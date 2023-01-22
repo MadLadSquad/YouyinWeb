@@ -1,0 +1,44 @@
+h1, h2, p, li {
+	font-family: 'Ubuntu', sans-serif;
+}
+
+a {
+	text-decoration: none;
+	color: #c87e74;
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+}
+
+ul li {
+	float: left;
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+ul li a {
+	display: block;
+	color: #c87e74;
+	text-align: center;
+	padding: 0 24px 0 24px;
+	text-decoration: none;
+	font-size: 32px;
+	line-height: 1.5;
+}
+
+#site-title {
+	color: #000000;
+}
+
+#err-404-emoji {
+	font-size: 200px;
+}
+
+.centered {
+	text-align: center;
+}
