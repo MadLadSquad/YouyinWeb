@@ -7,21 +7,25 @@ a {
 	color: #c87e74;
 }
 
-ul {
+ul, footer, #main-page {
 	list-style: none;
 	padding: 0;
 	margin: 0;
 	overflow: hidden;
 }
 
-ul li {
+ul {
+	height: var(--bar-height, height);
+}
+
+ul li, footer, #main-page {
 	float: left;
 	position: relative;
 	display: flex;
 	align-items: center;
 }
 
-ul li a {
+ul li a, footer p, footer select {
 	display: block;
 	color: #c87e74;
 	text-align: center;
@@ -29,6 +33,40 @@ ul li a {
 	text-decoration: none;
 	font-size: 32px;
 	line-height: 1.5;
+}
+
+#character-target-div {
+	display: block;
+	position: relative;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px solid #CCC;
+}
+
+footer p, footer select {
+	font-size: 18px;
+	color: #000000;
+	height: var(--footer-height, height);
+}
+
+select {
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+	max-width: max-content;
+	resize: horizontal;
+}
+
+option {
+	display: flex;
+	min-width: 0;
+	flex-direction: row;
+	border-color: red;
+	box-sizing: border-box;
+}
+
+#character-info-widget p {
+	margin-top: 3px;
+	margin-bottom: 3px;
 }
 
 #site-title {
@@ -41,4 +79,12 @@ ul li a {
 
 .centered {
 	text-align: center;
+}
+
+/*.character-div {
+	height: calc(100vh - (var(--footer-height) + var(--bar-height)));
+}*/
+
+#main-page {
+	width: 100%;
 }

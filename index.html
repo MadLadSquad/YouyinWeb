@@ -18,52 +18,39 @@
 		<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="main.css">
 
-		<title>Document</title>
+		<title class="site-title">Youyin </title>
 	</head>
 	<body>
 		<header>
-			<!--<a href="./index.html"><h1 id="site-title">Youyin </h1></a>-->
 			<ul>
-				<li><a href="./index.html" id="site-title">Youyin </a></li>
+				<li><a href="./index.html" class="site-title">Youyin </a></li>
 				<li><a href="./learning.html">Learning</a></li>
 				<li><a href="./deck.html">Deck</a></li>
 				<li><a href="./random.html">Random</a></li>
 				<li><a href="./about.html">About</a></li>
-				<li><a href="https://madladsquad.com/">To MadLadSquad</a></li>
 			<ul>
 		</header>
-		<main>
+		<main id="main-page">
+			<div id="character-info-widget">
+				<p id="character-info-widget-spelling">Spelling: gài</p>
+				<p id="character-info-widget-errors">Errors: 0</p>
+				<p>Definition:</p>
+				<ol id="character-info-widget-info">
+					<li>Manner, mettle</li>
+					<li>General idea</li>
+					<li>Scenery, scene</li>
+					<li>Without any exception</li>
+				</ol>
+			</div>
 			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
-			<div id="character-target-div" class="centered"></div>
-			<div id="character-target-div-2" class="centered"></div>
-
-			<script>
-				var writer = HanziWriter.create('character-target-div', '谢', {
-					width: 150,
-					height: 150,
-					showCharacter: false,
-					padding: 5
-				});
-				writer.quiz();
-
-				var writer2 = HanziWriter.create('character-target-div-2', '鬼', {
-					width: 150,
-					height: 150,
-					showCharacter: false,
-					showOutline: false,
-					showHintAfterMisses: 1,
-					highlightOnComplete: false,
-					padding: 5
-				});
-				writer2.quiz();
-
-				/*var writer = HanziWriter.create('character-target-div', '我', 
-				{
-					width: 100,
-					height: 100,
-					padding: 5
-				});*/
-			</script>
+			<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" id="character-target-div" class="centered character-div">
+				<line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
+				<line x1="100%" y1="0" x2="0" y2="100%" stroke="#DDD" />
+				<line x1="50%" y1="0" x2="50%" y2="100%" stroke="#DDD" />
+				<line x1="0" y1="50%" x2="100%" y2="50%" stroke="#DDD" />
+			</svg>
+			
+			<!--<div id="character-target-div" class="centered character-div"></div>-->
 		</main>
 
 		<footer class="centered">
@@ -72,8 +59,19 @@
 				and <a href="https://www.skishore.me/makemeahanzi/">makemeahanzi</a> libraries, each project gets 20% of all donations, purchases
 				and AD earnings ❤️
 			</p>
+			<select name="lang" id="lang-select" class="centered" onchange="modifySelectedLanguage()">
+				<option value="0">🇬🇧   EN</option>
+				<option value="1">🇧🇬   BG</option>
+				<option value="2">🇨🇳   CN SC</option>
+				<option value="3">🇹🇼   CN TC</option>
+				<option value="4">🇩🇪   DE</option>
+				<option value="5">🇲🇰   MK</option>
+				<option value="6">🇷🇺   RU</option>
+				<option value="7">🇯🇵   JP</option>
+			</select>
 		</footer>
 
 		<script src="./index.js"></script>
 	</body>
+	<script src="./main-page.js"></script>
 </html>

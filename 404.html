@@ -18,12 +18,12 @@
 		<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="main.css">
 
-		<title>404</title>
+		<title class="site-title">404 | Youyin </title>
 	</head>
 	<body>
 		<header>
 			<ul>
-				<li><a href="./index.html" id="site-title">Youyin </a></li>
+				<li><a href="./index.html" class="site-title">Youyin </a></li>
 				<li><a href="./learning.html">Learning</a></li>
 				<li><a href="./deck.html">Deck</a></li>
 				<li><a href="./random.html">Random</a></li>
@@ -43,6 +43,16 @@
 				and <a href="https://www.skishore.me/makemeahanzi/">makemeahanzi</a> libraries, each project gets 20% of all donations, purchases
 				and AD earnings ❤️
 			</p>
+			<select name="lang" id="lang-select" class="centered" onchange="modifySelectedLanguage()">
+				<option value="0">🇬🇧     EN</option>
+				<option value="1">🇧🇬     BG</option>
+				<option value="2">🇨🇳     CN SC</option>
+				<option value="3">🇹🇼     CN TC</option>
+				<option value="4">🇩🇪     DE</option>
+				<option value="5">🇲🇰     MK</option>
+				<option value="6">🇷🇺     RU</option>
+				<option value="7">🇯🇵     JP</option>
+			</select>
 		</footer>
 
 		<script src="./index.js"></script>
