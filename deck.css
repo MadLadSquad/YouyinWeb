@@ -1,0 +1,50 @@
+.card {
+	border: 1px solid #CCC;
+}
+
+.card-button-edit {
+	color: #fff;
+	background-color: #c87e74;
+	border-color: #a56961;
+
+	margin-top: 12px;
+	margin-bottom: 12px;
+
+	display: inline-block;
+	padding: 6px 12px;
+	text-align: center;
+	vertical-align: middle;
+	user-select: none;
+	background-image: none;
+	border: 2px solid transparent;
+	border-radius: 4px;
+	cursor: pointer;
+	touch-action: manipulation;
+}
+
+.card-button-edit:hover {
+	color: #fff;
+	background-color: #a56961;
+	border-color: #c87e74;
+}
+
+button {
+	text-transform: visible;
+	overflow: visible;
+	-webkit-appearance: button;
+}
+
+main {
+	width: 100%
+}
+
+ol {
+	list-style: none;
+	text-align: left;
+	padding-right: 40px;
+}
+
+ol li {
+	text-decoration: default;
+	list-style-type: decimal;
+}

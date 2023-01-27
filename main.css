@@ -1,4 +1,4 @@
-h1, h2, p, li {
+h1, h2, h3, p, li {
 	font-family: 'Ubuntu', sans-serif;
 }
 
@@ -7,7 +7,7 @@ a {
 	color: #c87e74;
 }
 
-ul, footer, #main-page {
+ul, footer, #main-page, #deck {
 	list-style: none;
 	padding: 0;
 	margin: 0;
@@ -18,7 +18,7 @@ ul {
 	height: var(--bar-height, height);
 }
 
-ul li, footer, #main-page {
+ul li, footer, #main-page, #deck {
 	float: left;
 	position: relative;
 	display: flex;
@@ -85,6 +85,6 @@ option {
 	height: calc(100vh - (var(--footer-height) + var(--bar-height)));
 }*/
 
-#main-page {
+#main-page, #deck {
 	width: 100%;
 }
