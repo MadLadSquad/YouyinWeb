@@ -1,0 +1,67 @@
+{
+	"sessions": 0,
+	"streak": 0,
+	"lastDate": "0",
+	"cards":
+	[
+		{
+			"name": "gài",
+			"character": "概",
+			"knowledge": 5,
+			"definitions":
+			[
+				"Manner, mettle",
+				"General idea",
+				"Screnery, scene",
+				"Without any exception"
+			]
+		},
+		{
+			"name": "huì",
+			"character": "会",
+			"knowledge": 2,
+			"definitions":
+			[
+				"To know, to be able to",
+				"To be good at, to be skilful in",
+				"Will, to be likely to, to be sure to"
+			]
+		},
+		{
+			"name": "ài",
+			"character": "愛",
+			"knowledge": 1,
+			"definitions":
+			[
+				"To love",
+				"To treasure",
+				"To like, be fond of, keen on",
+				"To begrudge, to be reluctant",
+				"To be prone, to be easy to"
+			]
+		},
+		{
+			"name": "wǒ",
+			"character": "我",
+			"knowledge": 0,
+			"definitions":
+			[
+				"I, me, my",
+				"We us, our(formal and literary)",
+				"A surname"
+			]
+		},
+		{
+			"name": "tā",
+			"character": "他",
+			"knowledge": 0,
+			"definitions":
+			[
+				"He, him",
+				"A dummy pronoun",
+				"Other, another",
+				"A surname"
+			]
+		}
+	]
+}

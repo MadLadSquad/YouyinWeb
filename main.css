@@ -7,7 +7,7 @@ a {
 	color: #c87e74;
 }
 
-ul, footer, #main-page, #deck {
+ul, footer, #main-page {
 	list-style: none;
 	padding: 0;
 	margin: 0;
@@ -18,7 +18,7 @@ ul {
 	height: var(--bar-height, height);
 }
 
-ul li, footer, #main-page, #deck {
+ul li, footer, #main-page {
 	float: left;
 	position: relative;
 	display: flex;
@@ -85,6 +85,6 @@ option {
 	height: calc(100vh - (var(--footer-height) + var(--bar-height)));
 }*/
 
-#main-page, #deck {
+#main-page {
 	width: 100%;
 }

@@ -1,43 +1,56 @@
+// Returns an element
+function addElement(elType, content, id, classType, type, parentEl)
+{
+	let el = document.createElement(elType);
+	el.className = classType;
+	el.id = id;
+	el.textContent = content;
+
+	parentEl.appendChild(el);
+	return el;
+}
+
 function deckmain()
 {
-	var writer = HanziWriter.create('card-character-target-div', '概', {
-		width: 100,
-		height: 100,
-		padding: 5,
-		showOutline: true,
-		strokeAnimationSpeed: 1.25,
-		delayBetweenStrokes: 50,
-	});
+	const data = JSON.parse(window.localStorage.getItem('youyinCardData'));
+	var deck = document.getElementById("deck");
 
-	var writer2 = HanziWriter.create('card-character-target-div-2', '概', {
-		width: 100,
-		height: 100,
-		padding: 5,
-		showOutline: true,
-		strokeAnimationSpeed: 1.25,
-		delayBetweenStrokes: 50,
-	});
+	for (var val in data["cards"])
+	{
+		const it = data["cards"][val];
 
-	document.getElementById('card-character-target-div').addEventListener('mouseover', function() {
-		writer.animateCharacter();
-	});
+		let div = document.createElement("div");
+		div.className = "card centered";
+		div.id = `${val}`
 
-	document.getElementById('card-character-target-div-2').addEventListener('mouseover', function() {
-		writer2.animateCharacter();
-	});
+		addElement("h3", `${it["name"]} ${it["knowledge"]}/5`, "", "", "", div);
+		const target = addElement("div", "", `card-character-target-div-${val}`, "", "", div);
+		addElement("p", "Definitions:", "", "", "", div);
 
-	var writer3 = HanziWriter.create('card-character-target-div-3', '概', {
-		width: 100,
-		height: 100,
-		padding: 5,
-		showOutline: true,
-		strokeAnimationSpeed: 1.25,
-		delayBetweenStrokes: 50,
-	});
+		let list = document.createElement("ol");
+		for (var i in it["definitions"])
+		{
+			let f = it["definitions"][i];
+			addElement("li", `${f}`, "", "", "", list);
+		}
+		div.appendChild(list);
 
-	document.getElementById('card-character-target-div-3').addEventListener('mouseover', function() {
-		writer3.animateCharacter();
-	});
+		addElement("button", "Edit", `${val}`, "card-button-edit", "submit", div);
+
+		deck.appendChild(div);
+
+		let writer = HanziWriter.create(`card-character-target-div-${val}`, it["character"], {
+			width: 100,
+			heigt: 100,
+			padding: 5,
+			showOutline: true,
+			strokeAnimationSpeed: 1.25,
+			delayBetweenStrokes: 50,
+		})
+		target.addEventListener('mouseover', function() {
+			writer.animateCharacter();
+		});
+	}
 }
 
 deckmain();
