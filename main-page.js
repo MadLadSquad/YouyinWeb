@@ -1,8 +1,13 @@
 // Global writer variable, because yes
 var writer;
 
+// This function uses some dark magic that works half the time in order to calculate the size of the mainpage viewport
+// and main elements. Here are some issues:
+// TODO: On portrait screens if the resolution changes this sometimes breaks, would be good if it was fixed. Probably check out main.css
+// and the main-page media query
 function getDrawElementHeight()
 {
+	// Some magic code to calculate the height
 	const parent = document.querySelector("html");
 	const lastChild = parent.lastElementChild;
 	const lastChildRect = lastChild.getBoundingClientRect();
@@ -12,11 +17,20 @@ function getDrawElementHeight()
 	// Here we have to adjust the height, because the list widget causes problems
 	const listWidget = document.getElementById("character-info-widget");
 
-	var finalHeight = window.innerHeight - unusedSpace - 10 + listWidget.getBoundingClientRect().height;
+	// Why does this exist, idk
+	const padding = 10;
 
-	listWidget.style.setProperty("height", finalHeight.toString() + "px");
-	if ((finalHeight + listWidget.getBoundingClientRect().width) > parent.getBoundingClientRect().width)
-		finalHeight = (parent.getBoundingClientRect().width / 2) - 10;
+	var finalHeight = window.innerHeight - unusedSpace - padding + listWidget.getBoundingClientRect().height;
+	if (!!window.chrome)
+	{
+		const footer = document.querySelector("footer");
+		finalHeight -= (listWidget.getBoundingClientRect().height + footer.getBoundingClientRect().height);
+	}
+
+	if (parent.getBoundingClientRect().width < finalHeight)
+		finalHeight = parent.getBoundingClientRect().width - (2 * padding);
+	else
+		listWidget.style.setProperty("height", finalHeight.toString() + "px");
 
 	return finalHeight;
 }

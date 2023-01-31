@@ -32,18 +32,40 @@
 		</header>
 		<main id="deck">
 			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
+			<div id="new-card" class="card centered">
+				<h1 id="new-card-header">+</h1>
+				<p>Add a new card to the deck</p>
+				<button id="new-card-button" class="card-button-edit">New card</button>
+			</div>
+			<div id="current-new-card" class="card centered">
+				<h3>Name: </h3>
+				<input type="text" id="name-text-field" name="Name Text Field" aria-label="Name Text Field"></input>
+
+				<h3>Character:</h3>
+				<input type="text" id="character-text-field" name="Character Text Field" aria-label="Character Text Field"></input>
+
+				<h3>Meanings:</h3>
+				<input type="text" id="meaning-text-field" name="Meaning Text Field" aria-label="Meaning Text Field"></input>
+
+				<button id="add-meaning-list-button" class="card-button-edit">+</button>
+				<ol id="definition-list-current-edit">
+					<!--Data will be inserted here dynamically by the Javascript defined in deck.js -->
+					<li>The quick brown fox jumps over the lazy dog</li>
+				</ol>
+				<button id="finish-edit-button" class="card-button-edit">Finish</button>
+
+			</div>
 			<!-- Data will be inserted dynamically by the Javascript here from deck.js file -->
 		</main>
 		<footer class="centered">
 			<p>
-				A project by <a href="https://madladsquad.com/">MadLad Squad</a>, based on the <a href="https://hanziwriter.org/">hanziwriter</a>
-				and <a href="https://www.skishore.me/makemeahanzi/">makemeahanzi</a> libraries ❤️
+				A <a href="https://madladsquad.com/">MadLad Squad</a> project!
 			</p>
-			<select name="lang" id="lang-select" class="centered" onchange="modifySelectedLanguage()">
+			<select aria-label="Language select box" name="lang" id="lang-select" class="centered" onchange="modifySelectedLanguage()">
 				<option value="0">🇬🇧   EN</option>
 				<option value="1">🇧🇬   BG</option>
-				<option value="2">🇨🇳   CN SC</option>
-				<option value="3">🇹🇼   CN TC</option>
+				<option value="2">🇨🇳   CN</option>
+				<option value="3">🇹🇼   CN-T</option>
 				<option value="4">🇩🇪   DE</option>
 				<option value="5">🇲🇰   MK</option>
 				<option value="6">🇷🇺   RU</option>

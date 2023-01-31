@@ -7,7 +7,7 @@ a {
 	color: #c87e74;
 }
 
-ul, footer, #main-page {
+ul, footer {
 	list-style: none;
 	padding: 0;
 	margin: 0;
@@ -18,14 +18,14 @@ ul {
 	height: var(--bar-height, height);
 }
 
-ul li, footer, #main-page {
+ul li, footer {
 	float: left;
 	position: relative;
 	display: flex;
 	align-items: center;
 }
 
-ul li a, footer p, footer select {
+ul li a {
 	display: block;
 	color: #c87e74;
 	text-align: center;
@@ -35,15 +35,27 @@ ul li a, footer p, footer select {
 	line-height: 1.5;
 }
 
+#main-page {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: 25% 75%;
+	grid-auto-rows: 100%;
+}
+
 #character-target-div {
-	display: block;
-	position: relative;
-	margin-left: auto;
-	margin-right: auto;
-	border: 1px solid #CCC;
+	border: 2px solid #CCC;
+	min-width: 260px;
+}
+
+/* This may cause problems, check out main-page.js on top of the definition of the "getDrawElementHeight" function */
+@media (orientation: portrait) {
+	#main-page {
+		display: block;
+	}
 }
 
 footer p, footer select {
+	padding: 0 0.33rem 0 0.33rem;
 	font-size: 18px;
 	color: #000000;
 	height: var(--footer-height, height);
@@ -74,17 +86,9 @@ option {
 }
 
 #err-404-emoji {
-	font-size: 200px;
+	font-size: 18vw;
 }
 
 .centered {
 	text-align: center;
-}
-
-/*.character-div {
-	height: calc(100vh - (var(--footer-height) + var(--bar-height)));
-}*/
-
-#main-page {
-	width: 100%;
 }

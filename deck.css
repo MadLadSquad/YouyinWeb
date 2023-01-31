@@ -54,3 +54,8 @@ ol li {
 	text-decoration: default;
 	list-style-type: decimal;
 }
+
+#new-card-header {
+	font-size: 7.5rem;
+	color: #555555;
+}
