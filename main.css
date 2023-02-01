@@ -14,10 +14,7 @@ ul, footer {
 	overflow: hidden;
 }
 
-ul {
-	height: var(--bar-height, height);
-}
-
+/* Make the footer and all list items in unordered lists inline with left alignment */
 ul li, footer {
 	float: left;
 	position: relative;
@@ -25,6 +22,7 @@ ul li, footer {
 	align-items: center;
 }
 
+/* Basically the styling for the text on the top bar */
 ul li a {
 	display: block;
 	color: #c87e74;
@@ -37,7 +35,7 @@ ul li a {
 
 #main-page {
 	display: grid;
-	gap: 1rem;
+	gap: 0rem;
 	grid-template-columns: 25% 75%;
 	grid-auto-rows: 100%;
 }
@@ -45,6 +43,8 @@ ul li a {
 #character-target-div {
 	border: 2px solid #CCC;
 	min-width: 260px;
+	margin: auto;
+	position: relative;
 }
 
 /* This may cause problems, check out main-page.js on top of the definition of the "getDrawElementHeight" function */
@@ -54,13 +54,14 @@ ul li a {
 	}
 }
 
+/* Define uniform styling for footer elements */
 footer p, footer select {
 	padding: 0 0.33rem 0 0.33rem;
 	font-size: 18px;
 	color: #000000;
-	height: var(--footer-height, height);
 }
 
+/* Make the select members shrink to fit since they would take too much space */
 select {
 	padding: 0 0 0 0;
 	margin: 0 0 0 0;
@@ -76,19 +77,44 @@ option {
 	box-sizing: border-box;
 }
 
+/* Only display the right border on landscape since on portrait elements are not inline */
+@media (orientation: landscape) {
+	#character-info-widget {
+		border-right: 1px solid #CCC;
+	}
+}
+
+/* Reduce margins for the text on the character info */
 #character-info-widget p {
 	margin-top: 3px;
 	margin-bottom: 3px;
+}
+
+/* Style the hr element is stupid can confirm, why have an hr? because a border on the footer will break */
+#main-page-hr {
+	padding: 0 0 0 0;
+	margin: 0 0 0 0;
+	border: 0;
+	border-top: 1px solid #CCC;
+	background-color: #CCC;
+}
+
+
+/* Add a border to make the user not think or be distracted by the titlebar */
+header {
+	border-bottom: 1px solid #CCC;
 }
 
 #site-title {
 	color: #000000;
 }
 
+/* Make the 404 emoji take up more or less the whole page */
 #err-404-emoji {
 	font-size: 18vw;
 }
 
+/* The generic centered class */
 .centered {
 	text-align: center;
 }

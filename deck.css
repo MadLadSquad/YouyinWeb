@@ -8,6 +8,7 @@
 	border: 1px solid #CCC;
 }
 
+/* I totally didn't cop this from somewhere I don't even remember */
 .card-button-edit {
 	color: #fff;
 	background-color: #c87e74;
@@ -41,7 +42,7 @@ button {
 }
 
 main {
-	width: 100%
+	width: 100%;
 }
 
 ol {
@@ -53,6 +54,11 @@ ol {
 ol li {
 	text-decoration: default;
 	list-style-type: decimal;
+}
+
+/* override the style of main.css specifically for the deck page, since it doesn't look good with a border */
+header {
+	border: 0px;
 }
 
 #new-card-header {

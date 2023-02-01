@@ -3,8 +3,8 @@ var writer;
 
 // This function uses some dark magic that works half the time in order to calculate the size of the mainpage viewport
 // and main elements. Here are some issues:
-// TODO: On portrait screens if the resolution changes this sometimes breaks, would be good if it was fixed. Probably check out main.css
-// and the main-page media query
+// TODO: On portrait screens if the resolution changes this sometimes breaks and a refresh is needed, would be good if it was fixed. 
+// Probably check out main.css and the main-page media query
 function getDrawElementHeight()
 {
 	// Some magic code to calculate the height
@@ -29,8 +29,8 @@ function getDrawElementHeight()
 
 	if (parent.getBoundingClientRect().width < finalHeight)
 		finalHeight = parent.getBoundingClientRect().width - (2 * padding);
-	else
-		listWidget.style.setProperty("height", finalHeight.toString() + "px");
+	else // The +4 is for the borders designe
+		listWidget.style.setProperty("height", (finalHeight + 4).toString() + "px");
 
 	return finalHeight;
 }
