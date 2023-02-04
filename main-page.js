@@ -44,7 +44,7 @@ function mainPageMain()
 	const drawElementHeight = getDrawElementHeight();
 
 	//var writer = HanziWriter.create('character-target-div', '概', {
-	window.writer = HanziWriter.create('character-target-div', '粤', {
+	window.writer = HanziWriter.create('character-target-div', '靈', {
 		width: drawElementHeight,
 		height: drawElementHeight,
 		showCharacter: false,

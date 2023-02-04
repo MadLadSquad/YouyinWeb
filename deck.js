@@ -12,6 +12,18 @@ function addElement(elType, content, id, classType, type, parentEl)
 
 function deckmain()
 {
+	if (window.localStorage.getItem('youyinCardData') === null)
+	{
+		const data = {
+			sessions: 0,
+			streak: 0,
+			lastDate: 0,
+			cards: [],
+		};
+		window.localStorage.setItem("youyinCardData", JSON.stringify(data))
+		return;
+	}
+
 	const data = JSON.parse(window.localStorage.getItem('youyinCardData'));
 	var deck = document.getElementById("deck");
 
@@ -35,11 +47,15 @@ function deckmain()
 		}
 		div.appendChild(list);
 
-		addElement("button", "Edit", `${val}`, "card-button-edit", "submit", div);
+		addElement("button", "Edit", `${val}`, "card-button-edit", "submit", div).addEventListener("click", function()
+		{
+			location.href = `./deck-edit-card.html?edit=${this.id}`;
+		});
 
 		deck.appendChild(div);
 
-		let writer = HanziWriter.create(`card-character-target-div-${val}`, it["character"], {
+		let writer = HanziWriter.create(`card-character-target-div-${val}`, it["character"],
+		{
 			width: 100,
 			heigt: 100,
 			padding: 5,
@@ -47,7 +63,8 @@ function deckmain()
 			strokeAnimationSpeed: 1.25,
 			delayBetweenStrokes: 50,
 		})
-		target.addEventListener('mouseover', function() {
+		target.addEventListener('mouseover', function() 
+		{
 			writer.animateCharacter();
 		});
 	}

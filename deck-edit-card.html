@@ -19,8 +19,9 @@
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="main.css">
+		<link rel="stylesheet" href="deck.css">
 
-		<title class="site-title">404 | Youyin </title>
+		<title class="site-title">Edit Card | Youyin </title>
 	</head>
 	<body>
 		<header>
@@ -31,28 +32,50 @@
 				<li><a href="./about.html">About</a></li>
 			<ul>
 		</header>
-		<main class="centered">
-			<h1 id="err-404-emoji">\(o_o)/</h1>
-			<h1>Unfortunately this page doesn't exist 😔</h1>
-			<br>
-		</main>
+		<main id="deck">
+			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
+			<div id="current-new-card" class="card centered">
+				<h3>Name: </h3>
+				<input type="text" id="name-text-field" name="Name Text Field" aria-label="Name Text Field"></input>
 
+				<h3>Character:</h3>
+				<input type="text" id="character-text-field" name="Character Text Field" aria-label="Character Text Field"></input>
+
+				<h3>Definitions:</h3>
+				<input type="text" id="meaning-text-field" name="Meaning Text Field" aria-label="Meaning Text Field"></input>
+
+				<button id="add-meaning-list-button" class="card-button-edit small-button">+</button>
+				<ol id="definition-list-current-edit">
+					<!--Data will be inserted here dynamically by the Javascript defined in deck-new.js -->
+				</ol>
+				<button id="finish-edit-button" class="card-button-edit">Finish</button>
+			</div>
+			<div id="character-preview" class="card centered">
+				<h3 id="card-preview-name">Preview Name</h3>
+				<div id="card-character-target-div-preview"></div>
+				<p>Definitions: </p>
+				<ol id="card-preview-list">
+					<!-- Data here will be inserted by deck-new.js -->
+				</ol>
+			</div>
+		</main>
 		<footer class="centered">
 			<p>
 				A <a href="https://madladsquad.com/">MadLad Squad</a> project!
 			</p>
 			<select aria-label="Language select box" name="lang" id="lang-select" class="centered" onchange="modifySelectedLanguage()">
-				<option value="0">🇬🇧     EN</option>
-				<option value="1">🇧🇬     BG</option>
-				<option value="2">🇨🇳     CN</option>
-				<option value="3">🇹🇼     CN-T</option>
-				<option value="4">🇩🇪     DE</option>
-				<option value="5">🇲🇰     MK</option>
-				<option value="6">🇷🇺     RU</option>
-				<option value="7">🇯🇵     JP</option>
+				<option value="0">🇬🇧   EN</option>
+				<option value="1">🇧🇬   BG</option>
+				<option value="2">🇨🇳   CN</option>
+				<option value="3">🇹🇼   CN-T</option>
+				<option value="4">🇩🇪   DE</option>
+				<option value="5">🇲🇰   MK</option>
+				<option value="6">🇷🇺   RU</option>
+				<option value="7">🇯🇵   JP</option>
 			</select>
 		</footer>
 
 		<script src="./index.js"></script>
+		<script src="./deck-new.js"></script>
 	</body>
 </html>

@@ -13,6 +13,8 @@
 			Hangul, Katakana, Hiragana, hanzi, kanji, hanja, hangul, katakana, hiragana">
 		<meta name="author" content="MadLad Squad">
 
+		<link rel="icon" type="image/png" href="./favicon.png">
+
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
@@ -35,25 +37,7 @@
 			<div id="new-card" class="card centered">
 				<h1 id="new-card-header">+</h1>
 				<p>Add a new card to the deck</p>
-				<button id="new-card-button" class="card-button-edit">New card</button>
-			</div>
-			<div id="current-new-card" class="card centered">
-				<h3>Name: </h3>
-				<input type="text" id="name-text-field" name="Name Text Field" aria-label="Name Text Field"></input>
-
-				<h3>Character:</h3>
-				<input type="text" id="character-text-field" name="Character Text Field" aria-label="Character Text Field"></input>
-
-				<h3>Meanings:</h3>
-				<input type="text" id="meaning-text-field" name="Meaning Text Field" aria-label="Meaning Text Field"></input>
-
-				<button id="add-meaning-list-button" class="card-button-edit">+</button>
-				<ol id="definition-list-current-edit">
-					<!--Data will be inserted here dynamically by the Javascript defined in deck.js -->
-					<li>The quick brown fox jumps over the lazy dog</li>
-				</ol>
-				<button id="finish-edit-button" class="card-button-edit">Finish</button>
-
+				<button id="new-card-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?new'">New card</button>
 			</div>
 			<!-- Data will be inserted dynamically by the Javascript here from deck.js file -->
 		</main>

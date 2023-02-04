@@ -41,6 +41,15 @@ button {
 	-webkit-appearance: button;
 }
 
+.small-button {
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
+
 main {
 	width: 100%;
 }
@@ -52,6 +61,7 @@ ol {
 }
 
 ol li {
+	padding-top: 0.25rem;
 	text-decoration: default;
 	list-style-type: decimal;
 }
