@@ -1,5 +1,6 @@
 // Global writer variable, because yes
 var writer;
+var currentCharacterErrors = [  ];
 
 // This function uses some dark magic that works half the time in order to calculate the size of the mainpage viewport
 // and main elements. Here are some issues:
@@ -35,20 +36,45 @@ function getDrawElementHeight()
 	return finalHeight;
 }
 
-function writerOnMistake(strokeData) {
-	document.getElementById("character-info-widget-errors").innerHTML = `Errors: ${strokeData.totalMistakes}`;
+function writerOnMistake(strokeData) 
+{
+	document.getElementById("character-info-widget-errors").textContent = `Errors: ${strokeData.totalMistakes}`;
+}
+
+function writerOnComplete(strokeData) 
+{
+	
 }
 
 function mainPageMain()
 {
 	const drawElementHeight = getDrawElementHeight();
+	if (window.localStorage.getItem('youyinCardData') === null || JSON.parse(window.localStorage.getItem("youyinCardData"))["cards"].length == 0)
+	{
+		document.getElementById("character-target-div").remove();
+
+		let link = document.createElement("a");
+		link.href = "./deck.html"
+		link.appendChild(document.createTextNode("Deck"));
+
+		let el = document.createElement("h1");
+		el.className = "centered vcentered"
+		el.textContent = "You currently have no cards, go to the "
+		el.appendChild(link);
+		el.appendChild(document.createTextNode(" page to add some!"))
+
+		document.getElementById("main-page").appendChild(el);
+		return;
+	}
 
 	//var writer = HanziWriter.create('character-target-div', '概', {
 	window.writer = HanziWriter.create('character-target-div', '靈', {
 		width: drawElementHeight,
 		height: drawElementHeight,
 		showCharacter: false,
-		padding: 5
+		padding: 5,
+		showHintAfterMisses: 3,
+		radicalColor: '#c87e74'
 	});
 	window.writer.quiz({
 		onMistake: writerOnMistake
@@ -59,6 +85,13 @@ function mainPageMain()
 		window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
 	};
 	window.addEventListener("resize", notify);
+
+	window.addEventListener("beforeunload", function(e)
+	{
+		
+
+		return false;
+	});
 }
 
 mainPageMain();

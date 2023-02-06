@@ -19,6 +19,7 @@
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="main.css">
+		<link rel="stylesheet" href="deck.css" type="text/css">
 
 		<title class="site-title">Learning | Youyin </title>
 	</head>
@@ -31,8 +32,77 @@
 				<li><a href="./about.html">About</a></li>
 			<ul>
 		</header>
-		<main class="centered">
-			<h1>The learning section is a work in progress and is coming soon! 🚧</h1>
+		<main>
+			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
+			<h1 class="centered">The learning section is currently a work in progress and is bound to be incomplete</h1>
+
+			<hr>
+
+			<h1>Tips for learning Chinese characters:</h1>
+			<p>
+				Let's begin with form: All chinese characters have a specific stroke order that needs to be strictly followed, currently we only use the PRC stroke order with the exception of
+				Chinese characters created in Japan or Korea. Here is the stroke order for the character 想:
+			</p>
+			<svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" id="character-target-div-n" class="centered character-prop">
+				<line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
+				<line x1="100%" y1="0" x2="0" y2="100%" stroke="#DDD" />
+				<line x1="50%" y1="0" x2="50%" y2="100%" stroke="#DDD" />
+				<line x1="0" y1="50%" x2="100%" y2="50%" stroke="#DDD" />
+			</svg>
+			<br>
+			<button id="animate-button" class="card-button-edit">Animate</button>
+			<script>
+				var writer = HanziWriter.create('character-target-div-n', '想', {
+					width: 100,
+					height: 100,
+					padding: 5,
+					showOutline: true,
+					strokeAnimationSpeed: 1.25,
+					delayBetweenStrokes: 50,
+				});
+				document.getElementById('animate-button').addEventListener('click', function() {
+					writer.animateCharacter();
+				});
+			</script>
+			<p>
+				Additionally, you might have noticed that strokes are dynamic, that is they start slow and press hard, then transition to fast and light. That's because Chinese characters have traditionally
+				been written on paper using a brush, allowing for more dynamic strokes than in other writing systems. Notice the change in speed here:
+			<p>
+			<br>
+			<svg xmlns="http://www.w3.org/2000/svg" width="100px" height="100px" id="character-target-div-n1" class="centered character-prop">
+				<line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
+				<line x1="100%" y1="0" x2="0" y2="100%" stroke="#DDD" />
+				<line x1="50%" y1="0" x2="50%" y2="100%" stroke="#DDD" />
+				<line x1="0" y1="50%" x2="100%" y2="50%" stroke="#DDD" />
+			</svg>
+			<br>
+			<button id="animate-button-1" class="card-button-edit">Animate</button>
+			<script>
+				var writer1 = HanziWriter.create('character-target-div-n1', '想', {
+					width: 100,
+					height: 100,
+					padding: 5,
+					showOutline: true,
+					strokeAnimationSpeed: 1,
+					delayBetweenStrokes: 400,
+				});
+				document.getElementById('animate-button-1').addEventListener('click', function() {
+					writer1.animateCharacter();
+				});
+			</script>
+			<p>
+				Generally you should apply the same principle when writing with a pen or pencil on paper. To get the hang of it, start practicing the initial strokes by starting slow and pressing hard, then
+				finishing the stroke fast with light pressure. When learning characters, it's also recommended that you use a <a href="https://en.wikipedia.org/wiki/Ming_(typefaces)">Ming/Song</a>
+				or a <a href="https://en.wikipedia.org/wiki/Regular_script">Regular Script</a> font, due to them having clear indicators for stroke directions. On Youyin, we use the Regular Script.
+			</p>
+			<br>
+			<p>
+				Now to remembering characters: There are a couple of methods depending on the characters depending on their type. Pictograms are characters like 木, 日, 山 and 月. These characters represent
+				a specific idea graphically. Characters similar to pictograms are the simple ideograms like 上, 下, 凸, 凹 which represent up, down, convex and concave respectivelly. Then there are
+				compound ideographs like 明(sun next to moon = bright), 休(man next to tree = relaxed), 好(woman next to child = good). Finally there are phono-semantic compounds like 湖 and 河,
+				both have the water radical 氵on their left side that determines their meaning, since the characters mean river and lake respectively. Their pronunciation is hé and hú respectively,
+				where the pronunciation is determined by the main part of the character that being 胡(hú) and 可(kě).
+			</p>
 		</main>
 		<footer class="centered">
 			<p>

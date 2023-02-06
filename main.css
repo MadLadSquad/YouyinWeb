@@ -40,11 +40,19 @@ ul li a {
 	grid-auto-rows: 100%;
 }
 
+/* Keep this just in case
 #character-target-div {
 	border: 2px solid #CCC;
 	min-width: 260px;
 	margin: auto;
 	position: relative;
+}
+*/
+
+.character-prop {
+	border: 2px solid #CCC;
+	margin: auto;
+	position: relative
 }
 
 /* This may cause problems, check out main-page.js on top of the definition of the "getDrawElementHeight" function */
@@ -117,4 +125,8 @@ header {
 /* The generic centered class */
 .centered {
 	text-align: center;
+}
+
+.vcentered {
+	margin: auto;
 }
