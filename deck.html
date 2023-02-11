@@ -13,6 +13,8 @@
 			Hangul, Katakana, Hiragana, hanzi, kanji, hanja, hangul, katakana, hiragana">
 		<meta name="author" content="MadLad Squad">
 
+
+
 		<link rel="icon" type="image/png" href="./favicon.png">
 
 		<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,8 +41,10 @@
 				<p>Add a new card to the deck</p>
 				<button id="new-card-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?new'">New card</button>
 				<br>
-				<button id="import-deck-button" class="card-button-edit">Import</button>
+				<input type="file" id="fileupload"><button id="import-deck-button" class="card-button-edit">Import</button></input>
 				<button id="export-deck-button" class="card-button-edit">Export</button>
+
+				<button id="clear-deck-button" class="card-button-edit">Clear</button>
 			</div>
 			<!-- Data will be inserted dynamically by the Javascript here from deck.js file -->
 		</main>

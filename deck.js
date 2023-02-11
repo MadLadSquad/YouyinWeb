@@ -10,6 +10,48 @@ function addElement(elType, content, id, classType, type, parentEl)
 	return el;
 }
 
+function updateExportButton()
+{
+	const dt = JSON.parse(window.localStorage.getItem("youyinCardData"))["cards"];
+
+	var file = new Blob([JSON.stringify(dt)], { type: "application/json;charset=utf-8" });
+
+	const link = document.createElement("a");
+	link.href = URL.createObjectURL(file);
+	link.download = "deck.yydeck.json";
+	link.click();
+	URL.revokeObjectURL(link.href);
+}
+
+function importDeck(f) {
+	var bExecuted = confirm("Importing a deck WILL merge your current deck with the new one, to replace it first clear your current deck!");
+	if (bExecuted)
+	{
+		var dt = JSON.parse(window.localStorage.getItem("youyinCardData"));
+		const reader = new FileReader();
+		reader.addEventListener("load", function(){
+			var dt = JSON.parse(window.localStorage.getItem("youyinCardData"));
+			dt["cards"].push.apply(dt["cards"], JSON.parse(this.result));
+
+			window.localStorage.setItem("youyinCardData", JSON.stringify(dt));
+			document.location.reload();
+		});
+		reader.readAsText(f.target.files[0])
+	}
+}
+
+function clearDeck() {
+	var bExecuted = confirm("Are you sure you want to DELETE the current deck, THIS CANNOT BE UNDONE! Export your data to save it just in case!");
+	if (bExecuted)
+	{
+		var dt = JSON.parse(window.localStorage.getItem("youyinCardData"));
+		dt["cards"] = [];
+
+		window.localStorage.setItem("youyinCardData", JSON.stringify(dt));
+		document.location.reload();
+	}
+}
+
 function deckmain()
 {
 	if (window.localStorage.getItem('youyinCardData') === null)
@@ -23,6 +65,13 @@ function deckmain()
 		window.localStorage.setItem("youyinCardData", JSON.stringify(data))
 		return;
 	}
+
+	document.getElementById("export-deck-button").addEventListener("click", updateExportButton);
+	document.getElementById("clear-deck-button").addEventListener("click", clearDeck);
+	document.getElementById("import-deck-button").addEventListener("click", function(){
+		document.getElementById("fileupload").click();
+	});
+	document.getElementById("fileupload").addEventListener("change", importDeck);
 
 	const data = JSON.parse(window.localStorage.getItem('youyinCardData'));
 	var deck = document.getElementById("deck");

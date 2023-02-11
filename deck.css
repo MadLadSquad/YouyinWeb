@@ -75,3 +75,10 @@ header {
 	font-size: 7.5rem;
 	color: #555555;
 }
+
+#fileupload {
+	display: block;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+}

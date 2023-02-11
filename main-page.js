@@ -21,15 +21,21 @@ function getDrawElementHeight()
 	// Why does this exist, idk
 	const padding = 10;
 
+	const footer = document.querySelector("footer");
+
 	var finalHeight = window.innerHeight - unusedSpace - padding + listWidget.getBoundingClientRect().height;
-	if (!!window.chrome)
+	const bMobile = navigator.userAgent.toLowerCase().includes("mobile");
+	if (!!window.chrome || bMobile)
 	{
-		const footer = document.querySelector("footer");
-		finalHeight -= (listWidget.getBoundingClientRect().height + footer.getBoundingClientRect().height);
+		finalHeight -= (footer.getBoundingClientRect().height);
 	}
 
 	if (parent.getBoundingClientRect().width < finalHeight)
+	{
 		finalHeight = parent.getBoundingClientRect().width - (2 * padding);
+		if (bMobile && !(!!window.chrome))
+			finalHeight -= footer.getBoundingClientRect().height;
+	}
 	else // The +4 is for the borders designe
 		listWidget.style.setProperty("height", (finalHeight + 4).toString() + "px");
 
@@ -68,7 +74,7 @@ function mainPageMain()
 	}
 
 	//var writer = HanziWriter.create('character-target-div', '概', {
-	window.writer = HanziWriter.create('character-target-div', '靈', {
+	window.writer = HanziWriter.create('character-target-div', '概', {
 		width: drawElementHeight,
 		height: drawElementHeight,
 		showCharacter: false,
