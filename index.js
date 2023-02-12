@@ -1,3 +1,16 @@
+// Returns an element, creates an element with the given parameters and appends it
+function addElement(elType, content, id, classType, data, parentEl)
+{
+	let el = document.createElement(elType);
+	el.className = classType;
+	el.id = id;
+	el.textContent = content;
+	el.setAttribute("arbitrary-data", data);
+
+	parentEl.appendChild(el);
+	return el;
+}
+
 // Returns void, sets the name of the title
 function setTitleName()
 {

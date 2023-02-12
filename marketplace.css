@@ -1,0 +1,10 @@
+#new-card-header-smaller {
+	font-size: 4.5rem;
+	color: #555555;
+	margin-top: 2rem;
+	margin-bottom: 2rem;
+}
+
+.error-text {
+	color: rgb(255, 0, 0);
+}

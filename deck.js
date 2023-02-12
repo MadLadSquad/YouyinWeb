@@ -1,15 +1,3 @@
-// Returns an element
-function addElement(elType, content, id, classType, type, parentEl)
-{
-	let el = document.createElement(elType);
-	el.className = classType;
-	el.id = id;
-	el.textContent = content;
-
-	parentEl.appendChild(el);
-	return el;
-}
-
 function updateExportButton()
 {
 	const dt = JSON.parse(window.localStorage.getItem("youyinCardData"))["cards"];
@@ -27,7 +15,6 @@ function importDeck(f) {
 	var bExecuted = confirm("Importing a deck WILL merge your current deck with the new one, to replace it first clear your current deck!");
 	if (bExecuted)
 	{
-		var dt = JSON.parse(window.localStorage.getItem("youyinCardData"));
 		const reader = new FileReader();
 		reader.addEventListener("load", function(){
 			var dt = JSON.parse(window.localStorage.getItem("youyinCardData"));

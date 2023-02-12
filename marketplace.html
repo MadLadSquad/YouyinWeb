@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8" />
+		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="Learn how to write and read Chinese characters and other writing systems in a fun and easy way">
 		<meta name="keywords" content="Youyin, MadLad Squad, writing systems, Chinese Characters, Japanese Kana, Latin, Cyrillic, Georgian, Armenian, Greek, Arabic, Hindi, 
@@ -13,17 +13,16 @@
 			Hangul, Katakana, Hiragana, hanzi, kanji, hanja, hangul, katakana, hiragana">
 		<meta name="author" content="MadLad Squad">
 
-
-
 		<link rel="icon" type="image/png" href="./favicon.png">
 
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
-		<link rel="stylesheet" href="main.css">
-		<link rel="stylesheet" href="deck.css">
+		<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="main.css" type="text/css">
+		<link rel="stylesheet" href="deck.css" type="text/css">
+		<link rel="stylesheet" href="marketplace.css" type="text/css">
 
-		<title class="site-title">Deck | Youyin </title>
+		<title class="site-title">Youyin </title>
 	</head>
 	<body>
 		<header>
@@ -34,20 +33,18 @@
 				<li><a href="./about.html">About</a></li>
 			<ul>
 		</header>
-		<main id="deck">
-			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
-			<div id="new-card" class="card centered">
-				<h1 id="new-card-header">+</h1>
-				<p>Add a new card to the deck</p>
-				<button id="new-card-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?new'">New card</button>
-				<br>
-				<input type="file" id="fileupload"><button id="import-deck-button" class="card-button-edit">Import</button></input>
-				<button id="export-deck-button" class="card-button-edit">Export</button>
-
-				<button id="clear-deck-button" class="card-button-edit">Clear</button>
-				<button id="marketplace-deck-button" class="card-button-edit" onclick="location.href='./marketplace.html'">Marketplace</button>
-			</div>
-			<!-- Data will be inserted dynamically by the Javascript here from deck.js file -->
+		<main id="main">
+			<h1 class="centered">Official decks</h1>
+			<section id="deck">
+				<div id="new-deck-upload-card" class="card centered">
+					<h3 id="new-card-header-smaller">+</h3>
+					<p>Want to add your deck to the marketplace? Click below to learn more!</p>
+					<button id="upload-deck-public" class="card-button-edit" onclick="location.href='https://github.com/MadLadSquad/YouyinPublicDeckRepository'">Upload</button>
+				</div>
+			</section>
+			<h1 class="centered">Community decks</h1>
+			<section id="deck-community-master">
+			</section>
 		</main>
 		<footer class="centered">
 			<p>
@@ -67,5 +64,5 @@
 
 		<script src="./index.js"></script>
 	</body>
-	<script src="./deck.js"></script>
+	<script src="./marketplace.js"></script>
 </html>
