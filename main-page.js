@@ -1,6 +1,9 @@
+'use strict';
+
 // Global writer variable, because yes
 var writer;
 var currentCharacterErrors = [  ];
+var bInTest = false;
 
 // This function uses some dark magic that works half the time in order to calculate the size of the mainpage viewport
 // and main elements. Here are some issues:
@@ -23,7 +26,7 @@ function getDrawElementHeight()
 
 	const footer = document.querySelector("footer");
 
-	var finalHeight = window.innerHeight - unusedSpace - padding + listWidget.getBoundingClientRect().height;
+	let finalHeight = window.innerHeight - unusedSpace - padding + listWidget.getBoundingClientRect().height;
 	const bMobile = navigator.userAgent.toLowerCase().includes("mobile");
 	if (!!window.chrome || bMobile)
 	{
@@ -42,12 +45,12 @@ function getDrawElementHeight()
 	return finalHeight;
 }
 
-function writerOnMistake(strokeData) 
+function writerOnMistake(strokeData)
 {
 	document.getElementById("character-info-widget-errors").textContent = `Errors: ${strokeData.totalMistakes}`;
 }
 
-function writerOnComplete(strokeData) 
+function writerOnComplete(strokeData)
 {
 	
 }
@@ -55,9 +58,9 @@ function writerOnComplete(strokeData)
 function mainPageMain()
 {
 	const drawElementHeight = getDrawElementHeight();
-	if (window.localStorage.getItem('youyinCardData') === null || JSON.parse(window.localStorage.getItem("youyinCardData"))["cards"].length == 0)
+	if (window.localStorageData["cards"].length == 0)
 	{
-		document.getElementById("character-target-div").remove();
+		document.getElementById("start-button").remove();
 
 		let link = document.createElement("a");
 		link.href = "./deck.html"
@@ -73,22 +76,55 @@ function mainPageMain()
 		return;
 	}
 
-	//var writer = HanziWriter.create('character-target-div', '概', {
-	window.writer = HanziWriter.create('character-target-div', '概', {
-		width: drawElementHeight,
-		height: drawElementHeight,
-		showCharacter: false,
-		padding: 5,
-		showHintAfterMisses: 3,
-		radicalColor: '#c87e74'
-	});
-	window.writer.quiz({
-		onMistake: writerOnMistake
+	const startButton = document.getElementById("start-button");
+	startButton.style.setProperty("width", drawElementHeight + "px");
+	startButton.style.setProperty("height", drawElementHeight + "px");
+	startButton.addEventListener("click", function()
+	{
+		document.getElementById("start-button").remove();
+		window.bInTest = true;
+
+		const page = document.getElementById("main-page");
+		
+		page.innerHTML += `
+			<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" id="character-target-div" class="centered character-div character-prop">
+				<line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
+				<line x1="100%" y1="0" x2="0" y2="100%" stroke="#DDD" />
+				<line x1="50%" y1="0" x2="50%" y2="100%" stroke="#DDD" />
+				<line x1="0" y1="50%" x2="100%" y2="50%" stroke="#DDD" />
+			</svg>
+		`;
+
+		window.writer = HanziWriter.create('character-target-div', '概', {
+			width: drawElementHeight,
+			height: drawElementHeight,
+			showCharacter: false,
+			padding: 5,
+			showHintAfterMisses: 3,
+			radicalColor: '#c87e74'
+		});
+		window.writer.quiz({
+			onMistake: writerOnMistake,
+			onComplete: writerOnComplete,
+		});
 	});
 
-	notify = function() {
+	//document.getElementById("character-target-div").focus();
+
+	var notify = function() {
 		const newDrawElementHeight = getDrawElementHeight();
-		window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
+		if (bInTest)
+		{
+			window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
+		}
+		else
+		{
+			const el = document.getElementById("start-button");
+			el.style.setProperty("width", newDrawElementHeight + "px");
+			console.log(newDrawElementHeight)
+			el.style.setProperty("height", newDrawElementHeight + "px");
+		}
+		//window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
 	};
 	window.addEventListener("resize", notify);
 

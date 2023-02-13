@@ -1,3 +1,5 @@
+'use strict';
+
 // Global variables, why not
 var previewName = "Preview Name";
 var previewCharacter = "是";
@@ -11,10 +13,10 @@ function updateListElements()
 	const previewList = document.getElementById("card-preview-list");
 	editList.replaceChildren(...window.previewDefinitions);
 
-	var tmpArr = [];
-	for (var i = 0; i < window.previewDefinitions.length; i++)
+	let tmpArr = [];
+	for (let i = 0; i < window.previewDefinitions.length; i++)
 	{
-		var el = document.createElement("li");
+		let el = document.createElement("li");
 		el.textContent = window.previewDefinitions[i].textContent.slice(0, -1);
 		tmpArr.push(el);
 	}
@@ -30,29 +32,31 @@ function finishButtonNewCard()
 		definitions: [],
 	}
 
-	for (var i = 0; i < previewDefinitions.length; i++)
+	for (let i = 0; i < previewDefinitions.length; i++)
 	{
 		data["definitions"].push(previewDefinitions[i].innerText.slice(0, -1));
 	}
 
-	var dt = JSON.parse(window.localStorage.getItem("youyinCardData"))
-	dt["cards"].push(data);
-	window.localStorage.setItem("youyinCardData", JSON.stringify(dt));
+	window.localStorageData["cards"].push(data);
+	saveToLocalStorage(window.localStorageData);
 	location.href = "./deck.html";
 }
 
+// Always call updateListElements after this
+// Returns void, takes the name of the list element and an id for further on click events
 function constructListElement(name, id)
 {
-	var el = document.createElement("li");
+	let el = document.createElement("li");
 	el.textContent = (name + " ");
 
-	var button = document.createElement("button");
+	// Add a remove definition button on each call
+	let button = document.createElement("button");
 	button.className = "card-button-edit small-button";
 	button.id = `remove-meaning-list-button-${id}`;
 	button.textContent = "-";
 	button.addEventListener("click", function()
 	{
-		for (var i = 0; i < window.previewDefinitions.length; i++)
+		for (let i = 0; i < window.previewDefinitions.length; i++)
 		{
 			if (window.previewDefinitions[i].firstElementChild.id == this.id)
 			{
@@ -63,25 +67,29 @@ function constructListElement(name, id)
 		}
 	});
 
+	// Append the button to the list element and push to the preview definitions list
 	el.appendChild(button);
-
 	window.previewDefinitions.push(el);
-	updateListElements();
 }
 
+// Returns void, takes references to the name text field, the character text field and the definition ordered list
 function addFinishButton(nameTextField, characterTextField, meaningList)
 {
 	const button = document.getElementById("finish-edit-button");
 	const urlParams = new URLSearchParams(window.location.search);
-	var finishButtonClickFunction;
+	let finishButtonClickFunction;
+
 	if (urlParams.has("edit"))
 	{
-		const data = JSON.parse(window.localStorage.getItem("youyinCardData"))["cards"];
+		const data = window.localStorageData["cards"];
+		// This statement checkf if the number provided as a parameter of the page is higher or equal to the length of the array.
+		// This check is needed because we use indexes as parameters for editing the card
 		if (urlParams.get("edit") >= data.length)
 		{
 			finishButtonClickFunction = finishButtonNewCard;
 			return;
 		}
+		// Get reference to the element we're currently editing
 		const el = data[urlParams.get("edit")]
 
 		const nameTextBox = document.getElementById("name-text-field");
@@ -95,66 +103,76 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 		characterTextBox.value = el["character"];
 		window.previewCharacter = el["character"];
 
-		for (var i in el["definitions"])
+		// Add all the definitions to the ordered lists
+		for (let i in el["definitions"])
 		{
-			var it = el["definitions"][i];
+			let it = el["definitions"][i];
 			constructListElement(it, i);
+			updateListElements();
 		}
 
+		// Callback for the finish button
 		finishButtonClickFunction = function()
 		{
 			const urlParams = new URLSearchParams(window.location.search);
-			var dt = JSON.parse(window.localStorage.getItem("youyinCardData"))
-			var data = dt["cards"][urlParams.get("edit")];
+			let dt = window.localStorageData;
+			let data = dt["cards"][urlParams.get("edit")];
 
 			data["name"] = window.previewName;
 			data["character"] = window.previewCharacter;
 			data["definitions"] = [];
-			for (var i = 0; i < previewDefinitions.length; i++)
+			for (let i = 0; i < previewDefinitions.length; i++)
 			{
 				data["definitions"].push(previewDefinitions[i].innerText.slice(0, -1));
 			}
-			window.localStorage.setItem("youyinCardData", JSON.stringify(dt));
+			saveToLocalStorage(dt);
 			location.href = "./deck.html";
 		};
 
+		// Dynamically put the delete button there because it doesn't exist by default in the HTML
 		const parentDiv = document.getElementById("current-new-card");
 		const deleteButton = document.createElement("button");
 		deleteButton.id = "delete-card-button";
 		deleteButton.className = "card-button-edit";
 		deleteButton.textContent = "Delete"
+
+		// On click ask for confirmation
 		deleteButton.addEventListener("click", function()
 		{
-			var bExecuted = confirm("Are you sure you want to delete the card?");
+			let bExecuted = confirm("Are you sure you want to delete the card?");
 			if (bExecuted)
 			{
 				const urlParams = new URLSearchParams(window.location.search);
-				var dt = JSON.parse(window.localStorage.getItem("youyinCardData"));
+				let dt = window.localStorageData;
 				dt["cards"].splice(urlParams.get("edit"), 1);
 
-				window.localStorage.setItem("youyinCardData", JSON.stringify(dt));
+				saveToLocalStorage(dt);
 				location.href = "./deck.html"
 			}
 		});
-
+		// Add the button to the div
 		parentDiv.appendChild(deleteButton);
 	}
-	else
+	else // In any other case such as non "edit" parameters we assing to this
 		finishButtonClickFunction = finishButtonNewCard;
 
+	// Add selected function event
 	button.addEventListener("click", finishButtonClickFunction);
+}
+
+function addButtonEvent(id, type, func)
+{
+	document.getElementById(id).addEventListener(type, func);
 }
 
 function constructPreviewEvents()
 {
 	const nameTextField = document.getElementById("name-text-field");
 	const characterTextField = document.getElementById("character-text-field");
-	const meaningButton = document.getElementById("add-meaning-list-button");
-	const writerEl = document.getElementById("card-character-target-div-preview");
 
 	addFinishButton(nameTextField, characterTextField, null);
 
-	meaningButton.addEventListener("click", function()
+	addButtonEvent("add-meaning-list-button", "click", function()
 	{
 		const txtField = document.getElementById("meaning-text-field");
 
@@ -162,7 +180,13 @@ function constructPreviewEvents()
 			return;
 
 		constructListElement(txtField.value, window.previewDefinitions.length);
+		updateListElements();
 		txtField.value = "";
+	});
+
+	addButtonEvent("card-character-target-div-preview", "mouseover", function()
+	{
+		window.writer.animateCharacter();
 	});
 
 	nameTextField.addEventListener("change", function()
@@ -191,10 +215,6 @@ function constructPreviewEvents()
 		strokeAnimationSpeed: 1.25,
 		delayBetweenStrokes: 50,
 	})
-	writerEl.addEventListener('mouseover', function()
-	{
-		window.writer.animateCharacter();
-	});
 }
 
 constructPreviewEvents();

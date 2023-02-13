@@ -67,7 +67,7 @@ ol li {
 }
 
 /* override the style of main.css specifically for the deck page, since it doesn't look good with a border */
-header {
+.header-deck {
 	border: 0px;
 }
 

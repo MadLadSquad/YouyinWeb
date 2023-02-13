@@ -1,20 +1,22 @@
+'use strict';
+
 var gname = "";
 var gfolder = "";
 
 function constructElement(val, deckContainer, it, type1, type2, folder)
 {
-	var leveledUpType = "No";
-	var extension = ".yydeck.json"
+	let leveledUpType = "No";
+	let extension = ".yydeck.json"
 	if (it["name"].endsWith(".presetlvl.yydeck.json"))
 	{
 		leveledUpType = "Yes"
 		extension = ".presetlvl.yydeck.json"
 	}
-	var div = document.createElement("div");
+	let div = document.createElement("div");
 	div.className = "card centered";
 	div.id = `marketplace-${type1}-card-${val}`;
 
-	var nm = it["name"].replaceAll("-", " ").replaceAll(extension, "");
+	let nm = it["name"].replaceAll("-", " ").replaceAll(extension, "");
 
 	addElement("h1", nm, "", "", "", div);
 	addElement("p", `Status: ${type2}`, "", "", "", div);
@@ -32,12 +34,12 @@ function constructElement(val, deckContainer, it, type1, type2, folder)
 			})
 			.then(function (content)
 			{
-				var bExecuted = confirm("Importing a deck WILL merge your current deck with the new one, to replace it first clear your current deck!");
+				let bExecuted = confirm("Importing a deck WILL merge your current deck with the new one, to replace it first clear your current deck!");
 				if (bExecuted)
 				{
-					var dt = JSON.parse(window.localStorage.getItem("youyinCardData"));
+					let dt = window.localStorageData;
 					dt["cards"].push.apply(dt["cards"], JSON.parse(content));
-					window.localStorage.setItem("youyinCardData", JSON.stringify(dt));
+					saveToLocalStorage(dt);
 					location.href = "./deck.html";
 				}
 			})
@@ -50,7 +52,7 @@ function constructElement(val, deckContainer, it, type1, type2, folder)
 	addElement("button", "Source", `source-button-${type1}-${val}`, "card-button-edit", folder + it["name"], div).addEventListener("click", function()
 	{
 		// If an element uses addElement, arbitrary data is also assigned
-		location.href = 'https://github.com/MadLadSquad/YouyinPublicDeckRepository/blob/master/' + this.getAttribute("arbitrary-data");
+		window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository/blob/master/' + this.getAttribute("arbitrary-data"));
 	});
 
 	addElement("br", "", "", "", "", div);
@@ -66,7 +68,7 @@ function constructElement(val, deckContainer, it, type1, type2, folder)
 			})
 			.then(function (content)
 			{
-				var file = new Blob([content], { type: "application/json;charset=utf-8"});
+				let file = new Blob([content], { type: "application/json;charset=utf-8"});
 				const link = document.createElement("a");
 
 				link.href = URL.createObjectURL(file);
@@ -81,7 +83,7 @@ function constructElement(val, deckContainer, it, type1, type2, folder)
 
 function createErrorElement(deckContainer, response, marketplaceType)
 {
-	var el = document.createElement("h1");
+	let el = document.createElement("h1");
 	el.textContent = `Error ${response.status}: Couldn't load the ${marketplaceType} marketplace, retry later!`;
 	el.className = "error-text centered vcentered";
 
@@ -97,9 +99,9 @@ async function handleOfficialRepos(deckContainer)
 		return;
 	}
 	const json = await response.json();
-	for (var val in json)
+	for (let val in json)
 	{
-		var it = json[val];
+		let it = json[val];
 		if (it["name"].endsWith(".yydeck.json"))
 			constructElement(val, deckContainer, it, "official", "Official", "");
 	}
@@ -115,9 +117,9 @@ async function handleCommunityRepos(deckContainer)
 		return;
 	}
 	const json1 = await response.json();
-	for (var ii in json1)
+	for (let ii in json1)
 	{
-		var it1 = json1[ii];
+		let it1 = json1[ii];
 		if (it1["name"].startsWith("r") && it1["type"] == "dir")
 		{
 			let res = await fetch(`https://api.github.com/repos/MadLadSquad/YouyinPublicDeckRepository/contents/community/${it1['name']}`);
@@ -129,10 +131,10 @@ async function handleCommunityRepos(deckContainer)
 			const json = await res.json();
 			addElement("h1", `Release ${it1["name"].slice(1)}`, "", "centered", "", deckContainer);
 			addElement("br", "", "", "", "", deckContainer);
-			var el = addElement("section", "", "deck-community", "", "", deckContainer);
-			for (var val in json)
+			let el = addElement("section", "", "deck-community", "", "", deckContainer);
+			for (let val in json)
 			{
-				var it = json[val];
+				let it = json[val];
 				const fname = it1["name"];
 				if (it["name"].endsWith(".yydeck.json"))
 					constructElement(val, el, it, "community", "Community", `community/${fname}/`);

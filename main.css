@@ -52,7 +52,7 @@ ul li a {
 .character-prop {
 	border: 2px solid #CCC;
 	margin: auto;
-	position: relative
+	position: relative;
 }
 
 /* This may cause problems, check out main-page.js on top of the definition of the "getDrawElementHeight" function */
@@ -129,4 +129,8 @@ header {
 
 .vcentered {
 	margin: auto;
+}
+
+#start-button {
+	margin: 0 auto 0 auto;
 }

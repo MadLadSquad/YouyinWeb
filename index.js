@@ -1,3 +1,12 @@
+'use strict';
+
+var localStorageData;
+
+function saveToLocalStorage(string)
+{
+	window.localStorage.setItem("youyinCardData", JSON.stringify(string));
+}
+
 // Returns an element, creates an element with the given parameters and appends it
 function addElement(elType, content, id, classType, data, parentEl)
 {
@@ -25,7 +34,7 @@ function setTitleName()
 	const selectedText = names[Math.floor(Math.random() * names.length)];
 
 	for (let i = 0; i < el.length; i++)
-		el[i].innerHTML += selectedText;
+		el[i].textContent += selectedText;
 }
 
 // Returns an URLSearchParams object
@@ -80,6 +89,20 @@ function modifySelectedLanguage()
 // I'm a C/C++ programmer, I ain't trusting this toy language with anything + it's stupid to not have a main function tbh
 function main()
 {
+	// Saves us performance costs of loading and saving things many times
+	window.localStorageData = JSON.parse(window.localStorage.getItem("youyinCardData"));
+	if (window.localStorageData === null)
+	{
+		const data = {
+			sessions: 0,
+			streak: 0,
+			lastDate: 0,
+			cards: [],
+		}
+		saveToLocalStorage(data);
+		document.location.reload(true);
+	}
+
 	setTitleName();
 
 	const params = getParams();
