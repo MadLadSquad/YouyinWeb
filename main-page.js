@@ -5,6 +5,8 @@ var writer;
 var currentCharacterErrors = [  ];
 var bInTest = false;
 
+var currentIndex = 0;
+
 // This function uses some dark magic that works half the time in order to calculate the size of the mainpage viewport
 // and main elements. Here are some issues:
 // TODO: On portrait screens if the resolution changes this sometimes breaks and a refresh is needed, would be good if it was fixed. 
@@ -52,7 +54,12 @@ function writerOnMistake(strokeData)
 
 function writerOnComplete(strokeData)
 {
-	
+	++window.currentIndex;
+	if (window.currentIndex < window.localStorageData["cards"].length)
+	{
+		window.writer.setCharacter(window.localStorageData["cards"][window.currentIndex]["character"]);
+		window.writer.quiz();
+	}
 }
 
 function mainPageMain()
@@ -95,7 +102,7 @@ function mainPageMain()
 			</svg>
 		`;
 
-		window.writer = HanziWriter.create('character-target-div', '概', {
+		window.writer = HanziWriter.create('character-target-div', window.localStorageData["cards"][window.currentIndex]["character"], {
 			width: drawElementHeight,
 			height: drawElementHeight,
 			showCharacter: false,
