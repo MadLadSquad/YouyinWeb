@@ -41,8 +41,39 @@ function clearDeck() {
 	}
 }
 
+function setProfileCardData()
+{
+	document.getElementById("total-sessions-field").textContent += window.localStorageData["sessions"];
+	document.getElementById("streak-field").textContent += (window.localStorageData["streak"] + " days");
+	document.getElementById("deck-card-num-field").textContent += window.localStorageData["cards"].length;
+
+	const lastDate = window.localStorageData["lastDate"];
+	const date = new Date(lastDate);
+	document.getElementById("last-session-date-field").textContent += date.toLocaleDateString('en-GB',
+	{
+		weekday: "short",
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		hour: "numeric",
+		minute: "numeric"
+	});
+
+	const averageKnowledge = document.getElementById("average-knowledge-level-field");
+	let knowledge = 0;
+	for (let i in window.localStorageData["cards"])
+		knowledge += window.localStorageData["cards"][i]["knowledge"];
+
+	knowledge /= window.localStorageData["cards"].length;
+	if (isNaN(knowledge))
+		knowledge = 0;
+	averageKnowledge.textContent = `Average knowledge level: ${knowledge.toFixed(4)}`;
+}
+
 function deckmain()
 {
+	setProfileCardData();
+
 	// Get the elements and load their onclick events, holy shit that's massive! That's what she said!
 	document.getElementById("export-deck-button").addEventListener("click", updateExportButton);
 	document.getElementById("clear-deck-button").addEventListener("click", clearDeck);

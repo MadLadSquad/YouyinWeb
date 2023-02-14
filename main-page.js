@@ -52,14 +52,102 @@ function writerOnMistake(strokeData)
 	document.getElementById("character-info-widget-errors").textContent = `Errors: ${strokeData.totalMistakes}`;
 }
 
-function writerOnComplete(strokeData)
+function changeSidebarText()
+{
+	const spelling = window.localStorageData["cards"][window.currentIndex]["name"]
+	
+	document.getElementById("character-info-widget-spelling").textContent = `Spelling: ${spelling}`;
+	document.getElementById("character-info-widget-errors").textContent = "Errors: 0";
+	const list = document.getElementById("character-info-widget-info");
+	list.replaceChildren();
+	for (let i in window.localStorageData["cards"][window.currentIndex]["definitions"])
+	{
+		let it = window.localStorageData["cards"][window.currentIndex]["definitions"][i];
+		const el = document.createElement("li");
+		el.textContent = it;
+
+		list.appendChild(el);
+	}
+}
+
+function resetSidebar()
+{
+	document.getElementById("character-info-widget-spelling").textContent = "Spelling: To be loaded";
+	document.getElementById("character-info-widget-errors").textContent = "Errors: 0";
+
+	const el = document.createElement("li");
+	el.textContent = "To be loaded";
+	document.getElementById("character-info-widget-info").replaceChildren(el);
+}
+
+async function writerOnComplete(strokeData)
 {
 	++window.currentIndex;
+
+	// Basically sleep
+	await new Promise(r => setTimeout(r, 1200));
 	if (window.currentIndex < window.localStorageData["cards"].length)
 	{
 		window.writer.setCharacter(window.localStorageData["cards"][window.currentIndex]["character"]);
 		window.writer.quiz();
+		changeSidebarText();
+		return;
 	}
+
+	document.getElementById("character-target-div").remove();
+	window.currentIndex = 0;
+	createStartButton();
+	resetSidebar();
+	saveToLocalStorage(window.localStorageData);
+}
+
+function createStartButton()
+{
+	const drawElementHeight = getDrawElementHeight();
+	let startButton = document.getElementById("start-button");
+	if (startButton === null)
+	{
+		startButton = document.createElement("button");
+		startButton.id = "start-button";
+		startButton.className = "card-button-edit centered character-prop";
+		startButton.textContent = "Start session";
+
+		document.getElementById("main-page").appendChild(startButton);
+	}
+	startButton.style.setProperty("width", drawElementHeight + "px");
+	startButton.style.setProperty("height", drawElementHeight + "px");
+	startButton.addEventListener("click", function()
+	{
+		document.getElementById("start-button").remove();
+		window.bInTest = true;
+
+		const page = document.getElementById("main-page");
+
+		page.innerHTML += `
+			<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" id="character-target-div" class="centered character-div character-prop">
+				<line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
+				<line x1="100%" y1="0" x2="0" y2="100%" stroke="#DDD" />
+				<line x1="50%" y1="0" x2="50%" y2="100%" stroke="#DDD" />
+				<line x1="0" y1="50%" x2="100%" y2="50%" stroke="#DDD" />
+			</svg>
+		`;
+		
+		window.writer = HanziWriter.create('character-target-div', window.localStorageData["cards"][window.currentIndex]["character"], {
+			width: drawElementHeight,
+			height: drawElementHeight,
+			showCharacter: false,
+			padding: 5,
+			showHintAfterMisses: 3,
+			radicalColor: '#c87e74'
+		});
+		window.writer.quiz({
+			onMistake: writerOnMistake,
+			onComplete: writerOnComplete,
+		});
+		changeSidebarText();
+		window.localStorageData["sessions"]++;
+		window.localStorageData["lastDate"] = Date.now();
+	});
 }
 
 function mainPageMain()
@@ -83,40 +171,7 @@ function mainPageMain()
 		return;
 	}
 
-	const startButton = document.getElementById("start-button");
-	startButton.style.setProperty("width", drawElementHeight + "px");
-	startButton.style.setProperty("height", drawElementHeight + "px");
-	startButton.addEventListener("click", function()
-	{
-		document.getElementById("start-button").remove();
-		window.bInTest = true;
-
-		const page = document.getElementById("main-page");
-		
-		page.innerHTML += `
-			<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" id="character-target-div" class="centered character-div character-prop">
-				<line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
-				<line x1="100%" y1="0" x2="0" y2="100%" stroke="#DDD" />
-				<line x1="50%" y1="0" x2="50%" y2="100%" stroke="#DDD" />
-				<line x1="0" y1="50%" x2="100%" y2="50%" stroke="#DDD" />
-			</svg>
-		`;
-
-		window.writer = HanziWriter.create('character-target-div', window.localStorageData["cards"][window.currentIndex]["character"], {
-			width: drawElementHeight,
-			height: drawElementHeight,
-			showCharacter: false,
-			padding: 5,
-			showHintAfterMisses: 3,
-			radicalColor: '#c87e74'
-		});
-		window.writer.quiz({
-			onMistake: writerOnMistake,
-			onComplete: writerOnComplete,
-		});
-	});
-
-	//document.getElementById("character-target-div").focus();
+	createStartButton();
 
 	var notify = function() {
 		const newDrawElementHeight = getDrawElementHeight();
@@ -128,7 +183,6 @@ function mainPageMain()
 		{
 			const el = document.getElementById("start-button");
 			el.style.setProperty("width", newDrawElementHeight + "px");
-			console.log(newDrawElementHeight)
 			el.style.setProperty("height", newDrawElementHeight + "px");
 		}
 		//window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
@@ -137,8 +191,7 @@ function mainPageMain()
 
 	window.addEventListener("beforeunload", function(e)
 	{
-		
-
+		saveToLocalStorage(window.localStorageData);
 		return false;
 	});
 }
