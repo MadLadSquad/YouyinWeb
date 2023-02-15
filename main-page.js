@@ -2,7 +2,11 @@
 
 // Global writer variable, because yes
 var writer;
-var currentCharacterErrors = [  ];
+
+var errors = 0;
+var backwardsErrors = 0;
+var currentCharacterXP = 1;
+
 var bInTest = false;
 
 var currentIndex = 0;
@@ -50,7 +54,18 @@ function getDrawElementHeight()
 
 function writerOnMistake(strokeData)
 {
-	document.getElementById("character-info-widget-errors").textContent = `Errors: ${strokeData.totalMistakes}`;
+	if (strokeData.isBackwards)
+		window.backwardsErrors++;
+
+	if ((strokeData.mistakesOnStroke - window.backwardsErrors) == 3)
+		window.errors++;
+
+	document.getElementById("character-info-widget-errors").textContent = `Errors: ${window.errors}`;
+}
+
+function writerOnCorrectStroke(strokeData)
+{
+	window.backwardsErrors = 0;
 }
 
 function changeSidebarText()
@@ -148,6 +163,7 @@ function createStartButton()
 		window.writer.quiz({
 			onMistake: writerOnMistake,
 			onComplete: writerOnComplete,
+			onCorrectStroke: writerOnCorrectStroke,
 		});
 		changeSidebarText();
 		window.sessionTime = Date.now();
