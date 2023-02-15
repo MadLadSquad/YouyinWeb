@@ -101,22 +101,50 @@ function resetSidebar()
 	document.getElementById("character-info-widget-info").replaceChildren(el);
 }
 
+function setWriterState(ref)
+{
+	window.writer.updateColor("radicalColor", null);
+	if (ref["knowledge"] >= 3)
+	{
+		window.writer.hideOutline();
+	}
+	else if (ref["knowledge"] >= 2)
+	{
+		window.writer.hideOutline();
+		window.bLiberalErrors = true;
+	}
+	else if (ref["knowledge"] >= 1)
+	{
+		window.writer.showOutline();
+	}
+	else
+	{
+		window.writer.updateColor("radicalColor", "#c87e74");
+		window.writer.showOutline();
+	}
+}
+
 async function writerOnComplete(strokeData)
 {
 	++window.currentIndex;
+	window.bLiberalErrors = false;
 
 	// Basically sleep
 	await new Promise(r => setTimeout(r, 1200));
 	if (window.currentIndex < window.localStorageData["cards"].length)
 	{
-		window.writer.setCharacter(window.localStorageData["cards"][window.currentIndex]["character"]);
+		let ref = window.localStorageData["cards"][window.currentIndex];
+
+		setWriterState(ref);
+		window.writer.setCharacter(ref["character"]);
+
 		window.writer.quiz();
 		changeSidebarText();
 		return;
 	}
 
 	document.getElementById("character-target-div").remove();
-	window.localStorageData["totalTimeInSessions"] += Date.now() - window.sessionTime;
+	window.localStorageData["totalTimeInSessions"] += (Date.now() - window.sessionTime);
 	window.sessionTime = Date.now();
 
 	window.currentIndex = 0;
@@ -170,6 +198,7 @@ function createStartButton()
 			onComplete: writerOnComplete,
 			onCorrectStroke: writerOnCorrectStroke,
 		});
+		setWriterState(window.localStorageData["cards"][window.currentIndex]);
 		changeSidebarText();
 		window.sessionTime = Date.now();
 

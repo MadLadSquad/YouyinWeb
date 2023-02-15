@@ -67,8 +67,8 @@ function setProfileCardData()
 		averageSessionLen /= 1000;
 	}
 
-	document.getElementById("average-session-length-field").textContent += ((averageSessionLen / window.localStorageData["sessions"]).toString() + sessionLenPostfix);
-	document.getElementById("time-spent-in-sessions-field").textContent += (averageSessionLen.toString() + sessionLenPostfix);
+	document.getElementById("average-session-length-field").textContent += ((averageSessionLen / window.localStorageData["sessions"]).toFixed(4).toString() + sessionLenPostfix);
+	document.getElementById("time-spent-in-sessions-field").textContent += (averageSessionLen.toFixed(4).toString() + sessionLenPostfix);
 
 	const lastDate = window.localStorageData["lastDate"];
 	const date = new Date(lastDate);
@@ -118,7 +118,7 @@ function deckmain()
 		div.id = `${val}`
 
 		// Add title, character render div and the definitions text
-		addElement("h3", `${it["name"]} ${it["knowledge"]}/5`, "", "", "", div);
+		addElement("h3", `${it["name"]} ${it["knowledge"]}/4`, "", "", "", div);
 		const target = addElement("div", "", `card-character-target-div-${val}`, "", "", div);
 		addElement("p", "Definitions:", "", "", "", div);
 
