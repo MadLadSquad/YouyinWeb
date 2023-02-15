@@ -35,9 +35,14 @@ function getDrawElementHeight()
 
 	let finalHeight = window.innerHeight - unusedSpace - padding + listWidget.getBoundingClientRect().height;
 	const bMobile = navigator.userAgent.toLowerCase().includes("mobile");
-	if (!!window.chrome || bMobile)
+	if (bMobile)
 	{
 		finalHeight -= (footer.getBoundingClientRect().height);
+	}
+	else if (!!window.chrome)
+	{
+		const footer = document.querySelector("footer");
+		finalHeight -= (listWidget.getBoundingClientRect().height + footer.getBoundingClientRect().height);
 	}
 
 	if (parent.getBoundingClientRect().width < finalHeight)
