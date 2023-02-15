@@ -103,6 +103,7 @@ function resetSidebar()
 
 function setWriterState(ref)
 {
+	window.writer._options.showHintAfterMisses = 3;
 	window.writer.updateColor("radicalColor", null);
 	if (ref["knowledge"] >= 3)
 	{
@@ -110,8 +111,8 @@ function setWriterState(ref)
 	}
 	else if (ref["knowledge"] >= 2)
 	{
+		window.writer._options.showHintAfterMisses = 1;
 		window.writer.hideOutline();
-		window.bLiberalErrors = true;
 	}
 	else if (ref["knowledge"] >= 1)
 	{
@@ -127,7 +128,27 @@ function setWriterState(ref)
 async function writerOnComplete(strokeData)
 {
 	++window.currentIndex;
-	window.bLiberalErrors = false;
+
+	const strokeNum = window.writer._character.strokes.length;
+	let pointsPerStroke = (0.25 / strokeNum);
+	let points = (0.25 - (window.errors * pointsPerStroke));
+	let result = 0;
+	if (points >= 0.25)
+		result = 0.25;
+	else if (points >= 0.1875)
+		result = 0.1875;
+	else if (points >= 0.125)
+		result = 0.125
+	else if (points >= 0.0625)
+		result = -0.0625;
+	else
+		result = -0.125
+
+	var knowledge = window.localStorageData["cards"][(window.currentIndex - 1)]["knowledge"];
+	knowledge = (knowledge + result) >= 4 ? 4 : (knowledge + result);
+	window.localStorageData["cards"][(window.currentIndex - 1)]["knowledge"] = knowledge;
+
+	window.errors = 0;
 
 	// Basically sleep
 	await new Promise(r => setTimeout(r, 1200));
@@ -144,8 +165,10 @@ async function writerOnComplete(strokeData)
 	}
 
 	document.getElementById("character-target-div").remove();
-	window.localStorageData["totalTimeInSessions"] += (Date.now() - window.sessionTime);
-	window.sessionTime = Date.now();
+
+	const now = Date.now();
+	window.localStorageData["totalTimeInSessions"] += (now - window.sessionTime);
+	window.sessionTime = now;
 
 	window.currentIndex = 0;
 	createStartButton();
@@ -200,10 +223,11 @@ function createStartButton()
 		});
 		setWriterState(window.localStorageData["cards"][window.currentIndex]);
 		changeSidebarText();
-		window.sessionTime = Date.now();
+		const now = Date.now();
+		window.sessionTime = now;
 
 		window.localStorageData["sessions"]++;
-		window.localStorageData["lastDate"] = Date.now();
+		window.localStorageData["lastDate"] = now;
 	});
 }
 
