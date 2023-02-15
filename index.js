@@ -86,6 +86,21 @@ function modifySelectedLanguage()
 	location.replace(`./index.html?lang=${val}`);
 }
 
+// The standard shuffle algorithm
+function fisherYates(array)
+{
+	let count = array.length,
+		randomnumber,
+		temp;
+	while(count)
+	{
+		randomnumber = Math.random() * count-- | 0;
+		temp = array[count];
+		array[count] = array[randomnumber];
+		array[randomnumber] = temp
+	}
+}
+
 // I'm a C/C++ programmer, I ain't trusting this toy language with anything + it's stupid to not have a main function tbh
 function main()
 {

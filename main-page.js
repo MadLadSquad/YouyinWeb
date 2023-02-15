@@ -99,6 +99,7 @@ async function writerOnComplete(strokeData)
 	createStartButton();
 	resetSidebar();
 	saveToLocalStorage(window.localStorageData);
+	fisherYates(window.localStorageData["cards"]);
 }
 
 function createStartButton()
@@ -194,6 +195,7 @@ function mainPageMain()
 		saveToLocalStorage(window.localStorageData);
 		return false;
 	});
+	fisherYates(window.localStorageData["cards"]);
 }
 
 mainPageMain();
