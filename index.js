@@ -112,6 +112,7 @@ function main()
 			sessions: 0,
 			streak: 0,
 			lastDate: 0,
+			totalTimeInSessions: 0,
 			cards: [],
 		}
 		saveToLocalStorage(data);

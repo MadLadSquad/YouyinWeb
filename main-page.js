@@ -6,6 +6,7 @@ var currentCharacterErrors = [  ];
 var bInTest = false;
 
 var currentIndex = 0;
+var sessionTime = 0;
 
 // This function uses some dark magic that works half the time in order to calculate the size of the mainpage viewport
 // and main elements. Here are some issues:
@@ -95,6 +96,9 @@ async function writerOnComplete(strokeData)
 	}
 
 	document.getElementById("character-target-div").remove();
+	window.localStorageData["totalTimeInSessions"] += Date.now() - window.sessionTime;
+	window.sessionTime = Date.now();
+
 	window.currentIndex = 0;
 	createStartButton();
 	resetSidebar();
@@ -146,6 +150,8 @@ function createStartButton()
 			onComplete: writerOnComplete,
 		});
 		changeSidebarText();
+		window.sessionTime = Date.now();
+
 		window.localStorageData["sessions"]++;
 		window.localStorageData["lastDate"] = Date.now();
 	});
@@ -192,6 +198,8 @@ function mainPageMain()
 
 	window.addEventListener("beforeunload", function(e)
 	{
+		window.localStorageData["totalTimeInSessions"] += (Date.now() - window.sessionTime);
+		console.log(window.localStorageData["totalTimeInSessions"])
 		saveToLocalStorage(window.localStorageData);
 		return false;
 	});

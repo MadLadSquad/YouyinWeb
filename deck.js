@@ -47,6 +47,29 @@ function setProfileCardData()
 	document.getElementById("streak-field").textContent += (window.localStorageData["streak"] + " days");
 	document.getElementById("deck-card-num-field").textContent += window.localStorageData["cards"].length;
 
+	let a = (window.localStorageData["totalTimeInSessions"] * 1);
+	let averageSessionLen = isNaN(a) ? 0 : a;
+	let sessionLenPostfix = "ms"
+	// 1000 * 60 * 60 basically an hour
+	if (averageSessionLen > 3600000)
+	{
+		sessionLenPostfix = "h"
+		averageSessionLen /= 3600000;
+	}
+	else if (averageSessionLen > 60000)
+	{
+		sessionLenPostfix = "min"
+		averageSessionLen /= 60000;
+	}
+	else if (averageSessionLen > 1000)
+	{
+		sessionLenPostfix = "sec";
+		averageSessionLen /= 1000;
+	}
+
+	document.getElementById("average-session-length-field").textContent += ((averageSessionLen / window.localStorageData["sessions"]).toString() + sessionLenPostfix);
+	document.getElementById("time-spent-in-sessions-field").textContent += (averageSessionLen.toString() + sessionLenPostfix);
+
 	const lastDate = window.localStorageData["lastDate"];
 	const date = new Date(lastDate);
 	document.getElementById("last-session-date-field").textContent += date.toLocaleDateString('en-GB',
