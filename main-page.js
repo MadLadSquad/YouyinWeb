@@ -268,8 +268,8 @@ function mainPageMain()
 
 	window.addEventListener("beforeunload", function(e)
 	{
-		window.localStorageData["totalTimeInSessions"] += (Date.now() - window.sessionTime);
-		console.log(window.localStorageData["totalTimeInSessions"])
+		if (bInTest)
+			window.localStorageData["totalTimeInSessions"] += (Date.now() - window.sessionTime);
 		saveToLocalStorage(window.localStorageData);
 		return false;
 	});

@@ -1,8 +1,8 @@
 'use strict';
 
-const HOUR_UNIX = 36000000;
-const MINUTE_UNIX = 60000;
-const SECOND_UNIX = 1000;
+var HOUR_UNIX = 36000000;
+var MINUTE_UNIX = 60000;
+var SECOND_UNIX = 1000;
 
 function updateExportButton()
 {
@@ -54,6 +54,8 @@ function setProfileCardData()
 	let a = (window.localStorageData["totalTimeInSessions"] * 1);
 	let averageSessionLen = isNaN(a) ? 0 : a;
 	let sessionLenPostfix = "ms"
+
+	console.log(window.HOUR_UNIX)
 	// 1000 * 60 * 60 basically an hour
 	if (averageSessionLen > window.HOUR_UNIX)
 	{

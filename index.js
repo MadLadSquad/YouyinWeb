@@ -20,7 +20,6 @@ var WRITER_SHOW_HINT_ON_ERRORS = 3;
 var WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
 
 var MAIN_PAGE_TOP_PADDING = 10;
-
 // ---------------------------------- CONSTANT BLOCK END ----------------------------------
 
 var localStorageData;
