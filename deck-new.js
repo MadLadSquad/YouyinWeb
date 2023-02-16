@@ -1,8 +1,8 @@
 'use strict';
 
 // Global variables, why not
-var previewName = "Preview Name";
-var previewCharacter = "是";
+var previewName = window.CARD_DEFAULT_PREVIEW_NAME;
+var previewCharacter = window.CARD_DEFAULT_CHARACTER;
 var previewDefinitions = [  ];
 
 var writer;
@@ -192,6 +192,8 @@ function constructPreviewEvents()
 	nameTextField.addEventListener("change", function()
 	{
 		window.previewName = this.value;
+		if (window.previewName == "")
+			window.previewName = window.CARD_DEFAULT_PREVIEW_NAME;
 
 		const el = document.getElementById("card-preview-name");
 		el.innerText = `${previewName}`;
@@ -201,19 +203,19 @@ function constructPreviewEvents()
 	{
 		window.previewCharacter = this.value;
 		if (window.previewCharacter == "")
-			window.previewChracter = "是";
+			window.previewCharacter = window.CARD_DEFAULT_CHARACTER;
 
 		window.writer.setCharacter(window.previewCharacter.charAt(0));
 	});
 
 	window.writer = HanziWriter.create("card-character-target-div-preview", previewCharacter,
 	{
-		width: 100,
-		heigt: 100,
-		padding: 5,
+		width: window.CARD_WRITER_SIZE,
+		heigt: window.CARD_WRITER_SIZE,
+		padding: window.WRITER_PADDING,
 		showOutline: true,
-		strokeAnimationSpeed: 1.25,
-		delayBetweenStrokes: 50,
+		strokeAnimationSpeed: window.CARD_WRITER_STROKE_ANIMATION_SPEED,
+		delayBetweenStrokes: window.CARD_WRITER_DELAY_BETWEEN_STROKES,
 	})
 }
 

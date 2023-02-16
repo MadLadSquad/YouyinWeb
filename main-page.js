@@ -5,7 +5,6 @@ var writer;
 
 var errors = 0;
 var backwardsErrors = 0;
-var currentCharacterXP = 1;
 
 var bInTest = false;
 
@@ -28,12 +27,9 @@ function getDrawElementHeight()
 	// Here we have to adjust the height, because the list widget causes problems
 	const listWidget = document.getElementById("character-info-widget");
 
-	// Why does this exist, idk
-	const padding = 10;
-
 	const footer = document.querySelector("footer");
 
-	let finalHeight = window.innerHeight - unusedSpace - padding + listWidget.getBoundingClientRect().height;
+	let finalHeight = window.innerHeight - unusedSpace - window.MAIN_PAGE_TOP_PADDING + listWidget.getBoundingClientRect().height;
 	const bMobile = navigator.userAgent.toLowerCase().includes("mobile");
 	if (bMobile)
 	{
@@ -47,7 +43,7 @@ function getDrawElementHeight()
 
 	if (parent.getBoundingClientRect().width < finalHeight)
 	{
-		finalHeight = parent.getBoundingClientRect().width - (2 * padding);
+		finalHeight = parent.getBoundingClientRect().width - (2 * window.MAIN_PAGE_TOP_PADDING);
 		if (bMobile && !(!!window.chrome))
 			finalHeight -= footer.getBoundingClientRect().height;
 	}
@@ -62,7 +58,7 @@ function writerOnMistake(strokeData)
 	if (strokeData.isBackwards)
 		window.backwardsErrors++;
 
-	if ((strokeData.mistakesOnStroke - window.backwardsErrors) == 3)
+	if ((strokeData.mistakesOnStroke - window.backwardsErrors) == window.WRITER_SHOW_HINT_ON_ERRORS)
 		window.errors++;
 
 	document.getElementById("character-info-widget-errors").textContent = `Errors: ${window.errors}`;
@@ -111,7 +107,7 @@ function setWriterState(ref)
 	}
 	else if (ref["knowledge"] >= 2)
 	{
-		window.writer._options.showHintAfterMisses = 1;
+		window.writer._options.showHintAfterMisses = window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3;
 		window.writer.hideOutline();
 	}
 	else if (ref["knowledge"] >= 1)
@@ -120,7 +116,7 @@ function setWriterState(ref)
 	}
 	else
 	{
-		window.writer.updateColor("radicalColor", "#c87e74");
+		window.writer.updateColor("radicalColor", window.WRITER_RADICAL_COLOUR);
 		window.writer.showOutline();
 	}
 }
@@ -130,28 +126,28 @@ async function writerOnComplete(strokeData)
 	++window.currentIndex;
 
 	const strokeNum = window.writer._character.strokes.length;
-	let pointsPerStroke = (0.25 / strokeNum);
-	let points = (0.25 - (window.errors * pointsPerStroke));
+	let pointsPerStroke = (window.MAX_POINTS_ON_CHARACTER / strokeNum);
+	let points = (window.MAX_POINTS_ON_CHARACTER - (window.errors * pointsPerStroke));
 	let result = 0;
-	if (points >= 0.25)
-		result = 0.25;
-	else if (points >= 0.1875)
-		result = 0.1875;
-	else if (points >= 0.125)
-		result = 0.125
+	if (points >= window.MAX_POINTS_ON_CHARACTER)
+		result = window.MAX_POINTS_ON_CHARACTER;
+	else if (points >= window.ADD_POINTS_ON_ERROR_3_4)
+		result = window.ADD_POINTS_ON_ERROR_3_4;
+	else if (points >= window.ADD_POINTS_ON_ERROR_1_2)
+		result = window.ADD_POINTS_ON_ERROR_1_2;
 	else if (points >= 0.0625)
-		result = -0.0625;
+		result = -window.ADD_POINTS_ON_ERROR_1_3;
 	else
-		result = -0.125
+		result = -window.ADD_POINTS_ON_ERROR_1_2;
 
 	var knowledge = window.localStorageData["cards"][(window.currentIndex - 1)]["knowledge"];
-	knowledge = (knowledge + result) >= 4 ? 4 : (knowledge + result);
+	knowledge = (knowledge + result) >= window.MAX_KNOWLEDGE_LEVEL ? window.MAX_KNOWLEDGE_LEVEL : (knowledge + result);
 	window.localStorageData["cards"][(window.currentIndex - 1)]["knowledge"] = knowledge;
 
 	window.errors = 0;
 
 	// Basically sleep
-	await new Promise(r => setTimeout(r, 1200));
+	await new Promise(r => setTimeout(r, window.WRITER_SLEEP_AFTER_COMPLETE));
 	if (window.currentIndex < window.localStorageData["cards"].length)
 	{
 		let ref = window.localStorageData["cards"][window.currentIndex];
@@ -212,9 +208,9 @@ function createStartButton()
 			width: drawElementHeight,
 			height: drawElementHeight,
 			showCharacter: false,
-			padding: 5,
-			showHintAfterMisses: 3,
-			radicalColor: '#c87e74'
+			padding: window.WRITER_PADDING,
+			showHintAfterMisses: window.WRITER_SHOW_HINT_ON_ERRORS,
+			radicalColor: window.WRITER_RADICAL_COLOUR,
 		});
 		window.writer.quiz({
 			onMistake: writerOnMistake,

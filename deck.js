@@ -1,5 +1,9 @@
 'use strict';
 
+const HOUR_UNIX = 36000000;
+const MINUTE_UNIX = 60000;
+const SECOND_UNIX = 1000;
+
 function updateExportButton()
 {
 	const dt = window.localStorageData["cards"];
@@ -51,20 +55,20 @@ function setProfileCardData()
 	let averageSessionLen = isNaN(a) ? 0 : a;
 	let sessionLenPostfix = "ms"
 	// 1000 * 60 * 60 basically an hour
-	if (averageSessionLen > 3600000)
+	if (averageSessionLen > window.HOUR_UNIX)
 	{
 		sessionLenPostfix = "h"
-		averageSessionLen /= 3600000;
+		averageSessionLen /= window.HOUR_UNIX;
 	}
-	else if (averageSessionLen > 60000)
+	else if (averageSessionLen > window.MINUTE_UNIX)
 	{
 		sessionLenPostfix = "min"
-		averageSessionLen /= 60000;
+		averageSessionLen /= window.MINUTE_UNIX;
 	}
-	else if (averageSessionLen > 1000)
+	else if (averageSessionLen > window.SECOND_UNIX)
 	{
 		sessionLenPostfix = "sec";
-		averageSessionLen /= 1000;
+		averageSessionLen /= window.SECOND_UNIX;
 	}
 
 	document.getElementById("average-session-length-field").textContent += ((averageSessionLen / window.localStorageData["sessions"]).toFixed(4).toString() + sessionLenPostfix);
@@ -118,7 +122,7 @@ function deckmain()
 		div.id = `${val}`
 
 		// Add title, character render div and the definitions text
-		addElement("h3", `${it["name"]} ${it["knowledge"]}/4`, "", "", "", div);
+		addElement("h3", `${it["name"]} ${it["knowledge"]}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
 		const target = addElement("div", "", `card-character-target-div-${val}`, "", "", div);
 		addElement("p", "Definitions:", "", "", "", div);
 
@@ -142,12 +146,12 @@ function deckmain()
 		// Create an instance of the writer
 		let writer = HanziWriter.create(`card-character-target-div-${val}`, it["character"],
 		{
-			width: 100,
-			heigt: 100,
-			padding: 5,
+			width: window.CARD_WRITER_SIZE,
+			heigt: window.CARD_WRITER_SIZE,
+			padding: window.WRITER_PADDING,
 			showOutline: true,
-			strokeAnimationSpeed: 1.25,
-			delayBetweenStrokes: 50,
+			strokeAnimationSpeed: window.CARD_WRITER_STROKE_ANIMATION_SPEED,
+			delayBetweenStrokes: window.CARD_WRITER_DELAY_BETWEEN_STROKES,
 		})
 		target.addEventListener('mouseover', function() 
 		{

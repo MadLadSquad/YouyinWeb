@@ -1,8 +1,5 @@
 'use strict';
 
-var gname = "";
-var gfolder = "";
-
 function constructElement(val, deckContainer, it, type1, type2, folder)
 {
 	let leveledUpType = "No";
