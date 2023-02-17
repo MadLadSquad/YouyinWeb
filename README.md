@@ -5,14 +5,11 @@ The source code for the youyin(卣囙/yǒuyīn) website
 Youyin(卣囙/yǒuyīn) is a language learning platform focused on helping you learn how to write the characters in your language's writing system. For the 1.0
 release we plan on supporting the following scripts:
 - [x] Unified Chinese Characters
-- [ ] Japanese-only Kanji
-- [ ] Korean-only Hanja
+- [x] Japanese-only Kanji
 - [ ] Katakana
 - [ ] Hiragana
 - [ ] Latin
-- [ ] Latin cursive
 - [ ] Cyrillic
-- [ ] Cyrillic cursive
 - [ ] Armenian
 - [ ] Georgian
 - [ ] Runic
