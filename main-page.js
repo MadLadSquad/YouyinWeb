@@ -211,6 +211,7 @@ function createStartButton()
 			padding: window.WRITER_PADDING,
 			showHintAfterMisses: window.WRITER_SHOW_HINT_ON_ERRORS,
 			radicalColor: window.WRITER_RADICAL_COLOUR,
+			charDataLoader: charDataLoader,
 		});
 		window.writer.quiz({
 			onMistake: writerOnMistake,

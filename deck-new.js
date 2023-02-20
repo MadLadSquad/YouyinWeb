@@ -165,6 +165,21 @@ function addButtonEvent(id, type, func)
 	document.getElementById(id).addEventListener(type, func);
 }
 
+function writerRecreate()
+{
+	document.getElementById("card-character-target-div-preview").replaceChildren();
+	window.writer = HanziWriter.create("card-character-target-div-preview", window.previewCharacter,
+	{
+		width: window.CARD_WRITER_SIZE,
+		height: window.CARD_WRITER_SIZE,
+		padding: window.WRITER_PADDING,
+		showOutline: true,
+		strokeAnimationSpeed: window.CARD_WRITER_STROKE_ANIMATION_SPEED,
+		delayBetweenStrokes: window.CARD_WRITER_DELAY_BETWEEN_STROKES,
+		charDataLoader: charDataLoader,
+	})
+}
+
 function constructPreviewEvents()
 {
 	const nameTextField = document.getElementById("name-text-field");
@@ -196,7 +211,7 @@ function constructPreviewEvents()
 			window.previewName = window.CARD_DEFAULT_PREVIEW_NAME;
 
 		const el = document.getElementById("card-preview-name");
-		el.innerText = `${previewName}`;
+		el.innerText = `${window.previewName}`;
 	});
 
 	characterTextField.addEventListener("change", function()
@@ -208,15 +223,7 @@ function constructPreviewEvents()
 		window.writer.setCharacter(window.previewCharacter.charAt(0));
 	});
 
-	window.writer = HanziWriter.create("card-character-target-div-preview", previewCharacter,
-	{
-		width: window.CARD_WRITER_SIZE,
-		heigt: window.CARD_WRITER_SIZE,
-		padding: window.WRITER_PADDING,
-		showOutline: true,
-		strokeAnimationSpeed: window.CARD_WRITER_STROKE_ANIMATION_SPEED,
-		delayBetweenStrokes: window.CARD_WRITER_DELAY_BETWEEN_STROKES,
-	})
+	writerRecreate();
 }
 
 constructPreviewEvents();

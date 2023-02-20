@@ -154,6 +154,7 @@ function deckmain()
 			showOutline: true,
 			strokeAnimationSpeed: window.CARD_WRITER_STROKE_ANIMATION_SPEED,
 			delayBetweenStrokes: window.CARD_WRITER_DELAY_BETWEEN_STROKES,
+			charDataLoader: charDataLoader,
 		})
 		target.addEventListener('mouseover', function() 
 		{

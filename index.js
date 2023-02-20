@@ -24,6 +24,22 @@ var MAIN_PAGE_TOP_PADDING = 10;
 
 var localStorageData;
 
+async function charDataLoader(character, onLoad, onError)
+{
+	let response = await fetch(`https://cdn.jsdelivr.net/gh/chanind/hanzi-writer-data@latest/data/${character}.json`)
+	if (await response.status !== 200)
+	{
+		let res = await fetch(`https://cdn.jsdelivr.net/gh/chanind/hanzi-writer-data-jp@latest/data/${character}.json`)
+		if (await res.status !== 200)
+		{
+			console.log(`Bad response from both the Chinese and Japanese hanzi databases, ZH: ${response.status}, JP: ${res.status}`)
+			return;
+		}
+		return await res.json();
+	}
+	return await response.json();
+}
+
 function saveToLocalStorage(string)
 {
 	window.localStorage.setItem("youyinCardData", JSON.stringify(string));
