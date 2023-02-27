@@ -26,16 +26,11 @@ var localStorageData;
 
 async function charDataLoader(character, onLoad, onError)
 {
-	let response = await fetch(`https://cdn.jsdelivr.net/gh/chanind/hanzi-writer-data@latest/data/${character}.json`)
+	let response = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin@latest/data/${character}.json`)
 	if (await response.status !== 200)
 	{
-		let res = await fetch(`https://cdn.jsdelivr.net/gh/chanind/hanzi-writer-data-jp@latest/data/${character}.json`)
-		if (await res.status !== 200)
-		{
-			console.log(`Bad response from both the Chinese and Japanese hanzi databases, ZH: ${response.status}, JP: ${res.status}`)
-			return;
-		}
-		return await res.json();
+		console.log(`Bad response from both the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
+		return;
 	}
 	return await response.json();
 }
