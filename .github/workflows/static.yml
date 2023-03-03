@@ -39,7 +39,10 @@ jobs:
       - run: for i in ./*.js; do terser $i --compress -o $i; done
       - run: for i in ./*.css; do csso $i -o $i; done
       #- run: for i in ./*.html; do html-minifier [--your-options-here] $i -o $i; done
-      
+      - name: Change URLs to production mode
+        run: |
+          find ./ -type f \( -iname \*.html -o -iname \*.js \) -exec sed -i 's/\.html//g' {} \;
+          find ./ -type f \( -iname \*.html -o -iname \*.js \) -exec sed -i 's/\.\//https:\/\/youyin.madladsquad.com\//g' {} \;
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
