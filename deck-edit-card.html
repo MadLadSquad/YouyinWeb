@@ -24,7 +24,7 @@
 		<title class="site-title">Edit Card | Youyin </title>
 	</head>
 	<body>
-		<header>
+		<header class="header-deck">
 			<ul>
 				<li><a href="./index.html" class="site-title">Youyin </a></li>
 				<li><a href="./learning.html">Learning</a></li>
@@ -40,6 +40,12 @@
 
 				<h3>Character:</h3>
 				<input type="text" id="character-text-field" name="Character Text Field" aria-label="Character Text Field"></input>
+
+				<select aria-label="Character variant box" name="character-variant-box" id="character-variant-box" class="centered">
+					<option value="">Default</option>
+					<option value="-jp">🇯🇵 Kanji</option>
+					<option value="-ko">🇰🇷 Hanja</option>
+				</select>
 
 				<h3>Definitions:</h3>
 				<input type="text" id="meaning-text-field" name="Meaning Text Field" aria-label="Meaning Text Field"></input>

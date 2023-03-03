@@ -4,6 +4,7 @@
 var previewName = window.CARD_DEFAULT_PREVIEW_NAME;
 var previewCharacter = window.CARD_DEFAULT_CHARACTER;
 var previewDefinitions = [  ];
+var previewVariant = "";
 
 var writer;
 
@@ -27,7 +28,7 @@ function finishButtonNewCard()
 {
 	const data = {
 		name: window.previewName,
-		character: window.previewCharacter,
+		character: window.previewCharacter + window.previewVariant,
 		knowledge: 0,
 		definitions: [],
 	}
@@ -100,8 +101,12 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 		window.previewName = el["name"];
 		previewName.textContent = el["name"];
 
-		characterTextBox.value = el["character"];
-		window.previewCharacter = el["character"];
+		characterTextBox.value = el["character"].charAt(0);
+		window.previewCharacter = el["character"].charAt(0);
+
+		// Deal with regional character variants
+		window.previewVariant = el["character"].length > 1 ? el["character"].substr(1, el["character"].length) : "";
+		document.getElementById("character-variant-box").value = window.previewVariant;
 
 		// Add all the definitions to the ordered lists
 		for (let i in el["definitions"])
@@ -119,7 +124,7 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 			let data = dt["cards"][urlParams.get("edit")];
 
 			data["name"] = window.previewName;
-			data["character"] = window.previewCharacter;
+			data["character"] = window.previewCharacter.charAt(0) + window.previewVariant;
 			data["definitions"] = [];
 			for (let i = 0; i < previewDefinitions.length; i++)
 			{
@@ -180,6 +185,41 @@ function writerRecreate()
 	})
 }
 
+async function fetchCharacterVariant(character, postfix, textContent)
+{
+	let select = document.getElementById("character-variant-box")
+	let res = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin@latest/data/${character}${postfix}.json`)
+	let bFound = false;
+	for (let i in select.options)
+	{
+		let it = select.options[i].value
+		if (it == postfix)
+		{
+			bFound = true;
+			if (await res.status !== 200)
+			{
+				select.removeChild(select.options[i]);
+			}
+			return;
+		}
+	}
+	if (!bFound && await res.status === 200)
+	{
+		let option = document.createElement("option");
+		option.setAttribute("value", postfix);
+		option.textContent = textContent;
+		select.appendChild(option)
+	}
+}
+
+async function fetchCharacterVariantsFromDB()
+{
+	let dt = await window.writer.getCharacterData();
+
+	await fetchCharacterVariant(dt.symbol, "-jp", "🇯🇵 Kanji");
+	await fetchCharacterVariant(dt.symbol, "-ko", "🇰🇷 Hanja");
+}
+
 function constructPreviewEvents()
 {
 	const nameTextField = document.getElementById("name-text-field");
@@ -220,10 +260,16 @@ function constructPreviewEvents()
 		if (window.previewCharacter == "")
 			window.previewCharacter = window.CARD_DEFAULT_CHARACTER;
 
-		window.writer.setCharacter(window.previewCharacter.charAt(0));
+		window.writer.setCharacter(window.previewCharacter.charAt(0) + window.previewVariant);
+		fetchCharacterVariantsFromDB();
 	});
-
+	document.getElementById("character-variant-box").addEventListener("change", function()
+	{
+		window.previewVariant = this.value;
+		window.writer.setCharacter(window.previewCharacter.charAt(0) + window.previewVariant);
+	});
 	writerRecreate();
+	fetchCharacterVariantsFromDB();
 }
 
 constructPreviewEvents();

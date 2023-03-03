@@ -55,7 +55,6 @@ function setProfileCardData()
 	let averageSessionLen = isNaN(a) ? 0 : a;
 	let sessionLenPostfix = "ms"
 
-	console.log(window.HOUR_UNIX)
 	// 1000 * 60 * 60 basically an hour
 	if (averageSessionLen > window.HOUR_UNIX)
 	{
