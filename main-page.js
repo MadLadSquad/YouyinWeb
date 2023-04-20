@@ -35,7 +35,7 @@ function getDrawElementHeight()
 	{
 		finalHeight -= (footer.getBoundingClientRect().height);
 	}
-	else if (!!window.chrome)
+	else
 	{
 		const footer = document.querySelector("footer");
 		finalHeight -= (listWidget.getBoundingClientRect().height + footer.getBoundingClientRect().height);
