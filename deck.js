@@ -72,8 +72,8 @@ function setProfileCardData()
 		averageSessionLen /= window.SECOND_UNIX;
 	}
 
-	document.getElementById("average-session-length-field").textContent += ((averageSessionLen / window.localStorageData["sessions"]).toFixed(4).toString() + sessionLenPostfix);
-	document.getElementById("time-spent-in-sessions-field").textContent += (averageSessionLen.toFixed(4).toString() + sessionLenPostfix);
+	document.getElementById("average-session-length-field").textContent += ((averageSessionLen / window.localStorageData["sessions"]).toFixed(2).toString() + sessionLenPostfix);
+	document.getElementById("time-spent-in-sessions-field").textContent += (averageSessionLen.toFixed(2).toString() + sessionLenPostfix);
 
 	const lastDate = window.localStorageData["lastDate"];
 	const date = new Date(lastDate);
@@ -95,7 +95,7 @@ function setProfileCardData()
 	knowledge /= window.localStorageData["cards"].length;
 	if (isNaN(knowledge))
 		knowledge = 0;
-	averageKnowledge.textContent = `Average knowledge level: ${knowledge.toFixed(4)}`;
+	averageKnowledge.textContent = `Average knowledge level: ${knowledge.toFixed(2)}`;
 }
 
 function deckmain()
