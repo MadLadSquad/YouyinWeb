@@ -72,20 +72,28 @@ function setProfileCardData()
 		averageSessionLen /= window.SECOND_UNIX;
 	}
 
-	document.getElementById("average-session-length-field").textContent += ((averageSessionLen / window.localStorageData["sessions"]).toFixed(2).toString() + sessionLenPostfix);
+	let sessionLenTmp = averageSessionLen / window.localStorageData["sessions"];
+	if (isNaN(sessionLenTmp))
+		sessionLenTmp = 0;
+	document.getElementById("average-session-length-field").textContent += (sessionLenTmp.toFixed(2).toString() + sessionLenPostfix);
 	document.getElementById("time-spent-in-sessions-field").textContent += (averageSessionLen.toFixed(2).toString() + sessionLenPostfix);
 
 	const lastDate = window.localStorageData["lastDate"];
-	const date = new Date(lastDate);
-	document.getElementById("last-session-date-field").textContent += date.toLocaleDateString('en-GB',
+	if (lastDate != 0)
 	{
-		weekday: "short",
-		year: "numeric",
-		month: "short",
-		day: "numeric",
-		hour: "numeric",
-		minute: "numeric"
-	});
+		const date = new Date(lastDate);
+		document.getElementById("last-session-date-field").textContent += date.toLocaleDateString('en-GB',
+		{
+			weekday: "short",
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+			hour: "numeric",
+			minute: "numeric"
+		});
+	}
+	else
+		document.getElementById("last-session-date-field").textContent += "No sessions yet recorded!";
 
 	const averageKnowledge = document.getElementById("average-knowledge-level-field");
 	let knowledge = 0;
@@ -95,7 +103,7 @@ function setProfileCardData()
 	knowledge /= window.localStorageData["cards"].length;
 	if (isNaN(knowledge))
 		knowledge = 0;
-	averageKnowledge.textContent = `Average knowledge level: ${knowledge.toFixed(2)}`;
+	averageKnowledge.textContent = `Average knowledge level: ${knowledge.toFixed(2)}/${window.MAX_KNOWLEDGE_LEVEL}`;
 }
 
 function deckmain()

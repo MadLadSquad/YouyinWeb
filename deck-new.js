@@ -6,7 +6,62 @@ var previewCharacter = window.CARD_DEFAULT_CHARACTER;
 var previewDefinitions = [  ];
 var previewVariant = "";
 
+var bUsingPinyinConversion = false;
+
 var writer;
+
+function pinyinify(string) {
+	const pinyin =
+	{
+		"uai": [ "uāi", "uái", "uǎi", "uài", "uai" ],
+		"ua": [ "uā", "uá", "uǎ", "uà", "ua" ],
+		"ue": [ "uē", "ué", "uě", "uè", "ue" ],
+		"ui": [ "uī", "uí", "uǐ", "uì", "ui" ],
+		"uo": [ "uō", "uó", "uǒ", "uò", "uo" ],
+		"va": [ "üā", "üá", "üǎ", "üà", "üa" ],
+		"ve": [ "üē", "üé", "üě", "üè", "üe" ],
+		"ai": [ "āi", "ái", "ǎi", "ài", "ai" ],
+		"iao": [ "iāo", "iáo", "iǎo", "iào", "iao" ],
+		"ao": [ "āo", "áo", "ǎo", "ào", "ao" ],
+		"ei": [ "ēi", "éi", "ěi", "èi", "ei" ],
+		"ia": [ "iā", "iá", "iǎ", "ià", "ia" ],
+		"ie": [ "iē", "ié", "iě", "iè", "ie" ],
+		"io": [ "iō", "ió", "iǒ", "iò", "io" ],
+		"iu": [ "iū", "iú", "iǔ", "iù", "iu" ],
+		"ou": [ "ōu", "óu", "ǒu", "òu", "ou" ],
+		"a": [ "ā", "á", "ǎ", "à", "a" ],
+		"e": [ "ē", "é", "ě", "è", "e" ],
+		"i": [ "ī", "í", "ǐ", "ì", "i" ],
+		"o": [ "ō", "ó", "ǒ", "ò", "o" ],
+		"u": [ "ū", "ú", "ǔ", "ù", "u" ],
+		"v": [ "ǖ", "ǘ", "ǚ", "ǜ", "ü" ],
+	};
+
+	let arr = string.toLowerCase().split(' ');
+
+	for (let i in arr)
+	{
+		for (const [key, val] of Object.entries(pinyin))
+		{
+			if (arr[i].includes(key))
+			{
+				let lastEl = arr[i].at(arr[i].length - 1);
+				let index = 5;
+				// Check if the number at the back is above 0 and less than 6 since we don't support Jyutping(it doesn't have markings anyway)
+				if (lastEl >= '0' && lastEl <= '5')
+				{
+					index = parseInt(lastEl);
+					arr[i] = arr[i].substr(0, arr[i].length - 1);
+					if (lastEl == '0')
+						index = 5;
+				}
+				arr[i] = arr[i].replace(key, val[index - 1]);
+				continue;
+			}
+		}
+	}
+	return arr.join(" ");
+}
 
 function updateListElements()
 {
@@ -227,12 +282,21 @@ function constructPreviewEvents()
 
 	addFinishButton(nameTextField, characterTextField, null);
 
+	document.getElementById("meaning-text-field").addEventListener("change", function()
+	{
+		let t = window.bUsingPinyinConversion ? pinyinify(this.value) : this.value;
+		this.value = t;
+	});
+
 	addButtonEvent("add-meaning-list-button", "click", function()
 	{
 		const txtField = document.getElementById("meaning-text-field");
 
 		if (txtField.value == "")
 			return;
+
+		let t = window.bUsingPinyinConversion ? pinyinify(txtField.value) : txtField.value;
+		txtField.value = t;
 
 		constructListElement(txtField.value, window.previewDefinitions.length);
 		updateListElements();
@@ -246,7 +310,8 @@ function constructPreviewEvents()
 
 	nameTextField.addEventListener("change", function()
 	{
-		window.previewName = this.value;
+		window.previewName = window.bUsingPinyinConversion ? pinyinify(this.value) : this.value;
+		this.value = window.previewName;
 		if (window.previewName == "")
 			window.previewName = window.CARD_DEFAULT_PREVIEW_NAME;
 
@@ -256,7 +321,8 @@ function constructPreviewEvents()
 
 	characterTextField.addEventListener("change", function()
 	{
-		window.previewCharacter = this.value;
+		window.previewCharacter = window.bUsingPinyinConversion ? pinyinify(this.value) : this.value;
+		this.value = window.previewCharacter;
 		if (window.previewCharacter == "")
 			window.previewCharacter = window.CARD_DEFAULT_CHARACTER;
 

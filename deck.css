@@ -83,3 +83,23 @@ ol li {
 	width: 0;
 	height: 0;
 }
+
+#input-mode {
+	padding: 0;
+	margin: auto;
+	overflow: hidden;
+	float: left;
+	position: relative;
+	display: flex;
+	align-items: center;
+	width: 100%;
+	justify-content: center;
+}
+
+#input-mode p {
+	margin-right: 6px;
+}
+
+* {
+	font-family: 'Ubuntu', sans-serif;
+}
