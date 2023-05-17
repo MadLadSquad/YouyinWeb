@@ -1,3 +1,8 @@
+* {
+	background-color: #ffffff;
+	accent-color: #c87e74;
+}
+
 h1, h2, h3, p, li {
 	font-family: 'Ubuntu', sans-serif;
 }

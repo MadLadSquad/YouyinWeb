@@ -59,15 +59,13 @@ function setTitleName()
 	const el = document.getElementsByClassName("site-title");
 
 	// Cool array of quirky names for the website title because who needs to be serious
-	const names = [ "卣囙", "诱因", "油印", "Yǒuyīn", "📮📮", "ඞඞ", "ඣ",
-		"爱汉字", "愛カタカナ", "愛ひらがな", "愛漢字",
-		"❤️ Latin", "❤️ Кирилица", "❤️  მხედრული", "❤️ Հայոց գրեր", "❤️ العربية", "❤️ 한글", "❤️ Ελληνικά", "❤️ देवनागरी "
+	const names = [ "Youyin 卣囙", "Youyin 诱因", "Youyin 油印", "Yǒuyīn 　　", "Youyin  ඞඞ",
 	];
 
 	const selectedText = names[Math.floor(Math.random() * names.length)];
 
 	for (let i = 0; i < el.length; i++)
-		el[i].textContent += selectedText;
+		el[i].textContent = selectedText;
 }
 
 // Returns an URLSearchParams object

@@ -26,7 +26,6 @@
 		<header>
 			<ul>
 				<li><a href="./index.html" class="site-title">Youyin </a></li>
-				<li><a href="./learning.html">Learning</a></li>
 				<li><a href="./deck.html">Deck</a></li>
 				<li><a href="./about.html">About</a></li>
 			</ul>
@@ -38,27 +37,27 @@
 
 				<br><br>
 
-				We use a simple flashcard based approach to learning to read, write and understand the given writing system. These are the components of the app:
+				We use a simple flashcard based approach to learning how to read and write the given writing system. These are the components of the app:
 			</p>
 			<ol>
-				<li>Learning - A page filled with tips for new language learners</li>
 				<li>Practice - Helps you learn to read and write the given character</li>
 				<li>Deck marketplace - A large list of community and official decks that can be imported on demand</li>
+				<li>Leaderboards and User profiles - Gamifies the system by challenging the user to compete in weekly leaderboards</li>
 			</ol>
 			<p>
-				The app is not a dictionary, the user is supposed to use a separate dictionary(like <a href="https://pleco.com">pleco</a> for Chinese)
+				The app is not a dictionary, the user is supposed to use a separate dictionary(like <a href="https://pleco.com">pleco</a> for Chinese).
 			</p>
 
 			<h2>The story of the app's development</h2>
 			<p>
-				In January 2023 <a href="https://madman10k.online/">Stanislav Vasilev(Madman10K)</a> decided to create Youyin because he was already learning Chinese and found remembering to write the characters
-				hard. He found no existing solution that would help with that, so he decided to develop one himself. Initially started as a platform for learning to write Chinese characters, 
-				Youyin is currently expanding into more writing systems like Hiragana, Katakana, Hangul, Cyrillic, Latin, Greek, Georgian, Armenian, Arabic and more.
+				In January 2023, <a href="https://madman10k.online/">Stanislav Vasilev(Madman10K)</a> decided to create Youyin as a solution for his obsession with learning Chinese characters and other
+				writing systems. He found no existing solution that would help with that, so he decided to develop one himself. Initially started as a platform for learning to write Chinese characters, 
+				Youyin is currently expanding into more writing systems like Hiragana, Katakana, Cyrillic, Latin, Greek, etc.
 
 				<br><br>
 
 				The name Youyin comes from a bad joke about the videogame <a href="https://en.wikipedia.org/wiki/Among_Us">Among us</a> where people all over the internet were going insane when they saw the 
-				geometric shape of the crewmates in the game. In Chinese the name uses the 2 symbols "卣囙" pronounced as "yǒuyīn" in pinyin, which kind of look like the crewmates. Additionally the name of the 
+				geometric shape of the crewmates in the game. In Chinese, the name use the 2 symbols "卣囙", pronounced as "yǒuyīn" in pinyin, look like the crewmates. Additionally, the name of the 
 				site is similar to the following 3 words:
 			</p>
 			<ol>
@@ -67,19 +66,19 @@
 				<li>有瘾 - meaning to be addicted to something, relevant because you'll be addicted to writing characters here</li>
 			</ol>
 			<p>
-				The pair 卣囙 doesn't mean anything, the first character is an archaic word for a "small-mouthed wine vessel", while the second is an old variand of the character 因, which
-				generally means, cause, origin, to follow, to carry on, to conform to, to accord with, because of, as a result of, because.
+				The pair 卣囙 has no meaning. The first character is an archaic word for a "small-mouthed wine vessel", while the second is an old variant of the character 因, which
+				generally means the following: cause, origin, to follow, to carry on, to conform to, to accord with, because of, as a result of, because, etc.
 				<br>
 			</p>
 
 			<h2>Credits</h2>
 			<p>
-				Youyin uses the following open source libraries for most of the testing and text rendering functionality, most of the yearly revenue of the site after maintenance costs gets donated to those 2
-				projects:
+				Youyin uses the following open source libraries for most of the testing and text rendering functionality:
 			</p>
 			<ol>
 				<li><a href="https://github.com/skishore/makemeahanzi">Makemeahanzi</a> - Provides the character information used by Hanziwriter</li>
 				<li><a href="https://github.com/chanind/hanzi-writer">Hanziwriter</a> - Provides the character animations and handwriting recognition used during tests</li>
+				<li><a href="https://github.com/parsimonhi/animCJK">animCJK</a> - Provides data for Japanese Kanji and most Japanese Kana</li>
 			</ol>
 			<p>
 				Addtionally, we want to thank the following people for helping with the development of the application:
@@ -87,14 +86,25 @@
 			<ol>
 				<li><a href="https://github.com/ProHunter67BG">Hristian Rusev</a> for providing German translations</li>
 				<li><a href="https://github.com/Neyko641">Neyko Naydenov</a> for providing Japanese translations</li>
+				<li><a href="https://github.com/nick-1666">Nick-1666</a> for helping with UI and UX issues</li>
 			</ol>
 			<h1>Known issues</h1>
 			<h2>Start session button or writer becomes really large</h2>
-			<p>Q: When I resize the window or finish a test, the start session button or the writer becomes really large, why is that?</p>
+			<p>Q: When I resize the window or finish a test, the start session button or the writer becomes larger than the available screen real estate, why is that?</p>
 			<p>
 				A: Unfortunarely, this peculiar error cannot be resolved by us, because it's mainly caused by third party extensions. One example is <a href="https://grammarly.com">Grammarly</a>.
 				The only way to stop that from happening is to find out which extension causes this and disable it for our site.
 			</p>
+
+			<h1>More like Youyin</h1>
+			<p><a href="https://madladsquad.com/">MadLad Squad</a> develops more than just Youyin, check out the following CJK/Language learning applications and libraries<p/>
+			<ol>
+				<li>
+					<a href="https://github.com/MadLadSquad/UntitledIBusHandwriting">UntitledIBusHandwriting</a> - A handwriting plugin for <a href="https://en.wikipedia.org/wiki/Intelligent_Input_Bus">ibus</a>
+				</li>
+				<li><a href="https://github.com/MadLadSquad/hanzi-writer-data-youyin">hanzi-writer-data-youyin</a> - All character data used in Youyin in one place</li>
+				<li><a href="https://madladsquad.com/untitled-desktop/subprojects/i18n">i18n project</a> - The MadLad Squad i18n(internationalisation) project</li>
+			</ol>
 			<hr>
 		</main>
 		<footer class="centered">
