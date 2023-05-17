@@ -181,8 +181,8 @@ function createStartButton()
 	{
 		startButton = document.createElement("button");
 		startButton.id = "start-button";
-		startButton.className = "card-button-edit centered character-prop";
-		startButton.textContent = "Start session";
+		startButton.className = "card-button-edit centered character-prop large-button-text";
+		startButton.textContent = "Click to start session";
 
 		document.getElementById("main-page").appendChild(startButton);
 	}

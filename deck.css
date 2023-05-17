@@ -33,7 +33,18 @@
 .card-button-edit:hover {
 	color: #fff;
 	background-color: #a56961;
+	border-color: #a56961;
+}
+
+.card-button-edit:active {
 	border-color: #c87e74;
+	background-color: #a56961;
+}
+
+.large-button-text {
+	font-size: 32px;
+	border: 6px solid transparent;
+	border-radius: 12px;
 }
 
 button {
