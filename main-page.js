@@ -44,10 +44,13 @@ function getDrawElementHeight()
 	if (parent.getBoundingClientRect().width < finalHeight)
 	{
 		finalHeight = parent.getBoundingClientRect().width - (2 * window.MAIN_PAGE_TOP_PADDING);
-		if (bMobile && !(!!window.chrome))
-			finalHeight -= footer.getBoundingClientRect().height;
+		if (bMobile)
+		{
+			if (!(!!window.chrome))
+				finalHeight -= footer.getBoundingClientRect().height;
+		}
 	}
-	else // The +4 is for the borders designe
+	else // The +4 is for the borders design
 		listWidget.style.setProperty("height", (finalHeight + 4).toString() + "px");
 
 	return finalHeight;

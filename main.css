@@ -122,6 +122,14 @@ header {
 	color: #000000;
 }
 
+#coming-soon-header {
+	font-size: 3vw;
+}
+
+#coming-soon-text {
+	font-size: 1.5vw;
+}
+
 /* Make the 404 emoji take up more or less the whole page */
 #err-404-emoji {
 	font-size: 18vw;
