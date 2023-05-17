@@ -11,6 +11,10 @@ var bInTest = false;
 var currentIndex = 0;
 var sessionTime = 0;
 
+var bMobile = false;
+
+var linkChildren;
+
 // This function uses some dark magic that works half the time in order to calculate the size of the mainpage viewport
 // and main elements. Here are some issues:
 // TODO: On portrait screens if the resolution changes this sometimes breaks and a refresh is needed, would be good if it was fixed. 
@@ -30,8 +34,8 @@ function getDrawElementHeight()
 	const footer = document.querySelector("footer");
 
 	let finalHeight = window.innerHeight - unusedSpace - window.MAIN_PAGE_TOP_PADDING + listWidget.getBoundingClientRect().height;
-	const bMobile = navigator.userAgent.toLowerCase().includes("mobile");
-	if (bMobile)
+	window.bMobile = navigator.userAgent.toLowerCase().includes("mobile");
+	if (window.bMobile)
 	{
 		finalHeight -= (footer.getBoundingClientRect().height);
 	}
@@ -44,7 +48,7 @@ function getDrawElementHeight()
 	if (parent.getBoundingClientRect().width < finalHeight)
 	{
 		finalHeight = parent.getBoundingClientRect().width - (2 * window.MAIN_PAGE_TOP_PADDING);
-		if (bMobile)
+		if (window.bMobile)
 		{
 			if (!(!!window.chrome))
 				finalHeight -= footer.getBoundingClientRect().height;
@@ -174,6 +178,9 @@ async function writerOnComplete(strokeData)
 	resetSidebar();
 	saveToLocalStorage(window.localStorageData);
 	fisherYates(window.localStorageData["cards"]);
+
+	if (window.bMobile)
+		document.getElementById("main-page-header").replaceChildren(...window.linkChildren);
 }
 
 function createStartButton()
@@ -193,6 +200,14 @@ function createStartButton()
 	startButton.style.setProperty("height", drawElementHeight + "px");
 	startButton.addEventListener("click", function()
 	{
+		if (window.bMobile)
+		{
+			const buttonList = document.getElementById("main-page-header");
+			window.linkChildren = [ ...buttonList.children ];
+			const headerHome = buttonList.children[0];
+			buttonList.replaceChildren(headerHome);
+		}
+
 		document.getElementById("start-button").remove();
 		window.bInTest = true;
 
