@@ -74,12 +74,34 @@ footer p, footer select {
 	color: #000000;
 }
 
+select::before, select::after {
+	box-sizing: border-box;
+}
+
 /* Make the select members shrink to fit since they would take too much space */
 select {
-	padding: 0 0 0 0;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	background-color: transparent;
+	border: 1px solid #c87e74;
+	border-radius: 4px;
+	font-family: inherit;
+	font-size: inherit;
+	cursor: inherit;
+	line-height: inherit;
+	z-index: 1;
+	outline: none;
+	box-sizing: border-box;
+
+	padding: 1 1 1 1;
 	margin: 0 0 0 0;
 	max-width: max-content;
 	resize: horizontal;
+}
+
+select::-ms-expand {
+	display: none;
 }
 
 option {
