@@ -205,7 +205,16 @@ function createStartButton()
 			const buttonList = document.getElementById("main-page-header");
 			window.linkChildren = [ ...buttonList.children ];
 			const headerHome = buttonList.children[0];
+
 			buttonList.replaceChildren(headerHome);
+
+			var el = document.createElement("li");
+			var link = document.createElement("a");
+			link.textContent = "Exit"
+			link.setAttribute("href", "./index.html");
+
+			el.appendChild(link);
+			buttonList.appendChild(el);
 		}
 
 		document.getElementById("start-button").remove();
