@@ -29,7 +29,7 @@ async function charDataLoader(character, onLoad, onError)
 	let response = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin@latest/data/${character}.json`)
 	if (await response.status !== 200)
 	{
-		console.log(`Bad response from both the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
+		console.log(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
 		return;
 	}
 	return await response.json();
