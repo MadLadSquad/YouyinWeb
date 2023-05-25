@@ -68,7 +68,7 @@ function writerOnMistake(strokeData)
 	if ((strokeData.mistakesOnStroke - window.backwardsErrors) == window.WRITER_SHOW_HINT_ON_ERRORS)
 		window.errors++;
 
-	document.getElementById("character-info-widget-errors").textContent = `Errors: ${window.errors}`;
+	document.getElementById("character-info-widget-errors").textContent = `Cards: ${window.currentIndex}/${window.localStorageData["cards"].length}; Errors: ${window.errors}`;
 }
 
 function writerOnCorrectStroke(strokeData)
@@ -81,7 +81,7 @@ function changeSidebarText()
 	const spelling = window.localStorageData["cards"][window.currentIndex]["name"]
 	
 	document.getElementById("character-info-widget-spelling").textContent = `Spelling: ${spelling}`;
-	document.getElementById("character-info-widget-errors").textContent = "Errors: 0";
+	document.getElementById("character-info-widget-errors").textContent = `Cards: ${window.currentIndex}/${window.localStorageData["cards"].length}; Errors: 0`;
 	const list = document.getElementById("character-info-widget-info");
 	list.replaceChildren();
 	for (let i in window.localStorageData["cards"][window.currentIndex]["definitions"])
@@ -97,7 +97,7 @@ function changeSidebarText()
 function resetSidebar()
 {
 	document.getElementById("character-info-widget-spelling").textContent = "Spelling: To be loaded";
-	document.getElementById("character-info-widget-errors").textContent = "Errors: 0";
+	document.getElementById("character-info-widget-errors").textContent = "Cards: 0/0; Errors: 0";
 
 	const el = document.createElement("li");
 	el.textContent = "To be loaded";
