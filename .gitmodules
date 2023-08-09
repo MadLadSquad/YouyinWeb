@@ -1,0 +1,3 @@
+[submodule "UVKBuildTool"]
+	path = UVKBuildTool
+	url = https://github.com/MadLadSquad/UVKBuildTool.git

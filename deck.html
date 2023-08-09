@@ -24,15 +24,7 @@
 		<title class="site-title">Deck | Youyin </title>
 	</head>
 	<body>
-		<header class="header-deck">
-			<ul>
-				<li><a href="./index.html" class="site-title">Youyin </a></li>
-				<li><a href="./deck.html">Deck</a></li>
-				<li><a href="./marketplace.html">Marketplace</a></li>
-				<li><a href="./account.html">Account</a></li>
-				<li><a href="./about.html">About</a></li>
-			</ul>
-		</header>
+		{{ include components/header.tmpl.html }}
 		<main id="deck">
 			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
 			<div id="profile-card" class="card centered">
@@ -58,22 +50,7 @@
 			</div>
 			<!-- Data will be inserted dynamically by the Javascript here from deck.js file -->
 		</main>
-		<footer class="centered">
-			<p>
-				A <a href="https://madladsquad.com/">MadLad Squad</a> project!
-			</p>
-			<select aria-label="Language select box" name="lang" id="lang-select" class="centered" onchange="modifySelectedLanguage()">
-				<option value="0">🇬🇧   EN</option>
-				<option value="1">🇧🇬   BG</option>
-				<option value="2">🇨🇳   CN</option>
-				<option value="3">🇹🇼   CN-T</option>
-				<option value="4">🇩🇪   DE</option>
-				<option value="5">🇲🇰   MK</option>
-				<option value="6">🇷🇺   RU</option>
-				<option value="7">🇯🇵   JP</option>
-			</select>
-		</footer>
-
+		{{ include components/footer.tmpl.html }}
 		<script src="./index.js"></script>
 	</body>
 	<script src="./deck.js"></script>

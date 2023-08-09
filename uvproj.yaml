@@ -1,0 +1,11 @@
+localhost-commands:
+  - python3 -m http.server
+allowed-extensions:
+  - html
+filename-blacklist:
+  - .git
+  - UBTCustomFunctions
+  - UVKBuildTool
+  - .github
+intermediate-extensions:
+  - .tmpl.html

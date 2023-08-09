@@ -33,6 +33,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
+      - name: Build project
+        run: cd UVKBuildTool/ && ./setup-web.sh .. && cd build && ./UVKBuildTool --build ../../build ../../ && cd ../../
+      - run: rm *.html
+      - run: mv build/*.html .
       - run: npm install -g terser
       - run: npm install -g csso-cli
       - run: npm install -g html-minifier
