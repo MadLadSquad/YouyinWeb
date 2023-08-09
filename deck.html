@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		{{ include components/head.tmpl.html }}
+		{{ include Components/head.tmpl.html }}
 		<link rel="stylesheet" href="./deck.css">
 
 		<title class="site-title">Deck | Youyin </title>
 	</head>
 	<body>
-		{{ include components/header.tmpl.html }}
+		{{ include Components/header.tmpl.html }}
 		<main id="deck">
 			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
 			<div id="profile-card" class="card centered">
@@ -33,8 +33,7 @@
 			</div>
 			<!-- Data will be inserted dynamically by the Javascript here from deck.js file -->
 		</main>
-		{{ include components/footer.tmpl.html }}
-		<script src="./index.js"></script>
+		{{ include Components/footer.tmpl.html }}
 	</body>
 	<script src="./deck.js"></script>
 </html>
