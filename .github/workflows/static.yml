@@ -41,7 +41,7 @@ jobs:
         with:
           node-version: '16'
       # Disable automatic localhost
-      - run: echo "run-localhost-automatically: false" >> uvproj.yaml 
+      - run: "echo 'run-localhost-automatically: false' >> uvproj.yaml"
       - name: Build project
         run: cd UVKBuildTool/ && ./setup-web.sh .. && cd build && ./UVKBuildTool --build ../../build ../../ && cd ../../
       - run: rm *.html
