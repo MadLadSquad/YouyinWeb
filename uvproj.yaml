@@ -9,3 +9,6 @@ filename-blacklist:
   - .github
 intermediate-extensions:
   - .tmpl.html
+variables:
+  - var: trademark
+    val: Youyin
