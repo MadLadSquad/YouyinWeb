@@ -1,15 +1,22 @@
-* {
-	background-color: #ffffff;
-	accent-color: #c87e74;
+:root {
+	--main-background-colour: #ffffff;
+	--main-accent-colour: #c87e74;
+	--main-border-colour: #CCC;
+	--main-text-colour: #000000;
 }
 
-h1, h2, h3, p, li {
+* {
+	background-color: var(--main-background-colour);
+	accent-color: var(--main-accent-colour);
+}
+
+h1, h2, h3, h4, h5, h6, p, li {
 	font-family: 'Ubuntu', sans-serif;
 }
 
 a {
 	text-decoration: none;
-	color: #c87e74;
+	color: var(--main-accent-colour);
 }
 
 ul, footer {
@@ -30,7 +37,7 @@ ul li, footer {
 /* Basically the styling for the text on the top bar */
 ul li a {
 	display: block;
-	color: #c87e74;
+	color: var(--main-accent-colour);
 	text-align: center;
 	padding: 0 24px 0 24px;
 	text-decoration: none;
@@ -55,7 +62,7 @@ ul li a {
 */
 
 .character-prop {
-	border: 2px solid #CCC;
+	border: 2px solid var(--main-border-colour);
 	margin: auto;
 	position: relative;
 }
@@ -71,7 +78,7 @@ ul li a {
 footer p, footer select {
 	padding: 0 0.33rem 0 0.33rem;
 	font-size: 18px;
-	color: #000000;
+	color: var(--main-text-colour);
 }
 
 select::before, select::after {
@@ -84,7 +91,7 @@ select {
 	-moz-appearance: none;
 	appearance: none;
 	background-color: transparent;
-	border: 1px solid #c87e74;
+	border: 1px solid var(--main-accent-colour);
 	border-radius: 4px;
 	font-family: inherit;
 	font-size: inherit;
@@ -115,7 +122,7 @@ option {
 /* Only display the right border on landscape since on portrait elements are not inline */
 @media (orientation: landscape) {
 	#character-info-widget {
-		border-right: 1px solid #CCC;
+		border-right: 1px solid var(--main-border-colour);
 	}
 }
 
@@ -130,18 +137,18 @@ option {
 	padding: 0 0 0 0;
 	margin: 0 0 0 0;
 	border: 0;
-	border-top: 1px solid #CCC;
-	background-color: #CCC;
+	border-top: 1px solid var(--main-border-colour);
+	background-color: var(--main-border-colour);
 }
 
 
 /* Add a border to make the user not think or be distracted by the titlebar */
 header {
-	border-bottom: 1px solid #CCC;
+	border-bottom: 1px solid var(--main-border-colour);
 }
 
 #site-title {
-	color: #000000;
+	color: var(--main-text-colour);
 }
 
 #coming-soon-header {

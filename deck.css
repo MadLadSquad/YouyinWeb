@@ -1,3 +1,8 @@
+:root {
+	--deck-button-active-colour: #a56961;
+	--deck-card-text-colour: #555555;
+}
+
 #deck, #deck-community {
 	display: grid;
 	gap: 1rem;
@@ -5,14 +10,14 @@
 }
 
 .card {
-	border: 1px solid #CCC;
+	border: 1px solid var(--main-border-colour);
 }
 
 /* I totally didn't cop this from somewhere I don't even remember */
 .card-button-edit {
-	color: #fff;
-	background-color: #c87e74;
-	border-color: #a56961;
+	color: var(--main-text-colour);
+	background-color: var(--main-accent-colour);
+	border-color: var(--deck-button-active-colour);
 
 	margin-top: 12px;
 	margin-bottom: 12px;
@@ -31,14 +36,14 @@
 }
 
 .card-button-edit:hover {
-	color: #fff;
-	background-color: #a56961;
-	border-color: #a56961;
+	color: var(--main-text-colour);
+	background-color: var(--deck-button-active-colour);
+	border-color: var(--deck-button-active-colour);
 }
 
 .card-button-edit:active {
-	border-color: #c87e74;
-	background-color: #a56961;
+	border-color: var(--main-accent-colour);
+	background-color: var(--deck-button-active-colour);
 }
 
 .large-button-text {
@@ -85,7 +90,7 @@ ol li {
 
 #new-card-header {
 	font-size: 7.5rem;
-	color: #555555;
+	color: var(--deck-card-text-colour);
 }
 
 #fileupload {
@@ -123,7 +128,7 @@ input[type=text] {
 	font-size: 16px;
 	font-family: inherit;
 	padding: 4 0 0 0;
-	background-color: #ffffff;
-	border: 1px solid #c87e74;
+	background-color: var(--main-background-colour);
+	border: 1px solid var(--main-accent-colour);
 	border-radius: 4px;
 }

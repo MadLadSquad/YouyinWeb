@@ -1,6 +1,6 @@
 #new-card-header-smaller {
 	font-size: 4.5rem;
-	color: #555555;
+	color: var(--deck-card-text-colour);
 	margin-top: 2rem;
 	margin-bottom: 2rem;
 }
