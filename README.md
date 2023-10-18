@@ -19,9 +19,9 @@ release we plan on supporting the following scripts:
 - [ ] Armenian
 - [ ] Georgian
 - [ ] Runic
-- [ ] Greek
+- [x] Greek
 - [ ] Arabic
-- [ ] Zhuyin/BoPoMoFo
+- [x] Zhuyin/BoPoMoFo
 - [ ] Hebrew
 - [ ] Devanagari
 - [ ] Bengali
