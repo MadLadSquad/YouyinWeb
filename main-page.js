@@ -22,10 +22,11 @@ var linkChildren;
 function getDrawElementHeight()
 {
 	// Some magic code to calculate the height
-	const parent = document.querySelector("html");
-	const lastChild = parent.lastElementChild;
+	const html = document.querySelector("html");
+	const mainEl = document.querySelector("main");
+	const lastChild = html.lastElementChild;
 	const lastChildRect = lastChild.getBoundingClientRect();
-	const parentRect = parent.getBoundingClientRect();
+	const parentRect = html.getBoundingClientRect();
 	const unusedSpace = parentRect.bottom - lastChildRect.bottom;
 
 	// Here we have to adjust the height, because the list widget causes problems
@@ -41,19 +42,11 @@ function getDrawElementHeight()
 	}
 	else
 	{
-		const footer = document.querySelector("footer");
 		finalHeight -= (listWidget.getBoundingClientRect().height + footer.getBoundingClientRect().height);
 	}
 
-	if (parent.getBoundingClientRect().width < finalHeight)
-	{
-		finalHeight = parent.getBoundingClientRect().width;
-		if (window.bMobile)
-		{
-			if (!(!!window.chrome))
-				finalHeight -= footer.getBoundingClientRect().height;
-		}
-	}
+	if (mainEl.getBoundingClientRect().width < finalHeight)
+		finalHeight = mainEl.getBoundingClientRect().width - (getComputedStyle(mainEl).paddingRight.replace("px", "") * 2);
 	else
 		listWidget.style.setProperty("height", finalHeight.toString() + "px");
 

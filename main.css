@@ -14,7 +14,9 @@ main {
 	padding-left: 0.5rem;
 	padding-right: 0.5rem;
 	box-sizing: border-box;
+	--main-padding-width: 1rem;
 }
+
 
 * {
 	background-color: var(--main-background-colour);
