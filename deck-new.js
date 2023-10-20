@@ -10,7 +10,9 @@ var bUsingPinyinConversion = false;
 
 var writer;
 
+// Convert each word in a sentence to pinyin
 function pinyinify(string) {
+	// Ugly af but it's the only way we can do it ig
 	const pinyin =
 	{
 		"uai": [ "uāi", "uái", "uǎi", "uài", "uai" ],
@@ -39,6 +41,7 @@ function pinyinify(string) {
 
 	let arr = string.toLowerCase().split(' ');
 
+	// Pinyin-ify every element
 	for (let i in arr)
 	{
 		for (const [key, val] of Object.entries(pinyin))

@@ -22,6 +22,7 @@ var WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
 
 var localStorageData;
 
+// This loads characters from the database. Change the URL to your own database.
 async function charDataLoader(character, onLoad, onError)
 {
 	let response = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/data/${character}.json`)

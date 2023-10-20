@@ -46,7 +46,7 @@ function getDrawElementHeight()
 	}
 
 	if (mainEl.getBoundingClientRect().width < finalHeight)
-		finalHeight = mainEl.getBoundingClientRect().width - (getComputedStyle(mainEl).paddingRight.replace("px", "") * 2);
+		finalHeight = mainEl.getBoundingClientRect().width - (getComputedStyle(mainEl).paddingLeft.replace("px", "") * 2);
 	else
 		listWidget.style.setProperty("height", finalHeight.toString() + "px");
 
@@ -55,6 +55,7 @@ function getDrawElementHeight()
 
 function writerOnMistake(strokeData)
 {
+	// Error calculation and display
 	if (strokeData.isBackwards)
 		window.backwardsErrors++;
 
@@ -71,6 +72,7 @@ function writerOnCorrectStroke(strokeData)
 
 function changeSidebarText()
 {
+	// Utility function to update the sidebar text
 	const spelling = window.localStorageData["cards"][window.currentIndex]["name"]
 	
 	document.getElementById("character-info-widget-spelling").textContent = `Spelling: ${spelling}`;
@@ -89,6 +91,7 @@ function changeSidebarText()
 
 function resetSidebar()
 {
+	// Ugly ahh code to reset to the inital state
 	document.getElementById("character-info-widget-spelling").textContent = "Spelling: To be loaded";
 	document.getElementById("character-info-widget-errors").textContent = "Cards: 0/0; Errors: 0";
 
@@ -99,6 +102,7 @@ function resetSidebar()
 
 function setWriterState(ref)
 {
+	// Set the default writer state. Certain knowledge levels have certain features enabled/disabled
 	window.writer._options.showHintAfterMisses = 3;
 	window.writer.updateColor("radicalColor", null);
 	if (ref["knowledge"] >= 3)
@@ -123,12 +127,15 @@ function setWriterState(ref)
 
 async function writerOnComplete(strokeData)
 {
+	// Go to the next card
 	++window.currentIndex;
 
+	// Calculate how many points to add to your knowledge
 	const strokeNum = window.writer._character.strokes.length;
 	let pointsPerStroke = (window.MAX_POINTS_ON_CHARACTER / strokeNum);
 	let points = (window.MAX_POINTS_ON_CHARACTER - (window.errors * pointsPerStroke));
 	let result = 0;
+
 	if (points >= window.MAX_POINTS_ON_CHARACTER)
 		result = window.MAX_POINTS_ON_CHARACTER;
 	else if (points >= window.ADD_POINTS_ON_ERROR_3_4)
@@ -144,10 +151,14 @@ async function writerOnComplete(strokeData)
 	knowledge = (knowledge + result) >= window.MAX_KNOWLEDGE_LEVEL ? window.MAX_KNOWLEDGE_LEVEL : (knowledge + result);
 	window.localStorageData["cards"][(window.currentIndex - 1)]["knowledge"] = knowledge;
 
+	// Reset the errors
 	window.errors = 0;
 
-	// Basically sleep
+	// Basically sleep. This is so we wait until the finished character animation finishes, but also because the animation
+	// will not feel great if we just skip directly without some time with no animation after it plays.
 	await new Promise(r => setTimeout(r, window.WRITER_SLEEP_AFTER_COMPLETE));
+
+	// This if statement handles switching to the next card
 	if (window.currentIndex < window.localStorageData["cards"].length)
 	{
 		let ref = window.localStorageData["cards"][window.currentIndex];
@@ -160,25 +171,33 @@ async function writerOnComplete(strokeData)
 		return;
 	}
 
+	// If there are no cards, remove the writer and recreate the initial view
 	document.getElementById("character-target-div").remove();
 
+	// Save user data
 	const now = Date.now();
 	window.localStorageData["totalTimeInSessions"] += (now - window.sessionTime);
 	window.sessionTime = now;
 
+	// Recreate initial view
 	window.currentIndex = 0;
 	createStartButton();
 	resetSidebar();
 	saveToLocalStorage(window.localStorageData);
 	fisherYates(window.localStorageData["cards"]);
 
+	// On mobile we remove all header elements when playing, so readd them
 	if (window.bMobile)
 		document.getElementById("main-page-header").replaceChildren(...window.linkChildren);
 }
 
 function createStartButton()
 {
+	// Get the desired element height. These calculations will be used for the start button and
+	// drawing widget
 	const drawElementHeight = getDrawElementHeight();
+
+	// Get start button, create if exists
 	let startButton = document.getElementById("start-button");
 	if (startButton === null)
 	{
@@ -189,10 +208,16 @@ function createStartButton()
 
 		document.getElementById("main-page").appendChild(startButton);
 	}
+
+	// Set the button width
 	startButton.style.setProperty("width", drawElementHeight + "px");
 	startButton.style.setProperty("height", drawElementHeight + "px");
+
+	// When the button is clicked, we will create the writer view
 	startButton.addEventListener("click", function()
 	{
+		// Make the experience more immersive by removing all buttons from the header, except for the main page link.
+		// Also, add an exit button, even though it does the same as clicking the main page link.
 		if (window.bMobile)
 		{
 			const buttonList = document.getElementById("main-page-header");
@@ -210,11 +235,12 @@ function createStartButton()
 			buttonList.appendChild(el);
 		}
 
+		// Remove the start session button and set the global to indicate that we're in a test
 		document.getElementById("start-button").remove();
 		window.bInTest = true;
 
+		// Append HTML for the writer background, which is just a star
 		const page = document.getElementById("main-page");
-
 		page.innerHTML += `
 			<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" id="character-target-div" class="centered character-div character-prop">
 				<line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
@@ -223,10 +249,12 @@ function createStartButton()
 				<line x1="0" y1="50%" x2="100%" y2="50%" stroke="#DDD" />
 			</svg>
 		`;
-		
+
+		// Get the width of the writer border, since the element will not be truly centered if we do not subtract from it
+		const borderWidth = window.getComputedStyle(document.getElementById("character-target-div")).borderWidth.replace("px", "") * 2;
 		window.writer = HanziWriter.create('character-target-div', window.localStorageData["cards"][window.currentIndex]["character"], {
-			width: drawElementHeight,
-			height: drawElementHeight,
+			width: drawElementHeight - borderWidth,
+			height: drawElementHeight - borderWidth,
 			showCharacter: false,
 			padding: window.WRITER_PADDING,
 			showHintAfterMisses: window.WRITER_SHOW_HINT_ON_ERRORS,
@@ -238,6 +266,8 @@ function createStartButton()
 			onComplete: writerOnComplete,
 			onCorrectStroke: writerOnCorrectStroke,
 		});
+
+		// Modify sidebar text, as well as statistics data
 		setWriterState(window.localStorageData["cards"][window.currentIndex]);
 		changeSidebarText();
 		const now = Date.now();
@@ -251,6 +281,8 @@ function createStartButton()
 function mainPageMain()
 {
 	const drawElementHeight = getDrawElementHeight();
+
+	// If there are no cards there, create a widget to inform the user that they need to create a deck
 	if (window.localStorageData["cards"].length == 0)
 	{
 		document.getElementById("start-button").remove();
@@ -271,6 +303,8 @@ function mainPageMain()
 
 	createStartButton();
 
+	// Function to be called on the window resize event. This is needed because of a number of custom calculations we perform
+	// to compute the width and height of the writer widget/start button from Javascript
 	var notify = function() {
 		const newDrawElementHeight = getDrawElementHeight();
 		if (bInTest)
@@ -287,6 +321,7 @@ function mainPageMain()
 	};
 	window.addEventListener("resize", notify);
 
+	// Add this event to make sure to save any data if we close the tab
 	window.addEventListener("beforeunload", function(e)
 	{
 		if (bInTest)
@@ -294,6 +329,8 @@ function mainPageMain()
 		saveToLocalStorage(window.localStorageData);
 		return false;
 	});
+
+	// Shuffle the cards
 	fisherYates(window.localStorageData["cards"]);
 }
 

@@ -13,6 +13,7 @@ async function loadMarketplaceData(file)
 
 async function constructElement(val, deckContainer, it, type1, type2, folder)
 {
+	// Get data for the given marketplace entry and process it
 	let filename = folder + it["name"];
 	let marketplaceJSON = await loadMarketplaceData(filename);
 
@@ -23,6 +24,8 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 		leveledUpType = "Yes"
 		extension = ".presetlvl.yydeck.json"
 	}
+
+	// Create card
 	let div = document.createElement("div");
 	div.className = "card centered";
 	div.id = `marketplace-${type1}-card-${val}`;
@@ -34,6 +37,7 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	addElement("p", `Pre-leveled up: ${leveledUpType}`, "", "", "", div);
 	addElement("p", `Cards: ${marketplaceJSON.length}`, "", "", "", div);
 
+	// Import a deck from file
 	addElement("button", "Import", `import-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
 	{
 		// If an element is created using addElement, arbitrary data is also assigned
@@ -59,6 +63,7 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 
 	addElement("br", "", "", "", "", div);
 
+	// Download deck with this interesting code
 	addElement("button", "Download", `download-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
 	{
 		let content = await loadMarketplaceData(this.getAttribute("arbitrary-data"));
@@ -99,6 +104,7 @@ async function handleOfficialRepos(deckContainer)
 	}
 }
 
+// Creates cards for the community decks
 async function handleCommunityRepos(deckContainer)
 {
 	// Start from community, we will then iterate trough all the release folders
