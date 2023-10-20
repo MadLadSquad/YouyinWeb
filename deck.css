@@ -15,7 +15,7 @@
 
 /* I totally didn't cop this from somewhere I don't even remember */
 .card-button-edit {
-	color: var(--main-text-colour);
+	color: var(--main-background-colour);
 	background-color: var(--main-accent-colour);
 	border-color: var(--deck-button-active-colour);
 
