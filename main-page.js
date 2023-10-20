@@ -47,6 +47,7 @@ function getDrawElementHeight()
 
 	if (parent.getBoundingClientRect().width < finalHeight)
 	{
+		finalHeight = parent.getBoundingClientRect().width;
 		if (window.bMobile)
 		{
 			if (!(!!window.chrome))
