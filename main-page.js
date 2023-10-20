@@ -33,7 +33,7 @@ function getDrawElementHeight()
 
 	const footer = document.querySelector("footer");
 
-	let finalHeight = window.innerHeight - unusedSpace - window.MAIN_PAGE_TOP_PADDING + listWidget.getBoundingClientRect().height;
+	let finalHeight = window.innerHeight - unusedSpace + listWidget.getBoundingClientRect().height;
 	window.bMobile = navigator.userAgent.toLowerCase().includes("mobile");
 	if (window.bMobile)
 	{
@@ -47,15 +47,14 @@ function getDrawElementHeight()
 
 	if (parent.getBoundingClientRect().width < finalHeight)
 	{
-		finalHeight = parent.getBoundingClientRect().width - (2 * window.MAIN_PAGE_TOP_PADDING);
 		if (window.bMobile)
 		{
 			if (!(!!window.chrome))
 				finalHeight -= footer.getBoundingClientRect().height;
 		}
 	}
-	else // The +4 is for the borders design
-		listWidget.style.setProperty("height", (finalHeight + 4).toString() + "px");
+	else
+		listWidget.style.setProperty("height", finalHeight.toString() + "px");
 
 	return finalHeight;
 }

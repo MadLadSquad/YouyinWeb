@@ -5,6 +5,17 @@
 	--main-text-colour: #000000;
 }
 
+body {
+	padding: 0;
+	margin: 0;
+}
+
+main {
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	box-sizing: border-box;
+}
+
 * {
 	background-color: var(--main-background-colour);
 	accent-color: var(--main-accent-colour);
@@ -144,6 +155,7 @@ option {
 
 /* Add a border to make the user not think or be distracted by the titlebar */
 header {
+	margin-top: 0.25rem;
 	border-bottom: 1px solid var(--main-border-colour);
 }
 

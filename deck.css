@@ -5,8 +5,11 @@
 
 #deck, #deck-community {
 	display: grid;
-	gap: 1rem;
+	gap: 0.5rem;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	box-sizing: border-box;
 }
 
 .card {
@@ -36,7 +39,7 @@
 }
 
 .card-button-edit:hover {
-	color: var(--main-text-colour);
+	color: var(--main-background-colour);
 	background-color: var(--deck-button-active-colour);
 	border-color: var(--deck-button-active-colour);
 }
