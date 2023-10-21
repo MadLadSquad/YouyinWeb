@@ -130,7 +130,7 @@ async function handleCommunityRepos(deckContainer)
 
 			addElement("h1", `Release ${it1["name"].slice(1)}`, "", "centered", "", deckContainer);
 			addElement("br", "", "", "", "", deckContainer);
-			let el = addElement("section", "", "deck-community", "", "", deckContainer);
+			let el = addElement("section", "", "deck-community", "deck", "", deckContainer);
 			for (let val in json)
 			{
 				let it = json[val];
@@ -144,7 +144,7 @@ async function handleCommunityRepos(deckContainer)
 
 async function marketplaceMain()
 {
-	const deckContainer = $("deck");
+	const deckContainer = $("marketplace-deck-container");
 	const communityContainer =  $("deck-community-master");
 
 	await handleOfficialRepos(deckContainer);
