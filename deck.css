@@ -1,8 +1,10 @@
+/* Set deck-specific colours */
 :root {
 	--deck-button-active-colour: #a56961;
 	--deck-card-text-colour: #555555;
 }
 
+/* Display the deck or marketplace as a grid of cards */
 #deck, #deck-community {
 	display: grid;
 	gap: 0.5rem;
@@ -12,6 +14,7 @@
 	box-sizing: border-box;
 }
 
+/* Add border to the cards for better UI/UX */
 .card {
 	border: 1px solid var(--main-border-colour);
 }
@@ -49,18 +52,21 @@
 	background-color: var(--deck-button-active-colour);
 }
 
+/* Some buttons, like the start button may require large text*/
 .large-button-text {
 	font-size: 32px;
 	border: 6px solid transparent;
 	border-radius: 12px;
 }
 
+/* TF is this??? */
 button {
 	text-transform: visible;
 	overflow: visible;
 	-webkit-appearance: button;
 }
 
+/* Make small buttons smaller */
 .small-button {
 	padding-left: 5px;
 	padding-right: 5px;
@@ -74,6 +80,7 @@ main {
 	width: 100%;
 }
 
+/* Configure unordered lists to be left-aligned with some padding and deciman numbers */
 ol {
 	list-style: none;
 	text-align: left;
@@ -96,6 +103,7 @@ ol li {
 	color: var(--deck-card-text-colour);
 }
 
+/* Hide the default file upload widget */
 #fileupload {
 	display: block;
 	visibility: hidden;
@@ -103,6 +111,7 @@ ol li {
 	height: 0;
 }
 
+/* Make the input mode container a flexbox */
 #input-mode {
 	padding: 0;
 	margin: auto;
@@ -123,10 +132,12 @@ ol li {
 	font-family: 'Ubuntu', sans-serif;
 }
 
+/* Configure input text fields to be border boxes */
 input[type=text]::before, input[type=text]::after, input[type=text] {
 	box-sizing: border-box;
 }
 
+/* Configure input text fields to follow our style */
 input[type=text] {
 	font-size: 16px;
 	font-family: inherit;
@@ -134,4 +145,19 @@ input[type=text] {
 	background-color: var(--main-background-colour);
 	border: 1px solid var(--main-accent-colour);
 	border-radius: 4px;
+}
+
+/* This is for dividing the deck edit card input mode into a simple grid*/
+#input-mode-internal {
+	display: grid;
+	gap: 0;
+	grid-template-columns: 1fr 1fr;
+	padding-left: 0;
+	padding-right: 0;
+	box-sizing: border-box;
+}
+
+/* Do not configure margin because yes */
+#input-mode-internal div {
+	margin: auto;
 }

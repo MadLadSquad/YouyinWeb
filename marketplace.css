@@ -1,3 +1,4 @@
+/* Smaller header because the cards are always physically smaller */
 #new-card-header-smaller {
 	font-size: 4.5rem;
 	color: var(--deck-card-text-colour);
@@ -5,6 +6,7 @@
 	margin-bottom: 2rem;
 }
 
+/* Colour the error text in bright red */
 .error-text {
 	color: rgb(255, 0, 0);
 }

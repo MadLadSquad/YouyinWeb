@@ -1,3 +1,4 @@
+/* Colours as CSS variables */
 :root {
 	--main-background-colour: #ffffff;
 	--main-accent-colour: #c87e74;
@@ -5,11 +6,17 @@
 	--main-text-colour: #000000;
 }
 
+/* Remove body padding, otherwise bound calculations will be really hard */
 body {
 	padding: 0;
 	margin: 0;
 }
 
+/**
+ * Add padding to the side of the main block, because we still
+ * need some spacing from the border of the screen for good user
+ * experience
+ **/
 main {
 	padding-left: 0.5rem;
 	padding-right: 0.5rem;
@@ -17,12 +24,13 @@ main {
 	--main-padding-width: 1rem;
 }
 
-
+/* Set the background and accent colour */
 * {
 	background-color: var(--main-background-colour);
 	accent-color: var(--main-accent-colour);
 }
 
+/* Set font family for basically all text we use */
 h1, h2, h3, h4, h5, h6, p, li {
 	font-family: 'Ubuntu', sans-serif;
 }
@@ -32,6 +40,7 @@ a {
 	color: var(--main-accent-colour);
 }
 
+/* Make the ul and footer to be contatiners for a horizontal list */
 ul, footer {
 	list-style: none;
 	padding: 0;
@@ -58,6 +67,10 @@ ul li a {
 	line-height: 1.5;
 }
 
+/**
+ * Divide the main page into 2 parts, 25% for the sidebar and 75% for the writer widget. 
+ * This is only applies in landscape mode.
+ **/
 #main-page {
 	display: grid;
 	gap: 0rem;
@@ -65,15 +78,9 @@ ul li a {
 	grid-auto-rows: 100%;
 }
 
-/* Keep this just in case
-#character-target-div {
-	border: 2px solid #CCC;
-	min-width: 260px;
-	margin: auto;
-	position: relative;
-}
-*/
-
+/**
+ * Settings for the SVG that will be used by the writer
+ */
 .character-prop {
 	border: 2px solid var(--main-border-colour);
 	margin: auto;
@@ -94,6 +101,7 @@ footer p, footer select {
 	color: var(--main-text-colour);
 }
 
+/* Make sure selects are border boxes */
 select::before, select::after {
 	box-sizing: border-box;
 }
@@ -120,10 +128,12 @@ select {
 	resize: horizontal;
 }
 
+/* IDK what this does but why not keep it */
 select::-ms-expand {
 	display: none;
 }
 
+/* Make options flex-boxes */
 option {
 	display: flex;
 	min-width: 0;
@@ -153,7 +163,6 @@ option {
 	border-top: 1px solid var(--main-border-colour);
 	background-color: var(--main-border-colour);
 }
-
 
 /* Add a border to make the user not think or be distracted by the titlebar */
 header {
@@ -187,6 +196,7 @@ header {
 	margin: auto;
 }
 
+/* This is the button you use to start a session */
 #start-button {
 	margin: 0 auto 0 auto;
 }

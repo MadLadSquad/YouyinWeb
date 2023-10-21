@@ -66,6 +66,7 @@ function pinyinify(string) {
 	return arr.join(" ");
 }
 
+// Utility function to update the elements of the selected cards list
 function updateListElements()
 {
 	const editList = document.getElementById("definition-list-current-edit");
@@ -82,6 +83,7 @@ function updateListElements()
 	previewList.replaceChildren(...tmpArr);
 }
 
+// Save new card data to localstorage
 function finishButtonNewCard()
 {
 	const data = {
@@ -93,6 +95,7 @@ function finishButtonNewCard()
 
 	for (let i = 0; i < previewDefinitions.length; i++)
 	{
+		// Definitions end with a space so we have to trim it real quick
 		data["definitions"].push(previewDefinitions[i].innerText.slice(0, -1));
 	}
 
@@ -138,6 +141,7 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 	const urlParams = new URLSearchParams(window.location.search);
 	let finishButtonClickFunction;
 
+	// If this is set, we're editing a card instead of creating a new one
 	if (urlParams.has("edit"))
 	{
 		const data = window.localStorageData["cards"];
@@ -151,14 +155,18 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 		// Get reference to the element we're currently editing
 		const el = data[urlParams.get("edit")]
 
+		// Get the text boxes
 		const nameTextBox = document.getElementById("name-text-field");
 		const characterTextBox = document.getElementById("character-text-field");
 		const previewName = document.getElementById("card-preview-name");
 
+		// Use the current data to fill the boxes
 		nameTextBox.value = el["name"];
 		window.previewName = el["name"];
 		previewName.textContent = el["name"];
+		document.getElementById("deck-new-card-header").textContent = "Editing: " + el["name"];
 
+		// TODO: Remove this for phrases
 		characterTextBox.value = el["character"].charAt(0);
 		window.previewCharacter = el["character"].charAt(0);
 
@@ -228,6 +236,7 @@ function addButtonEvent(id, type, func)
 	document.getElementById(id).addEventListener(type, func);
 }
 
+// Recreate the writer
 function writerRecreate()
 {
 	document.getElementById("card-character-target-div-preview").replaceChildren();
@@ -243,6 +252,7 @@ function writerRecreate()
 	})
 }
 
+// Utility to fetch a character variant from the database
 async function fetchCharacterVariant(character, postfix, textContent)
 {
 	let select = document.getElementById("character-variant-box")
@@ -270,6 +280,8 @@ async function fetchCharacterVariant(character, postfix, textContent)
 	}
 }
 
+// Tries to fetch regional variants of a given character from the character db
+// Not ideal but it works I guess
 async function fetchCharacterVariantsFromDB()
 {
 	let dt = await window.writer.getCharacterData();
@@ -285,12 +297,14 @@ function constructPreviewEvents()
 
 	addFinishButton(nameTextField, characterTextField, null);
 
+	// Pinyinifies text in the input box if using the pinyinifier
 	document.getElementById("meaning-text-field").addEventListener("change", function()
 	{
 		let t = window.bUsingPinyinConversion ? pinyinify(this.value) : this.value;
 		this.value = t;
 	});
 
+	// Update preview and list when the user adds a definition
 	addButtonEvent("add-meaning-list-button", "click", function()
 	{
 		const txtField = document.getElementById("meaning-text-field");
@@ -306,11 +320,13 @@ function constructPreviewEvents()
 		txtField.value = "";
 	});
 
+	// Animate characters on hover in the preview view
 	addButtonEvent("card-character-target-div-preview", "mouseover", function()
 	{
 		window.writer.animateCharacter();
 	});
 
+	// Pinyinify on change. Additionally, if the preview name is empty add the default preview name
 	nameTextField.addEventListener("change", function()
 	{
 		window.previewName = window.bUsingPinyinConversion ? pinyinify(this.value) : this.value;
@@ -322,6 +338,7 @@ function constructPreviewEvents()
 		el.innerText = `${window.previewName}`;
 	});
 
+	// Pinyinify on change. Also set the writer character to update in the preview view
 	characterTextField.addEventListener("change", function()
 	{
 		window.previewCharacter = window.bUsingPinyinConversion ? pinyinify(this.value) : this.value;
@@ -332,6 +349,8 @@ function constructPreviewEvents()
 		window.writer.setCharacter(window.previewCharacter.charAt(0) + window.previewVariant);
 		fetchCharacterVariantsFromDB();
 	});
+
+	// Set variant of character from the variant box
 	document.getElementById("character-variant-box").addEventListener("change", function()
 	{
 		window.previewVariant = this.value;
