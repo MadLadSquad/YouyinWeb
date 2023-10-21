@@ -118,7 +118,7 @@ function constructCard(it, index, container)
 	addElement("h3", `${it["name"]} ${it["knowledge"]}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
 	const target = it["character"]
 									? addElement("div", "", `card-character-target-div-${index}`, "", "", div)
-									: addElement("h1", it["phrase"], `card-character-target-div-${index}`, "", "", div);
+									: addElement("h1", it["phrase"], `card-character-target-div-${index}`, "phrase-card-header", "", div);
 	addElement("p", "Definitions:", "", "", "", div);
 
 	// Add the list to the card and fill it with elements
@@ -129,6 +129,35 @@ function constructCard(it, index, container)
 		addElement("li", `${f}`, "", "", "", list);
 	}
 	div.appendChild(list);
+
+	// If it's a character find which phrases contain it
+	if (it["character"])
+	{
+		const data = window.localStorageData;
+		// Actual optimisation
+		if (data.phrases.length > 0)
+		{
+			// This is really not performant...
+			let paragraph = addElement("p", "Part of:", "", "", "", div);
+			let ol = document.createElement("ol");
+			let bPartOfPhrase = false;
+
+			for (let i in data.phrases)
+			{
+				if (data.phrases[i].phrase.includes(it["character"]))
+				{
+					bPartOfPhrase = true;
+					addElement("li", `${data.phrases[i].name}`, "", "", "", ol);
+				}
+			}
+
+			// Not ideal...
+			if (bPartOfPhrase)
+				div.appendChild(ol);
+			else
+				paragraph.remove();
+		}
+	}
 
 	// Create the "Edit" button and add an onclick event that redirects to the new card page
 	addElement("button", "Edit", `${index}`, "card-button-edit", "submit", div).addEventListener("click", function()

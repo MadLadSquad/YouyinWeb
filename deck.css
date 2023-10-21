@@ -103,6 +103,11 @@ ol li {
 	color: var(--deck-card-text-colour);
 }
 
+.phrase-card-header {
+	font-size: 2.25rem;
+	color: var(--deck-card-text-colour);
+}
+
 /* Hide the default file upload widget */
 #fileupload {
 	display: block;
