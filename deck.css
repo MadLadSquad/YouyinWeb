@@ -134,6 +134,21 @@ ol li {
 	margin-right: 6px;
 }*/
 
+#input-mode {
+	width: fit-content;
+	padding: 0;
+	margin: auto;
+	overflow: hidden;
+}
+
+#input-mode * {
+	float: left;
+	position: relative;
+	display: flex;
+	align-items: center;
+	margin-top: 1em;
+}
+
 * {
 	font-family: 'Ubuntu', sans-serif;
 }
@@ -158,12 +173,17 @@ input[type=text] {
 	display: grid;
 	gap: 0;
 	grid-template-columns: 1fr 1fr;
-	padding-left: 0;
-	padding-right: 0;
+	padding: 0;
+	margin-top: 1em;
 	box-sizing: border-box;
 }
 
 /* Do not configure margin because yes */
 #input-mode-internal div {
 	margin: auto;
+	margin-top: 0;
+}
+
+#input-mode-internal input[type=radio] {
+	margin-top: 0;
 }
