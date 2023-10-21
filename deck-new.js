@@ -69,8 +69,8 @@ function pinyinify(string) {
 // Utility function to update the elements of the selected cards list
 function updateListElements()
 {
-	const editList = document.getElementById("definition-list-current-edit");
-	const previewList = document.getElementById("card-preview-list");
+	const editList = $("definition-list-current-edit");
+	const previewList = $("card-preview-list");
 	editList.replaceChildren(...window.previewDefinitions);
 
 	let tmpArr = [];
@@ -137,7 +137,7 @@ function constructListElement(name, id)
 // Returns void, takes references to the name text field, the character text field and the definition ordered list
 function addFinishButton(nameTextField, characterTextField, meaningList)
 {
-	const button = document.getElementById("finish-edit-button");
+	const button = $("finish-edit-button");
 	const urlParams = new URLSearchParams(window.location.search);
 	let finishButtonClickFunction;
 
@@ -156,15 +156,15 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 		const el = data[urlParams.get("edit")]
 
 		// Get the text boxes
-		const nameTextBox = document.getElementById("name-text-field");
-		const characterTextBox = document.getElementById("character-text-field");
-		const previewName = document.getElementById("card-preview-name");
+		const nameTextBox = $("name-text-field");
+		const characterTextBox = $("character-text-field");
+		const previewName = $("card-preview-name");
 
 		// Use the current data to fill the boxes
 		nameTextBox.value = el["name"];
 		window.previewName = el["name"];
 		previewName.textContent = el["name"];
-		document.getElementById("deck-new-card-header").textContent = "Editing: " + el["name"];
+		$("deck-new-card-header").textContent = "Editing: " + el["name"];
 
 		// TODO: Remove this for phrases
 		characterTextBox.value = el["character"].charAt(0);
@@ -172,7 +172,7 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 
 		// Deal with regional character variants
 		window.previewVariant = el["character"].length > 1 ? el["character"].substr(1, el["character"].length) : "";
-		document.getElementById("character-variant-box").value = window.previewVariant;
+		$("character-variant-box").value = window.previewVariant;
 
 		// Add all the definitions to the ordered lists
 		for (let i in el["definitions"])
@@ -201,7 +201,7 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 		};
 
 		// Dynamically put the delete button there because it doesn't exist by default in the HTML
-		const parentDiv = document.getElementById("current-new-card");
+		const parentDiv = $("current-new-card");
 		const deleteButton = document.createElement("button");
 		deleteButton.id = "delete-card-button";
 		deleteButton.className = "card-button-edit";
@@ -233,13 +233,13 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 
 function addButtonEvent(id, type, func)
 {
-	document.getElementById(id).addEventListener(type, func);
+	$(id).addEventListener(type, func);
 }
 
 // Recreate the writer
 function writerRecreate()
 {
-	document.getElementById("card-character-target-div-preview").replaceChildren();
+	$("card-character-target-div-preview").replaceChildren();
 	window.writer = HanziWriter.create("card-character-target-div-preview", window.previewCharacter,
 	{
 		width: window.CARD_WRITER_SIZE,
@@ -255,7 +255,7 @@ function writerRecreate()
 // Utility to fetch a character variant from the database
 async function fetchCharacterVariant(character, postfix, textContent)
 {
-	let select = document.getElementById("character-variant-box")
+	let select = $("character-variant-box")
 	let res = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin@latest/data/${character}${postfix}.json`)
 	let bFound = false;
 	for (let i in select.options)
@@ -292,13 +292,13 @@ async function fetchCharacterVariantsFromDB()
 
 function constructPreviewEvents()
 {
-	const nameTextField = document.getElementById("name-text-field");
-	const characterTextField = document.getElementById("character-text-field");
+	const nameTextField = $("name-text-field");
+	const characterTextField = $("character-text-field");
 
 	addFinishButton(nameTextField, characterTextField, null);
 
 	// Pinyinifies text in the input box if using the pinyinifier
-	document.getElementById("meaning-text-field").addEventListener("change", function()
+	$("meaning-text-field").addEventListener("change", function()
 	{
 		let t = window.bUsingPinyinConversion ? pinyinify(this.value) : this.value;
 		this.value = t;
@@ -307,7 +307,7 @@ function constructPreviewEvents()
 	// Update preview and list when the user adds a definition
 	addButtonEvent("add-meaning-list-button", "click", function()
 	{
-		const txtField = document.getElementById("meaning-text-field");
+		const txtField = $("meaning-text-field");
 
 		if (txtField.value == "")
 			return;
@@ -334,7 +334,7 @@ function constructPreviewEvents()
 		if (window.previewName == "")
 			window.previewName = window.CARD_DEFAULT_PREVIEW_NAME;
 
-		const el = document.getElementById("card-preview-name");
+		const el = $("card-preview-name");
 		el.innerText = `${window.previewName}`;
 	});
 
@@ -351,7 +351,7 @@ function constructPreviewEvents()
 	});
 
 	// Set variant of character from the variant box
-	document.getElementById("character-variant-box").addEventListener("change", function()
+	$("character-variant-box").addEventListener("change", function()
 	{
 		window.previewVariant = this.value;
 		window.writer.setCharacter(window.previewCharacter.charAt(0) + window.previewVariant);

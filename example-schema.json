@@ -1,67 +1,58 @@
 {
-	"sessions": 0,
-	"streak": 0,
-	"lastDate": 0,
-	"cards":
-	[
-		{
-			"name": "gài",
-			"character": "概",
-			"knowledge": 5,
-			"definitions":
-			[
-				"Manner, mettle",
-				"General idea",
-				"Screnery, scene",
-				"Without any exception"
-			]
-		},
-		{
-			"name": "huì",
-			"character": "会",
-			"knowledge": 2,
-			"definitions":
-			[
-				"To know, to be able to",
-				"To be good at, to be skilful in",
-				"Will, to be likely to, to be sure to"
-			]
-		},
-		{
-			"name": "ài",
-			"character": "愛",
-			"knowledge": 1,
-			"definitions":
-			[
-				"To love",
-				"To treasure",
-				"To like, be fond of, keen on",
-				"To begrudge, to be reluctant",
-				"To be prone, to be easy to"
-			]
-		},
-		{
-			"name": "wǒ",
-			"character": "我",
-			"knowledge": 0,
-			"definitions":
-			[
-				"I, me, my",
-				"We us, our(formal and literary)",
-				"A surname"
-			]
-		},
-		{
-			"name": "tā",
-			"character": "他",
-			"knowledge": 0,
-			"definitions":
-			[
-				"He, him",
-				"A dummy pronoun",
-				"Other, another",
-				"A surname"
-			]
-		}
-	]
+   "sessions":27,
+   "streak":0,
+   "lastDate":1697889938997,
+   "totalTimeInSessions":3283889,
+   "cards":[
+      {
+         "name":"qiān",
+         "character":"千",
+         "knowledge":0,
+         "definitions":[
+            "Number 1000 "
+         ]
+      },
+      {
+         "name":"wàn",
+         "character":"万",
+         "knowledge":0,
+         "definitions":[
+            "Number 10000 "
+         ]
+      },
+      {
+         "name":"yì",
+         "character":"亿",
+         "knowledge":0,
+         "definitions":[
+            "Number 100mil "
+         ]
+      },
+      {
+         "name":"liǎng",
+         "character":"两",
+         "knowledge":0,
+         "definitions":[
+            "Number 2(alternative variant) "
+         ]
+      }
+   ],
+   "phrases":[
+      {
+         "name":"liǎng yì wàn",
+         "phrase":"两亿万",
+         "knowledge": 0,
+         "definitions":[
+            "200 mio."
+         ]
+      },
+      {
+         "name":"yì wàn",
+         "phrase":"亿万",
+         "knowledge":0,
+         "definitions":[
+            "100s mio."
+         ]
+      }
+   ]
 }

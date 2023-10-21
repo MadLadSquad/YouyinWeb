@@ -9,30 +9,41 @@
 	<body>
 		{{ include Components/header.tmpl.html }}
 		<h1 class="centered">Deck</h1>
-		<main id="deck">
+		<main>
 			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
-			<div id="profile-card" class="card centered">
-				<h3>Profile Statistics</h3>
-				<p id="total-sessions-field">Total Sessions: </p>
-				<p id="streak-field">Streak: </p>
-				<p id="deck-card-num-field">Cards in deck: </p>
-				<p id="last-session-date-field">Last session: </p>
-				<p id="average-knowledge-level-field">Average knowledge level: </p>
-				<p id="average-session-length-field">Average session length: </p>
-				<p id="time-spent-in-sessions-field">Time spent in sessions: </p>
-			</div>
-			<div id="new-card" class="card centered">
-				<h1 id="new-card-header">+</h1>
-				<p>Add a new card to the deck</p>
-				<button id="new-card-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?new'">New card</button>
-				<br>
-				<input type="file" id="fileupload"><button id="import-deck-button" class="card-button-edit">Import</button></input>
-				<button id="export-deck-button" class="card-button-edit">Export</button>
+			<section class="deck" id="deck-generic-info-section">
+				<div id="profile-card" class="card centered">
+					<h3>Profile Statistics</h3>
+					<p id="total-sessions-field">Total Sessions: </p>
+					<p id="streak-field">Streak: </p>
+					<p id="deck-card-num-field">Cards in deck: </p>
+					<p id="deck-phrase-num-field">Phrases in deck: </p>
+					<p id="last-session-date-field">Last session: </p>
+					<p id="average-knowledge-level-field">Average knowledge level: </p>
+					<p id="average-session-length-field">Average session length: </p>
+					<p id="time-spent-in-sessions-field">Time spent in sessions: </p>
+				</div>
+				<div id="new-card" class="card centered">
+					<h1 id="new-card-header">+</h1>
+					<p>Add a new card to the deck</p>
+					<button id="new-card-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?new'">New card</button>
+					<button id="new-phrase-button" class="card-button-edit">New phrase</button>
+					<br>
+					<input type="file" id="fileupload"><button id="import-deck-button" class="card-button-edit">Import</button></input>
+					<button id="export-deck-button" class="card-button-edit">Export</button>
 
-				<button id="clear-deck-button" class="card-button-edit">Clear</button>
-				<button id="marketplace-deck-button" class="card-button-edit" onclick="location.href='./marketplace.html'">Marketplace</button>
-			</div>
-			<!-- Data will be inserted dynamically by the Javascript here from deck.js file -->
+					<button id="clear-deck-button" class="card-button-edit">Clear</button>
+					<button id="marketplace-deck-button" class="card-button-edit" onclick="location.href='./marketplace.html'">Marketplace</button>
+				</div>
+			</section>
+			<h1 id="deck-phrases-header" class="centered">Phrases</h1>
+			<section class="deck" id="deck-phrases-section">
+				<!-- Data will be inserted dynamically by the Javascript here from the deck.js file -->
+			</section>
+			<h1 id="deck-characters-header" class="centered">Character cards</h1>
+			<section class="deck" id="deck-characters-section">
+				<!-- Data will be inserted dynamically by the Javascript here from the deck.js file -->
+			</section>
 		</main>
 		{{ include Components/footer.tmpl.html }}
 	</body>

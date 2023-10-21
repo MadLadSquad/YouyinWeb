@@ -144,8 +144,8 @@ async function handleCommunityRepos(deckContainer)
 
 async function marketplaceMain()
 {
-	const deckContainer = document.getElementById("deck");
-	const communityContainer =  document.getElementById("deck-community-master");
+	const deckContainer = $("deck");
+	const communityContainer =  $("deck-community-master");
 
 	await handleOfficialRepos(deckContainer);
 	await handleCommunityRepos(communityContainer);

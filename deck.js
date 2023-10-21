@@ -47,9 +47,10 @@ function clearDeck() {
 
 function setProfileCardData()
 {
-	document.getElementById("total-sessions-field").textContent += window.localStorageData["sessions"];
-	document.getElementById("streak-field").textContent += (window.localStorageData["streak"] + " days");
-	document.getElementById("deck-card-num-field").textContent += window.localStorageData["cards"].length;
+	$("total-sessions-field").textContent += window.localStorageData["sessions"];
+	$("streak-field").textContent += (window.localStorageData["streak"] + " days");
+	$("deck-card-num-field").textContent += window.localStorageData["cards"].length;
+	$("deck-phrase-num-field").textContent += window.localStorageData["phrases"].length;
 
 	let a = (window.localStorageData["totalTimeInSessions"] * 1);
 	let averageSessionLen = isNaN(a) ? 0 : a;
@@ -75,14 +76,14 @@ function setProfileCardData()
 	let sessionLenTmp = averageSessionLen / window.localStorageData["sessions"];
 	if (isNaN(sessionLenTmp))
 		sessionLenTmp = 0;
-	document.getElementById("average-session-length-field").textContent += (sessionLenTmp.toFixed(2).toString() + sessionLenPostfix);
-	document.getElementById("time-spent-in-sessions-field").textContent += (averageSessionLen.toFixed(2).toString() + sessionLenPostfix);
+	$("average-session-length-field").textContent += (sessionLenTmp.toFixed(2).toString() + sessionLenPostfix);
+	$("time-spent-in-sessions-field").textContent += (averageSessionLen.toFixed(2).toString() + sessionLenPostfix);
 
 	const lastDate = window.localStorageData["lastDate"];
 	if (lastDate != 0)
 	{
 		const date = new Date(lastDate);
-		document.getElementById("last-session-date-field").textContent += date.toLocaleDateString('en-GB',
+		$("last-session-date-field").textContent += date.toLocaleDateString('en-GB',
 		{
 			weekday: "short",
 			year: "numeric",
@@ -93,9 +94,9 @@ function setProfileCardData()
 		});
 	}
 	else
-		document.getElementById("last-session-date-field").textContent += "No sessions yet recorded!";
+		$("last-session-date-field").textContent += "No sessions yet recorded!";
 
-	const averageKnowledge = document.getElementById("average-knowledge-level-field");
+	const averageKnowledge = $("average-knowledge-level-field");
 	let knowledge = 0;
 	for (let i in window.localStorageData["cards"])
 		knowledge += window.localStorageData["cards"][i]["knowledge"];
@@ -106,57 +107,43 @@ function setProfileCardData()
 	averageKnowledge.textContent = `Average knowledge level: ${knowledge.toFixed(2)}/${window.MAX_KNOWLEDGE_LEVEL}`;
 }
 
-function deckmain()
+function constructCard(it, index, container)
 {
-	setProfileCardData();
+	// Add parent div
+	let div = document.createElement("div");
+	div.className = "card centered";
+	div.id = `${index}`
 
-	// Get the elements and load their onclick events, holy shit that's massive! That's what she said!
-	document.getElementById("export-deck-button").addEventListener("click", updateExportButton);
-	document.getElementById("clear-deck-button").addEventListener("click", clearDeck);
-	document.getElementById("import-deck-button").addEventListener("click", function(){
-		document.getElementById("fileupload").click();
-	});
-	document.getElementById("fileupload").addEventListener("change", importDeck);
+	// Add title, character render div and the definitions text
+	addElement("h3", `${it["name"]} ${it["knowledge"]}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
+	const target = it["character"]
+									? addElement("div", "", `card-character-target-div-${index}`, "", "", div)
+									: addElement("h1", it["phrase"], `card-character-target-div-${index}`, "", "", div);
+	addElement("p", "Definitions:", "", "", "", div);
 
-	const data = window.localStorageData;
-	let deck = document.getElementById("deck");
-
-	for (let val in data["cards"])
+	// Add the list to the card and fill it with elements
+	let list = document.createElement("ol");
+	for (let i in it["definitions"])
 	{
-		const it = data["cards"][val];
+		let f = it["definitions"][i];
+		addElement("li", `${f}`, "", "", "", list);
+	}
+	div.appendChild(list);
 
-		// Add parent div
-		let div = document.createElement("div");
-		div.className = "card centered";
-		div.id = `${val}`
+	// Create the "Edit" button and add an onclick event that redirects to the new card page
+	addElement("button", "Edit", `${index}`, "card-button-edit", "submit", div).addEventListener("click", function()
+	{
+		location.href = `./deck-edit-card.html?edit=${this.id}`;
+	});
 
-		// Add title, character render div and the definitions text
-		addElement("h3", `${it["name"]} ${it["knowledge"]}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
-		const target = addElement("div", "", `card-character-target-div-${val}`, "", "", div);
-		addElement("p", "Definitions:", "", "", "", div);
-
-		// Add the list to the card and fill it with elements
-		let list = document.createElement("ol");
-		for (let i in it["definitions"])
-		{
-			let f = it["definitions"][i];
-			addElement("li", `${f}`, "", "", "", list);
-		}
-		div.appendChild(list);
-
-		// Create the "Edit" button and add an onclick event that redirects to the new card page
-		addElement("button", "Edit", `${val}`, "card-button-edit", "submit", div).addEventListener("click", function()
-		{
-			location.href = `./deck-edit-card.html?edit=${this.id}`;
-		});
-
-		deck.appendChild(div);
-
+	container.appendChild(div);
+	if (it["character"])
+	{
 		// Create an instance of the writer
-		let writer = HanziWriter.create(`card-character-target-div-${val}`, it["character"],
+		let writer = HanziWriter.create(`card-character-target-div-${index}`, it["character"],
 		{
 			width: window.CARD_WRITER_SIZE,
-			heigt: window.CARD_WRITER_SIZE,
+			height: window.CARD_WRITER_SIZE,
 			padding: window.WRITER_PADDING,
 			showOutline: true,
 			strokeAnimationSpeed: window.CARD_WRITER_STROKE_ANIMATION_SPEED,
@@ -167,6 +154,53 @@ function deckmain()
 		{
 			writer.animateCharacter();
 		});
+	}
+}
+
+function deckmain()
+{
+	setProfileCardData();
+
+	// Get the elements and load their onclick events, holy shit that's massive! That's what she said!
+	$("export-deck-button").addEventListener("click", updateExportButton);
+	$("clear-deck-button").addEventListener("click", clearDeck);
+	$("import-deck-button").addEventListener("click", function(){
+		$("fileupload").click();
+	});
+	$("fileupload").addEventListener("change", importDeck);
+
+	const data = window.localStorageData;
+	let cardsContainer = $("deck-characters-section");
+	let phrasesContainer = $("deck-phrases-section");
+
+	// Remove phrases elements if none are available
+	if (data.phrases.length == 0)
+	{
+		$("deck-phrases-header").remove();
+		$("deck-phrases-section").remove();
+	}
+	else // Load phrases
+	{
+		for (let val in data.phrases)
+		{
+			const it = data.phrases[val];
+			constructCard(it, val, phrasesContainer);
+		}
+	}
+
+	// Remove cards elements if none are available
+	if (data.cards.length == 0)
+	{
+		$("deck-characters-header").remove();
+		$("deck-characters-section").remove();
+		return;
+	}
+
+	// Load normal cards
+	for (let val in data["cards"])
+	{
+		const it = data["cards"][val];
+		constructCard(it, val + data.phrases.length, cardsContainer);
 	}
 }
 

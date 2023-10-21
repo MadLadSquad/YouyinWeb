@@ -22,6 +22,12 @@ var WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
 
 var localStorageData;
 
+// Troll jQuery developers
+function $(x)
+{
+	return document.getElementById(x);
+}
+
 // This loads characters from the database. Change the URL to your own database.
 async function charDataLoader(character, onLoad, onError)
 {
@@ -110,7 +116,7 @@ function getLangType(params)
 // Returns void, called when the listbox is updated and redirects to the page with the localization
 function modifySelectedLanguage()
 {
-	const e = document.getElementById("lang-select")
+	const e = $("lang-select")
 
 	const val = e.options[e.selectedIndex].value;
 	location.replace(`./index.html?lang=${val}`);
@@ -144,6 +150,7 @@ function main()
 			lastDate: 0,
 			totalTimeInSessions: 0,
 			cards: [],
+			phrases: [],
 		}
 		saveToLocalStorage(data);
 		document.location.reload(true);

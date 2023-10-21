@@ -30,7 +30,7 @@ function getDrawElementHeight()
 	const unusedSpace = parentRect.bottom - lastChildRect.bottom;
 
 	// Here we have to adjust the height, because the list widget causes problems
-	const listWidget = document.getElementById("character-info-widget");
+	const listWidget = $("character-info-widget");
 
 	const footer = document.querySelector("footer");
 
@@ -62,7 +62,7 @@ function writerOnMistake(strokeData)
 	if ((strokeData.mistakesOnStroke - window.backwardsErrors) == window.WRITER_SHOW_HINT_ON_ERRORS)
 		window.errors++;
 
-	document.getElementById("character-info-widget-errors").textContent = `Cards: ${window.currentIndex}/${window.localStorageData["cards"].length}; Errors: ${window.errors}`;
+	$("character-info-widget-errors").textContent = `Cards: ${window.currentIndex}/${window.localStorageData["cards"].length}; Errors: ${window.errors}`;
 }
 
 function writerOnCorrectStroke(strokeData)
@@ -75,9 +75,9 @@ function changeSidebarText()
 	// Utility function to update the sidebar text
 	const spelling = window.localStorageData["cards"][window.currentIndex]["name"]
 	
-	document.getElementById("character-info-widget-spelling").textContent = `Spelling: ${spelling}`;
-	document.getElementById("character-info-widget-errors").textContent = `Cards: ${window.currentIndex}/${window.localStorageData["cards"].length}; Errors: 0`;
-	const list = document.getElementById("character-info-widget-info");
+	$("character-info-widget-spelling").textContent = `Spelling: ${spelling}`;
+	$("character-info-widget-errors").textContent = `Cards: ${window.currentIndex}/${window.localStorageData["cards"].length}; Errors: 0`;
+	const list = $("character-info-widget-info");
 	list.replaceChildren();
 	for (let i in window.localStorageData["cards"][window.currentIndex]["definitions"])
 	{
@@ -92,12 +92,12 @@ function changeSidebarText()
 function resetSidebar()
 {
 	// Ugly ahh code to reset to the inital state
-	document.getElementById("character-info-widget-spelling").textContent = "Spelling: To be loaded";
-	document.getElementById("character-info-widget-errors").textContent = "Cards: 0/0; Errors: 0";
+	$("character-info-widget-spelling").textContent = "Spelling: To be loaded";
+	$("character-info-widget-errors").textContent = "Cards: 0/0; Errors: 0";
 
 	const el = document.createElement("li");
 	el.textContent = "To be loaded";
-	document.getElementById("character-info-widget-info").replaceChildren(el);
+	$("character-info-widget-info").replaceChildren(el);
 }
 
 function setWriterState(ref)
@@ -172,7 +172,7 @@ async function writerOnComplete(strokeData)
 	}
 
 	// If there are no cards, remove the writer and recreate the initial view
-	document.getElementById("character-target-div").remove();
+	$("character-target-div").remove();
 
 	// Save user data
 	const now = Date.now();
@@ -188,7 +188,7 @@ async function writerOnComplete(strokeData)
 
 	// On mobile we remove all header elements when playing, so readd them
 	if (window.bMobile)
-		document.getElementById("main-page-header").replaceChildren(...window.linkChildren);
+		$("main-page-header").replaceChildren(...window.linkChildren);
 }
 
 function createStartButton()
@@ -198,7 +198,7 @@ function createStartButton()
 	const drawElementHeight = getDrawElementHeight();
 
 	// Get start button, create if exists
-	let startButton = document.getElementById("start-button");
+	let startButton = $("start-button");
 	if (startButton === null)
 	{
 		startButton = document.createElement("button");
@@ -206,7 +206,7 @@ function createStartButton()
 		startButton.className = "card-button-edit centered character-prop large-button-text";
 		startButton.textContent = "Click to start session";
 
-		document.getElementById("main-page").appendChild(startButton);
+		$("main-page").appendChild(startButton);
 	}
 
 	// Set the button width
@@ -220,7 +220,7 @@ function createStartButton()
 		// Also, add an exit button, even though it does the same as clicking the main page link.
 		if (window.bMobile)
 		{
-			const buttonList = document.getElementById("main-page-header");
+			const buttonList = $("main-page-header");
 			window.linkChildren = [ ...buttonList.children ];
 			const headerHome = buttonList.children[0];
 
@@ -236,11 +236,11 @@ function createStartButton()
 		}
 
 		// Remove the start session button and set the global to indicate that we're in a test
-		document.getElementById("start-button").remove();
+		$("start-button").remove();
 		window.bInTest = true;
 
 		// Append HTML for the writer background, which is just a star
-		const page = document.getElementById("main-page");
+		const page = $("main-page");
 		page.innerHTML += `
 			<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" id="character-target-div" class="centered character-div character-prop">
 				<line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
@@ -251,7 +251,7 @@ function createStartButton()
 		`;
 
 		// Get the width of the writer border, since the element will not be truly centered if we do not subtract from it
-		const borderWidth = window.getComputedStyle(document.getElementById("character-target-div")).borderWidth.replace("px", "") * 2;
+		const borderWidth = window.getComputedStyle($("character-target-div")).borderWidth.replace("px", "") * 2;
 		window.writer = HanziWriter.create('character-target-div', window.localStorageData["cards"][window.currentIndex]["character"], {
 			width: drawElementHeight - borderWidth,
 			height: drawElementHeight - borderWidth,
@@ -285,7 +285,7 @@ function mainPageMain()
 	// If there are no cards there, create a widget to inform the user that they need to create a deck
 	if (window.localStorageData["cards"].length == 0)
 	{
-		document.getElementById("start-button").remove();
+		$("start-button").remove();
 
 		let link = document.createElement("a");
 		link.href = "./deck.html"
@@ -297,7 +297,7 @@ function mainPageMain()
 		el.appendChild(link);
 		el.appendChild(document.createTextNode(" page to add some!"))
 
-		document.getElementById("main-page").appendChild(el);
+		$("main-page").appendChild(el);
 		return;
 	}
 
@@ -313,7 +313,7 @@ function mainPageMain()
 		}
 		else
 		{
-			const el = document.getElementById("start-button");
+			const el = $("start-button");
 			el.style.setProperty("width", newDrawElementHeight + "px");
 			el.style.setProperty("height", newDrawElementHeight + "px");
 		}
