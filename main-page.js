@@ -10,6 +10,8 @@ var backwardsErrors = 0;
 var bInTest = false;
 var bInPhrase = false;
 
+var totalPhraseStrokes = 0;
+
 var currentPhraseIndex = 0;
 var currentIndex = 0;
 var sessionTime = 0;
@@ -156,18 +158,10 @@ function setWriterState(ref)
 	}
 }
 
-async function writerOnComplete(strokeData)
+function computeScore(strokes, errors, knowledge)
 {
-	// Go to the next card
-	++window.currentIndex;
-
-	let data = window.localStorageData;
-	//let gradeObj = window.bInPhrase ? data.cards[window.currentIndex - 1] : data.phrases[window.currentPhraseIndex]
-
-	// Calculate how many points to add to your knowledge
-	const strokeNum = window.writer._character.strokes.length;
-	let pointsPerStroke = (window.MAX_POINTS_ON_CHARACTER / strokeNum);
-	let points = (window.MAX_POINTS_ON_CHARACTER - (window.errors * pointsPerStroke));
+	let pointsPerStroke = (window.MAX_POINTS_ON_CHARACTER / strokes);
+	let points = (window.MAX_POINTS_ON_CHARACTER - (errors * pointsPerStroke));
 	let result = 0;
 
 	if (points >= window.MAX_POINTS_ON_CHARACTER)
@@ -181,9 +175,28 @@ async function writerOnComplete(strokeData)
 	else
 		result = -window.ADD_POINTS_ON_ERROR_1_2;
 
-	var knowledge = data.cards[(window.currentIndex - 1)].knowledge;
-	knowledge = (knowledge + result) >= window.MAX_KNOWLEDGE_LEVEL ? window.MAX_KNOWLEDGE_LEVEL : (knowledge + result);
-	data.cards[(window.currentIndex - 1)].knowledge = knowledge;
+	knowledge = Math.min(knowledge + result, window.MAX_KNOWLEDGE_LEVEL);
+	return knowledge;
+}
+
+async function writerOnComplete(strokeData)
+{
+	// Go to the next card
+	++window.currentIndex;
+
+	let data = window.localStorageData;
+	//let gradeObj = window.bInPhrase ? data.cards[window.currentIndex - 1] : data.phrases[window.currentPhraseIndex]
+
+	// Calculate how many points to add to your knowledge
+	const strokeNum = window.writer._character.strokes.length;
+	totalPhraseStrokes += strokeNum;
+
+	if (!window.bInPhrase)
+		data.cards[(window.currentIndex - 1)].knowledge = computeScore(strokeNum, window.errors, data.cards[(window.currentIndex - 1)].knowledge);
+	else
+	{
+		// TODO: Implement card scroring for phrases here
+	}
 
 	// Reset the errors
 	window.errors = 0;
@@ -206,6 +219,7 @@ async function writerOnComplete(strokeData)
 			changeSidebarText(null, 0, ref, data.cards.length);
 			return;
 		}
+		window.totalPhraseStrokes = 0;
 		window.currentIndex = 0;
 		window.bInPhrase = true;
 		$("phrase-info-widget").style.display = "block"; // Show the phrase info widget
@@ -216,6 +230,8 @@ async function writerOnComplete(strokeData)
 	{
 		if (window.currentIndex >= data.phrases[window.currentPhraseIndex].phrase.length)
 		{
+
+
 			window.currentIndex = 0;
 			++window.currentPhraseIndex;
 			window.totalPhraseErrors = 0;
