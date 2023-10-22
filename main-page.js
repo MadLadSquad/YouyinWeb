@@ -54,9 +54,6 @@ function getDrawElementHeight()
 	else
 		listWidget.style.setProperty("height", finalHeight.toString() + "px");
 
-	//$("start-button-writer-section").style.setProperty("height", finalHeight.toString() + "px");
-	//$("main-page").style.setProperty("height", finalHeight.toString() + "px")
-
 	return finalHeight;
 }
 
