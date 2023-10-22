@@ -56,6 +56,8 @@ function getDrawElementHeight()
 	else
 		listWidget.style.setProperty("height", finalHeight.toString() + "px");
 
+	mainEl.style.setProperty("height", finalHeight.toString() + "px");
+
 	return finalHeight;
 }
 
@@ -185,7 +187,6 @@ async function writerOnComplete(strokeData)
 	++window.currentIndex;
 
 	let data = window.localStorageData;
-	//let gradeObj = window.bInPhrase ? data.cards[window.currentIndex - 1] : data.phrases[window.currentPhraseIndex]
 
 	// Calculate how many points to add to your knowledge
 	const strokeNum = window.writer._character.strokes.length;
@@ -195,7 +196,14 @@ async function writerOnComplete(strokeData)
 		data.cards[(window.currentIndex - 1)].knowledge = computeScore(strokeNum, window.errors, data.cards[(window.currentIndex - 1)].knowledge);
 	else
 	{
-		// TODO: Implement card scroring for phrases here
+		for (let i in data.cards)
+		{
+			if (data.phrases[window.currentPhraseIndex].phrase[(window.currentIndex - 1)] == data.cards[i].character)
+			{
+				data.cards[i].knowledge = computeScore(strokeNum, window.errors, data.cards[i].knowledge);
+				break;
+			}
+		}
 	}
 
 	// Reset the errors
@@ -230,7 +238,7 @@ async function writerOnComplete(strokeData)
 	{
 		if (window.currentIndex >= data.phrases[window.currentPhraseIndex].phrase.length)
 		{
-
+			data.phrases[window.currentPhraseIndex].knowledge = computeScore(window.totalPhraseStrokes, window.totalPhraseErrors, data.phrases[window.currentPhraseIndex].knowledge);
 
 			window.currentIndex = 0;
 			++window.currentPhraseIndex;
@@ -240,8 +248,6 @@ async function writerOnComplete(strokeData)
 		if (window.currentPhraseIndex < data.phrases.length)
 		{
 			const currentPhrase = data.phrases[window.currentPhraseIndex]
-			setWriterState(currentPhrase);
-			window.writer.setCharacter(currentPhrase.phrase[currentIndex])
 
 			let card = null;
 			for (let i in data.cards)
@@ -249,10 +255,15 @@ async function writerOnComplete(strokeData)
 				if (currentPhrase.phrase[currentIndex] == data.cards[i].character)
 				{
 					card = data.cards[i];
+					setWriterState(card);
 					break;
 				}
 			}
+			// Revert to using the phrase score if no card is found
+			if (card === null)
+				setWriterState(currentPhrase);
 
+			window.writer.setCharacter(currentPhrase.phrase[currentIndex])
 			window.writer.quiz();
 			changeSidebarText(currentPhrase, data.phrases.length, card, currentPhrase.phrase.length);
 			return;
