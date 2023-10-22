@@ -3,11 +3,14 @@
 // Global writer variable, because yes
 var writer;
 
+var totalPhraseErrors = 0;
 var errors = 0;
 var backwardsErrors = 0;
 
 var bInTest = false;
+var bInPhrase = false;
 
+var currentPhraseIndex = 0;
 var currentIndex = 0;
 var sessionTime = 0;
 
@@ -23,14 +26,14 @@ function getDrawElementHeight()
 {
 	// Some magic code to calculate the height
 	const html = document.querySelector("html");
-	const mainEl = document.querySelector("main");
+	const mainEl = $("start-button-writer-section");//document.querySelector("main");
 	const lastChild = html.lastElementChild;
 	const lastChildRect = lastChild.getBoundingClientRect();
 	const parentRect = html.getBoundingClientRect();
 	const unusedSpace = parentRect.bottom - lastChildRect.bottom;
 
 	// Here we have to adjust the height, because the list widget causes problems
-	const listWidget = $("character-info-widget");
+	const listWidget = $("main-page-info-container");
 
 	const footer = document.querySelector("footer");
 
@@ -59,10 +62,24 @@ function writerOnMistake(strokeData)
 	if (strokeData.isBackwards)
 		window.backwardsErrors++;
 
+	// Since we don't count backwards strokes as errors, remove them rom the mistakes and calculate errors correctly
 	if ((strokeData.mistakesOnStroke - window.backwardsErrors) == window.WRITER_SHOW_HINT_ON_ERRORS)
+	{
 		window.errors++;
+		window.totalPhraseErrors++;
+	}
 
-	$("character-info-widget-errors").textContent = `Cards: ${window.currentIndex}/${window.localStorageData["cards"].length}; Errors: ${window.errors}`;
+	// Either use the number of cards or the phrase-local number
+	let num = window.localStorageData.cards.length;
+	if (window.bInPhrase)
+	{
+		num = window.localStorageData.phrases[window.currentPhraseIndex].phrase.length;
+		// Also update the phrase information. It's ugly, I know...
+		$("phrase-info-widget-errors").textContent = `Phrases ${window.currentPhraseIndex}/${window.localStorageData.phrases.length}; Errors: ${window.totalPhraseErrors}`;
+	}
+
+	// Update the card information
+	$("character-info-widget-errors").textContent = `Cards: ${window.currentIndex}/${num}; Errors: ${window.errors}`;
 }
 
 function writerOnCorrectStroke(strokeData)
@@ -70,23 +87,33 @@ function writerOnCorrectStroke(strokeData)
 	window.backwardsErrors = 0;
 }
 
-function changeSidebarText()
+function updateIndividualSidebarElementText(prefix, spelling, errors, obj)
 {
-	// Utility function to update the sidebar text
-	const spelling = window.localStorageData["cards"][window.currentIndex]["name"]
-	
-	$("character-info-widget-spelling").textContent = `Spelling: ${spelling}`;
-	$("character-info-widget-errors").textContent = `Cards: ${window.currentIndex}/${window.localStorageData["cards"].length}; Errors: 0`;
-	const list = $("character-info-widget-info");
+	$(`${prefix}-info-widget-spelling`).textContent = spelling;
+	$(`${prefix}-info-widget-errors`).textContent = errors;
+	const list = $(`${prefix}-info-widget-info`);
 	list.replaceChildren();
-	for (let i in window.localStorageData["cards"][window.currentIndex]["definitions"])
-	{
-		let it = window.localStorageData["cards"][window.currentIndex]["definitions"][i];
-		const el = document.createElement("li");
-		el.textContent = it;
 
-		list.appendChild(el);
+	if (obj !== null)
+	{
+		for (let i in obj.definitions)
+		{
+			const el = document.createElement("li");
+			el.textContent = obj.definitions[i];
+			list.appendChild(el);
+		}
 	}
+}
+
+function changeSidebarText(phrase, phraseNum, card, cardNum)
+{
+	if (phrase !== null && phraseNum > 0)
+		updateIndividualSidebarElementText("phrase", phrase.name, `Phrases ${window.currentPhraseIndex}/${phraseNum}; Errors: ${window.totalPhraseErrors}`, phrase);
+
+	if (card !== null && cardNum > 0)
+		updateIndividualSidebarElementText("character", `Spelling: ${card.name}`, `Cards: ${window.currentIndex}/${cardNum}; Errors: 0`, card);
+	else
+		updateIndividualSidebarElementText("character", "Unknown character", "", null);
 }
 
 function resetSidebar()
@@ -98,6 +125,9 @@ function resetSidebar()
 	const el = document.createElement("li");
 	el.textContent = "To be loaded";
 	$("character-info-widget-info").replaceChildren(el);
+
+	// Hide the phrase info widget
+	$("phrase-info-widget").style.display = "none";
 }
 
 function setWriterState(ref)
@@ -105,16 +135,16 @@ function setWriterState(ref)
 	// Set the default writer state. Certain knowledge levels have certain features enabled/disabled
 	window.writer._options.showHintAfterMisses = 3;
 	window.writer.updateColor("radicalColor", null);
-	if (ref["knowledge"] >= 3)
+	if (ref.knowledge >= 3)
 	{
 		window.writer.hideOutline();
 	}
-	else if (ref["knowledge"] >= 2)
+	else if (ref.knowledge >= 2)
 	{
 		window.writer._options.showHintAfterMisses = window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3;
 		window.writer.hideOutline();
 	}
-	else if (ref["knowledge"] >= 1)
+	else if (ref.knowledge >= 1)
 	{
 		window.writer.showOutline();
 	}
@@ -129,6 +159,9 @@ async function writerOnComplete(strokeData)
 {
 	// Go to the next card
 	++window.currentIndex;
+
+	let data = window.localStorageData;
+	//let gradeObj = window.bInPhrase ? data.cards[window.currentIndex - 1] : data.phrases[window.currentPhraseIndex]
 
 	// Calculate how many points to add to your knowledge
 	const strokeNum = window.writer._character.strokes.length;
@@ -147,9 +180,9 @@ async function writerOnComplete(strokeData)
 	else
 		result = -window.ADD_POINTS_ON_ERROR_1_2;
 
-	var knowledge = window.localStorageData["cards"][(window.currentIndex - 1)]["knowledge"];
+	var knowledge = data.cards[(window.currentIndex - 1)].knowledge;
 	knowledge = (knowledge + result) >= window.MAX_KNOWLEDGE_LEVEL ? window.MAX_KNOWLEDGE_LEVEL : (knowledge + result);
-	window.localStorageData["cards"][(window.currentIndex - 1)]["knowledge"] = knowledge;
+	data.cards[(window.currentIndex - 1)].knowledge = knowledge;
 
 	// Reset the errors
 	window.errors = 0;
@@ -159,16 +192,54 @@ async function writerOnComplete(strokeData)
 	await new Promise(r => setTimeout(r, window.WRITER_SLEEP_AFTER_COMPLETE));
 
 	// This if statement handles switching to the next card
-	if (window.currentIndex < window.localStorageData["cards"].length)
+	if (!window.bInPhrase)
 	{
-		let ref = window.localStorageData["cards"][window.currentIndex];
+		if (window.currentIndex < data.cards.length)
+		{
+			let ref = data.cards[window.currentIndex];
 
-		setWriterState(ref);
-		window.writer.setCharacter(ref["character"]);
+			setWriterState(ref);
+			window.writer.setCharacter(ref.character);
 
-		window.writer.quiz();
-		changeSidebarText();
-		return;
+			window.writer.quiz();
+			changeSidebarText(null, 0, ref, data.cards.length);
+			return;
+		}
+		window.currentIndex = 0;
+		window.bInPhrase = true;
+		$("phrase-info-widget").style.display = "block"; // Show the phrase info widget
+	}
+
+	// This code would be way more understandable and clearer if Javascript just had a goto statement
+	if (window.currentPhraseIndex < data.phrases.length)
+	{
+		if (window.currentIndex >= data.phrases[window.currentPhraseIndex].phrase.length)
+		{
+			window.currentIndex = 0;
+			++window.currentPhraseIndex;
+			window.totalPhraseErrors = 0;
+		}
+
+		if (window.currentPhraseIndex < data.phrases.length)
+		{
+			const currentPhrase = data.phrases[window.currentPhraseIndex]
+			setWriterState(currentPhrase);
+			window.writer.setCharacter(currentPhrase.phrase[currentIndex])
+
+			let card = null;
+			for (let i in data.cards)
+			{
+				if (currentPhrase.phrase[currentIndex] == data.cards[i].character)
+				{
+					card = data.cards[i];
+					break;
+				}
+			}
+
+			window.writer.quiz();
+			changeSidebarText(currentPhrase, data.phrases.length, card, currentPhrase.phrase.length);
+			return;
+		}
 	}
 
 	// If there are no cards, remove the writer and recreate the initial view
@@ -176,15 +247,21 @@ async function writerOnComplete(strokeData)
 
 	// Save user data
 	const now = Date.now();
-	window.localStorageData["totalTimeInSessions"] += (now - window.sessionTime);
+	data.totalTimeInSessions += (now - window.sessionTime);
 	window.sessionTime = now;
 
-	// Recreate initial view
+	// Reset data
 	window.currentIndex = 0;
+	window.currentPhraseIndex = 0;
+	window.bInTest = false;
+	window.bInPhrase = false;
+
+	// Recreate initial view
 	createStartButton();
 	resetSidebar();
-	saveToLocalStorage(window.localStorageData);
-	fisherYates(window.localStorageData["cards"]);
+	saveToLocalStorage(data);
+	fisherYates(data.cards);
+	fisherYates(data.phrases);
 
 	// On mobile we remove all header elements when playing, so readd them
 	if (window.bMobile)
@@ -206,7 +283,7 @@ function createStartButton()
 		startButton.className = "card-button-edit centered character-prop large-button-text";
 		startButton.textContent = "Click to start session";
 
-		$("main-page").appendChild(startButton);
+		$("start-button-writer-section").appendChild(startButton);
 	}
 
 	// Set the button width
@@ -240,7 +317,7 @@ function createStartButton()
 		window.bInTest = true;
 
 		// Append HTML for the writer background, which is just a star
-		const page = $("main-page");
+		const page = $("start-button-writer-section");
 		page.innerHTML += `
 			<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" id="character-target-div" class="centered character-div character-prop">
 				<line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
@@ -252,7 +329,7 @@ function createStartButton()
 
 		// Get the width of the writer border, since the element will not be truly centered if we do not subtract from it
 		const borderWidth = window.getComputedStyle($("character-target-div")).borderWidth.replace("px", "") * 2;
-		window.writer = HanziWriter.create('character-target-div', window.localStorageData["cards"][window.currentIndex]["character"], {
+		window.writer = HanziWriter.create('character-target-div', window.localStorageData.cards[window.currentIndex].character, {
 			width: drawElementHeight - borderWidth,
 			height: drawElementHeight - borderWidth,
 			showCharacter: false,
@@ -268,13 +345,13 @@ function createStartButton()
 		});
 
 		// Modify sidebar text, as well as statistics data
-		setWriterState(window.localStorageData["cards"][window.currentIndex]);
-		changeSidebarText();
+		setWriterState(window.localStorageData.cards[window.currentIndex]);
+		changeSidebarText(null, 0, window.localStorageData.cards[window.currentIndex], window.localStorageData.cards.length);
 		const now = Date.now();
 		window.sessionTime = now;
 
-		window.localStorageData["sessions"]++;
-		window.localStorageData["lastDate"] = now;
+		window.localStorageData.sessions++;
+		window.localStorageData.lastDate = now;
 	});
 }
 
@@ -283,7 +360,7 @@ function mainPageMain()
 	const drawElementHeight = getDrawElementHeight();
 
 	// If there are no cards there, create a widget to inform the user that they need to create a deck
-	if (window.localStorageData["cards"].length == 0)
+	if (window.localStorageData.cards.length == 0)
 	{
 		$("start-button").remove();
 
@@ -297,7 +374,7 @@ function mainPageMain()
 		el.appendChild(link);
 		el.appendChild(document.createTextNode(" page to add some!"))
 
-		$("main-page").appendChild(el);
+		$("start-button-writer-section").appendChild(el);
 		return;
 	}
 
@@ -325,13 +402,14 @@ function mainPageMain()
 	window.addEventListener("beforeunload", function(e)
 	{
 		if (bInTest)
-			window.localStorageData["totalTimeInSessions"] += (Date.now() - window.sessionTime);
+			window.localStorageData.totalTimeInSessions += (Date.now() - window.sessionTime);
 		saveToLocalStorage(window.localStorageData);
 		return false;
 	});
 
 	// Shuffle the cards
-	fisherYates(window.localStorageData["cards"]);
+	fisherYates(window.localStorageData.cards);
+	fisherYates(window.localStorageData.phrases);
 }
 
 mainPageMain();

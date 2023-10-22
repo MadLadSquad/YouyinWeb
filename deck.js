@@ -6,7 +6,7 @@ var SECOND_UNIX = 1000;
 
 function updateExportButton()
 {
-	const dt = window.localStorageData["cards"];
+	const dt = window.localStorageData.cards;
 
 	let file = new Blob([JSON.stringify(dt)], { type: "application/json;charset=utf-8" });
 
@@ -24,7 +24,7 @@ function importDeck(f) {
 		const reader = new FileReader();
 		reader.addEventListener("load", function(){
 			let dt = window.localStorageData;
-			dt["cards"].push.apply(dt["cards"], JSON.parse(this.result));
+			dt.cards.push.apply(dt.cards, JSON.parse(this.result));
 
 			saveToLocalStorage(dt);
 			document.location.reload();
@@ -38,7 +38,7 @@ function clearDeck() {
 	if (bExecuted)
 	{
 		let dt = window.localStorageData;
-		dt["cards"] = [];
+		dt.cards = [];
 
 		saveToLocalStorage(dt);
 		document.location.reload();
@@ -47,12 +47,12 @@ function clearDeck() {
 
 function setProfileCardData()
 {
-	$("total-sessions-field").textContent += window.localStorageData["sessions"];
-	$("streak-field").textContent += (window.localStorageData["streak"] + " days");
-	$("deck-card-num-field").textContent += window.localStorageData["cards"].length;
-	$("deck-phrase-num-field").textContent += window.localStorageData["phrases"].length;
+	$("total-sessions-field").textContent += window.localStorageData.sessions;
+	$("streak-field").textContent += (window.localStorageData.streak + " days");
+	$("deck-card-num-field").textContent += window.localStorageData.cards.length;
+	$("deck-phrase-num-field").textContent += window.localStorageData.phrases.length;
 
-	let a = (window.localStorageData["totalTimeInSessions"] * 1);
+	let a = (window.localStorageData.totalTimeInSessions * 1);
 	let averageSessionLen = isNaN(a) ? 0 : a;
 	let sessionLenPostfix = "ms"
 
@@ -73,13 +73,13 @@ function setProfileCardData()
 		averageSessionLen /= window.SECOND_UNIX;
 	}
 
-	let sessionLenTmp = averageSessionLen / window.localStorageData["sessions"];
+	let sessionLenTmp = averageSessionLen / window.localStorageData.sessions;
 	if (isNaN(sessionLenTmp))
 		sessionLenTmp = 0;
 	$("average-session-length-field").textContent += (sessionLenTmp.toFixed(2).toString() + sessionLenPostfix);
 	$("time-spent-in-sessions-field").textContent += (averageSessionLen.toFixed(2).toString() + sessionLenPostfix);
 
-	const lastDate = window.localStorageData["lastDate"];
+	const lastDate = window.localStorageData.lastDate;
 	if (lastDate != 0)
 	{
 		const date = new Date(lastDate);
@@ -98,10 +98,10 @@ function setProfileCardData()
 
 	const averageKnowledge = $("average-knowledge-level-field");
 	let knowledge = 0;
-	for (let i in window.localStorageData["cards"])
-		knowledge += window.localStorageData["cards"][i]["knowledge"];
+	for (let i in window.localStorageData.cards)
+		knowledge += window.localStorageData.cards[i].knowledge;
 
-	knowledge /= window.localStorageData["cards"].length;
+	knowledge /= window.localStorageData.cards.length;
 	if (isNaN(knowledge))
 		knowledge = 0;
 	averageKnowledge.textContent = `Average knowledge level: ${knowledge.toFixed(2)}/${window.MAX_KNOWLEDGE_LEVEL}`;
@@ -115,17 +115,17 @@ function constructCard(it, index, container)
 	div.id = `${index}`
 
 	// Add title, character render div and the definitions text
-	addElement("h3", `${it["name"]} ${it["knowledge"]}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
+	addElement("h3", `${it.name} ${it.knowledge}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
 	const target = it["character"]
 									? addElement("div", "", `card-character-target-div-${index}`, "", "", div)
-									: addElement("h1", it["phrase"], `card-character-target-div-${index}`, "phrase-card-header", "", div);
+									: addElement("h1", it.phrase, `card-character-target-div-${index}`, "phrase-card-header", "", div);
 	addElement("p", "Definitions:", "", "", "", div);
 
 	// Add the list to the card and fill it with elements
 	let list = document.createElement("ol");
-	for (let i in it["definitions"])
+	for (let i in it.definitions)
 	{
-		let f = it["definitions"][i];
+		let f = it.definitions[i];
 		addElement("li", `${f}`, "", "", "", list);
 	}
 	div.appendChild(list);
@@ -144,7 +144,7 @@ function constructCard(it, index, container)
 
 			for (let i in data.phrases)
 			{
-				if (data.phrases[i].phrase.includes(it["character"]))
+				if (data.phrases[i].phrase.includes(it.character))
 				{
 					bPartOfPhrase = true;
 					addElement("li", `${data.phrases[i].name}`, "", "", "", ol);
@@ -169,7 +169,7 @@ function constructCard(it, index, container)
 	if (it["character"])
 	{
 		// Create an instance of the writer
-		let writer = HanziWriter.create(`card-character-target-div-${index}`, it["character"],
+		let writer = HanziWriter.create(`card-character-target-div-${index}`, it.character,
 		{
 			width: window.CARD_WRITER_SIZE,
 			height: window.CARD_WRITER_SIZE,
@@ -226,9 +226,9 @@ function deckmain()
 	}
 
 	// Load normal cards
-	for (let val in data["cards"])
+	for (let val in data.cards)
 	{
-		const it = data["cards"][val];
+		const it = data.cards[val];
 		constructCard(it, val + data.phrases.length, cardsContainer);
 	}
 }

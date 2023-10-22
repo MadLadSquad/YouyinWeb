@@ -96,10 +96,10 @@ function finishButtonNewCard()
 	for (let i = 0; i < previewDefinitions.length; i++)
 	{
 		// Definitions end with a space so we have to trim it real quick
-		data["definitions"].push(previewDefinitions[i].innerText.slice(0, -1));
+		data.definitions.push(previewDefinitions[i].innerText.slice(0, -1));
 	}
 
-	window.localStorageData["cards"].push(data);
+	window.localStorageData.cards.push(data);
 	saveToLocalStorage(window.localStorageData);
 	location.href = "./deck.html";
 }
@@ -144,7 +144,7 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 	// If this is set, we're editing a card instead of creating a new one
 	if (urlParams.has("edit"))
 	{
-		const data = window.localStorageData["cards"];
+		const data = window.localStorageData.cards;
 		// This statement checkf if the number provided as a parameter of the page is higher or equal to the length of the array.
 		// This check is needed because we use indexes as parameters for editing the card
 		if (urlParams.get("edit") >= data.length)
@@ -161,23 +161,23 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 		const previewName = $("card-preview-name");
 
 		// Use the current data to fill the boxes
-		nameTextBox.value = el["name"];
-		window.previewName = el["name"];
-		previewName.textContent = el["name"];
-		$("deck-new-card-header").textContent = "Editing: " + el["name"];
+		nameTextBox.value = el.name;
+		window.previewName = el.name;
+		previewName.textContent = el.name;
+		$("deck-new-card-header").textContent = "Editing: " + el.name;
 
 		// TODO: Remove this for phrases
-		characterTextBox.value = el["character"].charAt(0);
-		window.previewCharacter = el["character"].charAt(0);
+		characterTextBox.value = el.character.charAt(0);
+		window.previewCharacter = el.character.charAt(0);
 
 		// Deal with regional character variants
-		window.previewVariant = el["character"].length > 1 ? el["character"].substr(1, el["character"].length) : "";
+		window.previewVariant = el.character.length > 1 ? el.character.substr(1, el.character.length) : "";
 		$("character-variant-box").value = window.previewVariant;
 
 		// Add all the definitions to the ordered lists
-		for (let i in el["definitions"])
+		for (let i in el.definitions)
 		{
-			let it = el["definitions"][i];
+			let it = el.definitions[i];
 			constructListElement(it, i);
 			updateListElements();
 		}
@@ -187,14 +187,14 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 		{
 			const urlParams = new URLSearchParams(window.location.search);
 			let dt = window.localStorageData;
-			let data = dt["cards"][urlParams.get("edit")];
+			let data = dt.cards[urlParams.get("edit")];
 
-			data["name"] = window.previewName;
-			data["character"] = window.previewCharacter.charAt(0) + window.previewVariant;
-			data["definitions"] = [];
+			data.name = window.previewName;
+			data.character = window.previewCharacter.charAt(0) + window.previewVariant;
+			data.definitions = [];
 			for (let i = 0; i < previewDefinitions.length; i++)
 			{
-				data["definitions"].push(previewDefinitions[i].innerText.slice(0, -1));
+				data.definitions.push(previewDefinitions[i].innerText.slice(0, -1));
 			}
 			saveToLocalStorage(dt);
 			location.href = "./deck.html";
@@ -215,7 +215,7 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 			{
 				const urlParams = new URLSearchParams(window.location.search);
 				let dt = window.localStorageData;
-				dt["cards"].splice(urlParams.get("edit"), 1);
+				dt.cards.splice(urlParams.get("edit"), 1);
 
 				saveToLocalStorage(dt);
 				location.href = "./deck.html"

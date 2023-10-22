@@ -18,10 +18,15 @@ body {
  * experience
  **/
 main {
-	padding-left: 0.5rem;
-	padding-right: 0.5rem;
+	/*padding-left: 0.5rem;*/
+	/*padding-right: 0.5rem;*/
 	box-sizing: border-box;
 	--main-padding-width: 1rem;
+}
+
+#start-button-writer-section {
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
 }
 
 /* Set the background and accent colour */
@@ -144,15 +149,45 @@ option {
 
 /* Only display the right border on landscape since on portrait elements are not inline */
 @media (orientation: landscape) {
-	#character-info-widget {
+	#main-page-info-container {
+		border-right: 1px solid var(--main-border-colour);
+	}
+
+	#main-page-info-container div {
+		border-bottom: 1px solid var(--main-border-colour);
+	}
+}
+
+@media (orientation: portrait) {
+	#main-page-info-container {
+		float: left;
+		position: relative;
+		display: flex;
+		align-items: left;
+
+		width: 100%;
+		padding: 0;
+		overflow: hidden;
+		margin-bottom: 0.5rem;
+		border-bottom: 1px solid var(--main-border-colour);
+	}
+
+	#main-page-info-container div {
+		max-width: 50%;
+	}
+
+	#phrase-info-widget {
+		display: none;
 		border-right: 1px solid var(--main-border-colour);
 	}
 }
 
 /* Reduce margins for the text on the character info */
-#character-info-widget p {
+#main-page-info-container p, #main-page-info-container ol {
 	margin-top: 3px;
 	margin-bottom: 3px;
+	margin-right: 0.5rem;
+	margin-left: 0.5rem
 }
 
 /* Style the hr element is stupid can confirm, why have an hr? because a border on the footer will break */

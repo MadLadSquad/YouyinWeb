@@ -14,12 +14,12 @@ async function loadMarketplaceData(file)
 async function constructElement(val, deckContainer, it, type1, type2, folder)
 {
 	// Get data for the given marketplace entry and process it
-	let filename = folder + it["name"];
+	let filename = folder + it.name;
 	let marketplaceJSON = await loadMarketplaceData(filename);
 
 	let leveledUpType = "No";
 	let extension = ".yydeck.json"
-	if (it["name"].endsWith(".presetlvl.yydeck.json"))
+	if (it.name.endsWith(".presetlvl.yydeck.json"))
 	{
 		leveledUpType = "Yes"
 		extension = ".presetlvl.yydeck.json"
@@ -30,7 +30,7 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	div.className = "card centered";
 	div.id = `marketplace-${type1}-card-${val}`;
 
-	let nm = it["name"].replaceAll("-", " ").replaceAll(extension, "");
+	let nm = it.name.replaceAll("-", " ").replaceAll(extension, "");
 
 	addElement("h1", nm, "", "", "", div);
 	addElement("p", `Status: ${type2}`, "", "", "", div);
@@ -46,7 +46,7 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 		if (bExecuted)
 		{
 			let dt = window.localStorageData;
-			dt["cards"].push.apply(dt["cards"], content);
+			dt.cards.push.apply(dt.cards, content);
 			saveToLocalStorage(dt);
 			location.href = "./deck.html";
 		}
@@ -99,7 +99,7 @@ async function handleOfficialRepos(deckContainer)
 	for (let val in json)
 	{
 		let it = json[val];
-		if (it["name"].endsWith(".yydeck.json"))
+		if (it.name.endsWith(".yydeck.json"))
 			constructElement(val, deckContainer, it, "official", "Official", "");
 	}
 }
@@ -118,7 +118,7 @@ async function handleCommunityRepos(deckContainer)
 	for (let ii in json1)
 	{
 		let it1 = json1[ii];
-		if (it1["name"].startsWith("r") && it1["type"] == "dir")
+		if (it1.name.startsWith("r") && it1.type == "dir")
 		{
 			let res = await fetch(`https://api.github.com/repos/MadLadSquad/YouyinPublicDeckRepository/contents/community/${it1['name']}`);
 			if (await res.status !== 200)
@@ -128,14 +128,14 @@ async function handleCommunityRepos(deckContainer)
 			}
 			const json = await res.json();
 
-			addElement("h1", `Release ${it1["name"].slice(1)}`, "", "centered", "", deckContainer);
+			addElement("h1", `Release ${it1.name.slice(1)}`, "", "centered", "", deckContainer);
 			addElement("br", "", "", "", "", deckContainer);
 			let el = addElement("section", "", "deck-community", "deck", "", deckContainer);
 			for (let val in json)
 			{
 				let it = json[val];
-				const fname = it1["name"];
-				if (it["name"].endsWith(".yydeck.json"))
+				const fname = it1.name;
+				if (it.name.endsWith(".yydeck.json"))
 					constructElement(val, el, it, "community", "Community", `community/${fname}/`);
 			}
 		}
