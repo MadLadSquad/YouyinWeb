@@ -26,7 +26,8 @@ function getDrawElementHeight()
 {
 	// Some magic code to calculate the height
 	const html = document.querySelector("html");
-	const mainEl = $("start-button-writer-section");//document.querySelector("main");
+	const mainEl = document.querySelector("main");
+	const startButtonWriterSection = $("start-button-writer-section");//document.querySelector("main");
 	const lastChild = html.lastElementChild;
 	const lastChildRect = lastChild.getBoundingClientRect();
 	const parentRect = html.getBoundingClientRect();
@@ -49,9 +50,12 @@ function getDrawElementHeight()
 	}
 
 	if (mainEl.getBoundingClientRect().width < finalHeight)
-		finalHeight = mainEl.getBoundingClientRect().width - (getComputedStyle(mainEl).paddingLeft.replace("px", "") * 2);
+		finalHeight = mainEl.getBoundingClientRect().width - (getComputedStyle(startButtonWriterSection).paddingLeft.replace("px", "") * 2);
 	else
 		listWidget.style.setProperty("height", finalHeight.toString() + "px");
+
+	//$("start-button-writer-section").style.setProperty("height", finalHeight.toString() + "px");
+	//$("main-page").style.setProperty("height", finalHeight.toString() + "px")
 
 	return finalHeight;
 }

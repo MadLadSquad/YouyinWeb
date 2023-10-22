@@ -177,9 +177,12 @@ option {
 	}
 
 	#phrase-info-widget {
-		display: none;
 		border-right: 1px solid var(--main-border-colour);
 	}
+}
+
+#phrase-info-widget {
+	display: none;
 }
 
 /* Reduce margins for the text on the character info */
@@ -232,6 +235,6 @@ header {
 }
 
 /* This is the button you use to start a session */
-#start-button {
+#start-button, #start-button-writer-section {
 	margin: 0 auto 0 auto;
 }
