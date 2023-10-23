@@ -110,9 +110,7 @@ function setProfileCardData()
 function constructCard(it, index, container)
 {
 	// Add parent div
-	let div = document.createElement("div");
-	div.className = "card centered";
-	div.id = `${index}`
+	let div = addElement("div", "", index, "card centered", "", container)
 
 	// Add title, character render div and the definitions text
 	addElement("h3", `${it.name} ${it.knowledge}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
@@ -122,13 +120,12 @@ function constructCard(it, index, container)
 	addElement("p", "Definitions:", "", "", "", div);
 
 	// Add the list to the card and fill it with elements
-	let list = document.createElement("ol");
+	let list = addElement("ol", "", "", "", "", div);
 	for (let i in it.definitions)
 	{
 		let f = it.definitions[i];
 		addElement("li", `${f}`, "", "", "", list);
 	}
-	div.appendChild(list);
 
 	// If it's a character find which phrases contain it
 	if (it["character"])
@@ -165,7 +162,6 @@ function constructCard(it, index, container)
 		location.href = `./deck-edit-card.html?edit=${this.id}`;
 	});
 
-	container.appendChild(div);
 	if (it["character"])
 	{
 		// Create an instance of the writer

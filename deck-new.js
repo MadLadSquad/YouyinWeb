@@ -75,11 +75,7 @@ function updateListElements()
 
 	let tmpArr = [];
 	for (let i = 0; i < window.previewDefinitions.length; i++)
-	{
-		let el = document.createElement("li");
-		el.textContent = window.previewDefinitions[i].textContent.slice(0, -1);
-		tmpArr.push(el);
-	}
+		tmpArr.push(addElement("li", window.previewDefinitions[i].textContent.slice(0, -1), "", "", "", null));
 	previewList.replaceChildren(...tmpArr);
 }
 
@@ -108,15 +104,10 @@ function finishButtonNewCard()
 // Returns void, takes the name of the list element and an id for further on click events
 function constructListElement(name, id)
 {
-	let el = document.createElement("li");
-	el.textContent = (name + " ");
+	let el = addElement("li", `${name} `, "", "", "", null);
 
 	// Add a remove definition button on each call
-	let button = document.createElement("button");
-	button.className = "card-button-edit small-button";
-	button.id = `remove-meaning-list-button-${id}`;
-	button.textContent = "-";
-	button.addEventListener("click", function()
+	addElement("button", "-", `remove-meaning-list-button-${id}`, "card-button-edit small-button", "", el).addEventListener("click", function()
 	{
 		for (let i = 0; i < window.previewDefinitions.length; i++)
 		{
@@ -128,49 +119,59 @@ function constructListElement(name, id)
 			}
 		}
 	});
-
-	// Append the button to the list element and push to the preview definitions list
-	el.appendChild(button);
 	window.previewDefinitions.push(el);
+}
+
+function handleCardEditing()
+{
+
 }
 
 // Returns void, takes references to the name text field, the character text field and the definition ordered list
 function addFinishButton(nameTextField, characterTextField, meaningList)
 {
-	const button = $("finish-edit-button");
 	const urlParams = new URLSearchParams(window.location.search);
 	let finishButtonClickFunction;
+
+	let data = null;
+	let urlType = null;
 
 	// If this is set, we're editing a card instead of creating a new one
 	if (urlParams.has("edit"))
 	{
-		const data = window.localStorageData.cards;
-		// This statement checkf if the number provided as a parameter of the page is higher or equal to the length of the array.
-		// This check is needed because we use indexes as parameters for editing the card
-		if (urlParams.get("edit") >= data.length)
+		data = window.localStorageData.cards;
+		urlType = urlParams.get("edit");
+	}
+	else if (urlParams.has("phrase-edit"))
+	{
+		data = window.localStorageData.phrases;
+		urlType = urlParams.get("phrase-edit")
+	}
+
+	if (data !== null && urlType !== null)
+	{
+		// Check if the number provided as a parameter of the page is higher or equal to the length of the array.
+		// This check is needed because we use indexes as parameters for editing the card/phrase
+		if (urlType >= data.length)
 		{
 			finishButtonClickFunction = finishButtonNewCard;
 			return;
 		}
 		// Get reference to the element we're currently editing
-		const el = data[urlParams.get("edit")]
+		const el = data[urlType]
 
-		// Get the text boxes
-		const nameTextBox = $("name-text-field");
-		const characterTextBox = $("character-text-field");
-		const previewName = $("card-preview-name");
-
-		// Use the current data to fill the boxes
-		nameTextBox.value = el.name;
-		window.previewName = el.name;
-		previewName.textContent = el.name;
+		// Fill text boxes
+		$("name-text-field").value = el.name;
+		$("character-text-field").value = el.character.charAt(0); // FIXME
+		$("card-preview-name").textContent = el.name;
 		$("deck-new-card-header").textContent = "Editing: " + el.name;
 
-		// TODO: Remove this for phrases
-		characterTextBox.value = el.character.charAt(0);
-		window.previewCharacter = el.character.charAt(0);
+		// Use the current data to fill the boxes
+		window.previewName = el.name;
+		window.previewCharacter = el.character.charAt(0); // FIXME
 
 		// Deal with regional character variants
+		// TODO: Phrases require this to be moved to the card preview
 		window.previewVariant = el.character.length > 1 ? el.character.substr(1, el.character.length) : "";
 		$("character-variant-box").value = window.previewVariant;
 
@@ -187,7 +188,7 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 		{
 			const urlParams = new URLSearchParams(window.location.search);
 			let dt = window.localStorageData;
-			let data = dt.cards[urlParams.get("edit")];
+			let data = dt.cards[urlParams.get("edit")]; // FIXME: This should be changed for phrases
 
 			data.name = window.previewName;
 			data.character = window.previewCharacter.charAt(0) + window.previewVariant;
@@ -200,35 +201,26 @@ function addFinishButton(nameTextField, characterTextField, meaningList)
 			location.href = "./deck.html";
 		};
 
-		// Dynamically put the delete button there because it doesn't exist by default in the HTML
-		const parentDiv = $("current-new-card");
-		const deleteButton = document.createElement("button");
-		deleteButton.id = "delete-card-button";
-		deleteButton.className = "card-button-edit";
-		deleteButton.textContent = "Delete"
-
-		// On click ask for confirmation
-		deleteButton.addEventListener("click", function()
+		// Add button element and add click event to ask for confirmation
+		addElement("button", "Delete", "delete-card-button", "card-button-edit", "", $("current-new-card")).addEventListener("click", function()
 		{
 			let bExecuted = confirm("Are you sure you want to delete the card?");
 			if (bExecuted)
 			{
 				const urlParams = new URLSearchParams(window.location.search);
 				let dt = window.localStorageData;
-				dt.cards.splice(urlParams.get("edit"), 1);
+				dt.cards.splice(urlParams.get("edit"), 1); // FIXME: This should be fixed for phrases
 
 				saveToLocalStorage(dt);
 				location.href = "./deck.html"
 			}
 		});
-		// Add the button to the div
-		parentDiv.appendChild(deleteButton);
 	}
 	else // In any other case such as non "edit" parameters we assing to this
 		finishButtonClickFunction = finishButtonNewCard;
 
 	// Add selected function event
-	button.addEventListener("click", finishButtonClickFunction);
+	$("finish-edit-button").addEventListener("click", finishButtonClickFunction);
 }
 
 function addButtonEvent(id, type, func)
@@ -273,10 +265,8 @@ async function fetchCharacterVariant(character, postfix, textContent)
 	}
 	if (!bFound && await res.status === 200)
 	{
-		let option = document.createElement("option");
+		let option =  addElement("option", textContent, "", "", "", select);
 		option.setAttribute("value", postfix);
-		option.textContent = textContent;
-		select.appendChild(option)
 	}
 }
 

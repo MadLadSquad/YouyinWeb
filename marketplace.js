@@ -26,10 +26,7 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	}
 
 	// Create card
-	let div = document.createElement("div");
-	div.className = "card centered";
-	div.id = `marketplace-${type1}-card-${val}`;
-
+	let div = addElement("div", "", `marketplace-${type1}-card-${val}`, "card centered", "", deckContainer);
 	let nm = it.name.replaceAll("-", " ").replaceAll(extension, "");
 
 	addElement("h1", nm, "", "", "", div);
@@ -75,16 +72,11 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 		link.click();
 		URL.revokeObjectURL(link.href);
 	});
-	deckContainer.appendChild(div);
 }
 
 function createErrorElement(deckContainer, response, marketplaceType)
 {
-	let el = document.createElement("h1");
-	el.textContent = `Error ${response.status}: Couldn't load the ${marketplaceType} marketplace, retry later!`;
-	el.className = "error-text centered vcentered";
-
-	deckContainer.appendChild(el);
+	addElement("h1", `Error ${response.status}: Couldn't load the ${marketplaceType} marketplace, retry later!`, "", "error-text centered, vcentered", "", deckContainer);
 }
 
 async function handleOfficialRepos(deckContainer)

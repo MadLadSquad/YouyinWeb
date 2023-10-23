@@ -104,9 +104,7 @@ function updateIndividualSidebarElementText(prefix, spelling, errors, obj)
 	{
 		for (let i in obj.definitions)
 		{
-			const el = document.createElement("li");
-			el.textContent = obj.definitions[i];
-			list.appendChild(el);
+			addElement("li", obj.definitions[i], "", "", "", list);
 		}
 	}
 }
@@ -119,7 +117,12 @@ function changeSidebarText(phrase, phraseNum, card, cardNum)
 	if (card !== null && cardNum > 0)
 		updateIndividualSidebarElementText("character", `Spelling: ${card.name}`, `Cards: ${window.currentIndex}/${cardNum}; Errors: 0`, card);
 	else
+	{
 		updateIndividualSidebarElementText("character", "Unknown character", "", null);
+		$("character-info-widget-def-p").style.display = "none";
+		return;
+	}
+	$("character-info-widget-def-p").style.display = "block";
 }
 
 function resetSidebar()
@@ -128,9 +131,7 @@ function resetSidebar()
 	$("character-info-widget-spelling").textContent = "Spelling: To be loaded";
 	$("character-info-widget-errors").textContent = "Cards: 0/0; Errors: 0";
 
-	const el = document.createElement("li");
-	el.textContent = "To be loaded";
-	$("character-info-widget-info").replaceChildren(el);
+	$("character-info-widget-info").replaceChildren(addElement("li", "To be loaded", "", "", "", null));
 
 	// Hide the phrase info widget
 	$("phrase-info-widget").style.display = "none";
@@ -306,14 +307,7 @@ function createStartButton()
 	// Get start button, create if exists
 	let startButton = $("start-button");
 	if (startButton === null)
-	{
-		startButton = document.createElement("button");
-		startButton.id = "start-button";
-		startButton.className = "card-button-edit centered character-prop large-button-text";
-		startButton.textContent = "Click to start session";
-
-		$("start-button-writer-section").appendChild(startButton);
-	}
+		addElement("button", "Click to start session", "start-button", "card-button-edit centered character-prop large-button-text", "", $("start-button-writer-section"));
 
 	// Set the button width
 	startButton.style.setProperty("width", drawElementHeight + "px");

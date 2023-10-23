@@ -54,7 +54,8 @@ function addElement(elType, content, id, classType, data, parentEl)
 	el.textContent = content;
 	el.setAttribute("arbitrary-data", data);
 
-	parentEl.appendChild(el);
+	if (parentEl !== null)
+		parentEl.appendChild(el);
 	return el;
 }
 
@@ -153,6 +154,13 @@ function main()
 			phrases: [],
 		}
 		saveToLocalStorage(data);
+		document.location.reload(true);
+	}
+
+	if (!window.localStorageData["phrases"])
+	{
+		window.localStorageData["phrases"] = [];
+		saveToLocalStorage(window.localStorageData);
 		document.location.reload(true);
 	}
 
