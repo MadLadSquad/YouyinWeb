@@ -54,9 +54,10 @@ function getDrawElementHeight()
 	if (mainEl.getBoundingClientRect().width < finalHeight)
 		finalHeight = mainEl.getBoundingClientRect().width - (getComputedStyle(startButtonWriterSection).paddingLeft.replace("px", "") * 2);
 	else
+	{
 		listWidget.style.setProperty("height", finalHeight.toString() + "px");
-
-	mainEl.style.setProperty("height", finalHeight.toString() + "px");
+		mainEl.style.setProperty("height", finalHeight.toString() + "px");
+	}
 
 	return finalHeight;
 }
