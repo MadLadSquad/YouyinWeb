@@ -430,6 +430,7 @@ function deckEditMain()
 		
 
 		saveToLocalStorage(window.localStorageData);
+		location.href = "./deck.html";
 	});
 }
 
