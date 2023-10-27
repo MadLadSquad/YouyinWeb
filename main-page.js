@@ -307,7 +307,7 @@ function createStartButton()
 	// Get start button, create if exists
 	let startButton = $("start-button");
 	if (startButton === null)
-		addElement("button", "Click to start session", "start-button", "card-button-edit centered character-prop large-button-text", "", $("start-button-writer-section"));
+		startButton = addElement("button", "Click to start session", "start-button", "card-button-edit centered character-prop large-button-text", "", $("start-button-writer-section"));
 
 	// Set the button width
 	startButton.style.setProperty("width", drawElementHeight + "px");
@@ -350,9 +350,11 @@ function createStartButton()
 			</svg>
 		`;
 
+		let data = window.localStorageData;
+
 		// Get the width of the writer border, since the element will not be truly centered if we do not subtract from it
 		const borderWidth = window.getComputedStyle($("character-target-div")).borderWidth.replace("px", "") * 2;
-		window.writer = HanziWriter.create('character-target-div', window.localStorageData.cards[window.currentIndex].character, {
+		window.writer = HanziWriter.create('character-target-div', data.cards[window.currentIndex].character + data.cards[window.currentIndex].variant, {
 			width: drawElementHeight - borderWidth,
 			height: drawElementHeight - borderWidth,
 			showCharacter: false,
@@ -368,13 +370,13 @@ function createStartButton()
 		});
 
 		// Modify sidebar text, as well as statistics data
-		setWriterState(window.localStorageData.cards[window.currentIndex]);
-		changeSidebarText(null, 0, window.localStorageData.cards[window.currentIndex], window.localStorageData.cards.length);
+		setWriterState(data.cards[window.currentIndex]);
+		changeSidebarText(null, 0, data.cards[window.currentIndex], data.cards.length);
 		const now = Date.now();
 		window.sessionTime = now;
 
-		window.localStorageData.sessions++;
-		window.localStorageData.lastDate = now;
+		data.sessions++;
+		data.lastDate = now;
 	});
 }
 

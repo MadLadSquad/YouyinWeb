@@ -107,10 +107,14 @@ function setProfileCardData()
 	averageKnowledge.textContent = `Average knowledge level: ${knowledge.toFixed(2)}/${window.MAX_KNOWLEDGE_LEVEL}`;
 }
 
-function constructCard(it, index, container)
+// it - struct
+// index - used to create UUIDs. For normal cards, its offset by the number of phrases
+// constainer - container element
+// localIndex - non-unique index
+function constructCard(it, index, container, localIndex)
 {
 	// Add parent div
-	let div = addElement("div", "", index, "card centered", "", container)
+	let div = addElement("div", "", `card-container-${index}`, "card centered", "", container)
 
 	// Add title, character render div and the definitions text
 	addElement("h3", `${it.name} ${it.knowledge}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
@@ -157,15 +161,18 @@ function constructCard(it, index, container)
 	}
 
 	// Create the "Edit" button and add an onclick event that redirects to the new card page
-	addElement("button", "Edit", `${index}`, "card-button-edit", "submit", div).addEventListener("click", function()
+	let editButton = addElement("button", "Edit", `card-edit-button-${index}`, "card-button-edit", `${localIndex}`, div)
+	editButton["phrase"] = it["phrase"] ? "phrase-" : ""; // If we're using phrases add this so that the callback can redirect correctly
+	editButton.addEventListener("click", function()
 	{
-		location.href = `./deck-edit-card.html?edit=${this.id}`;
+		// In the line above, we store the card index in the "arbitrary-data" field. Here we retrieve it
+		location.href = `./deck-edit-card.html?${this.phrase}edit=${this.attributes["arbitrary-data"].nodeValue}`;
 	});
 
 	if (it["character"])
 	{
 		// Create an instance of the writer
-		let writer = HanziWriter.create(`card-character-target-div-${index}`, it.character,
+		let writer = HanziWriter.create(`card-character-target-div-${index}`, it.character + it.variant,
 		{
 			width: window.CARD_WRITER_SIZE,
 			height: window.CARD_WRITER_SIZE,
@@ -209,7 +216,7 @@ function deckmain()
 		for (let val in data.phrases)
 		{
 			const it = data.phrases[val];
-			constructCard(it, val, phrasesContainer);
+			constructCard(it, val, phrasesContainer, val);
 		}
 	}
 
@@ -225,7 +232,7 @@ function deckmain()
 	for (let val in data.cards)
 	{
 		const it = data.cards[val];
-		constructCard(it, val + data.phrases.length, cardsContainer);
+		constructCard(it, val + data.phrases.length, cardsContainer, val);
 	}
 }
 

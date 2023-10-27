@@ -28,6 +28,11 @@ function $(x)
 	return document.getElementById(x);
 }
 
+function addTextNode(container, text)
+{
+	container.appendChild(document.createTextNode(text));
+}
+
 // This loads characters from the database. Change the URL to your own database.
 async function charDataLoader(character, onLoad, onError)
 {
@@ -138,6 +143,21 @@ function fisherYates(array)
 	}
 }
 
+function fixLegacyCharacterVariants()
+{
+	for (let i in window.localStorageData.cards)
+	{
+		let card = window.localStorageData.cards[i];
+		if (!card["variant"])
+		{
+			card["variant"] = card.character.substring(1);
+			card["character"] = card.character.charAt(0);
+		}
+		else
+			continue;
+	}
+}
+
 // I'm a C/C++ programmer, I ain't trusting this toy language with anything + it's stupid to not have a main function tbh
 function main()
 {
@@ -163,6 +183,8 @@ function main()
 		saveToLocalStorage(window.localStorageData);
 		document.location.reload(true);
 	}
+
+	fixLegacyCharacterVariants();
 
 	setTitleName();
 

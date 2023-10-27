@@ -9,49 +9,34 @@
 	<body>
 		{{ include Components/header.tmpl.html }}
 		<h1 id="deck-new-card-header" class="centered">New card</h1>
-		<main class="deck">
+		<main>
 			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
-			<div id="current-new-card" class="card centered">
-				<div id="input-mode" class="centered">
-					<p>Input: </p>
-					<div id="input-mode-internal">
-						<div>
-							<input 	type="radio" name="type" value="false" checked onclick="window.bUsingPinyinConversion = false">None</input>
-						</div>
-						<div title="Enables you to use Pinyin number notation in text boxes. It will then convert the text to actual pinyin. Example: 'pin1 yin1' will become 'pīn yīn'.">
-							<input type="radio" name="type" value="true" onclick="window.bUsingPinyinConversion = true">Pin1 yin1</input>
-						</div>
+			<section id="input-mode" class="centered">
+				<p>Input: </p>
+				<div id="input-mode-internal">
+					<div>
+						<input 	type="radio" name="type" value="false" checked onclick="window.bUsingPinyinConversion = false">None</input>
+					</div>
+					<div title="Enables you to use Pinyin number notation in text boxes. It will then convert the text to actual pinyin. Example: 'pin1 yin1' will become 'pīn yīn'.">
+						<input type="radio" name="type" value="true" onclick="window.bUsingPinyinConversion = true">Pin1 yin1</input>
 					</div>
 				</div>
-				<h3>Name: </h3>
-				<input type="text" id="name-text-field" name="Name Text Field" aria-label="Name Text Field"></input>
+			</section>
 
-				<h3>Character:</h3>
-				<input type="text" id="character-text-field" name="Character Text Field" aria-label="Character Text Field"></input>
-
-				<select aria-label="Character variant box" name="character-variant-box" id="character-variant-box" class="centered">
-					<option value="">Default</option>
-					<option value="-jp">🇯🇵 Kanji</option>
-					<option value="-ko">🇰🇷 Hanja</option>
-				</select>
-
-				<h3>Definitions:</h3>
-				<input type="text" id="meaning-text-field" name="Meaning Text Field" aria-label="Meaning Text Field"></input>
-
-				<button id="add-meaning-list-button" class="card-button-edit small-button">+</button>
-				<ol id="definition-list-current-edit">
-					<!--Data will be inserted here dynamically by the Javascript defined in deck-new.js -->
-				</ol>
+			<section id="card-edit-section" class="deck">
+				<!-- Javascript will fill this -->
+			</section>
+			<!-- This is normaly hidden, except when editing phrases. When editing phrases thist will be populated with previews of every card in -->
+			<section id="phrase-preview-section" style="display: none;">
+				<h1 class="centered">Previews</h1>
+				<section id="phrase-preview-section-container" class="deck">
+					<!-- This will be filled with preview cards from Javascript -->
+				</section>
+			</section>
+			<section id="navigation-footer">
 				<button id="finish-edit-button" class="card-button-edit">Finish</button>
-			</div>
-			<div id="character-preview" class="card centered">
-				<h3 id="card-preview-name">Preview Name</h3>
-				<div id="card-character-target-div-preview"></div>
-				<p>Definitions: </p>
-				<ol id="card-preview-list">
-					<!-- Data here will be inserted by deck-new.js -->
-				</ol>
-			</div>
+				<button id="cancel-edit-button" class="card-button-edit" onclick="location.href = './deck.html'">Cancel</button>
+			</section>
 		</main>
 		{{ include Components/footer.tmpl.html }}
 		<script src="./deck-new.js"></script>

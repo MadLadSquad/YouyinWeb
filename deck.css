@@ -134,7 +134,7 @@ ol li {
 	margin-right: 6px;
 }*/
 
-#input-mode {
+#input-mode, #navigation-footer {
 	width: fit-content;
 	padding: 0;
 	margin: auto;
@@ -160,6 +160,7 @@ input[type=text]::before, input[type=text]::after, input[type=text] {
 
 /* Configure input text fields to follow our style */
 input[type=text] {
+	max-width: 85%;
 	font-size: 16px;
 	font-family: inherit;
 	padding: 4 0 0 0;
