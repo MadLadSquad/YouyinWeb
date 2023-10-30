@@ -1,5 +1,5 @@
 #!/bin/bash
-rm *.hmtl
-rm -rf Components/ UBTCustomFunctions/ UVKBuildTool/ .github/
-mv build/*.html .
+rm *.html
+rm -rf Traslations/ Components/ UBTCustomFunctions/ UVKBuildTool/ .github/
+mv build/* .
 rm -rf build
