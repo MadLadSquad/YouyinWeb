@@ -43,7 +43,7 @@ jobs:
       # Disable automatic localhost
       - run: "echo 'run-localhost-automatically: false' >> uvproj.yaml"
       - name: Build project
-        run: cd UVKBuildTool/ && ./setup-web.sh .. && cd build && ./UVKBuildTool --build ../../build ../../ && cd ../../
+        run: mkdir build/ && cd UVKBuildTool/ && ./setup-web.sh .. && cd build && ./UVKBuildTool --build ../../build ../../ && cd ../../
       - run: ./ci-clean.sh
       - run: npm install -g terser
       - run: npm install -g csso-cli
