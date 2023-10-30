@@ -79,55 +79,6 @@ function setTitleName()
 		el[i].textContent = selectedText;
 }
 
-// Returns an URLSearchParams object
-function getParams()
-{
-	return new URLSearchParams(window.location.search);
-}
-
-// Returns a string representing the current script the user is using
-function getScriptType(params)
-{
-	if (params.has("script"))
-	{
-		return params.get("script")
-	}
-	return "zh";
-}
-
-// Returns an unsigned int representing the current language the page is in
-function getLangType(params)
-{
-	if (params.has("lang"))
-	{
-		const lang = params.get("lang");
-		if (lang === "bg")
-			return 1;
-		else if (lang === "cn")
-			return 2;
-		else if (lang === "tw")
-			return 3;
-		else if (lang === "de")
-			return 4;
-		else if (lang === "mk")
-			return 5;
-		else if (lang === "ru")
-			return 6;
-		else if (lang === "jp")
-			return 7;
-	}
-	return 0;
-}
-
-// Returns void, called when the listbox is updated and redirects to the page with the localization
-function modifySelectedLanguage()
-{
-	const e = $("lang-select")
-
-	const val = e.options[e.selectedIndex].value;
-	location.replace(`./index.html?lang=${val}`);
-}
-
 // The standard shuffle algorithm
 function fisherYates(array)
 {
@@ -154,6 +105,34 @@ function fixLegacyCharacterVariants()
 			card["character"] = card.character.charAt(0);
 		}
 	}
+}
+
+function setLanguage()
+{
+	let localStorageLang = window.localStorage.getItem("language");
+	if (localStorageLang === null)
+	{
+		localStorageLang = "en_US";
+		window.localStorage.setItem("language", localStorageLang);
+	}
+	else if (!location.href.includes(localStorageLang))
+	{
+		let url = location.href.split("/");
+		let redirect = url[0] + "//" + url[2] + "/" + localStorageLang + "/";
+		for (let i = 3; i < url.length; i++)
+			if (url[i] !== "")
+				redirect += url[i] + "/";
+		
+		location.href = redirect.slice(0, -1);
+	
+	}
+}
+
+function setLanguageBox()
+{
+	$("lang-select").addEventListener("change", function(){
+		window.localStorage.setItem("language", this.value);
+	})
 }
 
 // I'm a C/C++ programmer, I ain't trusting this toy language with anything + it's stupid to not have a main function tbh
@@ -186,10 +165,8 @@ function main()
 	fixLegacyCharacterVariants();
 
 	setTitleName();
-
-	const params = getParams();
-	const scriptType = getScriptType(params);
-	const langType = getLangType(params);
+	setLanguage();
+	setLanguageBox();
 }
 
 main();
