@@ -107,6 +107,18 @@ function fixLegacyCharacterVariants()
 	}
 }
 
+function redirectWithLanguage(localStorageLang, previous)
+{
+	let url = location.href.split("/");
+	let redirect = url[0] + "//" + url[2] + "/" + localStorageLang + "/";
+	for (let i = 3; i < url.length; i++)
+		if (url[i] !== "" || previous === null || url[i] !== previous)
+			redirect += url[i] + "/";
+	
+	selectWidget.value = localStorageLang;
+	location.href = redirect.slice(0, -1);
+}
+
 function setLanguage()
 {
 	let localStorageLang = window.localStorage.getItem("language");
@@ -119,14 +131,8 @@ function setLanguage()
 	}
 	else if (!location.href.includes(localStorageLang))
 	{
-		let url = location.href.split("/");
-		let redirect = url[0] + "//" + url[2] + "/" + localStorageLang + "/";
-		for (let i = 3; i < url.length; i++)
-			if (url[i] !== "")
-				redirect += url[i] + "/";
-		
-		selectWidget.value = localStorageLang;
-		location.href = redirect.slice(0, -1);
+		redirectWithLanguage(localStorageLang, null);
+		return;
 	}
 	selectWidget.value = localStorageLang;
 }
@@ -134,7 +140,9 @@ function setLanguage()
 function setLanguageBox()
 {
 	$("lang-select").addEventListener("change", function(){
+		let old = window.localStorage.getItem("language");
 		window.localStorage.setItem("language", this.value);
+		redirectWithLanguage(this.value, old);
 	})
 }
 
