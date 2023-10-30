@@ -173,6 +173,7 @@ function main()
 		}
 		saveToLocalStorage(data);
 		document.location.reload();
+		return;
 	}
 
 	if (!window.localStorageData["phrases"])

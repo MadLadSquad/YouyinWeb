@@ -2,88 +2,68 @@
 <html lang="en">
 	<head>
 		{{ include Components/head.tmpl.html }}
-		<title class="site-title">About | {{ trademark }} </title>
+		<title class="site-title">{{ _ about-us }} | {{ trademark }} </title>
 	</head>
 	<body>
 		{{ include Components/header.tmpl.html }}
-		<main>
-			<h1>About {{ trademark }}</h1>
+		<main class="article">
+			<h1>{{ _ about_h1 }}</h1>
 			<p>
-				{{ trademark }}(卣囙/yǒuyīn) is a simple platform for practicing hanzi/kanji/hanja/汉字/漢字 and/or other writing systems.
-
+				{{ _ about_p1_1 }}
 				<br><br>
-
-				We use a simple flashcard based approach to learning how to read and write the given writing system. These are the components of the app:
+				{{ _ about_p1_2 }}
 			</p>
 			<ol>
-				<li>Practice - Helps you learn to read and write the given character</li>
-				<li>Deck marketplace - A large list of community and official decks that can be imported on demand</li>
-				<li>Leaderboards and User profiles - Gamifies the system by challenging the user to compete in weekly leaderboards</li>
+				<li>{{ _ about_p1_li_1 }}</li>
+				<li>{{ _ about_p1_li_2 }}</li>
+				<li>{{ _ about_p1_li_3 }}</li>
 			</ol>
-			<p>
-				The app is not a dictionary, the user is supposed to use a separate dictionary(like <a href="https://pleco.com">Pleco</a> for Chinese).
-			</p>
+			<p>{{ _ about_p2 {{ raw <a href="https://pleco.com">Pleco</a>}} }}</p>
 
-			<h2>The story of the app's development</h2>
+			<h2>{{ _ about_h2 }}</h2>
 			<p>
-				In January 2023, <a href="https://madman10k.online/">Stanislav Vasilev(Madman10K)</a> decided to create {{ trademark }} as a solution for his obsession with learning Chinese characters and other
-				writing systems. He found no existing solution that would help with that, so he decided to develop one himself. Initially started as a platform for learning to write Chinese characters, 
-				{{ trademark }} is currently expanding into more writing systems like Hiragana, Katakana, Cyrillic, Latin, Greek, etc.
-
+				{{ _ about_p3_1 {{ raw <a href="https://madman10k.online/">Stanislav Vasilev(Madman10K)</a>}} }}
 				<br><br>
-
-				The name {{ trademark }} comes from a bad joke about the video game <a href="https://en.wikipedia.org/wiki/Among_Us">Among us</a> where people all over the internet were going insane when
-				they saw the geometric shape of the crewmates in the game. In Chinese, the name use the 2 symbols "卣囙", pronounced as "yǒuyīn" in pinyin, look like the crewmates. Additionally, 
-				the name of the site is similar to the following 3 words:
+				{{ _ about_p3_2 {{ raw <a href="https://en.wikipedia.org/wiki/Among_Us">Among us</a>}} }}
 			</p>
 			<ol>
-				<li>诱因 - meaning cause esp. of an illness, it's related to the site because you'll become sick of "I know how to write so much Chinese characters" syndrome</li>
-				<li>油印 - meaning a mimeograph, a device for copying text and images to another list of paper, related because you will be copying handwriting here a lot</li>
-				<li>有瘾 - meaning to be addicted to something, relevant because you'll be addicted to writing characters here</li>
+				<li>{{ _ about_p3_li_1 }}</li>
+				<li>{{ _ about_p3_li_2 }}</li>
+				<li>{{ _ about_p3_li_3 }}</li>
 			</ol>
 			<p>
-				The pair 卣囙 has no meaning. The first character is an archaic word for a "small-mouthed wine vessel", while the second is an old variant of the character 因, which
-				generally means the following: cause, origin, to follow, to carry on, to conform to, to accord with, because of, as a result of, because, etc.
+				{{ _ about_p3 }}
 				<br>
 			</p>
 
-			<h2>Credits</h2>
-			<p>
-				{{ trademark }} uses the following open source libraries for most of the testing and text rendering functionality:
-			</p>
+			<h2>{{ _ about_h3 }}</h2>
+			<p>{{ _ about_p4 }}</p>
 			<ol>
-				<li><a href="https://github.com/skishore/makemeahanzi">Makemeahanzi</a> - Provides the character information used by Hanziwriter</li>
-				<li><a href="https://github.com/chanind/hanzi-writer">Hanziwriter</a> - Provides the character animations and handwriting recognition used during tests</li>
-				<li><a href="https://github.com/parsimonhi/animCJK">animCJK</a> - Provides data for Japanese Kanji and most Japanese Kana</li>
+				<li><a href="https://github.com/skishore/makemeahanzi">Makemeahanzi</a>{{ _ about_p4_li_1 }}</li>
+				<li><a href="https://github.com/chanind/hanzi-writer">Hanziwriter</a>{{ _ about_p4_li_2 }}</li>
+				<li><a href="https://github.com/parsimonhi/animCJK">animCJK</a>{{ _ about_p4_li_3 }}</li>
 			</ol>
-			<p>
-				Additionally, we want to thank the following people for helping with the development of the application:
-			</p>
+			<p>{{ _ about_p5 }}</p>
 			<ol>
-				<li><a href="https://github.com/ProHunter67BG">Hristian Rusev</a> for providing German translations</li>
-				<li><a href="https://github.com/Neyko641">Neyko Naydenov</a> for providing Japanese translations</li>
-				<li><a href="https://github.com/nick-1666">Nick-1666</a> for helping with UI and UX issues</li>
+				<li>{{ _ about_p5_li_1 {{ raw <a href="https://github.com/ProHunter67BG">Hristian Rusev</a>}} }}</li>
+				<li>{{ _ about_p5_li_2 {{ raw <a href="https://github.com/Neyko641">Neyko Naydenov</a>}} }}</li>
+				<li>{{ _ about_p5_li_3 {{ raw <a href="https://github.com/nick-1666">Nick-1666</a>}} }}</li>
 			</ol>
-			<h1>Known issues</h1>
-			<h2>Start session button or writer becomes really large</h2>
-			<p>Q: When I resize the window or finish a test, the start session button or the writer becomes larger than the available screen real estate, why is that?</p>
-			<p>
-				A: Unfortunately, this peculiar error cannot be resolved by us, because it's mainly caused by third party extensions. One example is <a href="https://grammarly.com">Grammarly</a>.
-				The only way to stop that from happening is to find out which extension causes this and disable it for our site.
-			</p>
+			<h1>{{ _ about_h4 }}</h1>
+			<h2>{{ _ about_h4_h1 }}</h2>
+			<p>{{ _ about_q1 }}</p>
+			<p>{{ _ about_a1 {{ raw <a href="https://grammarly.com">Grammarly</a>}} }}</p>
 
-			<h1>More like {{ trademark }}</h1>
-			<p><a href="https://bgks.madladsquad.com">BGKS</a> - A website for correcting grammar, punctuation and spelling</p>
-			<p><a href="https://littok.madladsquad.com">LitTok</a> - Book reading as TikTok</p>
-			<p><a href="https://madladsquad.com/">MadLad Squad</a> develops more than just {{ trademark }}, check out the following CJK/Language learning applications and libraries</p>
+			<h1>{{ _ about_h5 }}</h1>
+			<p>{{ _ about_h5_3 {{ raw <a href="https://madladsquad.com/">MadLad Squad</a>}} }}</p>
 			<ol>
-				<li><a href="https://bgks.madladsquad.com">BGKS</a> - A website for correcting grammar, punctuation and spelling</li>
-				<li><a href="https://littok.madladsquad.com">LitTok</a> - Book reading as TikTok</li>
+				<li><a href="https://bgks.madladsquad.com">BGKS</a>{{ _ about_h5_1 }}</li>
+				<li><a href="https://littok.madladsquad.com">LitTok</a>{{ _ about_h5_2 }}</li>
 				<li>
-					<a href="https://github.com/MadLadSquad/UntitledIBusHandwriting">UntitledIBusHandwriting</a> - A handwriting plugin for <a href="https://en.wikipedia.org/wiki/Intelligent_Input_Bus">ibus</a>
+					<a href="https://github.com/MadLadSquad/UntitledIBusHandwriting">UntitledIBusHandwriting</a>{{ _ about_h5_4 {{ raw <a href="https://en.wikipedia.org/wiki/Intelligent_Input_Bus">ibus</a>}} }}
 				</li>
-				<li><a href="https://github.com/MadLadSquad/hanzi-writer-data-youyin">hanzi-writer-data-youyin</a> - All character data used in {{ trademark }} in one place</li>
-				<li><a href="https://madladsquad.com/untitled-desktop/subprojects/i18n">i18n project</a> - The MadLad Squad i18n(internationalisation) project</li>
+				<li><a href="https://github.com/MadLadSquad/hanzi-writer-data-youyin">hanzi-writer-data-youyin</a>{{ _ about_h5_5 }}</li>
+				<li><a href="https://madladsquad.com/untitled-desktop/subprojects/i18n">i18n project</a>{{ _ about_h5_6 }}</li>
 			</ol>
 			<hr>
 		</main>

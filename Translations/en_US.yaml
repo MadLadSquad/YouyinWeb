@@ -43,10 +43,14 @@ translations:
   - id: coming-soon-header
     text: "This page is coming soon!"
     # Add coming soon text 1
+  - id: coming-soon-text-1
+    text: "Maybe check out the main {} or {}!"
   - id: coming-soon-text-2
     text: "Thank you for your patience!"
 
   # deck-edit-card.html
+  - id: edit-card-site-title
+    text: Edit Card
   - id: new-card-h1
     text: "New Card"
   - id: input-mode-p
@@ -176,3 +180,73 @@ translations:
     text: "Community"
   - id: release
     text: "Release"
+
+  # about.html
+  - id: about_h1
+    text: "About {{ trademark }}"
+  - id: about_p1_1
+    text: "{{ trademark }}(卣囙/yǒuyīn) is a simple platform for practicing hanzi/kanji/hanja/汉字/漢字 and/or other writing systems."
+  - id: about_p1_2
+    text: "We use a simple flashcard based approach to learning how to read and write the given writing system. These are the components of the app:"
+  - id: about_p1_li_1
+    text: "Practice - Helps you learn to read and write the given character"
+  - id: about_p1_li_2
+    text: "Deck marketplace - A large list of community and official decks that can be imported on demand"
+  - id: about_p1_li_3
+    text: "Leaderboards and User profiles - Gamifies the system by challenging the user to compete in weekly leaderboards"
+  - id: about_p2
+    text: "The app is not a dictionary, the user is supposed to use a separate dictionary(like {} for Chinese)."
+  - id: about_h2
+    text: "The story of the app's development"
+  - id: about_p3_1
+    text: "In January 2023, {} decided to create {{ trademark }} as a solution for his obsession with learning Chinese characters and other writing systems. He found no existing solution that would help with that, so he decided to develop one himself. Initially started as a platform for learning to write Chinese characters, {{ trademark }} is currently expanding into more writing systems like Hiragana, Katakana, Cyrillic, Latin, Greek, etc."
+  - id: about_p3_2
+    text: "The name {{ trademark }} comes from a bad joke about the video game {} where people all over the internet were going insane when they saw the geometric shape of the crewmates in the game. In Chinese, the name use the 2 symbols \"卣囙\", pronounced as \"yǒuyīn\" in pinyin, look like the crewmates. Additionally, the name of the site is similar to the following 3 words:"
+  - id: about_p3_li_1
+    text: "诱因 - meaning cause esp. of an illness, it's related to the site because you'll become sick of \"I know how to write so much Chinese characters\" syndrome"
+  - id: about_p3_li_2
+    text: "油印 - meaning a mimeograph, a device for copying text and images to another list of paper, related because you will be copying handwriting here a lot"
+  - id: about_p3_li_3
+    text: "有瘾 - meaning to be addicted to something, relevant because you'll be addicted to writing characters here"
+  - id: about_p3
+    text: "The pair 卣囙 has no meaning. The first character is an archaic word for a \"small-mouthed wine vessel\", while the second is an old variant of the character 因, which generally means the following: cause, origin, to follow, to carry on, to conform to, to accord with, because of, as a result of, because, etc."
+  - id: about_h3
+    text: "Credits"
+  - id: about_p4
+    text: "{{ trademark }} uses the following open source libraries for most of the testing and text rendering functionality:"
+  - id: about_p4_li_1
+    text: " - Provides the character information used by Hanziwriter"
+  - id: about_p4_li_2
+    text: " - Provides the character animations and handwriting recognition used during tests"
+  - id: about_p4_li_3
+    text: " - Provides data for Japanese Kanji and most Japanese Kana"
+  - id: about_p5
+    text: "Additionally, we want to thank the following people for helping with the development of the application:"
+  - id: about_p5_li_1
+    text: "{} for providing German translations"
+  - id: about_p5_li_2
+    text: "{} for providing Japanese translations"
+  - id: about_p5_li_3
+    text: "{} for helping with UI and UX issues"
+  - id: about_h4
+    text: "Known issues"
+  - id: about_h4_h1
+    text: "Start session button or writer becomes really large"
+  - id: about_q1
+    text: "Q: When I resize the window or finish a test, the start session button or the writer becomes larger than the available screen real estate, why is that?"
+  - id: about_a1
+    text: "A: Unfortunately, this peculiar error cannot be resolved by us, because it's mainly caused by third party extensions. One example is {}. The only way to stop that from happening is to find out which extension causes this and disable it for our site."
+  - id: about_h5
+    text: "More like {{ trademark }}"
+  - id: about_h5_1
+    text: " - A website for correcting grammar, punctuation and spelling"
+  - id: about_h5_2
+    text: " - Book reading as TikTok"
+  - id: about_h5_3
+    text: "{} develops more than just {{ trademark }}, check out the following CJK/Language learning applications and libraries"
+  - id: about_h5_4
+    text: " - A handwriting plugin for {}"
+  - id: about_h5_5
+    text: " - All character data used in {{ trademark }} in one place"
+  - id: about_h5_6
+    text: " - The MadLad Squad i18n(internationalisation) project"

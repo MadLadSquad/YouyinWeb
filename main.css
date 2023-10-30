@@ -24,6 +24,11 @@ main {
 	--main-padding-width: 1rem;
 }
 
+.article {
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+}
+
 #start-button-writer-section {
 	padding-left: 0.5rem;
 	padding-right: 0.5rem;

@@ -3,6 +3,8 @@ localhost-commands:
 allowed-extensions:
   - html
   - js
+  - yaml
+  - yml
 filename-blacklist:
   - .git
   - UBTCustomFunctions
