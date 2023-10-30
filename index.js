@@ -110,6 +110,8 @@ function fixLegacyCharacterVariants()
 function setLanguage()
 {
 	let localStorageLang = window.localStorage.getItem("language");
+	let selectWidget = $("lang-select");
+
 	if (localStorageLang === null)
 	{
 		localStorageLang = "en_US";
@@ -123,9 +125,10 @@ function setLanguage()
 			if (url[i] !== "")
 				redirect += url[i] + "/";
 		
+		selectWidget.value = localStorageLang;
 		location.href = redirect.slice(0, -1);
-	
 	}
+	selectWidget.value = localStorageLang;
 }
 
 function setLanguageBox()
