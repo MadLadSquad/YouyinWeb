@@ -15,7 +15,7 @@ lc.milliseconds = "{{ _ milliseconds }}";
 lc.minutes = "{{ _ minutes }}";
 lc.seconds = "{{ _ seconds }}";
 
-lc.locale = "{{ _ locale }}";
+lc.locale = "{{ _ js_locale }}";
 
 lc.no_sessions_recorded = "{{ _ no_sessions_recorded }}";
 lc.average_knowledge_level = "{{ _ average_knowledge_level }}";

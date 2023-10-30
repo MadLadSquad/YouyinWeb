@@ -36,6 +36,8 @@ translations:
     text: "About"
   - id: account
     text: "Account"
+  - id: locale
+    text: "en_US/"
 
   # Coming soon
   - id: coming-soon-header
@@ -133,7 +135,7 @@ translations:
     text: "min."
   - id: seconds
     text: "sec."
-  - id: locale
+  - id: js_locale
     text: "en-US"
   - id: no_sessions_recorded
     text: "No sessions yet recorded!"

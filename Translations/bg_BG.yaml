@@ -36,6 +36,8 @@ translations:
     text: "За нас"
   - id: account
     text: "Профил"
+  - id: locale
+    text: "bg_BG/"
 
   # Coming soon
   - id: coming-soon-header
@@ -133,7 +135,7 @@ translations:
     text: "мин."
   - id: seconds
     text: "сек."
-  - id: locale
+  - id: js_locale
     text: "bg-BG"
   - id: no_sessions_recorded
     text: "Няма записани сесии!"
