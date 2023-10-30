@@ -107,7 +107,7 @@ function fixLegacyCharacterVariants()
 	}
 }
 
-function redirectWithLanguage(localStorageLang, previous)
+function redirectWithLanguage(selectWidget, localStorageLang, previous)
 {
 	let url = location.href.split("/");
 	let redirect = url[0] + "//" + url[2] + "/" + localStorageLang + "/";
@@ -131,7 +131,7 @@ function setLanguage()
 	}
 	else if (!location.href.includes(localStorageLang))
 	{
-		redirectWithLanguage(localStorageLang, null);
+		redirectWithLanguage(selectWidget, localStorageLang, null);
 		return;
 	}
 	selectWidget.value = localStorageLang;
@@ -142,7 +142,7 @@ function setLanguageBox()
 	$("lang-select").addEventListener("change", function(){
 		let old = window.localStorage.getItem("language");
 		window.localStorage.setItem("language", this.value);
-		redirectWithLanguage(this.value, old);
+		redirectWithLanguage(this, this.value, old);
 	})
 }
 
