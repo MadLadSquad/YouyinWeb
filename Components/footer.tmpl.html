@@ -1,6 +1,6 @@
 <footer class="centered">
 	<p>
-		A <a href="https://madladsquad.com/">MadLad Squad</a> project!
+		{{ _ footer {{ raw <a href="https://madladsquad.com/">MadLad Squad</a>}} }}
 	</p>
 	<select aria-label="Language select box" name="lang" id="lang-select" class="centered" onchange="modifySelectedLanguage()">
 		<option value="0">🇬🇧   EN</option>
@@ -13,4 +13,5 @@
 		<option value="7">🇯🇵   JP</option>
 	</select>
 </footer>
+<script src="./i18n.js"></script>
 <script src="./index.js"></script>

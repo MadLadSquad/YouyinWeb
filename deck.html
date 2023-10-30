@@ -4,43 +4,43 @@
 		{{ include Components/head.tmpl.html }}
 		<link rel="stylesheet" href="./deck.css">
 
-		<title class="site-title">Deck | {{ trademark }} </title>
+		<title class="site-title">{{ _ no_cards_link_deck }} | {{ trademark }} </title>
 	</head>
 	<body>
 		{{ include Components/header.tmpl.html }}
-		<h1 class="centered">Deck</h1>
+		<h1 class="centered">{{ _ no_cards_link_deck }}</h1>
 		<main>
 			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
 			<section class="deck" id="deck-generic-info-section">
 				<div id="profile-card" class="card centered">
-					<h3>Profile Statistics</h3>
-					<p id="total-sessions-field">Total Sessions: </p>
-					<p id="streak-field">Streak: </p>
-					<p id="deck-card-num-field">Cards in deck: </p>
-					<p id="deck-phrase-num-field">Phrases in deck: </p>
-					<p id="last-session-date-field">Last session: </p>
-					<p id="average-knowledge-level-field">Average knowledge level: </p>
-					<p id="average-session-length-field">Average session length: </p>
-					<p id="time-spent-in-sessions-field">Time spent in sessions: </p>
+					<h3>{{ _ profile-statistics-header }}</h3>
+					<p id="total-sessions-field">{{ _ total-sessions-field }}: </p>
+					<p id="streak-field">{{ _ streak-field }}: </p>
+					<p id="deck-card-num-field">{{ _ deck-card-num-field }}: </p>
+					<p id="deck-phrase-num-field">{{ _ deck-phrase-num-field }}: </p>
+					<p id="last-session-date-field">{{ _ last-session-date-field }}: </p>
+					<p id="average-knowledge-level-field">{{ _ average-knowledge-level-field }}: </p>
+					<p id="average-session-length-field">{{ _ average-session-length-field }}: </p>
+					<p id="time-spent-in-sessions-field">{{ _ time-spent-in-sessions-field }}: </p>
 				</div>
 				<div id="new-card" class="card centered">
 					<h1 id="new-card-header">+</h1>
-					<p>Add a new card to the deck</p>
-					<button id="new-card-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?new'">New card</button>
-					<button id="new-phrase-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?phrase-new'">New phrase</button>
+					<p>{{ _ new-card-header }}</p>
+					<button id="new-card-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?new'">{{ _ new-card-button }}</button>
+					<button id="new-phrase-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?phrase-new'">{{ _ new-phrase-button }}</button>
 					<br>
-					<input type="file" id="fileupload"><button id="import-deck-button" class="card-button-edit">Import</button></input>
-					<button id="export-deck-button" class="card-button-edit">Export</button>
+					<input type="file" id="fileupload"><button id="import-deck-button" class="card-button-edit">{{ _ import-deck-button }}</button></input>
+					<button id="export-deck-button" class="card-button-edit">{{ _ export-deck-button }}</button>
 
-					<button id="clear-deck-button" class="card-button-edit">Clear</button>
-					<button id="marketplace-deck-button" class="card-button-edit" onclick="location.href='./marketplace.html'">Marketplace</button>
+					<button id="clear-deck-button" class="card-button-edit">{{ _ clear-deck-button }}</button>
+					<button id="marketplace-deck-button" class="card-button-edit" onclick="location.href='./marketplace.html'">{{ _ marketplace-deck-button }}</button>
 				</div>
 			</section>
-			<h1 id="deck-phrases-header" class="centered">Phrases</h1>
+			<h1 id="deck-phrases-header" class="centered">{{ _ deck-phrases-header }}</h1>
 			<section class="deck" id="deck-phrases-section">
 				<!-- Data will be inserted dynamically by the Javascript here from the deck.js file -->
 			</section>
-			<h1 id="deck-characters-header" class="centered">Character cards</h1>
+			<h1 id="deck-characters-header" class="centered">{{ _ deck-characters-header }}</h1>
 			<section class="deck" id="deck-characters-section">
 				<!-- Data will be inserted dynamically by the Javascript here from the deck.js file -->
 			</section>

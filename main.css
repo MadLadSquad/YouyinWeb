@@ -78,7 +78,7 @@ ul li a {
  **/
 #main-page {
 	display: grid;
-	gap: 0rem;
+	gap: 0;
 	grid-template-columns: 25% 75%;
 	grid-auto-rows: 100%;
 }
@@ -187,10 +187,7 @@ option {
 
 /* Reduce margins for the text on the character info */
 #main-page-info-container p, #main-page-info-container ol {
-	margin-top: 3px;
-	margin-bottom: 3px;
-	margin-right: 0.5rem;
-	margin-left: 0.5rem
+	margin: 3px 0.5rem;
 }
 
 /* Style the hr element is stupid can confirm, why have an hr? because a border on the footer will break */

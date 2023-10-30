@@ -2,11 +2,15 @@ localhost-commands:
   - python3 -m http.server 8080
 allowed-extensions:
   - html
+  - js
 filename-blacklist:
   - .git
   - UBTCustomFunctions
   - UVKBuildTool
   - .github
+  - .idea
+  - .vs
+  - Translations
 intermediate-extensions:
   - .tmpl.html
 variables:

@@ -3,9 +3,9 @@
 async function loadMarketplaceData(file)
 {
 	let response = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest/${file}`)
-	if (await response.status !== 200)
+	if (response.status !== 200)
 	{
-		console.log(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
+		console.error(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
 		return;
 	}
 	return await response.json();
@@ -17,11 +17,11 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	let filename = folder + it.name;
 	let marketplaceJSON = await loadMarketplaceData(filename);
 
-	let leveledUpType = "No";
+	let leveledUpType = lc.leveled_up_no;
 	let extension = ".yydeck.json"
 	if (it.name.endsWith(".presetlvl.yydeck.json"))
 	{
-		leveledUpType = "Yes"
+		leveledUpType = lc.leveled_up_yes
 		extension = ".presetlvl.yydeck.json"
 	}
 
@@ -30,16 +30,16 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	let nm = it.name.replaceAll("-", " ").replaceAll(extension, "");
 
 	addElement("h1", nm, "", "", "", div);
-	addElement("p", `Status: ${type2}`, "", "", "", div);
-	addElement("p", `Pre-leveled up: ${leveledUpType}`, "", "", "", div);
-	addElement("p", `Cards: ${marketplaceJSON.length}`, "", "", "", div);
+	addElement("p", `${lc.status}: ${type2}`, "", "", "", div);
+	addElement("p", `${lc.pre_leveled_up}: ${leveledUpType}`, "", "", "", div);
+	addElement("p", `${lc.phrases_count_cards}: ${marketplaceJSON.length}`, "", "", "", div);
 
 	// Import a deck from file
-	addElement("button", "Import", `import-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
+	addElement("button", lc.deck_import, `import-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
 	{
 		// If an element is created using addElement, arbitrary data is also assigned
 		let content = await loadMarketplaceData(this.getAttribute("arbitrary-data"));
-		let bExecuted = confirm("Importing a deck WILL merge your current deck with the new one, to replace it first clear your current deck!");
+		let bExecuted = confirm(lc.import_deck_confirm_text);
 		if (bExecuted)
 		{
 			let dt = window.localStorageData;
@@ -52,7 +52,7 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	// Stupid ahhhh whitespace adding code because web dev is stupid
 	div.appendChild(document.createTextNode("\u00A0"));
 
-	addElement("button", "Source", `source-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
+	addElement("button", lc.deck_source, `source-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
 	{
 		// If an element uses addElement, arbitrary data is also assigned
 		window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository/blob/master/' + this.getAttribute("arbitrary-data"));
@@ -61,7 +61,7 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	addElement("br", "", "", "", "", div);
 
 	// Download deck with this interesting code
-	addElement("button", "Download", `download-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
+	addElement("button", lc.deck_download, `download-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
 	{
 		let content = await loadMarketplaceData(this.getAttribute("arbitrary-data"));
 
@@ -82,7 +82,7 @@ function createErrorElement(deckContainer, response, marketplaceType)
 async function handleOfficialRepos(deckContainer)
 {
 	let response = await fetch("https://api.github.com/repos/MadLadSquad/YouyinPublicDeckRepository/contents/");
-	if (await response.status !== 200)
+	if (response.status !== 200)
 	{
 		createErrorElement(deckContainer, response, "official");
 		return;
@@ -92,7 +92,7 @@ async function handleOfficialRepos(deckContainer)
 	{
 		let it = json[val];
 		if (it.name.endsWith(".yydeck.json"))
-			constructElement(val, deckContainer, it, "official", "Official", "");
+			await constructElement(val, deckContainer, it, "official", lc.official, "");
 	}
 }
 
@@ -101,7 +101,7 @@ async function handleCommunityRepos(deckContainer)
 {
 	// Start from community, we will then iterate trough all the release folders
 	let response = await fetch("https://api.github.com/repos/MadLadSquad/YouyinPublicDeckRepository/contents/community");
-	if (await response.status !== 200)
+	if (response.status !== 200)
 	{
 		createErrorElement(deckContainer, response, "community");
 		return;
@@ -110,17 +110,17 @@ async function handleCommunityRepos(deckContainer)
 	for (let ii in json1)
 	{
 		let it1 = json1[ii];
-		if (it1.name.startsWith("r") && it1.type == "dir")
+		if (it1.name.startsWith("r") && it1.type === "dir")
 		{
 			let res = await fetch(`https://api.github.com/repos/MadLadSquad/YouyinPublicDeckRepository/contents/community/${it1['name']}`);
-			if (await res.status !== 200)
+			if (res.status !== 200)
 			{
 				createErrorElement(deckContainer, res, "community");
 				return;
 			}
 			const json = await res.json();
 
-			addElement("h1", `Release ${it1.name.slice(1)}`, "", "centered", "", deckContainer);
+			addElement("h1", `${lc.release} ${it1.name.slice(1)}`, "", "centered", "", deckContainer);
 			addElement("br", "", "", "", "", deckContainer);
 			let el = addElement("section", "", "deck-community", "deck", "", deckContainer);
 			for (let val in json)
@@ -128,7 +128,7 @@ async function handleCommunityRepos(deckContainer)
 				let it = json[val];
 				const fname = it1.name;
 				if (it.name.endsWith(".yydeck.json"))
-					constructElement(val, el, it, "community", "Community", `community/${fname}/`);
+					await constructElement(val, el, it, "community", lc.community, `community/${fname}/`);
 			}
 		}
 	}
@@ -143,4 +143,4 @@ async function marketplaceMain()
 	await handleCommunityRepos(communityContainer);
 }
 
-marketplaceMain();
+marketplaceMain().then(_ => {});

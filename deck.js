@@ -1,8 +1,8 @@
 'use strict';
 
-var HOUR_UNIX = 36000000;
-var MINUTE_UNIX = 60000;
-var SECOND_UNIX = 1000;
+window.HOUR_UNIX = 36000000;
+window.MINUTE_UNIX = 60000;
+window.SECOND_UNIX = 1000;
 
 function updateExportButton()
 {
@@ -18,13 +18,13 @@ function updateExportButton()
 }
 
 function importDeck(f) {
-	let bExecuted = confirm("Importing a deck WILL merge your current deck with the new one, to replace it first clear your current deck!");
+	let bExecuted = confirm(lc.import_deck_confirm_text);
 	if (bExecuted)
 	{
 		const reader = new FileReader();
 		reader.addEventListener("load", function(){
 			let dt = window.localStorageData;
-			dt.cards.push.apply(dt.cards, JSON.parse(this.result));
+			dt.cards.push.apply(dt.cards, JSON.parse(this.result.toString()));
 
 			saveToLocalStorage(dt);
 			document.location.reload();
@@ -34,7 +34,7 @@ function importDeck(f) {
 }
 
 function clearDeck() {
-	let bExecuted = confirm("Are you sure you want to DELETE the current deck, THIS CANNOT BE UNDONE! Export your data to save it just in case!");
+	let bExecuted = confirm(lc.clear_deck_confirm_text);
 	if (bExecuted)
 	{
 		let dt = window.localStorageData;
@@ -48,28 +48,28 @@ function clearDeck() {
 function setProfileCardData()
 {
 	$("total-sessions-field").textContent += window.localStorageData.sessions;
-	$("streak-field").textContent += (window.localStorageData.streak + " days");
+	$("streak-field").textContent += (window.localStorageData.streak + lc.streak_field_days);
 	$("deck-card-num-field").textContent += window.localStorageData.cards.length;
 	$("deck-phrase-num-field").textContent += window.localStorageData.phrases.length;
 
 	let a = (window.localStorageData.totalTimeInSessions * 1);
 	let averageSessionLen = isNaN(a) ? 0 : a;
-	let sessionLenPostfix = "ms"
+	let sessionLenPostfix = lc.milliseconds;
 
 	// 1000 * 60 * 60 basically an hour
 	if (averageSessionLen > window.HOUR_UNIX)
 	{
-		sessionLenPostfix = "h"
+		sessionLenPostfix = lc.hours;
 		averageSessionLen /= window.HOUR_UNIX;
 	}
 	else if (averageSessionLen > window.MINUTE_UNIX)
 	{
-		sessionLenPostfix = "min"
+		sessionLenPostfix = lc.minutes;
 		averageSessionLen /= window.MINUTE_UNIX;
 	}
 	else if (averageSessionLen > window.SECOND_UNIX)
 	{
-		sessionLenPostfix = "sec";
+		sessionLenPostfix = lc.seconds;
 		averageSessionLen /= window.SECOND_UNIX;
 	}
 
@@ -80,10 +80,10 @@ function setProfileCardData()
 	$("time-spent-in-sessions-field").textContent += (averageSessionLen.toFixed(2).toString() + sessionLenPostfix);
 
 	const lastDate = window.localStorageData.lastDate;
-	if (lastDate != 0)
+	if (lastDate !== 0)
 	{
 		const date = new Date(lastDate);
-		$("last-session-date-field").textContent += date.toLocaleDateString('en-GB',
+		$("last-session-date-field").textContent += date.toLocaleDateString(lc.locale,
 		{
 			weekday: "short",
 			year: "numeric",
@@ -94,7 +94,7 @@ function setProfileCardData()
 		});
 	}
 	else
-		$("last-session-date-field").textContent += "No sessions yet recorded!";
+		$("last-session-date-field").textContent += lc.no_sessions_recorded;
 
 	const averageKnowledge = $("average-knowledge-level-field");
 	let knowledge = 0;
@@ -104,7 +104,7 @@ function setProfileCardData()
 	knowledge /= window.localStorageData.cards.length;
 	if (isNaN(knowledge))
 		knowledge = 0;
-	averageKnowledge.textContent = `Average knowledge level: ${knowledge.toFixed(2)}/${window.MAX_KNOWLEDGE_LEVEL}`;
+	averageKnowledge.textContent = `${lc.average_knowledge_level}: ${knowledge.toFixed(2)}/${window.MAX_KNOWLEDGE_LEVEL}`;
 }
 
 // it - struct
@@ -121,7 +121,7 @@ function constructCard(it, index, container, localIndex)
 	const target = it["character"]
 									? addElement("div", "", `card-character-target-div-${index}`, "", "", div)
 									: addElement("h1", it.phrase, `card-character-target-div-${index}`, "phrase-card-header", "", div);
-	addElement("p", "Definitions:", "", "", "", div);
+	addElement("p", `${lc.deck_definitions}`, "", "", "", div);
 
 	// Add the list to the card and fill it with elements
 	let list = addElement("ol", "", "", "", "", div);
@@ -139,7 +139,7 @@ function constructCard(it, index, container, localIndex)
 		if (data.phrases.length > 0)
 		{
 			// This is really not performant...
-			let paragraph = addElement("p", "Part of:", "", "", "", div);
+			let paragraph = addElement("p", `${lc.part_of}:`, "", "", "", div);
 			let ol = document.createElement("ol");
 			let bPartOfPhrase = false;
 
@@ -161,7 +161,7 @@ function constructCard(it, index, container, localIndex)
 	}
 
 	// Create the "Edit" button and add an onclick event that redirects to the new card page
-	let editButton = addElement("button", "Edit", `card-edit-button-${index}`, "card-button-edit", `${localIndex}`, div)
+	let editButton = addElement("button", lc.deck_card_edit, `card-edit-button-${index}`, "card-button-edit", `${localIndex}`, div)
 	editButton["phrase"] = it["phrase"] ? "phrase-" : ""; // If we're using phrases add this so that the callback can redirect correctly
 	editButton.addEventListener("click", function()
 	{
@@ -206,10 +206,10 @@ function deckmain()
 	let phrasesContainer = $("deck-phrases-section");
 
 	// Remove phrases elements if none are available
-	if (data.phrases.length == 0)
+	if (data.phrases.length === 0)
 	{
 		$("deck-phrases-header").remove();
-		$("deck-phrases-section").remove();
+		phrasesContainer.remove();
 	}
 	else // Load phrases
 	{
@@ -221,10 +221,10 @@ function deckmain()
 	}
 
 	// Remove cards elements if none are available
-	if (data.cards.length == 0)
+	if (data.cards.length === 0)
 	{
 		$("deck-characters-header").remove();
-		$("deck-characters-section").remove();
+		cardsContainer.remove();
 		return;
 	}
 

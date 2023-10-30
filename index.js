@@ -1,26 +1,26 @@
 'use strict';
 // ------------------- CONSTANT BLOCK EDIT IF RUNNING ON A CUSTOM SYSTEM ------------------
-var MAX_KNOWLEDGE_LEVEL = 4;
-var MAX_POINTS_ON_CHARACTER = 0.25;
-var ADD_POINTS_ON_ERROR_3_4 = 0.1875; // 3/4 of 0.25
-var ADD_POINTS_ON_ERROR_1_2 = 0.125; // 1/2 or 2/4 of 0.25
-var ADD_POINTS_ON_ERROR_1_3 = 0.0625; // 1/3 of 0.25
+window.MAX_KNOWLEDGE_LEVEL = 4;
+window.MAX_POINTS_ON_CHARACTER = 0.25;
+window.ADD_POINTS_ON_ERROR_3_4 = 0.1875; // 3/4 of 0.25
+window.ADD_POINTS_ON_ERROR_1_2 = 0.125; // 1/2 or 2/4 of 0.25
+window.ADD_POINTS_ON_ERROR_1_3 = 0.0625; // 1/3 of 0.25
 
-var CARD_WRITER_SIZE = 100;
-var CARD_WRITER_STROKE_ANIMATION_SPEED = 1.25;
-var CARD_WRITER_DELAY_BETWEEN_STROKES = 50;
-var CARD_DEFAULT_CHARACTER = "是"
-var CARD_DEFAULT_PREVIEW_NAME = "Preview Name"
+window.CARD_WRITER_SIZE = 100;
+window.CARD_WRITER_STROKE_ANIMATION_SPEED = 1.25;
+window.CARD_WRITER_DELAY_BETWEEN_STROKES = 50;
+window.CARD_DEFAULT_CHARACTER = "是"
+window.CARD_DEFAULT_PREVIEW_NAME = "Preview Name"
 
-var WRITER_PADDING = 5;
-var WRITER_RADICAL_COLOUR = "#c87e74";
-var WRITER_SLEEP_AFTER_COMPLETE = 1200; // In ms
+window.WRITER_PADDING = 5;
+window.WRITER_RADICAL_COLOUR = "#c87e74";
+window.WRITER_SLEEP_AFTER_COMPLETE = 1200; // In ms
 
-var WRITER_SHOW_HINT_ON_ERRORS = 3;
-var WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
+window.WRITER_SHOW_HINT_ON_ERRORS = 3;
+window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
 // ---------------------------------- CONSTANT BLOCK END ----------------------------------
 
-var localStorageData;
+window.localStorageData = null;
 
 // Troll jQuery developers
 function $(x)
@@ -34,12 +34,12 @@ function addTextNode(container, text)
 }
 
 // This loads characters from the database. Change the URL to your own database.
-async function charDataLoader(character, onLoad, onError)
+async function charDataLoader(character, _, __)
 {
 	let response = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/data/${character}.json`)
-	if (await response.status !== 200)
+	if (response.status !== 200)
 	{
-		console.log(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
+		console.error(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
 		return;
 	}
 	return await response.json();
@@ -101,19 +101,19 @@ function getLangType(params)
 	if (params.has("lang"))
 	{
 		const lang = params.get("lang");
-		if (lang == "bg")
+		if (lang === "bg")
 			return 1;
-		else if (lang == "cn")
+		else if (lang === "cn")
 			return 2;
-		else if (lang == "tw")
+		else if (lang === "tw")
 			return 3;
-		else if (lang == "de")
+		else if (lang === "de")
 			return 4;
-		else if (lang == "mk")
+		else if (lang === "mk")
 			return 5;
-		else if (lang == "ru")
+		else if (lang === "ru")
 			return 6;
-		else if (lang == "jp")
+		else if (lang === "jp")
 			return 7;
 	}
 	return 0;
@@ -153,8 +153,6 @@ function fixLegacyCharacterVariants()
 			card["variant"] = card.character.substring(1);
 			card["character"] = card.character.charAt(0);
 		}
-		else
-			continue;
 	}
 }
 
@@ -174,14 +172,14 @@ function main()
 			phrases: [],
 		}
 		saveToLocalStorage(data);
-		document.location.reload(true);
+		document.location.reload();
 	}
 
 	if (!window.localStorageData["phrases"])
 	{
 		window.localStorageData["phrases"] = [];
 		saveToLocalStorage(window.localStorageData);
-		document.location.reload(true);
+		document.location.reload();
 	}
 
 	fixLegacyCharacterVariants();

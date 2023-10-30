@@ -1,0 +1,176 @@
+translations:
+  # index.html
+  - id: phrase-info-widget-spelling
+    text: "My phrase"
+  - id: phrase-info-widget-errors
+    text: "Phrases: {}; Errors: {}"
+  - id: character-info-widget-def-p
+    text: "Definitions:"
+  - id: character-info-widget-info-default
+    text: "To be loaded"
+  - id: character-info-widget-errors
+    text: "Cards: {}; Errors: {}"
+  - id: character-info-widget-spelling
+    text: "Spelling: To be loaded"
+  - id: start-button
+    text: "Click to start session"
+  - id: 404-text
+    text: "Unfortunately, this page doesn't exist"
+  - id: phrases_count_errors
+    text: "Errors"
+  - id: phrases_count_cards
+    text: "Cards"
+  - id: phrases_count_spelling
+    text: "Spelling"
+  - id: to_be_loaded
+    text: "To be loaded"
+  - id: no_cards_link_deck
+    text: "Deck"
+  - id: no_cards_text
+    text: "You currently have no cards, go to the "
+  - id: no_cards_text_postfix
+    text: " page to add some!"
+  - id: footer
+    text: "A {} project!"
+  - id: about-us
+    text: "About"
+  - id: account
+    text: "Account"
+
+  # Coming soon
+  - id: coming-soon-header
+    text: "This page is coming soon!"
+    # Add coming soon text 1
+  - id: coming-soon-text-2
+    text: "Thank you for your patience!"
+
+  # deck-edit-card.html
+  - id: new-card-h1
+    text: "New Card"
+  - id: input-mode-p
+    text: "Input: "
+  - id: input-mode-none
+    text: "None"
+  - id: pinyin-input-description
+    text: "Enables you to use Pinyin number notation in text boxes. It will then convert the text to actual pinyin. Example: 'pin1 yin1' will become 'pīn yīn'."
+  - id: phrase-preview-section-header
+    text: "Previews"
+  - id: finish-edit-button
+    text: "Finish"
+  - id: cancel-edit-button
+    text: "Cancel"
+  - id: unknown_character
+    text: "Unknown character"
+  - id: unknown_phrase
+    text: "Unknown phrase"
+  - id: character_variant_default
+    text: "Default"
+  - id: character_variant_kanji
+    text: "Kanji"
+  - id: character_variant_hanja
+    text: "Hanja"
+  - id: name_text_field_aria
+    text: "Name text field"
+  - id: character_text_field_aria
+    text: "Character text field"
+  - id: meaning_text_field_aria
+    text: "Meaning text field"
+  - id: character_variant_box_aria
+    text: "Character variant box"
+  - id: card_name
+    text: "Name"
+  - id: card_phrase
+    text: "Phrase"
+  - id: card_character
+    text: "Character"
+
+  # deck.html
+  - id: profile-statistics-header
+    text: "Profile Statistics"
+  - id: total-sessions-field
+    text: "Total Sessions"
+  - id: streak-field
+    text: "Streak"
+  - id: deck-card-num-field
+    text: "Cards in deck"
+  - id: deck-phrase-num-field
+    text: "Phrases in deck"
+  - id: last-session-date-field
+    text: "Last Session"
+  - id: average-knowledge-level-field
+    text: "Average knowledge level"
+  - id: average-session-length-field
+    text: "Average session length"
+  - id: time-spent-in-sessions-field
+    text: "Time spent in sessions"
+  - id: new-card-header
+    text: "Add a new card or phrase to the deck"
+  - id: new-card-button
+    text: "New card"
+  - id: new-phrase-button
+    text: "New phrase"
+  - id: import-deck-button
+    text: "Import"
+  - id: export-deck-button
+    text: "Export"
+  - id: clear-deck-button
+    text: "Clear"
+  - id: marketplace-deck-button
+    text: "Marketplace"
+  - id: deck-phrases-header
+    text: "Phrases"
+  - id: deck-characters-header
+    text: "Character cards"
+  - id: clear_deck_confirm_text
+    text: "Are you sure you want to DELETE the current deck, THIS CANNOT BE UNDONE! Export your data to save it just in case!"
+  - id: streak_field_days
+    text: " days"
+  - id: hours
+    text: "h."
+  - id: milliseconds
+    text: "ms."
+  - id: minutes
+    text: "min."
+  - id: seconds
+    text: "sec."
+  - id: locale
+    text: "en-US"
+  - id: no_sessions_recorded
+    text: "No sessions yet recorded!"
+  - id: average_knowledge_level
+    text: "Average knowledge level"
+  - id: part_of
+    text: "Part of"
+  - id: deck_card_edit
+    text: "Edit"
+
+  # marketplace.html
+  - id: official-decks-header
+    text: "Official decks"
+  - id: new-deck-upload-info
+    text: "Want to add your deck to the marketplace? Click below to learn more!"
+  - id: upload-deck-public
+    text: "Upload"
+  - id: community-decks-header
+    text: "Community decks"
+
+  - id: import_deck_confirm_text
+    text: "Importing a deck WILL merge your current deck with the new one, to replace it first clear your current deck!"
+  - id: leveled_up_no
+    text: "No"
+  - id: leveled_up_yes
+    text: "Yes"
+  - id: status
+    text: "Status"
+  - id: pre_leveled_up
+    text: "Pre-leveled up"
+  - id: deck_source
+    text: "Source"
+  - id: deck_download
+    text: "Download"
+  - id: official
+    text: "Official"
+  - id: community
+    text: "Community"
+  - id: release
+    text: "Release"

@@ -1,24 +1,24 @@
 'use strict';
 
 // Global writer variable, because yes
-var writer;
+window.writer;
 
-var totalPhraseErrors = 0;
-var errors = 0;
-var backwardsErrors = 0;
+window.totalPhraseErrors = 0;
+window.errors = 0;
+window.backwardsErrors = 0;
 
-var bInTest = false;
-var bInPhrase = false;
+window.bInTest = false;
+window.bInPhrase = false;
 
-var totalPhraseStrokes = 0;
+window.totalPhraseStrokes = 0;
 
-var currentPhraseIndex = 0;
-var currentIndex = 0;
-var sessionTime = 0;
+window.currentPhraseIndex = 0;
+window.currentIndex = 0;
+window.sessionTime = 0;
 
-var bMobile = false;
+window.bMobile = false;
 
-var linkChildren;
+window.linkChildren = null;
 
 // This function uses some dark magic that works half the time in order to calculate the size of the mainpage viewport
 // and main elements. Here are some issues:
@@ -69,7 +69,7 @@ function writerOnMistake(strokeData)
 		window.backwardsErrors++;
 
 	// Since we don't count backwards strokes as errors, remove them rom the mistakes and calculate errors correctly
-	if ((strokeData.mistakesOnStroke - window.backwardsErrors) == window.WRITER_SHOW_HINT_ON_ERRORS)
+	if ((strokeData.mistakesOnStroke - window.backwardsErrors) === window.WRITER_SHOW_HINT_ON_ERRORS)
 	{
 		window.errors++;
 		window.totalPhraseErrors++;
@@ -81,14 +81,14 @@ function writerOnMistake(strokeData)
 	{
 		num = window.localStorageData.phrases[window.currentPhraseIndex].phrase.length;
 		// Also update the phrase information. It's ugly, I know...
-		$("phrase-info-widget-errors").textContent = `Phrases ${window.currentPhraseIndex}/${window.localStorageData.phrases.length}; Errors: ${window.totalPhraseErrors}`;
+		$("phrase-info-widget-errors").textContent = `${lc.phrases_count_phrase}: ${window.currentPhraseIndex}/${window.localStorageData.phrases.length}; ${lc.phrases_count_errors}: ${window.totalPhraseErrors}`;
 	}
 
 	// Update the card information
-	$("character-info-widget-errors").textContent = `Cards: ${window.currentIndex}/${num}; Errors: ${window.errors}`;
+	$("character-info-widget-errors").textContent = `${lc.phrases_count_cards}: ${window.currentIndex}/${num}; ${lc.phrases_count_errors}: ${window.errors}`;
 }
 
-function writerOnCorrectStroke(strokeData)
+function writerOnCorrectStroke(_)
 {
 	window.backwardsErrors = 0;
 }
@@ -111,27 +111,29 @@ function updateIndividualSidebarElementText(prefix, spelling, errors, obj)
 
 function changeSidebarText(phrase, phraseNum, card, cardNum)
 {
+	let definitionParagraph = $("character-info-widget-def-p");
+
 	if (phrase !== null && phraseNum > 0)
-		updateIndividualSidebarElementText("phrase", phrase.name, `Phrases ${window.currentPhraseIndex}/${phraseNum}; Errors: ${window.totalPhraseErrors}`, phrase);
+		updateIndividualSidebarElementText("phrase", phrase.name, `${lc.phrases_count_phrase}: ${window.currentPhraseIndex}/${phraseNum}; ${lc.phrases_count_errors}: ${window.totalPhraseErrors}`, phrase);
 
 	if (card !== null && cardNum > 0)
-		updateIndividualSidebarElementText("character", `Spelling: ${card.name}`, `Cards: ${window.currentIndex}/${cardNum}; Errors: 0`, card);
+		updateIndividualSidebarElementText("character", `${lc.phrases_count_spelling}: ${card.name}`, `${lc.phrases_count_cards}: ${window.currentIndex}/${cardNum}; ${lc.phrases_count_errors}: 0`, card);
 	else
 	{
-		updateIndividualSidebarElementText("character", "Unknown character", "", null);
-		$("character-info-widget-def-p").style.display = "none";
+		updateIndividualSidebarElementText("character", lc.unknown_character, "", null);
+		definitionParagraph.style.display = "none";
 		return;
 	}
-	$("character-info-widget-def-p").style.display = "block";
+	definitionParagraph.style.display = "block";
 }
 
 function resetSidebar()
 {
 	// Ugly ahh code to reset to the inital state
-	$("character-info-widget-spelling").textContent = "Spelling: To be loaded";
-	$("character-info-widget-errors").textContent = "Cards: 0/0; Errors: 0";
+	$("character-info-widget-spelling").textContent = `${lc.phrases_count_spelling}: ${lc.to_be_loaded}`;
+	$("character-info-widget-errors").textContent = `${lc.phrases_count_cards}: 0/0; ${lc.phrases_count_errors}: 0`;
 
-	$("character-info-widget-info").replaceChildren(addElement("li", "To be loaded", "", "", "", null));
+	$("character-info-widget-info").replaceChildren(addElement("li", lc.to_be_loaded, "", "", "", null));
 
 	// Hide the phrase info widget
 	$("phrase-info-widget").style.display = "none";
@@ -166,7 +168,7 @@ function computeScore(strokes, errors, knowledge)
 {
 	let pointsPerStroke = (window.MAX_POINTS_ON_CHARACTER / strokes);
 	let points = (window.MAX_POINTS_ON_CHARACTER - (errors * pointsPerStroke));
-	let result = 0;
+	let result;
 
 	if (points >= window.MAX_POINTS_ON_CHARACTER)
 		result = window.MAX_POINTS_ON_CHARACTER;
@@ -183,7 +185,7 @@ function computeScore(strokes, errors, knowledge)
 	return knowledge;
 }
 
-async function writerOnComplete(strokeData)
+async function writerOnComplete(_)
 {
 	// Go to the next card
 	++window.currentIndex;
@@ -200,7 +202,7 @@ async function writerOnComplete(strokeData)
 	{
 		for (let i in data.cards)
 		{
-			if (data.phrases[window.currentPhraseIndex].phrase[(window.currentIndex - 1)] == data.cards[i].character)
+			if (data.phrases[window.currentPhraseIndex].phrase[(window.currentIndex - 1)] === data.cards[i].character)
 			{
 				data.cards[i].knowledge = computeScore(strokeNum, window.errors, data.cards[i].knowledge);
 				break;
@@ -254,7 +256,7 @@ async function writerOnComplete(strokeData)
 			let card = null;
 			for (let i in data.cards)
 			{
-				if (currentPhrase.phrase[currentIndex] == data.cards[i].character)
+				if (currentPhrase.phrase[currentIndex] === data.cards[i].character)
 				{
 					card = data.cards[i];
 					setWriterState(card);
@@ -307,7 +309,7 @@ function createStartButton()
 	// Get start button, create if exists
 	let startButton = $("start-button");
 	if (startButton === null)
-		startButton = addElement("button", "Click to start session", "start-button", "card-button-edit centered character-prop large-button-text", "", $("start-button-writer-section"));
+		startButton = addElement("button", lc.start_button_text, "start-button", "card-button-edit centered character-prop large-button-text", "", $("start-button-writer-section"));
 
 	// Set the button width
 	startButton.style.setProperty("width", drawElementHeight + "px");
@@ -326,8 +328,8 @@ function createStartButton()
 
 			buttonList.replaceChildren(headerHome);
 
-			var el = document.createElement("li");
-			var link = document.createElement("a");
+			const el = document.createElement("li");
+			const link = document.createElement("a");
 			link.textContent = "Exit"
 			link.setAttribute("href", "./index.html");
 
@@ -382,22 +384,22 @@ function createStartButton()
 
 function mainPageMain()
 {
-	const drawElementHeight = getDrawElementHeight();
+	getDrawElementHeight();
 
 	// If there are no cards there, create a widget to inform the user that they need to create a deck
-	if (window.localStorageData.cards.length == 0)
+	if (window.localStorageData.cards.length === 0)
 	{
 		$("start-button").remove();
 
 		let link = document.createElement("a");
 		link.href = "./deck.html"
-		link.appendChild(document.createTextNode("Deck"));
+		link.appendChild(document.createTextNode(lc.no_cards_link_deck));
 
 		let el = document.createElement("h1");
 		el.className = "centered vcentered"
-		el.textContent = "You currently have no cards, go to the "
+		el.textContent = lc.no_cards_text
 		el.appendChild(link);
-		el.appendChild(document.createTextNode(" page to add some!"))
+		el.appendChild(document.createTextNode(lc.no_cards_text_postfix))
 
 		$("start-button-writer-section").appendChild(el);
 		return;
@@ -407,7 +409,7 @@ function mainPageMain()
 
 	// Function to be called on the window resize event. This is needed because of a number of custom calculations we perform
 	// to compute the width and height of the writer widget/start button from Javascript
-	var notify = function() {
+	const notify = function() {
 		const newDrawElementHeight = getDrawElementHeight();
 		if (bInTest)
 		{
@@ -424,7 +426,7 @@ function mainPageMain()
 	window.addEventListener("resize", notify);
 
 	// Add this event to make sure to save any data if we close the tab
-	window.addEventListener("beforeunload", function(e)
+	window.addEventListener("beforeunload", function(_)
 	{
 		if (bInTest)
 			window.localStorageData.totalTimeInSessions += (Date.now() - window.sessionTime);

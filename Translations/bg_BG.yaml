@@ -1,0 +1,175 @@
+translations:
+  # index.html
+  - id: phrase-info-widget-spelling
+    text: "Моята фраза"
+  - id: phrase-info-widget-errors
+    text: "Фрази: {}; Грешки: {}"
+  - id: character-info-widget-def-p
+    text: "Определения:"
+  - id: character-info-widget-info-default
+    text: "Ще бъде попълнено, когато започнете сесия"
+  - id: character-info-widget-errors
+    text: "Карти: {}; Грешки: {}"
+  - id: character-info-widget-spelling
+    text: "Произношение: Ще бъде попълнено, когато започнете сесия"
+  - id: start-button
+    text: "Играй!"
+  - id: 404-text
+    text: "За съжаление, тази страница не съществува"
+  - id: phrases_count_errors
+    text: "Грешки"
+  - id: phrases_count_cards
+    text: "Карти"
+  - id: phrases_count_spelling
+    text: "Произношение"
+  - id: to_be_loaded
+    text: "To be loaded"
+  - id: no_cards_link_deck
+    text: "Тесте"
+  - id: no_cards_text
+    text: "В момента нямате карти, влезте в You currently have no cards, go to the "
+  - id: no_cards_text_postfix
+    text: " страницата, за да добавите!"
+  - id: footer
+    text: "Проект на {}!"
+  - id: about-us
+    text: "За нас"
+  - id: account
+    text: "Профил"
+
+  # Coming soon
+  - id: coming-soon-header
+    text: "Очаквайте скоро!"
+    # Add coming soon text 1
+  - id: coming-soon-text-2
+    text: "Благодарим за търпението ви!"
+
+  # deck-edit-card.html
+  - id: new-card-h1
+    text: "Нова Карта"
+  - id: input-mode-p
+    text: "Метод на въвеждане: "
+  - id: input-mode-none
+    text: "Нормално"
+  - id: pinyin-input-description
+    text: "Позволява ви да използвате формата на Pinyin с числа в полетата за въвеждане на текст. Ще превърне текста във валиден pinyin. Пример: 'pin1 yin1' става 'pīn yīn'."
+  - id: phrase-preview-section-header
+    text: "Визуализации"
+  - id: finish-edit-button
+    text: "Запази"
+  - id: cancel-edit-button
+    text: "Назад"
+  - id: unknown_character
+    text: "Непознат символ"
+  - id: unknown_phrase
+    text: "Непозната фраза"
+  - id: character_variant_default
+    text: "Стандартен"
+  - id: character_variant_kanji
+    text: "Канджи"
+  - id: character_variant_hanja
+    text: "Ханджа"
+  - id: name_text_field_aria
+    text: "Текстово поле за името"
+  - id: character_text_field_aria
+    text: "Текстово поле за символа"
+  - id: meaning_text_field_aria
+    text: "Текстово поле за добавяне на определение"
+  - id: character_variant_box_aria
+    text: "Лист за избор на разновидност на символа"
+  - id: card_name
+    text: "Име"
+  - id: card_phrase
+    text: "Фраза"
+  - id: card_character
+    text: "Символ"
+
+  # deck.html
+  - id: profile-statistics-header
+    text: "Статистика за потребителя"
+  - id: total-sessions-field
+    text: "Общ брой сесии"
+  - id: streak-field
+    text: "Дневна серия"
+  - id: deck-card-num-field
+    text: "Карти в тестето"
+  - id: deck-phrase-num-field
+    text: "Фрази в тестето"
+  - id: last-session-date-field
+    text: "Последна сесия"
+  - id: average-knowledge-level-field
+    text: "Средно ниво на познанията"
+  - id: average-session-length-field
+    text: "Средна дължина на сесиите"
+  - id: time-spent-in-sessions-field
+    text: "Време прекарано в игра"
+  - id: new-card-header
+    text: "Добавете нова карта или фраза в тестето си"
+  - id: new-card-button
+    text: "Нова карта"
+  - id: new-phrase-button
+    text: "Нова фраза"
+  - id: import-deck-button
+    text: "Внеси тесте"
+  - id: export-deck-button
+    text: "Запази тесте"
+  - id: clear-deck-button
+    text: "Занули тестето"
+  - id: marketplace-deck-button
+    text: "Пазар"
+  - id: deck-phrases-header
+    text: "Фрази"
+  - id: deck-characters-header
+    text: "Карти за символи"
+  - id: clear_deck_confirm_text
+    text: "Сигурни ли сте, че искате да ИЗТРИЕТЕ сегашното си тесте? ТОВА НЕ МОЖЕ ДА БЪДЕ ОТМЕНЕНО! Препоръчително е да запазите данните си за всеки случай!"
+  - id: streak_field_days
+    text: " дни"
+  - id: hours
+    text: "ч."
+  - id: milliseconds
+    text: "мс."
+  - id: minutes
+    text: "мин."
+  - id: seconds
+    text: "сек."
+  - id: locale
+    text: "bg-BG"
+  - id: no_sessions_recorded
+    text: "Няма записани сесии!"
+  - id: average_knowledge_level
+    text: "Средно ниво на познанията"
+  - id: part_of
+    text: "Част от"
+  - id: deck_card_edit
+    text: "Редактирай"
+
+  # marketplace.html
+  - id: official_decks_header
+    text: "Oфициални тестета"
+  - id: new_deck_upload_info
+    text: "Искате да качите своето тесте на пазара? Научете повече, като натиснете бутона долу!"
+  - id: upload-deck-public
+    text: "Качване на тесте"
+  - id: community_decks_header
+    text: "Обществени тестета"
+  - id: import_deck_confirm_text
+    text: "Внасянето на тесте ЩЕ слее сегашното ви тесте с новото! За да внесете само новото, първо изчистете тестето си!"
+  - id: leveled_up_no
+    text: "Не"
+  - id: leveled_up_yes
+    text: "Да"
+  - id: status
+    text: "Статут"
+  - id: pre_leveled_up
+    text: "Преварително поставено ниво"
+  - id: deck_source
+    text: "Източник"
+  - id: deck_download
+    text: "Изтегли"
+  - id: official
+    text: "Официален"
+  - id: community
+    text: "Обществен"
+  - id: release
+    text: "Издание"
