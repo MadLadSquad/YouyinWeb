@@ -112,11 +112,11 @@ function redirectWithLanguage(selectWidget, localStorageLang, previous)
 	let url = location.href.split("/");
 	let redirect = url[0] + "//" + url[2] + "/" + localStorageLang + "/";
 	for (let i = 3; i < url.length; i++)
-		if (url[i] !== "" || previous === null || url[i] !== previous)
+		if (url[i] !== "" && url[i] !== previous)
 			redirect += url[i] + "/";
 	
 	selectWidget.value = localStorageLang;
-	console.log(redirect);
+	onsole.log(redirect);
 	//location.href = redirect.slice(0, -1);
 }
 
