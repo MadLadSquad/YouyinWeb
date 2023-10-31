@@ -142,6 +142,7 @@ function setLanguageBox()
 {
 	$("lang-select").addEventListener("change", function(){
 		let old = window.localStorage.getItem("language");
+		console.log(old);
 		window.localStorage.setItem("language", this.value);
 		redirectWithLanguage(this, this.value, old);
 	})
