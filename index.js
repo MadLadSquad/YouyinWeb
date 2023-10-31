@@ -116,7 +116,7 @@ function redirectWithLanguage(selectWidget, localStorageLang, previous)
 			redirect += url[i] + "/";
 	
 	selectWidget.value = localStorageLang;
-	onsole.log(redirect);
+	console.log(redirect);
 	//location.href = redirect.slice(0, -1);
 }
 
