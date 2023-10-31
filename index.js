@@ -110,9 +110,12 @@ function fixLegacyCharacterVariants()
 function redirectWithLanguage(selectWidget, localStorageLang, previous)
 {
 	let url = location.href.split("/");
+	// Skip [1] because it will be empty because of the second / in https://
 	let redirect = url[0] + "//" + url[2] + "/" + localStorageLang + "/";
-	for (let i = 3; i < url.length; i++)
-		if (url[i] !== "" && url[i] !== previous)
+
+	// Move by 1 index if it's not null
+	for (let i = previous !== null ? 4 : 3; i < url.length; i++)
+		if (url[i] !== "")
 			redirect += url[i] + "/";
 	
 	selectWidget.value = localStorageLang;
