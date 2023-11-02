@@ -163,10 +163,10 @@ function constructCard(it, index, container, localIndex)
 	// Create the "Edit" button and add an onclick event that redirects to the new card page
 	let editButton = addElement("button", lc.deck_card_edit, `card-edit-button-${index}`, "card-button-edit", `${localIndex}`, div)
 	editButton["phrase"] = it["phrase"] ? "phrase-" : ""; // If we're using phrases add this so that the callback can redirect correctly
-	editButton.addEventListener("click", function()
+	runEventAfterAnimation(editButton, "click", (e) =>
 	{
 		// In the line above, we store the card index in the "arbitrary-data" field. Here we retrieve it
-		location.href = `./deck-edit-card.html?${this.phrase}edit=${this.attributes["arbitrary-data"].nodeValue}`;
+		location.href = `./deck-edit-card.html?${e.target.phrase}edit=${e.target.attributes["arbitrary-data"].nodeValue}`;
 	});
 
 	if (it["character"])
@@ -194,12 +194,16 @@ function deckmain()
 	setProfileCardData();
 
 	// Get the elements and load their onclick events, holy shit that's massive! That's what she said!
-	$("export-deck-button").addEventListener("click", updateExportButton);
-	$("clear-deck-button").addEventListener("click", clearDeck);
-	$("import-deck-button").addEventListener("click", function(){
+	runEventAfterAnimation($("export-deck-button"), "click", updateExportButton);
+	runEventAfterAnimation($("clear-deck-button"), "click", clearDeck);
+	runEventAfterAnimation($("import-deck-button"), "click", function(){
 		$("fileupload").click();
 	});
 	$("fileupload").addEventListener("change", importDeck);
+
+	runEventAfterAnimation($("new-card-button"), "click", function() { location.href = './deck-edit-card.html?new' });
+	runEventAfterAnimation($("new-phrase-button"), "click", function() { location.href = './deck-edit-card.html?phrase-new' });
+	runEventAfterAnimation($("marketplace-deck-button"), "click", function() { location.href = './marketplace.html' });
 
 	const data = window.localStorageData;
 	let cardsContainer = $("deck-characters-section");

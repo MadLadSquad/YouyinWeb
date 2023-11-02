@@ -21,10 +21,11 @@
 
 /* I totally didn't cop this from somewhere I don't even remember */
 .card-button-edit {
+	position: relative;
+	overflow: hidden;
+
 	color: var(--main-background-colour);
 	background-color: var(--main-accent-colour);
-	border-color: var(--deck-button-active-colour);
-
 	margin-top: 12px;
 	margin-bottom: 12px;
 
@@ -36,21 +37,52 @@
 	-webkit-user-select: none;
 	background-image: none;
 	border: 2px solid transparent;
-	border-radius: 4px;
+	border-radius: 6px;
 	cursor: pointer;
 	touch-action: manipulation;
+
+	transition: 0.25s;
+}
+
+
+.card-button-edit:after {
+	content: "";
+	background: var(--main-border-colour);
+	display: block;
+	position: absolute;
+	padding-top: 300%;
+	padding-left: 350%;
+	margin-left: -20px!important;
+	margin-top: -120%;
+	opacity: 0;
+	transition: all 0.8s;
+}
+
+.card-button-edit:active:after {
+	padding: 0;
+	margin: 0;
+	opacity: 1;
+	transition: 0s;
 }
 
 .card-button-edit:hover {
 	color: var(--main-background-colour);
 	background-color: var(--deck-button-active-colour);
 	border-color: var(--deck-button-active-colour);
+	border-radius: 4px;
 }
 
 .card-button-edit:active {
 	border-color: var(--main-accent-colour);
 	background-color: var(--deck-button-active-colour);
 }
+
+/*.card-button-edit:hover:after {*/
+/*	width: inherit;*/
+/*	height: inherit;*/
+/*	position: inherit;*/
+/*	transition: 0.25s;*/
+/*}*/
 
 /* Some buttons, like the start button may require large text*/
 .large-button-text {

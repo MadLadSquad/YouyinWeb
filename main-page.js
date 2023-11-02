@@ -316,7 +316,7 @@ function createStartButton()
 	startButton.style.setProperty("height", drawElementHeight + "px");
 
 	// When the button is clicked, we will create the writer view
-	startButton.addEventListener("click", function()
+	runEventAfterAnimation(startButton, "click", function(_)
 	{
 		// Make the experience more immersive by removing all buttons from the header, except for the main page link.
 		// Also, add an exit button, even though it does the same as clicking the main page link.

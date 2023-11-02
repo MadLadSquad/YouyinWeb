@@ -28,6 +28,25 @@ function $(x)
 	return document.getElementById(x);
 }
 
+function runEventAfterAnimation(element, event, f)
+{
+	element.bWaitForAnimation = false;
+	element.addEventListener(event, (e) => {
+		e.target.bWaitForAnimation = true;
+	});
+
+	const func = (e) => {
+		if (e.target.bWaitForAnimation)
+		{
+			e.target.bWaitForAnimation = false;
+			f(e);
+		}
+	};
+
+	element.addEventListener("animationend", func);
+	element.addEventListener("transitionend", func);
+}
+
 function addTextNode(container, text)
 {
 	container.appendChild(document.createTextNode(text));

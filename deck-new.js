@@ -140,7 +140,7 @@ function constructInputElement(container, id, classT, type, ariaLabel, name, pre
 	input.addEventListener("change", (event) =>
 	{
 		event.target.value = window.bUsingPinyinConversion ? pinyinify(event.target.value) : event.target.value;
-		if (previewID !== "")
+		if (previewID !== "" && event.target.value !== "")
 			$(previewID).textContent = event.target.value;
 	});
 	if (callback !== null)
@@ -217,9 +217,9 @@ function reconstructDefinitionList(previewList, editList, definitions, bReadOnly
 		button.definitions = definitions;
 		button.defIndex = i;
 
-		button.addEventListener("click", function(){
-			this.definitions.splice(this.defIndex, 1);
-			reconstructDefinitionList(this.previewList, this.editList, this.definitions, false)
+		runEventAfterAnimation(button, "click", (e) => {
+			e.target.definitions.splice(e.target.defIndex, 1);
+			reconstructDefinitionList(e.target.previewList, e.target.editList, e.target.definitions, false)
 		});
 	}
 }
@@ -342,7 +342,7 @@ function constructEditCard(index, it, root, bPhrase)
 		addTextNode(container, " ");
 		let addButton = addElement("button", "+", `add-meaning-list-button-${index}`, "card-button-edit small-button", "", container);
 
-		addButton.addEventListener("click", (_) => {
+		runEventAfterAnimation(addButton, "click", (_) => {
 			let textField = $(`meaning-text-field-${index}`);
 			lit.definitions.push(textField.value);
 			textField.value = "";
@@ -417,7 +417,7 @@ function constructListElements()
 function deckEditMain()
 {
 	constructListElements();
-	$("finish-edit-button").addEventListener("click", function() {
+	runEventAfterAnimation($("finish-edit-button"), "click", function(_) {
 		if (window.previewPhrase !== null)
 			window.localStorageData.phrases.push(window.previewPhrase);
 
@@ -431,6 +431,7 @@ function deckEditMain()
 		saveToLocalStorage(window.localStorageData);
 		location.href = "./deck.html";
 	});
+	runEventAfterAnimation($("cancel-edit-button"), "click", function() { location.href = './deck.html' })
 }
 
 deckEditMain();

@@ -35,10 +35,10 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	addElement("p", `${lc.phrases_count_cards}: ${marketplaceJSON.length}`, "", "", "", div);
 
 	// Import a deck from file
-	addElement("button", lc.deck_import, `import-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
+	runEventAfterAnimation(addElement("button", lc.deck_import, `import-button-${type1}-${val}`, "card-button-edit", filename, div), "click", async function(e)
 	{
 		// If an element is created using addElement, arbitrary data is also assigned
-		let content = await loadMarketplaceData(this.getAttribute("arbitrary-data"));
+		let content = await loadMarketplaceData(e.target.getAttribute("arbitrary-data"));
 		let bExecuted = confirm(lc.import_deck_confirm_text);
 		if (bExecuted)
 		{
@@ -52,23 +52,23 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	// Stupid ahhhh whitespace adding code because web dev is stupid
 	div.appendChild(document.createTextNode("\u00A0"));
 
-	addElement("button", lc.deck_source, `source-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
+	runEventAfterAnimation(addElement("button", lc.deck_source, `source-button-${type1}-${val}`, "card-button-edit", filename, div), "click", async function(e)
 	{
 		// If an element uses addElement, arbitrary data is also assigned
-		window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository/blob/master/' + this.getAttribute("arbitrary-data"));
+		window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository/blob/master/' + e.target.getAttribute("arbitrary-data"));
 	});
 
 	addElement("br", "", "", "", "", div);
 
 	// Download deck with this interesting code
-	addElement("button", lc.deck_download, `download-button-${type1}-${val}`, "card-button-edit", filename, div).addEventListener("click", async function()
+	runEventAfterAnimation(addElement("button", lc.deck_download, `download-button-${type1}-${val}`, "card-button-edit", filename, div), "click", async function(e)
 	{
-		let content = await loadMarketplaceData(this.getAttribute("arbitrary-data"));
+		let content = await loadMarketplaceData(e.target.getAttribute("arbitrary-data"));
 
 		let file = new Blob([content], { type: "application/json;charset=utf-8" });
 		const link = document.createElement("a");
 		link.href = URL.createObjectURL(file);
-		link.download = this.getAttribute("arbitrary-data").split("/").at(-1);
+		link.download = e.target.getAttribute("arbitrary-data").split("/").at(-1);
 		link.click();
 		URL.revokeObjectURL(link.href);
 	});
@@ -141,6 +141,8 @@ async function marketplaceMain()
 
 	await handleOfficialRepos(deckContainer);
 	await handleCommunityRepos(communityContainer);
+
+	runEventAfterAnimation($("upload-deck-public"), "click", (_) => { window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository') });
 }
 
 marketplaceMain().then(_ => {});

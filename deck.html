@@ -26,14 +26,15 @@
 				<div id="new-card" class="card centered">
 					<h1 id="new-card-header">+</h1>
 					<p>{{ _ new-card-header }}</p>
-					<button id="new-card-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?new'">{{ _ new-card-button }}</button>
-					<button id="new-phrase-button" class="card-button-edit" onclick="location.href='./deck-edit-card.html?phrase-new'">{{ _ new-phrase-button }}</button>
+					<button id="new-card-button" class="card-button-edit">{{ _ new-card-button }}</button>
+					<button id="new-phrase-button" class="card-button-edit">{{ _ new-phrase-button }}</button>
 					<br>
-					<input type="file" id="fileupload"><button id="import-deck-button" class="card-button-edit">{{ _ import-deck-button }}</button></input>
+					<input type="file" id="fileupload" accept="application/json"><button id="import-deck-button" class="card-button-edit">{{ _ import-deck-button }}</button></input>
 					<button id="export-deck-button" class="card-button-edit">{{ _ export-deck-button }}</button>
 
 					<button id="clear-deck-button" class="card-button-edit">{{ _ clear-deck-button }}</button>
-					<button id="marketplace-deck-button" class="card-button-edit" onclick="location.href='./marketplace.html'">{{ _ marketplace-deck-button }}</button>
+					<button id="marketplace-deck-button" class="card-button-edit">{{ _ marketplace-deck-button }}</button>
+
 				</div>
 			</section>
 			<h1 id="deck-phrases-header" class="centered">{{ _ deck-phrases-header }}</h1>
