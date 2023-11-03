@@ -6,7 +6,7 @@ window.previewPhrase = null;
 
 window.bUsingPinyinConversion = false;
 
-window.writer;
+window.writer = null;
 
 // Convert each word in a sentence to pinyin
 function pinyinify(string) {

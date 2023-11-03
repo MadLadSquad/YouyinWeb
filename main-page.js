@@ -1,7 +1,7 @@
 'use strict';
 
 // Global writer variable, because yes
-window.writer;
+window.writer = null;
 
 window.totalPhraseErrors = 0;
 window.errors = 0;
@@ -194,7 +194,7 @@ async function writerOnComplete(_)
 
 	// Calculate how many points to add to your knowledge
 	const strokeNum = window.writer._character.strokes.length;
-	totalPhraseStrokes += strokeNum;
+	window.totalPhraseStrokes += strokeNum;
 
 	if (!window.bInPhrase)
 		data.cards[(window.currentIndex - 1)].knowledge = computeScore(strokeNum, window.errors, data.cards[(window.currentIndex - 1)].knowledge);

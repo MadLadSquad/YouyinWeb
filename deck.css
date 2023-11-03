@@ -52,7 +52,7 @@
 	position: absolute;
 	padding-top: 300%;
 	padding-left: 350%;
-	margin-left: -20px!important;
+	margin-left: -22px!important;
 	margin-top: -120%;
 	opacity: 0;
 	transition: all 0.8s;
@@ -77,13 +77,6 @@
 	background-color: var(--deck-button-active-colour);
 }
 
-/*.card-button-edit:hover:after {*/
-/*	width: inherit;*/
-/*	height: inherit;*/
-/*	position: inherit;*/
-/*	transition: 0.25s;*/
-/*}*/
-
 /* Some buttons, like the start button may require large text*/
 .large-button-text {
 	font-size: 32px;
@@ -93,19 +86,16 @@
 
 /* TF is this??? */
 button {
-	text-transform: visible;
+	/*text-transform: visible;*/
 	overflow: visible;
 	-webkit-appearance: button;
 }
 
 /* Make small buttons smaller */
 .small-button {
-	padding-left: 5px;
-	padding-right: 5px;
-	padding-top: 0px;
-	padding-bottom: 0px;
-	margin-top: 0px;
-	margin-bottom: 0px;
+	padding: 0 5px;
+	margin-top: 0;
+	margin-bottom: 0;
 }
 
 main {
@@ -121,13 +111,13 @@ ol {
 
 ol li {
 	padding-top: 0.25rem;
-	text-decoration: default;
+	text-decoration: none;
 	list-style-type: decimal;
 }
 
 /* override the style of main.css specifically for the deck page, since it doesn't look good with a border */
 .header-deck {
-	border: 0px;
+	border: 0;
 }
 
 #new-card-header {
@@ -148,24 +138,6 @@ ol li {
 	height: 0;
 }
 
-/* Make the input mode container a flexbox */
-/*
-#input-mode {
-	padding: 0;
-	margin: auto;
-	overflow: hidden;
-	float: left;
-	position: relative;
-	display: flex;
-	align-items: center;
-	max-width: 35%;
-	justify-content: center;
-}
-
-#input-mode p {
-	margin-right: 6px;
-}*/
-
 #input-mode, #navigation-footer {
 	width: fit-content;
 	padding: 0;
@@ -178,7 +150,6 @@ ol li {
 	position: relative;
 	display: flex;
 	align-items: center;
-	margin-top: 1em;
 }
 
 * {
@@ -195,7 +166,7 @@ input[type=text] {
 	max-width: 85%;
 	font-size: 16px;
 	font-family: inherit;
-	padding: 4 0 0 0;
+	padding: 2px 2px 2px 2px;
 	background-color: var(--main-background-colour);
 	border: 1px solid var(--main-accent-colour);
 	border-radius: 4px;
@@ -213,8 +184,7 @@ input[type=text] {
 
 /* Do not configure margin because yes */
 #input-mode-internal div {
-	margin: auto;
-	margin-top: 0;
+	margin: 0 auto auto;
 }
 
 #input-mode-internal input[type=radio] {
