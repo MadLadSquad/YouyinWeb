@@ -4,11 +4,18 @@ window.HOUR_UNIX = 36000000;
 window.MINUTE_UNIX = 60000;
 window.SECOND_UNIX = 1000;
 
+/**
+ * The export button callback. Stringifies the current data and exports it.
+ */
 function updateExportButton()
 {
-	const dt = window.localStorageData.cards;
+	const dt = window.localStorageData;
+	const data = {
+		cards: dt.cards,
+		phrases: dt.phrases
+	}
 
-	let file = new Blob([JSON.stringify(dt)], { type: "application/json;charset=utf-8" });
+	let file = new Blob([JSON.stringify(data)], { type: "application/json;charset=utf-8" });
 
 	const link = document.createElement("a");
 	link.href = URL.createObjectURL(file);
@@ -17,14 +24,21 @@ function updateExportButton()
 	URL.revokeObjectURL(link.href);
 }
 
+/**
+ * The import deck button callback. Imports a deck from a file.
+ * @param {string} f - The element in question
+ */
 function importDeck(f) {
 	let bExecuted = confirm(lc.import_deck_confirm_text);
 	if (bExecuted)
 	{
 		const reader = new FileReader();
-		reader.addEventListener("load", function(){
+		reader.addEventListener("load", (e) => {
 			let dt = window.localStorageData;
-			dt.cards.push.apply(dt.cards, JSON.parse(this.result.toString()));
+			let data = JSON.parse(e.target.result.toString());
+
+			dt.cards.push.apply(dt.cards, data.cards);
+			dt.phrases.push.apply(dt.phrases, data.phrases);
 
 			saveToLocalStorage(dt);
 			document.location.reload();
@@ -45,6 +59,9 @@ function clearDeck() {
 	}
 }
 
+/**
+ * Sets data about the current user. Deals with calculating most of the statistics and showcasing them
+ */
 function setProfileCardData()
 {
 	$("total-sessions-field").textContent += window.localStorageData.sessions;
@@ -107,10 +124,13 @@ function setProfileCardData()
 	averageKnowledge.textContent = `${lc.average_knowledge_level}: ${knowledge.toFixed(2)}/${window.MAX_KNOWLEDGE_LEVEL}`;
 }
 
-// it - struct
-// index - used to create UUIDs. For normal cards, its offset by the number of phrases
-// constainer - container element
-// localIndex - non-unique index
+/**
+ * Constructs a card HTML element
+ * @param { Object } it - Struct for the card data
+ * @param { int } index - Used to create UUIDs. For normal cards, it's offset by the number of phrases
+ * @param { HTMLElement } container - HTML element to attach to
+ * @param { int } localIndex - non-unique index
+ */
 function constructCard(it, index, container, localIndex)
 {
 	// Add parent div
@@ -189,6 +209,9 @@ function constructCard(it, index, container, localIndex)
 	}
 }
 
+/**
+ * Main function for the deck page
+ */
 function deckmain()
 {
 	setProfileCardData();

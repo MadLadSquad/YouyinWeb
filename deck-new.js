@@ -8,7 +8,11 @@ window.bUsingPinyinConversion = false;
 
 window.writer = null;
 
-// Convert each word in a sentence to pinyin
+/**
+ * Convert each word in a sentence to pinyin
+ * @param {string} string - The input non-pinyin string
+ * @returns {string} - The output pinyin-ified string
+ */
 function pinyinify(string) {
 	// Ugly af but it's the only way we can do it ig
 	const pinyin =
@@ -63,6 +67,14 @@ function pinyinify(string) {
 	return arr.join(" ");
 }
 
+/**
+ * Constructs a preview card HTML element for a phrase or card
+ * @param { number } index - The index into "it"
+ * @param { Object? } it - The struct that whose data will be used to construct the preview card
+ * @param { HTMLElement } owner - Parent HTML element
+ * @returns { Object } - Reference to the current modified object. Could be "it", a card from local storage(if "it" is
+ * a phrase reference, or it's null) or a new card.
+ */
 function constructPreviewCardGeneric(index, it, owner)
 {
 	let root = addElement("div", "", `character-preview-${index}`, "card centered", "", owner);
@@ -129,6 +141,18 @@ function constructPreviewCardGeneric(index, it, owner)
 	return lit;
 }
 
+/**
+ * Constructs an input element
+ * @param {HTMLElement} container - The parent HTML element to attach to
+ * @param { string } id - ID for the input element
+ * @param { string } classT - Class for the input element
+ * @param { string } type - Type attribute of the input element
+ * @param { string } ariaLabel - Aria label attribute of the input element
+ * @param { string } name - Name attribute of the input element
+ * @param { string } previewID - ID of the text field in the preview card that corresponds to the owning edit card
+ * @param { function } callback - Callback function when the data is changed
+ * @returns { HTMLElement } - The resulting input element
+ */
 function constructInputElement(container, id, classT, type, ariaLabel, name, previewID, callback)
 {
 	let input = addElement("input", "", id, classT, "", container);
@@ -171,11 +195,27 @@ function constructPhraseEditCardPreview(it) {
 	return lit;
 }
 
+/**
+ * Checks if a given character variant exists
+ * @param { string } character - The character in question
+ * @param { string } postfix - Variant postfix, like "-jp" or "-ko" for Japanese and Korean respectively
+ * @returns {Promise<undefined|Object>} - JSON data about the given character
+ */
 async function testVariantExists(character, postfix)
 {
 	return await charDataLoader(character + postfix, null, null);
 }
 
+/**
+ * Constructs the character variant select box
+ * @param { HTMLElement } container - The parent HTML element
+ * @param { string } id - ID for the select box
+ * @param { string } classT - Class for the select box
+ * @param { string } ariaLabel - Aria label attribute for the select box
+ * @param { string } name - Name attribute for the select box
+ * @param { Object } it - Card object this corresponds to. Used to change the character's value in the change callback
+ * @returns {Promise<void>}
+ */
 async function constructCharacterVariantSelect(container, id, classT, ariaLabel, name, it)
 {
 	let select = addElement("select", "", id, classT, "", container);
@@ -194,6 +234,14 @@ async function constructCharacterVariantSelect(container, id, classT, ariaLabel,
 	});
 }
 
+/**
+ * Reconstructs the definition list for a given card or phrase
+ * @param { HTMLElement } previewList - The HTML element that contains the definitions list inside its corresponding preview card
+ * @param { HTMLElement } editList - The HTML element that contains the definitions list inside its corresponding edit card
+ * @param { string[] } definitions - The list of definition strings
+ * @param { boolean } bReadOnly - Whether the definition list is read only, i.e. when editing a phrase and a character
+ * from it has a corresponding card that is already in the deck
+ */
 function reconstructDefinitionList(previewList, editList, definitions, bReadOnly)
 {
 	if (previewList === null || editList === null)
@@ -224,6 +272,13 @@ function reconstructDefinitionList(previewList, editList, definitions, bReadOnly
 	}
 }
 
+/**
+ * Constructs an edit card
+ * @param { string|number } index - Index into the array that holds "it"
+ * @param { Object } it - Object whose data will be used to construct an edit card
+ * @param { HTMLElement } root - The root element, to which the edit card should be attached to
+ * @param { boolean } bPhrase - Whether you're editing a phrase
+ */
 function constructEditCard(index, it, root, bPhrase)
 {
 	let lit = it;
@@ -321,7 +376,7 @@ function constructEditCard(index, it, root, bPhrase)
 			for (let i in lit.phrase)
 			{
 				constructPreviewCardGeneric(i, lit, phrasePreviewContainer);
-				constructEditCard(i, lit, cardEditSection);
+				constructEditCard(i, lit, cardEditSection, false);
 			}
 		});
 	}
@@ -379,7 +434,7 @@ function constructListElements()
 		
 		if (it["character"])
 		{
-			constructPreviewCardGeneric(0, it, cardEditSection, false);
+			constructPreviewCardGeneric(0, it, cardEditSection);
 			constructEditCard(0, it, cardEditSection, true);
 			for (let i = 0; i < cardEditSection.childNodes.length; i++)
 				cardEditSection.insertBefore(cardEditSection.childNodes[i], cardEditSection.firstChild);
@@ -391,7 +446,7 @@ function constructListElements()
 			constructEditCard("phrase", it, cardEditSection, true);
 			for (let i in it["phrase"])
 			{
-				constructPreviewCardGeneric(i, it, phrasePreviewSectionContainer, true)
+				constructPreviewCardGeneric(i, it, phrasePreviewSectionContainer)
 				constructEditCard(i, it, cardEditSection, false);
 			}
 		}
@@ -405,8 +460,8 @@ function constructListElements()
 	}
 	else
 	{
-		let lit = constructPreviewCardGeneric(0, null, cardEditSection, false);
-		constructEditCard("0", lit, cardEditSection, false);
+		let lit = constructPreviewCardGeneric(0, null, cardEditSection);
+		constructEditCard(0, lit, cardEditSection, false);
 
 		// Reverse children of $("card-edit-section") because we display the preview before the edit widget
 		for (let i = 0; i < cardEditSection.childNodes.length; i++)

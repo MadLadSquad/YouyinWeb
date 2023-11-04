@@ -2,9 +2,9 @@
 // ------------------- CONSTANT BLOCK EDIT IF RUNNING ON A CUSTOM SYSTEM ------------------
 window.MAX_KNOWLEDGE_LEVEL = 4;
 window.MAX_POINTS_ON_CHARACTER = 0.25;
-window.ADD_POINTS_ON_ERROR_3_4 = 0.1875; // 3/4 of 0.25
-window.ADD_POINTS_ON_ERROR_1_2 = 0.125; // 1/2 or 2/4 of 0.25
-window.ADD_POINTS_ON_ERROR_1_3 = 0.0625; // 1/3 of 0.25
+window.ADD_POINTS_ON_ERROR_3_4 = 0.1875; 			// 3/4 of 0.25
+window.ADD_POINTS_ON_ERROR_1_2 = 0.125; 			// 1/2 or 2/4 of 0.25
+window.ADD_POINTS_ON_ERROR_1_3 = 0.0625; 			// 1/3 of 0.25
 
 window.CARD_WRITER_SIZE = 100;
 window.CARD_WRITER_STROKE_ANIMATION_SPEED = 1.25;
@@ -14,7 +14,7 @@ window.CARD_DEFAULT_PREVIEW_NAME = "Preview Name"
 
 window.WRITER_PADDING = 5;
 window.WRITER_RADICAL_COLOUR = "#c87e74";
-window.WRITER_SLEEP_AFTER_COMPLETE = 1200; // In ms
+window.WRITER_SLEEP_AFTER_COMPLETE = 1200; 			// In ms
 
 window.WRITER_SHOW_HINT_ON_ERRORS = 3;
 window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
@@ -22,12 +22,23 @@ window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
 
 window.localStorageData = null;
 
-// Troll jQuery developers
+/**
+ * Troll jQuery developers. Returns the element with the given id
+ * @param {string} x - ID of the element
+ * @returns {HTMLElement} - The element in question
+ */
 function $(x)
 {
 	return document.getElementById(x);
 }
 
+/**
+ * Given an element, an event and a function to execute, tracks the given event and executes the provided callback
+ * function when the animation or transition on the given element has finished playing
+ * @param { HTMLElement } element - Element on which to track the event
+ * @param { string } event - Event type, like "click"
+ * @param { function } f - Function to run after animation
+ */
 function runEventAfterAnimation(element, event, f)
 {
 	element.bWaitForAnimation = false;
@@ -47,6 +58,11 @@ function runEventAfterAnimation(element, event, f)
 	element.addEventListener("transitionend", func);
 }
 
+/**
+ * Adds a text node to an element
+ * @param { HTMLElement } container - Parent element of the text node
+ * @param { string } text - The text that the node contains
+ */
 function addTextNode(container, text)
 {
 	container.appendChild(document.createTextNode(text));
@@ -58,18 +74,31 @@ async function charDataLoader(character, _, __)
 	let response = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/data/${character}.json`)
 	if (response.status !== 200)
 	{
-		console.error(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
+		console.warn(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
 		return;
 	}
 	return await response.json();
 }
 
-function saveToLocalStorage(string)
+/**
+ * Saves an object to the "youyinCardData" entry in the browser's local storage
+ * @param { Object } obj - The object in question
+ */
+function saveToLocalStorage(obj)
 {
-	window.localStorage.setItem("youyinCardData", JSON.stringify(string));
+	window.localStorage.setItem("youyinCardData", JSON.stringify(obj));
 }
 
-// Returns an element, creates an element with the given parameters and appends it
+/**
+ * Utility function to create an HTML element in a single line
+ * @param { string } elType - Type of the new element
+ * @param { string } content - Text content of the new element
+ * @param { string } id - ID of the new element
+ * @param { string } classType - Class of the new element
+ * @param { string } data - Data that will be stored as the value of the "arbitrary-data" attribute
+ * @param { HTMLElement } parentEl - Element to become the parent of the new element
+ * @returns { HTMLElement } - The element that was created
+ */
 function addElement(elType, content, id, classType, data, parentEl)
 {
 	let el = document.createElement(elType);
@@ -113,6 +142,7 @@ function fisherYates(array)
 	}
 }
 
+// Some legacy users may be lacking variants as part of their character card objects, so this function fixes this
 function fixLegacyCharacterVariants()
 {
 	for (let i in window.localStorageData.cards)
@@ -126,6 +156,12 @@ function fixLegacyCharacterVariants()
 	}
 }
 
+/**
+ * Redirects the user when selecting a new language from the language select box
+ * @param { HTMLElement } selectWidget - The select box widget
+ * @param { string } localStorageLang - Current language
+ * @param { string|null } previous - Previous language
+ */
 function redirectWithLanguage(selectWidget, localStorageLang, previous)
 {
 	let url = location.href.split("/");

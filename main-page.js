@@ -20,7 +20,7 @@ window.bMobile = false;
 
 window.linkChildren = null;
 
-// This function uses some dark magic that works half the time in order to calculate the size of the mainpage viewport
+// This function uses some dark magic that works half the time in order to calculate the size of the main page viewport
 // and main elements. Here are some issues:
 // TODO: On portrait screens if the resolution changes this sometimes breaks and a refresh is needed, would be good if it was fixed. 
 // Probably check out main.css and the main-page media query
@@ -43,13 +43,9 @@ function getDrawElementHeight()
 	let finalHeight = window.innerHeight - unusedSpace + listWidget.getBoundingClientRect().height;
 	window.bMobile = navigator.userAgent.toLowerCase().includes("mobile");
 	if (window.bMobile)
-	{
 		finalHeight -= (footer.getBoundingClientRect().height);
-	}
 	else
-	{
 		finalHeight -= (listWidget.getBoundingClientRect().height + footer.getBoundingClientRect().height);
-	}
 
 	if (mainEl.getBoundingClientRect().width < finalHeight)
 		finalHeight = mainEl.getBoundingClientRect().width - (getComputedStyle(startButtonWriterSection).paddingLeft.replace("px", "") * 2);
@@ -93,6 +89,14 @@ function writerOnCorrectStroke(_)
 	window.backwardsErrors = 0;
 }
 
+/**
+ * Generic function that updates the sidebar element for a phrase or card
+ * @param { string } prefix - Prefix, this is different depending on whether you're editing the phrase or character card
+ * data
+ * @param { string } spelling - Spelling of the given character or phrase
+ * @param { string } errors - The number of errors for the given character or phrase. String because it may be localised
+ * @param { Object|null } obj - Object currently editing. May be null if not editing an object
+ */
 function updateIndividualSidebarElementText(prefix, spelling, errors, obj)
 {
 	$(`${prefix}-info-widget-spelling`).textContent = spelling;
@@ -101,14 +105,17 @@ function updateIndividualSidebarElementText(prefix, spelling, errors, obj)
 	list.replaceChildren();
 
 	if (obj !== null)
-	{
 		for (let i in obj.definitions)
-		{
 			addElement("li", obj.definitions[i], "", "", "", list);
-		}
-	}
 }
 
+/**
+ * Changes the sidebar text
+ * @param { Object|null } phrase - Phrase to edit. May be null if only editing a character card
+ * @param { number } phraseNum - Number of phrases in the deck. Used to show which phrase you're currently on
+ * @param { Object|null } card - Card to edit. May be null if a phrase doesn't contain the card but contains the character
+ * @param { number } cardNum - Number of cards. Used to show which card you're currently on
+ */
 function changeSidebarText(phrase, phraseNum, card, cardNum)
 {
 	let definitionParagraph = $("character-info-widget-def-p");
@@ -129,7 +136,7 @@ function changeSidebarText(phrase, phraseNum, card, cardNum)
 
 function resetSidebar()
 {
-	// Ugly ahh code to reset to the inital state
+	// Ugly ahh code to reset to the initial state
 	$("character-info-widget-spelling").textContent = `${lc.phrases_count_spelling}: ${lc.to_be_loaded}`;
 	$("character-info-widget-errors").textContent = `${lc.phrases_count_cards}: 0/0; ${lc.phrases_count_errors}: 0`;
 
@@ -164,6 +171,13 @@ function setWriterState(ref)
 	}
 }
 
+/**
+ * Computes how to score a phrase or character card
+ * @param { number } strokes - Strokes in the given character
+ * @param { number } errors - Errors committed for the given character
+ * @param { number } knowledge - Knowledge for the given phrase or character card
+ * @returns { number } - The final score
+ */
 function computeScore(strokes, errors, knowledge)
 {
 	let pointsPerStroke = (window.MAX_POINTS_ON_CHARACTER / strokes);

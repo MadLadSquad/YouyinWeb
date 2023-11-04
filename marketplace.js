@@ -5,12 +5,22 @@ async function loadMarketplaceData(file)
 	let response = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest/${file}`)
 	if (response.status !== 200)
 	{
-		console.error(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
+		console.warn(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
 		return;
 	}
 	return await response.json();
 }
 
+/**
+ * Constructs a marketplace element
+ * @param { number } val - Index in the deck directory
+ * @param { HTMLElement } deckContainer - Container HTML element for the card
+ * @param { Object } it - JSON object for the element
+ * @param { string } type1 - Deck type
+ * @param { string } type2 - Deck type as a UI string
+ * @param { string } folder - Folder in which the marketplace element is in. Empty if it's not in a folder
+ * @returns { Promise<void> }
+ */
 async function constructElement(val, deckContainer, it, type1, type2, folder)
 {
 	// Get data for the given marketplace entry and process it
@@ -50,7 +60,7 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	});
 
 	// Stupid ahhhh whitespace adding code because web dev is stupid
-	div.appendChild(document.createTextNode("\u00A0"));
+	addTextNode(div, "\u00A0");
 
 	runEventAfterAnimation(addElement("button", lc.deck_source, `source-button-${type1}-${val}`, "card-button-edit", filename, div), "click", async function(e)
 	{
@@ -74,11 +84,22 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 	});
 }
 
+/**
+ * Creates an error text element
+ * @param { HTMLElement } deckContainer - Container HTML element
+ * @param { Object } response - JSON response object
+ * @param { string } marketplaceType - Marketplace type, official or community
+ */
 function createErrorElement(deckContainer, response, marketplaceType)
 {
 	addElement("h1", `Error ${response.status}: Couldn't load the ${marketplaceType} marketplace, retry later!`, "", "error-text centered, vcentered", "", deckContainer);
 }
 
+/**
+ * Constructs elements for official decks
+ * @param { HTMLElement } deckContainer - Container HTML element
+ * @returns {Promise<void>}
+ */
 async function handleOfficialRepos(deckContainer)
 {
 	let response = await fetch("https://api.github.com/repos/MadLadSquad/YouyinPublicDeckRepository/contents/");
@@ -96,10 +117,14 @@ async function handleOfficialRepos(deckContainer)
 	}
 }
 
-// Creates cards for the community decks
+/**
+ * Constructs elements for community decks
+ * @param { HTMLElement } deckContainer - Container HTML element
+ * @returns {Promise<void>}
+ */
 async function handleCommunityRepos(deckContainer)
 {
-	// Start from community, we will then iterate trough all the release folders
+	// Start from community, we will then iterate through all the release folders
 	let response = await fetch("https://api.github.com/repos/MadLadSquad/YouyinPublicDeckRepository/contents/community");
 	if (response.status !== 200)
 	{
