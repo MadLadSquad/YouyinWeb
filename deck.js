@@ -127,9 +127,9 @@ function setProfileCardData()
 /**
  * Constructs a card HTML element
  * @param { Object } it - Struct for the card data
- * @param { int } index - Used to create UUIDs. For normal cards, it's offset by the number of phrases
+ * @param { number } index - Used to create UUIDs. For normal cards, it's offset by the number of phrases
  * @param { HTMLElement } container - HTML element to attach to
- * @param { int } localIndex - non-unique index
+ * @param { number } localIndex - non-unique index
  */
 function constructCard(it, index, container, localIndex)
 {
@@ -209,12 +209,24 @@ function constructCard(it, index, container, localIndex)
 	}
 }
 
+function setupGameModifiers()
+{
+	const extensiveModeCheckbox = $("extensive-mode-checkbox");
+	extensiveModeCheckbox.checked = window.gameModifiers.extensive;
+
+	extensiveModeCheckbox.addEventListener("change", function(){
+		window.gameModifiers.extensive = this.checked;
+		saveGameModifiers();
+	});
+}
+
 /**
  * Main function for the deck page
  */
 function deckmain()
 {
 	setProfileCardData();
+	setupGameModifiers();
 
 	// Get the elements and load their onclick events, holy shit that's massive! That's what she said!
 	runEventAfterAnimation($("export-deck-button"), "click", updateExportButton);
@@ -259,7 +271,7 @@ function deckmain()
 	for (let val in data.cards)
 	{
 		const it = data.cards[val];
-		constructCard(it, val + data.phrases.length, cardsContainer, val);
+		constructCard(it, (val + data.phrases.length), cardsContainer, val);
 	}
 }
 

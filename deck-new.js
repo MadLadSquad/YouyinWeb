@@ -77,8 +77,6 @@ function pinyinify(string) {
  */
 function constructPreviewCardGeneric(index, it, owner)
 {
-	let root = addElement("div", "", `character-preview-${index}`, "card centered", "", owner);
-
 	let lit = it;
 	// Local it variable because phrases will require finding the card
 	if (it === null || it["phrase"])
@@ -95,13 +93,8 @@ function constructPreviewCardGeneric(index, it, owner)
 			}
 
 			for (let i in window.previewCards)
-			{
 				if (window.previewCards[i].character === it.phrase[index])
-				{
-					lit = window.previewCards[i];
-					break;
-				}
-			}
+					return window.previewCards[i];
 		}
 
 		if (it === null || lit === it)
@@ -116,6 +109,8 @@ function constructPreviewCardGeneric(index, it, owner)
 			lit = window.previewCards[window.previewCards.length - 1];
 		}
 	}
+
+	let root = addElement("div", "", `character-preview-${index}`, "card centered", "", owner);
 
 	addElement("h3", lit.name, `card-preview-name-${index}`, "", "", root);
 	let writerArea = addElement("div", "", `card-character-target-div-preview-${index}`, "", "", root);
@@ -143,7 +138,7 @@ function constructPreviewCardGeneric(index, it, owner)
 
 /**
  * Constructs an input element
- * @param {HTMLElement} container - The parent HTML element to attach to
+ * @param { HTMLElement } container - The parent HTML element to attach to
  * @param { string } id - ID for the input element
  * @param { string } classT - Class for the input element
  * @param { string } type - Type attribute of the input element
@@ -311,14 +306,8 @@ function constructEditCard(index, it, root, bPhrase)
 				bReadOnly = false;
 
 				for (let f = index - 1; f >= 0; --f)
-				{
 					if (it.phrase[f] === it.phrase[index])
-					{
-						bReadOnly = true;
-						bAllowChangingCharacter = false;
-						break;
-					}
-				}
+						return;
 				break;
 			}
 		}
@@ -329,7 +318,7 @@ function constructEditCard(index, it, root, bPhrase)
 		bReadOnly = false;
 
 	let container = addElement("div", "", `edit-phrase-${index}`, "card centered", "", root);
-	container.setAttribute("yy-readonly", bReadOnly);
+	container.setAttribute("yy-readonly", bReadOnly.toString());
 
 	addElement("h3", `${lc.card_name}: ` + (bReadOnly
 													? lit.name
@@ -359,26 +348,36 @@ function constructEditCard(index, it, root, bPhrase)
 		characterInput.value = lit !== null ? (lit["character"] ? lit.character : lit.phrase) : "";
 	}
 
-	if (lit !== null && lit["phrase"] && characterInput !== null)
+	if (lit !== null && characterInput !== null)
 	{
-		characterInput.addEventListener("change", (event) => {
-			let phrasePreviewContainer = $("phrase-preview-section-container");
-			let cardEditSection = $("card-edit-section");
+		if (lit["phrase"])
+		{
+			characterInput.addEventListener("change", (event) => {
+				let phrasePreviewContainer = $("phrase-preview-section-container");
+				let cardEditSection = $("card-edit-section");
 
-			// Clear children and reconstruct previews
-			phrasePreviewContainer.replaceChildren();
-			cardEditSection.replaceChildren();
-			lit.phrase = event.target.value;
+				// Clear children and reconstruct previews
+				phrasePreviewContainer.replaceChildren();
+				cardEditSection.replaceChildren();
+				lit.phrase = event.target.value === "" ? window.CARD_DEFAULT_CHARACTER : event.target.value;
 
-			window.previewCards = [];
-			constructPhraseEditCardPreview(lit, phrasePreviewContainer);
-			constructEditCard("phrase", lit, cardEditSection, true);
-			for (let i in lit.phrase)
-			{
-				constructPreviewCardGeneric(i, lit, phrasePreviewContainer);
-				constructEditCard(i, lit, cardEditSection, false);
-			}
-		});
+				window.previewCards = [];
+				constructPhraseEditCardPreview(lit, phrasePreviewContainer);
+				constructEditCard("phrase", lit, cardEditSection, true);
+				for (let i in lit.phrase)
+				{
+					constructPreviewCardGeneric(i, lit, phrasePreviewContainer);
+					constructEditCard(i, lit, cardEditSection, false);
+				}
+			});
+		}
+		else if (lit["character"])
+		{
+			characterInput.addEventListener("change", (e) => {
+				$(`card-character-target-div-preview-${index}`).writer.setCharacter(e.target.value + lit.variant);
+				lit.character = e.target.value;
+			})
+		}
 	}
 
 	if (!bPhrase && !bReadOnly)
@@ -415,16 +414,39 @@ function constructListElements()
 	let dataContainer = null;
 	let index = null;
 
+	let deleteButton = $("delete-edit-button");
 	if (urlParams.has("edit"))
 	{
 		dataContainer = window.localStorageData.cards;
 		index = urlParams.get("edit");
+		deleteButton.style.display = "inline-block";
+
+		deleteButton.cardIndex = index;
+		runEventAfterAnimation(deleteButton, "click", (e) => {
+			if (confirm(lc.deck_new_delete_card))
+			{
+				window.localStorageData.cards.splice(e.target.cardIndex, 1);
+				saveToLocalStorage(window.localStorageData);
+				location.href = "./deck.html";
+			}
+		});
 	}
 	else if (urlParams.has("phrase-edit"))
 	{
 		dataContainer = window.localStorageData.phrases;
 		index = urlParams.get("phrase-edit");
 		$("phrase-preview-section").style.display = "block";
+		deleteButton.style.display = "inline-block";
+
+		deleteButton.cardIndex = index;
+		runEventAfterAnimation(deleteButton, "click", (e) => {
+			if (confirm(lc.deck_new_delete_phrase))
+			{
+				window.localStorageData.phrases.splice(e.target.cardIndex, 1);
+				saveToLocalStorage(window.localStorageData);
+				location.href = "./deck.html";
+			}
+		});
 	}
 
 	let cardEditSection = $("card-edit-section");
@@ -460,8 +482,8 @@ function constructListElements()
 	}
 	else
 	{
-		let lit = constructPreviewCardGeneric(0, null, cardEditSection);
-		constructEditCard(0, lit, cardEditSection, false);
+		constructPreviewCardGeneric(0, null, cardEditSection);
+		constructEditCard(0, window.previewCards[0], cardEditSection, false);
 
 		// Reverse children of $("card-edit-section") because we display the preview before the edit widget
 		for (let i = 0; i < cardEditSection.childNodes.length; i++)

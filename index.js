@@ -21,6 +21,7 @@ window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
 // ---------------------------------- CONSTANT BLOCK END ----------------------------------
 
 window.localStorageData = null;
+window.gameModifiers = null;
 
 /**
  * Troll jQuery developers. Returns the element with the given id
@@ -87,6 +88,11 @@ async function charDataLoader(character, _, __)
 function saveToLocalStorage(obj)
 {
 	window.localStorage.setItem("youyinCardData", JSON.stringify(obj));
+}
+
+function saveGameModifiers()
+{
+	window.localStorage.setItem("youyinGameModifiers", JSON.stringify(window.gameModifiers));
 }
 
 /**
@@ -229,6 +235,17 @@ function main()
 		window.localStorageData["phrases"] = [];
 		saveToLocalStorage(window.localStorageData);
 		document.location.reload();
+	}
+
+	window.gameModifiers = JSON.parse(window.localStorage.getItem("youyinGameModifiers"));
+	if (window.gameModifiers === null)
+	{
+		window.gameModifiers = {
+			extensive: false
+		}
+		saveGameModifiers();
+		document.location.reload();
+		return;
 	}
 
 	fixLegacyCharacterVariants();

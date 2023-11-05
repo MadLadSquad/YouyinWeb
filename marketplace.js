@@ -87,7 +87,7 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
 /**
  * Creates an error text element
  * @param { HTMLElement } deckContainer - Container HTML element
- * @param { Object } response - JSON response object
+ * @param { Response } response - JSON response object
  * @param { string } marketplaceType - Marketplace type, official or community
  */
 function createErrorElement(deckContainer, response, marketplaceType)

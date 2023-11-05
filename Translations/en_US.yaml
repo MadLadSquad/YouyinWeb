@@ -38,6 +38,14 @@ translations:
     text: "Account"
   - id: locale
     text: "en_US/"
+  - id: extensive-mode-title
+    text: "Turns on extensive mode. Instead of going through all cards only once, extensive mode goes through the deck multiple times, gradually eliminating the cards with the highest knowledge."
+  - id: extensive-mode-aria-label
+    text: "Extensive mode checkbox"
+  - id: extensive-mode-label
+    text: "Extensive mode"
+  - id: game_modifiers_header
+    text: "Game modifiers"
 
   # Coming soon
   - id: coming-soon-header
@@ -89,6 +97,12 @@ translations:
     text: "Phrase"
   - id: card_character
     text: "Character"
+  - id: delete-edit-button
+    text: "Delete"
+  - id: deck-new-delete-phrase
+    text: "Are you sure you want to DELETE this phrase. THIS CANNOT BE UNDONE!"
+  - id: deck-new-delete-card
+    text: "Are you sure you want to DELETE this character. THIS CANNOT BE UNDONE!"
 
   # deck.html
   - id: profile-statistics-header

@@ -56,6 +56,9 @@ lc.no_cards_link_deck = "{{ _ no_cards_link_deck }}";
 lc.no_cards_text = "{{ _ no_cards_text }}";
 lc.no_cards_text_postfix = "{{ _ no_cards_text_postfix }}";
 
+lc.deck_new_delete_card = "{{ _ deck-new-delete-card }}"
+lc.deck_new_delete_phrase = "{{ _ deck-new-delete-phrase }}"
+
 // marketplace.js
 lc.leveled_up_no = "{{ _ leveled_up_no }}";
 lc.leveled_up_yes = "{{ _ leveled_up_yes }}";

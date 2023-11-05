@@ -20,6 +20,8 @@ window.bMobile = false;
 
 window.linkChildren = null;
 
+window.extensiveModeLevel = 4;
+
 // This function uses some dark magic that works half the time in order to calculate the size of the main page viewport
 // and main elements. Here are some issues:
 // TODO: On portrait screens if the resolution changes this sometimes breaks and a refresh is needed, would be good if it was fixed. 
@@ -199,6 +201,47 @@ function computeScore(strokes, errors, knowledge)
 	return knowledge;
 }
 
+function resetSessionData()
+{
+	window.totalPhraseErrors = 0;
+	window.errors = 0;
+	window.backwardsErrors = 0;
+
+	window.currentIndex = 0;
+	window.currentPhraseIndex = 0;
+	window.bInTest = false;
+	window.bInPhrase = false;
+
+	$("phrase-info-widget").style.display = "none"
+}
+
+/**
+ * Resets the play state when playing phrases
+ * @param { Object } data - Container for currentPhrase
+ */
+function resetPlayForPhrases(data)
+{
+	let currentPhrase = data.phrases[window.currentPhraseIndex];
+	let card = null;
+	for (let i in data.cards)
+	{
+		if (currentPhrase.phrase[currentIndex] === data.cards[i].character)
+		{
+			card = data.cards[i];
+			setWriterState(card);
+			break;
+		}
+	}
+	// Revert to using the phrase score if no card is found
+	if (card === null)
+		setWriterState(currentPhrase);
+
+	window.writer.setCharacter(currentPhrase.phrase[window.currentIndex])
+	window.writer.quiz();
+	changeSidebarText(currentPhrase, data.phrases.length, card, currentPhrase.phrase.length);
+}
+
+// Madman10K: This function is fucking depressing I want to kill myself by just thinking that I have to modify anything here
 async function writerOnComplete(_)
 {
 	// Go to the next card
@@ -236,14 +279,33 @@ async function writerOnComplete(_)
 	{
 		if (window.currentIndex < data.cards.length)
 		{
-			let ref = data.cards[window.currentIndex];
+			// If we just had a goto statement in this retarded language
+			const f = () => {
+				let ref = data.cards[window.currentIndex];
 
-			setWriterState(ref);
-			window.writer.setCharacter(ref.character);
+				setWriterState(ref);
+				window.writer.setCharacter(ref.character);
 
-			window.writer.quiz();
-			changeSidebarText(null, 0, ref, data.cards.length);
-			return;
+				window.writer.quiz();
+				changeSidebarText(null, 0, ref, data.cards.length);
+			}
+
+			if (window.gameModifiers.extensive)
+			{
+				for (; window.currentIndex < data.cards.length; ++window.currentIndex)
+				{
+					if (data.cards[window.currentIndex].knowledge <= window.extensiveModeLevel)
+					{
+						f();
+						return;
+					}
+				}
+			}
+			else
+			{
+				f();
+				return;
+			}
 		}
 		window.totalPhraseStrokes = 0;
 		window.currentIndex = 0;
@@ -263,28 +325,70 @@ async function writerOnComplete(_)
 			window.totalPhraseErrors = 0;
 		}
 
+		// If the index is lower than the length
 		if (window.currentPhraseIndex < data.phrases.length)
 		{
-			const currentPhrase = data.phrases[window.currentPhraseIndex]
-
-			let card = null;
-			for (let i in data.cards)
+			// A goto statement would have made this way simpler and way more readable
+			if (window.gameModifiers.extensive)
 			{
-				if (currentPhrase.phrase[currentIndex] === data.cards[i].character)
+				for (; window.currentPhraseIndex < data.phrases.length; ++window.currentPhraseIndex)
 				{
-					card = data.cards[i];
-					setWriterState(card);
-					break;
+					if (data.phrases[window.currentPhraseIndex].knowledge <= window.extensiveModeLevel)
+					{
+						resetPlayForPhrases(data);
+						return;
+					}
 				}
 			}
-			// Revert to using the phrase score if no card is found
-			if (card === null)
-				setWriterState(currentPhrase);
+			else
+			{
+				resetPlayForPhrases(data);
+				return;
+			}
+		}
+	}
 
-			window.writer.setCharacter(currentPhrase.phrase[currentIndex])
-			window.writer.quiz();
-			changeSidebarText(currentPhrase, data.phrases.length, card, currentPhrase.phrase.length);
-			return;
+	if (window.extensiveModeLevel > 0 && window.gameModifiers.extensive)
+	{
+		--window.extensiveModeLevel;
+		fisherYates(data.cards);
+		fisherYates(data.phrases);
+
+		for (; window.extensiveModeLevel >= 0; --window.extensiveModeLevel)
+		{
+			for (let i in data.cards)
+			{
+				if (data.cards[i].knowledge <= window.extensiveModeLevel)
+				{
+					resetSessionData();
+					window.bInTest = true;
+
+					let ref = data.cards[i];
+					setWriterState(ref);
+					window.writer.setCharacter(ref.character);
+
+					window.writer.quiz();
+					changeSidebarText(null, 0, ref, data.cards.length);
+					return;
+				}
+			}
+			for (let i in data.phrases)
+			{
+				if (data.phrases[i].knowledge <= window.extensiveModeLevel)
+				{
+					resetSessionData();
+					$("phrase-info-widget").style.display = "block"
+
+					window.bInTest = true;
+					window.bInPhrase = true;
+
+					window.currentPhraseIndex = i;
+
+					const currentPhrase = data.phrases[i];
+					resetPlayForPhrases(data, currentPhrase);
+					return;
+				}
+			}
 		}
 	}
 
@@ -297,10 +401,7 @@ async function writerOnComplete(_)
 	window.sessionTime = now;
 
 	// Reset data
-	window.currentIndex = 0;
-	window.currentPhraseIndex = 0;
-	window.bInTest = false;
-	window.bInPhrase = false;
+	resetSessionData();
 
 	// Recreate initial view
 	createStartButton();
@@ -309,7 +410,7 @@ async function writerOnComplete(_)
 	fisherYates(data.cards);
 	fisherYates(data.phrases);
 
-	// On mobile we remove all header elements when playing, so readd them
+	// On mobile, we remove all header elements when playing, so re-add them
 	if (window.bMobile)
 		$("main-page-header").replaceChildren(...window.linkChildren);
 }
