@@ -42,6 +42,12 @@ lc.card_phrase = "{{ _ card_phrase }}";
 lc.card_character = "{{ _ card_character }}";
 
 // main-page.js
+lc.finish_page_header = "{{ _ finish_page_header }}"
+lc.finish_page_characters_reviewed = "{{ _ finish_page_characters_reviewed }}"
+lc.finish_page_phrases_reviewed = "{{ _ finish_page_phrases_reviewed }}"
+lc.finish_page_session_len = "{{ _ finish_page_session_len }}"
+lc.finish_page_continue = "{{ _ finish_page_continue }}"
+
 lc.phrases_count_phrase = "{{ _ deck-phrases-header }}";
 lc.phrases_count_errors = "{{ _ phrases_count_errors }}";
 lc.phrases_count_cards = "{{ _ phrases_count_cards }}";

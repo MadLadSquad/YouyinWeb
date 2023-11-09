@@ -151,24 +151,55 @@ function resetSidebar()
 	$("phrase-info-widget").style.display = "none";
 }
 
+/**
+ * Sets up slide-in elements with an option callback
+ * @param { Array<Array> } data - Data object, an array of arrays, where each element is an array of strings that represent
+ * @param { number } i - Current index into the data array
+ * @param { HTMLElement } container - Container element
+ * @param { function } f - Callback function that will be called after creating the element
+ * @returns { HTMLElement | null} - The element in question or null if out of bounds
+ */
+function setupSlideInElement(data, i, container, f)
+{
+	if (i >= data.length)
+		return null;
+
+	let el = addElement(data[i][0], data[i][1], "", data[i][2] === null ? "" : data[i][2], "", container);
+	el.classList.add("slide-able");
+	f(el, data, i);
+
+	el.addEventListener("animationend", (_) => {
+		setupSlideInElement(data, i + 1, container, f);
+	});
+	return el;
+}
+
 function showFinishedSessionPage(st)
 {
 	const result = getLocalisedTimePostfix(st);
 
 	let mainContainer = $("start-button-writer-section");
-	let container = addElement("section", "", "finished-session-section", "", "", mainContainer);
+	let container = addElement("section", "", "finished-session-section", "centered", "", mainContainer);
 	container.classList.add("slide-right")
 
-	addElement("h3", "Session complete", "", "", "", container);
-	addElement("p", `Total characters reviewed: ${window.cardsReviewedCounter}`, "", "", "", container);
-	addElement("p", `Total phrases reviewed: ${window.phrasesReviewedCounter}`, "", "", "", container);
-	addElement("p", `Session length: ${result.time}${result.postfix}`, "", "", "", container);
+	const elData = [
+		[ "h3", 		lc.finish_page_header, 														null 				],
+		[ "p", 			`${lc.finish_page_characters_reviewed}: ${window.cardsReviewedCounter}`, 	null 				],
+		[ "p", 			`${lc.finish_page_phrases_reviewed}: ${window.phrasesReviewedCounter}`, 	null 				],
+		[ "p", 			`${lc.finish_page_session_len}: ${result.time}${result.postfix}`,			null 				],
+		[ "button", 	lc.finish_page_continue, 													"card-button-edit" 	]
+	]
 
-	runEventAfterAnimation(addElement("button", "Close", "", "card-button-edit slide-right", "", container), "click", (e) => {
-		$("finished-session-section").remove();
-		createStartButton();
-		resetSidebar();
-	})
+	setupSlideInElement(elData, 0, container, (e, data, i) => {
+		if (data[i][0] === "button")
+		{
+			runEventAfterAnimation(e, "click", (_) => {
+				$("finished-session-section").remove();
+				createStartButton();
+				resetSidebar();
+			})
+		}
+	});
 }
 
 function setWriterState(ref)

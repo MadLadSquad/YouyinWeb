@@ -46,6 +46,16 @@ translations:
     text: "Подробен режим"
   - id: game_modifiers_header
     text: "Настройки за играта"
+  - id: finish_page_header
+    text: "Тестето е прегледано"
+  - id: finish_page_characters_reviewed
+    text: "Прегледани символи"
+  - id: finish_page_phrases_reviewed
+    text: "Прегледани фрази"
+  - id: finish_page_session_len
+    text: "Дължина на сесията"
+  - id: finish_page_continue
+    text: "Продължи"
 
   # Coming soon
   - id: coming-soon-header

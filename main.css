@@ -242,6 +242,7 @@ header {
 
 .slide-right {
 	overflow: hidden;
+	/*animation-delay: 0.1s;*/
 }
 
 .slide-right .slide-able {
