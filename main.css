@@ -242,12 +242,20 @@ header {
 
 .slide-right {
 	overflow: hidden;
+	width: 100%;
 	/*animation-delay: 0.1s;*/
 }
 
 .slide-right .slide-able {
+	-webkit-animation: 1.5s slide-right 0.25s forwards;
 	animation: 1.5s slide-right 0.25s forwards;
 	transform: translateX(-100%);
+}
+
+@-webkit-keyframes slide-right {
+	to {
+		transform: translateX(0);
+	}
 }
 
 @keyframes slide-right {
