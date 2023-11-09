@@ -22,6 +22,9 @@ window.linkChildren = null;
 
 window.extensiveModeLevel = 4;
 
+window.cardsReviewedCounter = 1;
+window.phrasesReviewedCounter = 0;
+
 // This function uses some dark magic that works half the time in order to calculate the size of the main page viewport
 // and main elements. Here are some issues:
 // TODO: On portrait screens if the resolution changes this sometimes breaks and a refresh is needed, would be good if it was fixed. 
@@ -148,6 +151,26 @@ function resetSidebar()
 	$("phrase-info-widget").style.display = "none";
 }
 
+function showFinishedSessionPage(st)
+{
+	const result = getLocalisedTimePostfix(st);
+
+	let mainContainer = $("start-button-writer-section");
+	let container = addElement("section", "", "finished-session-section", "", "", mainContainer);
+	container.classList.add("slide-right")
+
+	addElement("h3", "Session complete", "", "", "", container);
+	addElement("p", `Total characters reviewed: ${window.cardsReviewedCounter}`, "", "", "", container);
+	addElement("p", `Total phrases reviewed: ${window.phrasesReviewedCounter}`, "", "", "", container);
+	addElement("p", `Session length: ${result.time}${result.postfix}`, "", "", "", container);
+
+	runEventAfterAnimation(addElement("button", "Close", "", "card-button-edit slide-right", "", container), "click", (e) => {
+		$("finished-session-section").remove();
+		createStartButton();
+		resetSidebar();
+	})
+}
+
 function setWriterState(ref)
 {
 	// Set the default writer state. Certain knowledge levels have certain features enabled/disabled
@@ -221,6 +244,7 @@ function resetSessionData()
  */
 function resetPlayForPhrases(data)
 {
+	++window.phrasesReviewedCounter;
 	let currentPhrase = data.phrases[window.currentPhraseIndex];
 	let card = null;
 	for (let i in data.cards)
@@ -281,6 +305,7 @@ async function writerOnComplete(_)
 		{
 			// If we just had a goto statement in this retarded language
 			const f = () => {
+				++window.cardsReviewedCounter;
 				let ref = data.cards[window.currentIndex];
 
 				setWriterState(ref);
@@ -360,6 +385,7 @@ async function writerOnComplete(_)
 			{
 				if (data.cards[i].knowledge <= window.extensiveModeLevel)
 				{
+					++window.cardsReviewedCounter;
 					resetSessionData();
 					window.bInTest = true;
 
@@ -383,9 +409,7 @@ async function writerOnComplete(_)
 					window.bInPhrase = true;
 
 					window.currentPhraseIndex = i;
-
-					const currentPhrase = data.phrases[i];
-					resetPlayForPhrases(data, currentPhrase);
+					resetPlayForPhrases(data);
 					return;
 				}
 			}
@@ -397,15 +421,18 @@ async function writerOnComplete(_)
 
 	// Save user data
 	const now = Date.now();
-	data.totalTimeInSessions += (now - window.sessionTime);
+	const st = (now - window.sessionTime);
+	data.totalTimeInSessions += st;
 	window.sessionTime = now;
+
+	showFinishedSessionPage(st);
 
 	// Reset data
 	resetSessionData();
+	window.cardsReviewedCounter = 1;
+	window.phrasesReviewedCounter = 0;
 
 	// Recreate initial view
-	createStartButton();
-	resetSidebar();
 	saveToLocalStorage(data);
 	fisherYates(data.cards);
 	fisherYates(data.phrases);
@@ -526,15 +553,15 @@ function mainPageMain()
 	// to compute the width and height of the writer widget/start button from Javascript
 	const notify = function() {
 		const newDrawElementHeight = getDrawElementHeight();
+		const startButton = $("start-button");
 		if (bInTest)
 		{
 			window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
 		}
-		else
+		else if (startButton !== null)
 		{
-			const el = $("start-button");
-			el.style.setProperty("width", newDrawElementHeight + "px");
-			el.style.setProperty("height", newDrawElementHeight + "px");
+			startButton.style.setProperty("width", newDrawElementHeight + "px");
+			startButton.style.setProperty("height", newDrawElementHeight + "px");
 		}
 		//window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
 	};

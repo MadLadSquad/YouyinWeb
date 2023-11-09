@@ -18,6 +18,10 @@ window.WRITER_SLEEP_AFTER_COMPLETE = 1200; 			// In ms
 
 window.WRITER_SHOW_HINT_ON_ERRORS = 3;
 window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
+
+window.HOUR_UNIX = 36000000;
+window.MINUTE_UNIX = 60000;
+window.SECOND_UNIX = 1000;
 // ---------------------------------- CONSTANT BLOCK END ----------------------------------
 
 window.localStorageData = null;
@@ -31,6 +35,37 @@ window.gameModifiers = null;
 function $(x)
 {
 	return document.getElementById(x);
+}
+
+/**
+ * Returns a localised postfix given a time. Also converts time units
+ * @param { number } time - in milliseconds
+ * @returns { Object<number, string> } - The postfix
+ */
+function getLocalisedTimePostfix(time)
+{
+	// I FUCKING HATE NOT HAVING PASS BY REFERENCE IN JAVASCRIPT
+	let rt = {
+		time: time,
+		postfix: lc.milliseconds
+	}
+
+	if (time > window.HOUR_UNIX)
+	{
+		rt.time /= window.HOUR_UNIX;
+		rt.postfix = lc.hours;
+	}
+	else if (time > window.MINUTE_UNIX)
+	{
+		rt.time /= window.MINUTE_UNIX;
+		rt.postfix = lc.minutes;
+	}
+	else if (time > window.SECOND_UNIX)
+	{
+		rt.time /= window.SECOND_UNIX;
+		rt.postfix = lc.seconds;
+	}
+	return rt;
 }
 
 /**

@@ -239,3 +239,18 @@ header {
 #start-button, #start-button-writer-section {
 	margin: auto;
 }
+
+.slide-right {
+	overflow: hidden;
+}
+
+.slide-right .slide-able {
+	animation: 1.5s slide-right 0.25s forwards;
+	transform: translateX(-100%);
+}
+
+@keyframes slide-right {
+	to {
+		transform: translateX(0);
+	}
+}

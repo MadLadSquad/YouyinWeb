@@ -1,9 +1,5 @@
 'use strict';
 
-window.HOUR_UNIX = 36000000;
-window.MINUTE_UNIX = 60000;
-window.SECOND_UNIX = 1000;
-
 /**
  * The export button callback. Stringifies the current data and exports it.
  */
@@ -73,22 +69,9 @@ function setProfileCardData()
 	let averageSessionLen = isNaN(a) ? 0 : a;
 	let sessionLenPostfix = lc.milliseconds;
 
-	// 1000 * 60 * 60 basically an hour
-	if (averageSessionLen > window.HOUR_UNIX)
-	{
-		sessionLenPostfix = lc.hours;
-		averageSessionLen /= window.HOUR_UNIX;
-	}
-	else if (averageSessionLen > window.MINUTE_UNIX)
-	{
-		sessionLenPostfix = lc.minutes;
-		averageSessionLen /= window.MINUTE_UNIX;
-	}
-	else if (averageSessionLen > window.SECOND_UNIX)
-	{
-		sessionLenPostfix = lc.seconds;
-		averageSessionLen /= window.SECOND_UNIX;
-	}
+	const result = getLocalisedTimePostfix(averageSessionLen);
+	sessionLenPostfix = result.postfix;
+	averageSessionLen = result.time;
 
 	let sessionLenTmp = averageSessionLen / window.localStorageData.sessions;
 	if (isNaN(sessionLenTmp))
