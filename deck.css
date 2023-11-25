@@ -138,18 +138,24 @@ ol li {
 	height: 0;
 }
 
-#input-mode, #navigation-footer {
+#navigation-footer {
 	width: fit-content;
 	padding: 0;
 	margin: auto;
 	overflow: hidden;
 }
 
-#input-mode * {
-	float: left;
-	position: relative;
-	display: flex;
-	align-items: center;
+#input-mode {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fit, minmax(85px, max-content));
+	margin: auto;
+	justify-content: center;
+}
+
+#input-mode div {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 
 * {
@@ -170,23 +176,4 @@ input[type=text] {
 	background-color: var(--main-background-colour);
 	border: 1px solid var(--main-accent-colour);
 	border-radius: 4px;
-}
-
-/* This is for dividing the deck edit card input mode into a simple grid*/
-#input-mode-internal {
-	display: grid;
-	gap: 0;
-	grid-template-columns: 1fr 1fr;
-	padding: 0;
-	margin-top: 1em;
-	box-sizing: border-box;
-}
-
-/* Do not configure margin because yes */
-#input-mode-internal div {
-	margin: 0 auto auto;
-}
-
-#input-mode-internal input[type=radio] {
-	margin-top: 0;
 }

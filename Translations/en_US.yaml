@@ -77,6 +77,10 @@ translations:
     text: "None"
   - id: pinyin-input-description
     text: "Enables you to use Pinyin number notation in text boxes. It will then convert the text to actual pinyin. Example: 'pin1 yin1' will become 'pīn yīn'."
+  - id: romaji-hiragana-input-description
+    text: "Enables you to use Romaji to input Hiragana. Note 1: Small Hiragana can be inputted by prepending 'x' to it. Note 2: Inputting 'っ' can only be done using 'xtsu'. Note 3: Use '-' to input 'ー'"
+  - id: romaji-katakana-input-description
+    text: "Enables you to use Romaji to input Katakana. Note 1: Small Katakana can be inputted by prepending 'x' to it. Note 2: Inputting 'ッ' can only be done using 'xtsu'. Note 3: Use '-' to input 'ー'"
   - id: phrase-preview-section-header
     text: "Previews"
   - id: finish-edit-button

@@ -4,67 +4,23 @@
 window.previewCards = [];
 window.previewPhrase = null;
 
-window.bUsingPinyinConversion = false;
-
 window.writer = null;
 
+window.currentIME = "";
+window.IMEIndex = 0;
+
+
 /**
- * Convert each word in a sentence to pinyin
- * @param {string} string - The input non-pinyin string
- * @returns {string} - The output pinyin-ified string
+ * Use the current IME(if any) to return a converted string
+ * @param { string } string - Input string
+ * @return { string } Output string
  */
-function pinyinify(string) {
-	// Ugly af but it's the only way we can do it ig
-	const pinyin =
-	{
-		"uai": [ "uāi", "uái", "uǎi", "uài", "uai" ],
-		"ua": [ "uā", "uá", "uǎ", "uà", "ua" ],
-		"ue": [ "uē", "ué", "uě", "uè", "ue" ],
-		"ui": [ "uī", "uí", "uǐ", "uì", "ui" ],
-		"uo": [ "uō", "uó", "uǒ", "uò", "uo" ],
-		"va": [ "üā", "üá", "üǎ", "üà", "üa" ],
-		"ve": [ "üē", "üé", "üě", "üè", "üe" ],
-		"ai": [ "āi", "ái", "ǎi", "ài", "ai" ],
-		"iao": [ "iāo", "iáo", "iǎo", "iào", "iao" ],
-		"ao": [ "āo", "áo", "ǎo", "ào", "ao" ],
-		"ei": [ "ēi", "éi", "ěi", "èi", "ei" ],
-		"ia": [ "iā", "iá", "iǎ", "ià", "ia" ],
-		"ie": [ "iē", "ié", "iě", "iè", "ie" ],
-		"io": [ "iō", "ió", "iǒ", "iò", "io" ],
-		"iu": [ "iū", "iú", "iǔ", "iù", "iu" ],
-		"ou": [ "ōu", "óu", "ǒu", "òu", "ou" ],
-		"a": [ "ā", "á", "ǎ", "à", "a" ],
-		"e": [ "ē", "é", "ě", "è", "e" ],
-		"i": [ "ī", "í", "ǐ", "ì", "i" ],
-		"o": [ "ō", "ó", "ǒ", "ò", "o" ],
-		"u": [ "ū", "ú", "ǔ", "ù", "u" ],
-		"v": [ "ǖ", "ǘ", "ǚ", "ǜ", "ü" ],
-	};
+function convertFromIME(string)
+{
+	if (window.currentIME === "")
+		return string;
 
-	let arr = string.toLowerCase().split(' ');
-
-	// Pinyin-ify every element
-	for (let i in arr)
-	{
-		for (const [key, val] of Object.entries(pinyin))
-		{
-			if (arr[i].includes(key))
-			{
-				let lastEl = arr[i].at(arr[i].length - 1);
-				let index = 5;
-				// Check if the number at the back is above 0 and less than 6 since we don't support Jyutping(it doesn't have markings anyway)
-				if (lastEl >= '0' && lastEl <= '5')
-				{
-					index = parseInt(lastEl);
-					arr[i] = arr[i].substring(0, arr[i].length - 1);
-					if (lastEl === '0')
-						index = 5;
-				}
-				arr[i] = arr[i].replace(key, val[index - 1]);
-			}
-		}
-	}
-	return arr.join(" ");
+	return soundTables[currentIME].convert(string, IMEIndex);
 }
 
 /**
@@ -158,7 +114,7 @@ function constructInputElement(container, id, classT, type, ariaLabel, name, pre
 
 	input.addEventListener("change", (event) =>
 	{
-		event.target.value = window.bUsingPinyinConversion ? pinyinify(event.target.value) : event.target.value;
+		event.target.value = convertFromIME(event.target.value);
 		if (previewID !== "" && event.target.value !== "")
 			$(previewID).textContent = event.target.value;
 	});
