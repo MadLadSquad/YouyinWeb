@@ -24,6 +24,8 @@ lc.part_of = "{{ _ part_of }}";
 lc.deck_definitions = "{{ _ character-info-widget-def-p }}";
 lc.deck_card_edit = "{{ _ deck_card_edit }}";
 
+lc.level_reduce_label = "{{ _ level-reduce-label }}";
+
 // deck-new.js
 lc.unknown_character = "{{ _ unknown_character }}";
 lc.unknown_phrase = "{{ _ unknown_phrase }}";

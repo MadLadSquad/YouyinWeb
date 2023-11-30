@@ -44,6 +44,12 @@ translations:
     text: "Extensive mode checkbox"
   - id: extensive-mode-label
     text: "Extensive mode"
+  - id: level-reduce-title
+    text: "Reduces your knowledge for all cards and phrases using the selected value every day."
+  - id: level-reduce-aria-label
+    text: "Level reduction slider"
+  - id: level-reduce-label
+    text: "Daily level reduction:"
   - id: game_modifiers_header
     text: "Game modifiers"
   - id: finish_page_header

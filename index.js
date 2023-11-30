@@ -1,10 +1,10 @@
 'use strict';
 // ------------------- CONSTANT BLOCK EDIT IF RUNNING ON A CUSTOM SYSTEM ------------------
 window.MAX_KNOWLEDGE_LEVEL = 4;
-window.MAX_POINTS_ON_CHARACTER = 0.25;
-window.ADD_POINTS_ON_ERROR_3_4 = 0.1875; 			// 3/4 of 0.25
-window.ADD_POINTS_ON_ERROR_1_2 = 0.125; 			// 1/2 or 2/4 of 0.25
-window.ADD_POINTS_ON_ERROR_1_3 = 0.0625; 			// 1/3 of 0.25
+window.MAX_POINTS_ON_CHARACTER = 0.05;
+window.ADD_POINTS_ON_ERROR_3_4 = 0.0375; 			// 3/4 of 0.05
+window.ADD_POINTS_ON_ERROR_1_2 = 0.025; 			// 1/2 or 2/4 of 0.05
+window.ADD_POINTS_ON_ERROR_1_4 = 0.0125; 			// 1/4 of 0.05
 
 window.CARD_WRITER_SIZE = 100;
 window.CARD_WRITER_STROKE_ANIMATION_SPEED = 1.25;
@@ -276,11 +276,18 @@ function main()
 	if (window.gameModifiers === null)
 	{
 		window.gameModifiers = {
-			extensive: false
+			extensive: false,
+			levelReduce: 0
 		}
 		saveGameModifiers();
 		document.location.reload();
 		return;
+	}
+
+	if (window.gameModifiers.levelReduce === null || window.gameModifiers.levelReduce === undefined)
+	{
+		window.gameModifiers.levelReduce = 0;
+		saveGameModifiers();
 	}
 
 	fixLegacyCharacterVariants();

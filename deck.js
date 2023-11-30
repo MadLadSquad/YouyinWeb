@@ -201,6 +201,16 @@ function setupGameModifiers()
 		window.gameModifiers.extensive = this.checked;
 		saveGameModifiers();
 	});
+
+	const levelReduce = $("level-reduce-slider");
+	levelReduce.value = window.gameModifiers.levelReduce;
+	levelReduce.labels[0].childNodes[0].textContent = `${lc.level_reduce_label} ${parseFloat(levelReduce.value).toFixed(2).toString()} `;
+
+	levelReduce.addEventListener("input", (e) => {
+		window.gameModifiers.levelReduce = e.target.value;
+		e.target.labels[0].childNodes[0].textContent = `${lc.level_reduce_label} ${parseFloat(e.target.value).toFixed(2).toString()} `;
+		saveGameModifiers();
+	});
 }
 
 /**

@@ -44,6 +44,12 @@ translations:
     text: "Чекбокс за подробен режим"
   - id: extensive-mode-label
     text: "Подробен режим"
+  - id: level-reduce-title
+    text: "Понижава нивото на познанието ви за всички символи и фрази, със зададеното от вас количество точки, всеки ден."
+  - id: level-reduce-aria-label
+    text: "Слайдер за дневно понижаване на нивото"
+  - id: level-reduce-label
+    text: "Дневно понижаване на нитовото:"
   - id: game_modifiers_header
     text: "Настройки за играта"
   - id: finish_page_header
