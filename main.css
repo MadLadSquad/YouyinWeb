@@ -38,10 +38,6 @@ main {
 * {
 	background-color: var(--main-background-colour);
 	accent-color: var(--main-accent-colour);
-}
-
-/* Set font family for basically all text we use */
-h1, h2, h3, h4, h5, h6, p, li {
 	font-family: 'Ubuntu', sans-serif;
 }
 

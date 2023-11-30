@@ -149,17 +149,12 @@ ol li {
 	display: grid;
 	gap: 1rem;
 	grid-template-columns: repeat(auto-fit, minmax(85px, max-content));
-	margin: auto;
 	justify-content: center;
+	margin: auto auto 1rem auto;
 }
 
-#input-mode div {
-	margin-top: 1rem;
-	margin-bottom: 1rem;
-}
-
-* {
-	font-family: 'Ubuntu', sans-serif;
+#input-mode * {
+	margin: 0;
 }
 
 /* Configure input text fields to be border boxes */
