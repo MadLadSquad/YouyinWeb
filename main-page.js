@@ -246,7 +246,7 @@ function computeScore(strokes, errors, knowledge)
 		result = window.ADD_POINTS_ON_ERROR_3_4;
 	else if (points >= window.ADD_POINTS_ON_ERROR_1_2)
 		result = window.ADD_POINTS_ON_ERROR_1_2;
-	else if (points >= 0.0625)
+	else if (points >= window.ADD_POINTS_ON_ERROR_1_4)
 		result = -window.ADD_POINTS_ON_ERROR_1_4;
 	else
 		result = -window.ADD_POINTS_ON_ERROR_1_2;
