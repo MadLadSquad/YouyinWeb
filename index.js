@@ -22,6 +22,8 @@ window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
 window.HOUR_UNIX = 36000000;
 window.MINUTE_UNIX = 60000;
 window.SECOND_UNIX = 1000;
+
+window.CHARACTER_FETCH_URL = "https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/data/";
 // ---------------------------------- CONSTANT BLOCK END ----------------------------------
 
 window.localStorageData = null;
@@ -107,7 +109,7 @@ function addTextNode(container, text)
 // This loads characters from the database. Change the URL to your own database.
 async function charDataLoader(character, _, __)
 {
-	let response = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/data/${character}.json`)
+	let response = await fetch(`${window.CHARACTER_FETCH_URL}${character}.json`)
 	if (response.status !== 200)
 	{
 		console.warn(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
