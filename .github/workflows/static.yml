@@ -42,6 +42,7 @@ jobs:
           node-version: '16'
       # Disable automatic localhost
       - run: "echo 'run-localhost-automatically: false' >> uvproj.yaml"
+      - run: sudo apt install libyaml-cpp-dev
       - name: Build project
         run: mkdir build/ && cd UVKBuildTool/ && ./setup-web.sh .. && cd build && ./UVKBuildTool --build ../../build ../../ && cd ../../
       - run: ./ci-clean.sh
