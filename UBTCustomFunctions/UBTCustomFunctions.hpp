@@ -4,6 +4,6 @@
 
 namespace UBT
 {
-    UBT_PUBLIC_API void funcExportMain(UTTE::Generator& generator) noexcept;
+    void funcExportMain(UTTE::Generator& generator) noexcept;
 }
 #endif
