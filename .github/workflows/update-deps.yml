@@ -41,17 +41,11 @@ jobs:
           git fetch --all
           git checkout auto || git checkout -b auto
           git submodule foreach --recursive "git reset --hard origin/\`git symbolic-ref refs/remotes/origin/HEAD | cut -f4 -d/\`"
-          o=$(git submodule update --remote --merge)
-          echo "out=${o:0:1}?" >> $GITHUB_OUTPUT
-      - name: Commit
-        if: "steps.mod.outputs.out != '?'"
-        id: commit
-        run: |
-          (git add . && git commit -m "auto" && git push origin auto && echo "com=+" >> $GITHUB_OUTPUT) || echo "com=?" >> $GITHUB_OUTPUT
-      - name: Test
-        run: "echo '${{ steps.mod.outputs.out }} ${{ steps.commits.outputs.com }}!'"
+          git submodule update --remote --merge --init
+          
+          (git add . && git commit -m "auto" && git push origin HEAD:auto && echo "out=s" >> $GITHUB_OUTPUT) || echo "out=?" >> $GITHUB_OUTPUT
       - name: Create PR
-        if: "steps.mod.outputs.out != '?' && steps.commit.outputs.com != '?'"
+        if: "steps.mod.outputs.out != '?'"
         uses: JasonEtco/create-an-issue@v2 
         env:
           GITHUB_TOKEN: ${{ secrets.ACTION_ISSUE_SECRET }}
