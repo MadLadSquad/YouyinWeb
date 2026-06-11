@@ -34,7 +34,7 @@ The CI deploy step strips `.html` extensions from URLs, and `.htaccess` rewrites
 
 ## Runtime architecture
 
-The app is a set of independent pages (`index.html`, `deck.html`, `marketplace.html`, `account.html`, `about.html`, `404.html`, plus `deck-edit-card.html` opened from the deck page), each loading its own JS file. There is **no module system** — every page also loads `index.js` (often implicitly via shared chrome) which defines globals on `window` that the page scripts rely on:
+The app is a set of independent pages (`index.html`, `deck.html`, `marketplace.html`, `account.html`, `404.html`, plus `deck-edit-card.html` opened from the deck page), each loading its own JS file. There is **no module system** — every page also loads `index.js` (often implicitly via shared chrome) which defines globals on `window` that the page scripts rely on:
 
 - **Storage:** All deck/session state lives in `localStorage` under two keys:
   - `youyinCardData` — `{ sessions, streak, lastDate, totalTimeInSessions, cards: [...], phrases: [...] }`. See `example-schema.json`. `cards` are single characters; `phrases` are multi-character sequences. Card objects have a `variant` field that distinguishes Chinese/Kanji/Hanja rendering of the same codepoint (legacy decks without it are migrated by `fixLegacyCharacterVariants` in `index.js`).
