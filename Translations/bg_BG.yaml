@@ -283,3 +283,5 @@ translations:
     text: " - Данните за всички символи използвани в {{ trademark }}, обединена на едно място"
   - id: about_h5_6
     text: " - Проекта по интернационализация, към MadLad Squad"
+  - id: skip-to-content
+    text: "Към съдържанието"

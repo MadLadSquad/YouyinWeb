@@ -284,3 +284,5 @@ translations:
     text: " - All character data used in {{ trademark }} in one place"
   - id: about_h5_6
     text: " - The MadLad Squad i18n(internationalisation) project"
+  - id: skip-to-content
+    text: "Skip to content"

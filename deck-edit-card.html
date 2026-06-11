@@ -9,7 +9,7 @@
 	<body>
 		{{ include Components/header.tmpl.html }}
 		<h1 id="deck-new-card-header" class="centered">{{ _ new-card-h1 }}</h1>
-		<main>
+		<main id="main-content">
 			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
 			<section id="input-mode" class="centered">
 				<p>{{ _ input-mode-p }}</p>
@@ -44,7 +44,7 @@
 			</section>
 
 			<!-- This is normally hidden, except when editing phrases. When editing phrases this will be populated with previews of every card in -->
-			<section id="phrase-preview-section" style="display: none;">
+			<section id="phrase-preview-section">
 				<h1 class="centered">{{ _ phrase-preview-section-header }}</h1>
 				<section id="phrase-preview-section-container" class="deck">
 					<!-- This will be filled with preview cards from Javascript -->
@@ -53,7 +53,7 @@
 
 			<section id="navigation-footer">
 				<button id="finish-edit-button" class="card-button-edit">{{ _ finish-edit-button }}</button>
-				<button id="delete-edit-button" class="card-button-edit" style="display:none">{{ _ delete-edit-button }}</button>
+				<button id="delete-edit-button" class="card-button-edit">{{ _ delete-edit-button }}</button>
 				<button id="cancel-edit-button" class="card-button-edit">{{ _ cancel-edit-button }}</button>
 			</section>
 		</main>

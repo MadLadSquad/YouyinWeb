@@ -9,7 +9,7 @@
 	<body>
 		{{ include Components/header.tmpl.html }}
 		<h1 class="centered">{{ _ no_cards_link_deck }}</h1>
-		<main>
+		<main id="main-content">
 			<script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
 			<section class="deck" id="deck-generic-info-section">
 				<div id="profile-card" class="card centered">
@@ -29,9 +29,9 @@
 						{{ _ extensive-mode-label }}
 					</label>
 					<br>
-					<label title="{{ _ level-reduce-title }}" style="display: block; margin-top: 0.5rem">
+					<label title="{{ _ level-reduce-title }}" class="slider-label">
 						{{ _ level-reduce-label }}
-						<input type="range" id="level-reduce-slider" name="{{ _ level-reduce-aria-label }}" aria-label="{{ _ level-reduce-aria-label }}" min="0" max="1" value="0" step="0.01" style="margin: 0">
+						<input type="range" id="level-reduce-slider" name="{{ _ level-reduce-aria-label }}" aria-label="{{ _ level-reduce-aria-label }}" min="0" max="1" value="0" step="0.01">
 					</label>
 				</div>
 				<div id="new-card" class="card centered">

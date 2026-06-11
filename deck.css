@@ -44,22 +44,24 @@
 }
 
 
+/* Click ripple: scales out from center and fades after release */
 .card-button-edit::after {
 	content: "";
-	background: var(--main-border-colour);
-	display: block;
 	position: absolute;
-	padding-top: 300%;
-	padding-left: 350%;
-	margin-left: -22px!important;
-	margin-top: -120%;
+	left: 50%;
+	top: 50%;
+	width: 5px;
+	height: 5px;
+	background: var(--main-border-colour);
+	border-radius: 50%;
+	transform: translate(-50%, -50%) scale(40);
 	opacity: 0;
-	transition: all 0.8s;
+	transition: transform 0.8s, opacity 0.8s;
+	pointer-events: none;
 }
 
 .card-button-edit:active::after {
-	padding: 0;
-	margin: 0;
+	transform: translate(-50%, -50%) scale(0);
 	opacity: 1;
 	transition: 0s;
 }
@@ -164,4 +166,20 @@ input[type=text] {
 	background-color: var(--main-background-colour);
 	border: 1px solid var(--main-accent-colour);
 	border-radius: 4px;
+}
+
+/* Level-reduce slider sits on its own line, separated from the checkbox above */
+.slider-label {
+	display: block;
+	margin-top: 0.5rem;
+}
+
+#level-reduce-slider {
+	margin: 0;
+}
+
+/* Hidden by default; JS toggles display when editing/showing phrases */
+#phrase-preview-section,
+#delete-edit-button {
+	display: none;
 }

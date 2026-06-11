@@ -6,7 +6,7 @@
 	--main-text-colour: #000000;
 	--main-error-colour: #c62828;
 	--deck-button-active-colour: #a56961;
-	--deck-card-text-colour: #555555;
+	--deck-card-text-colour: #444444;
 }
 
 html {
@@ -51,20 +51,41 @@ a {
 	color: var(--main-accent-colour);
 }
 
-/* Make the ul and footer to be contatiners for a horizontal list */
+/* Make the ul and footer containers for a horizontal list */
 ul, footer {
 	list-style: none;
 	padding: 0;
 	margin: 0;
-	overflow: hidden;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
 }
 
-/* Make the footer and all list items in unordered lists inline with left alignment */
-ul li, footer {
-	float: left;
-	position: relative;
-	display: flex;
-	align-items: center;
+footer.centered {
+	justify-content: center;
+}
+
+/* Visible focus indicator for keyboard users */
+:focus-visible {
+	outline: 2px solid var(--main-accent-colour);
+	outline-offset: 2px;
+}
+
+/* Skip-to-content link: hidden until focused via keyboard */
+.skip-link {
+	position: absolute;
+	left: -9999px;
+	top: 0;
+	z-index: 100;
+}
+
+.skip-link:focus {
+	left: 0.5rem;
+	top: 0.5rem;
+	padding: 0.5rem 1rem;
+	background-color: var(--main-background-colour);
+	border: 2px solid var(--main-accent-colour);
+	border-radius: 4px;
 }
 
 /* Basically the styling for the text on the top bar */
@@ -79,10 +100,10 @@ ul li a {
 }
 
 /**
- * Divide the main page into 2 parts, 25% for the sidebar and 75% for the writer widget. 
+ * Divide the main page into 2 parts, 25% for the sidebar and 75% for the writer widget.
  * This is only applies in landscape mode.
  **/
-#main-page {
+#main-content {
 	display: grid;
 	gap: 0;
 	grid-template-columns: 25% 75%;
@@ -100,7 +121,7 @@ ul li a {
 
 /* This may cause problems, check out main-page.js on top of the definition of the "getDrawElementHeight" function */
 @media (orientation: portrait) {
-	#main-page {
+	#main-content {
 		display: block;
 	}
 }
