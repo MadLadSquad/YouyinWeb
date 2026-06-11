@@ -363,6 +363,117 @@ function setThemeBox()
 	});
 }
 
+/**
+ * Traverses the DOM under `root` and replaces Unicode emojis with Twitter Emoji (Twemoji) SVG images.
+ * Skips interactive, styling, or structural elements where images are invalid/unwanted.
+ * @param {Node} root - The root node to parse
+ */
+function parseEmojis(root)
+{
+	if (!window.twemoji)
+		return;
+
+	const twemojiOptions = {
+		base: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/',
+		folder: 'svg',
+		ext: '.svg'
+	};
+
+	const ignoredTags = ['SCRIPT', 'STYLE', 'SELECT', 'OPTION', 'HEAD', 'NOSCRIPT', 'IFRAME'];
+
+	function walk(node)
+	{
+		if (node.nodeType === Node.ELEMENT_NODE)
+		{
+			const tagName = node.tagName.toUpperCase();
+			if (ignoredTags.includes(tagName) || node.classList.contains('emoji'))
+				return;
+
+			const children = Array.from(node.childNodes);
+			for (let i = 0; i < children.length; i++)
+			{
+				walk(children[i]);
+			}
+		}
+		else if (node.nodeType === Node.TEXT_NODE)
+		{
+			if (node.textContent.trim().length === 0)
+				return;
+
+			const originalText = node.textContent;
+			const parsedHTML = window.twemoji.parse(originalText, twemojiOptions);
+			if (parsedHTML !== originalText)
+			{
+				const parent = node.parentNode;
+				if (!parent)
+					return;
+
+				const tempSpan = document.createElement('span');
+				tempSpan.innerHTML = parsedHTML;
+
+				while (tempSpan.firstChild)
+				{
+					parent.insertBefore(tempSpan.firstChild, node);
+				}
+				parent.removeChild(node);
+			}
+		}
+	}
+
+	walk(root);
+}
+
+/**
+ * Initializes universal Twemoji replacement across the site, parsing the initial page content
+ * and setting up a MutationObserver to parse dynamically added content.
+ */
+function initEmojiReplacement()
+{
+	if (!window.twemoji)
+	{
+		console.warn("Twemoji library not loaded; falling back to native emojis.");
+		return;
+	}
+
+	// Initial parse of the body
+	parseEmojis(document.body);
+
+	// Watch for future updates to the DOM
+	const observer = new MutationObserver((mutations) => {
+		let targets = [];
+		for (let i = 0; i < mutations.length; i++)
+		{
+			const mutation = mutations[i];
+			if (mutation.type === 'childList')
+			{
+				const addedNodes = mutation.addedNodes;
+				for (let j = 0; j < addedNodes.length; j++)
+				{
+					targets.push(addedNodes[j]);
+				}
+			}
+		}
+
+		if (targets.length > 0)
+		{
+			observer.disconnect();
+			for (let i = 0; i < targets.length; i++)
+			{
+				parseEmojis(targets[i]);
+			}
+			observer.observe(document.body, {
+				childList: true,
+				subtree: true
+			});
+		}
+	});
+
+	observer.observe(document.body, {
+		childList: true,
+		subtree: true
+	});
+}
+
 function main()
 {
 	// Saves us performance costs of loading and saving things many times
@@ -413,6 +524,7 @@ function main()
 	setLanguage();
 	setLanguageBox();
 	setThemeBox();
+	initEmojiReplacement();
 }
 
 main();

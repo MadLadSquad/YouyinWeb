@@ -135,6 +135,10 @@ select {
 	-moz-appearance: none;
 	appearance: none;
 	background-color: transparent;
+	/* Themed text colour for every select (e.g. the deck card variant box). Without this,
+	   selects outside the footer fall back to browser-default black and are unreadable on
+	   dark themes. */
+	color: var(--main-text-colour);
 	border: 1px solid var(--main-accent-colour);
 	border-radius: 4px;
 	font-family: inherit;
@@ -162,6 +166,10 @@ option {
 	min-width: 0;
 	flex-direction: row;
 	box-sizing: border-box;
+	/* The select itself has a transparent background, so the open dropdown would otherwise
+	   use the system colours; theme the options so the popup stays readable on dark themes. */
+	color: var(--main-text-colour);
+	background-color: var(--main-background-colour);
 }
 
 /* Only display the right border on landscape since on portrait elements are not inline */
@@ -361,4 +369,13 @@ header {
 .theme-option.active {
 	color: var(--main-background-colour);
 	background-color: var(--main-accent-colour);
+}
+
+/* Twemoji styling to match surrounding text size */
+img.emoji {
+	height: 1em;
+	width: 1em;
+	margin: 0 .05em 0 .1em;
+	vertical-align: -0.1em;
+	display: inline-block;
 }
