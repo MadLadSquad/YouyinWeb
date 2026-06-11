@@ -119,13 +119,25 @@ ol li {
 	border: 0;
 }
 
+.card h1 {
+	font-size: 1.5rem;
+}
+
+.card h2 {
+	font-size: 1.3rem;
+}
+
+.card h3 {
+	font-size: 1.15rem;
+}
+
 #new-card-header {
 	font-size: 7.5rem;
 	color: var(--deck-card-text-colour);
 }
 
-.phrase-card-header {
-	font-size: 2.25rem;
+.card .phrase-card-header {
+	font-size: 1.75rem;
 	color: var(--deck-card-text-colour);
 }
 
