@@ -492,18 +492,65 @@ function setThemeBox()
 		opt.type = "button";
 		opt.className = "list-select-option" + (id === current ? " active" : "");
 		opt.textContent = window.youyinThemes[id].name;
-		opt.addEventListener("click", function(){
-			window.applyTheme(id);
-			window.localStorage.setItem("youyinTheme", id);
-			for (const k in options)
-				options[k].classList.toggle("active", k === id);
-			closePopup();
-		});
+		// Hovering previews a theme live, exactly like arrow-key navigation does.
+		opt.addEventListener("mouseenter", function(){ setPreview(id, false); });
+		opt.addEventListener("click", function(){ commitAndClose(id); });
 		list.appendChild(opt);
 		options[id] = opt;
 	}
 
 	document.body.appendChild(popup);
+
+	// committedId is the persisted theme; previewId is whatever is shown live while the popup
+	// is open. Navigating (arrows/hover) only previews — Enter/click commit, Escape reverts.
+	let committedId = current;
+	let previewId = current;
+
+	function setActiveHighlight(id)
+	{
+		for (const k in options)
+			options[k].classList.toggle("active", k === id);
+	}
+
+	// Centre an option inside the scrollable list without touching page scroll (the popup is
+	// position:fixed, so a plain scrollIntoView could move the whole page).
+	function scrollToOption(opt)
+	{
+		const optRect = opt.getBoundingClientRect();
+		const listRect = list.getBoundingClientRect();
+		list.scrollTop += (optRect.top - listRect.top) - (list.clientHeight - opt.clientHeight) / 2;
+	}
+
+	// Live-preview a theme without persisting it. `scroll` keeps the cursor visible during
+	// keyboard navigation (skipped on hover, where scrolling under the mouse feels jumpy).
+	function setPreview(id, scroll)
+	{
+		if (!options[id])
+			return;
+		previewId = id;
+		window.applyTheme(id);
+		setActiveHighlight(id);
+		if (scroll)
+			scrollToOption(options[id]);
+	}
+
+	function visibleIds()
+	{
+		return themeIds.filter(id => options[id].style.display !== "none");
+	}
+
+	// Move the preview cursor by `dir` (+1 down, -1 up) through the currently-visible themes.
+	function movePreview(dir)
+	{
+		const vis = visibleIds();
+		if (vis.length === 0)
+			return;
+		let idx = vis.indexOf(previewId);
+		if (idx === -1)
+			idx = dir > 0 ? -1 : 0;
+		idx = Math.max(0, Math.min(vis.length - 1, idx + dir));
+		setPreview(vis[idx], true);
+	}
 
 	function filter(query)
 	{
@@ -524,15 +571,41 @@ function setThemeBox()
 			}
 		});
 
+		// Re-read the persisted theme in case it changed since the page loaded, then highlight it.
+		committedId = window.localStorage.getItem("youyinTheme") || "default";
+		previewId = committedId;
+		setActiveHighlight(committedId);
+
 		popup.classList.add("open");
 		button.setAttribute("aria-expanded", "true");
 		search.value = "";
 		filter("");
 		search.focus();
+
+		// Scroll the current theme into view once the list has been laid out.
+		if (options[committedId])
+			requestAnimationFrame(function(){ scrollToOption(options[committedId]); });
 	}
 
+	// Close the popup, reverting any live preview back to the committed theme.
 	function closePopup()
 	{
+		if (previewId !== committedId)
+			window.applyTheme(committedId);
+		previewId = committedId;
+		setActiveHighlight(committedId);
+		popup.classList.remove("open");
+		button.setAttribute("aria-expanded", "false");
+	}
+
+	// Persist `id` as the chosen theme and close without reverting.
+	function commitAndClose(id)
+	{
+		window.applyTheme(id);
+		window.localStorage.setItem("youyinTheme", id);
+		committedId = id;
+		previewId = id;
+		setActiveHighlight(id);
 		popup.classList.remove("open");
 		button.setAttribute("aria-expanded", "false");
 	}
@@ -542,16 +615,44 @@ function setThemeBox()
 		popup.classList.contains("open") ? closePopup() : openPopup();
 	});
 
-	search.addEventListener("input", function(){ filter(this.value); });
+	// Filtering also previews the top match, so a search immediately shows a candidate theme.
+	search.addEventListener("input", function(){
+		filter(this.value);
+		const vis = visibleIds();
+		if (vis.length > 0)
+			setPreview(vis[0], true);
+	});
 
-	// Close on outside click and on Escape
+	// Close on outside click (reverts the preview, like Escape).
 	document.addEventListener("click", function(e){
 		if (popup.classList.contains("open") && !popup.contains(e.target) && e.target !== button)
 			closePopup();
 	});
+
+	// Keyboard control while the popup is open: arrows preview, Enter commits, Escape reverts.
 	document.addEventListener("keydown", function(e){
-		if (e.key === "Escape" && popup.classList.contains("open"))
+		if (!popup.classList.contains("open"))
+			return;
+
+		if (e.key === "ArrowDown")
 		{
+			e.preventDefault();
+			movePreview(1);
+		}
+		else if (e.key === "ArrowUp")
+		{
+			e.preventDefault();
+			movePreview(-1);
+		}
+		else if (e.key === "Enter")
+		{
+			e.preventDefault();
+			commitAndClose(previewId);
+			button.focus();
+		}
+		else if (e.key === "Escape")
+		{
+			e.preventDefault();
 			closePopup();
 			button.focus();
 		}

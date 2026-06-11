@@ -1917,6 +1917,21 @@ window.applyTheme = function (id)
 	// Keep the hanzi-writer radical highlight in sync with the accent colour
 	window.WRITER_RADICAL_COLOUR = t.accent;
 	document.documentElement.setAttribute("data-theme", id);
+
+	// Briefly cross-fade the colours on every change *after* the initial page paint (the first
+	// call happens before main.css renders, so there's nothing to fade from). The transition
+	// itself lives in main.css, gated behind the "theme-transition" class; we add it for the
+	// duration of the fade and pull it back off so normal interaction never pays for it.
+	if (window.__youyinThemeReady)
+	{
+		const root = document.documentElement;
+		root.classList.add("theme-transition");
+		window.clearTimeout(window.__youyinThemeTransitionTimer);
+		window.__youyinThemeTransitionTimer = window.setTimeout(function () {
+			root.classList.remove("theme-transition");
+		}, 400);
+	}
+	window.__youyinThemeReady = true;
 };
 
 // Apply the saved theme immediately, before main.css paints, to avoid a colour flash
