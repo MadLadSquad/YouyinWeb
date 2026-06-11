@@ -45,12 +45,17 @@ function getDrawElementHeight()
 
 	const footer = document.querySelector("footer");
 
+	// The header (incl. its margin-top) and the hr between main and footer also eat vertical space
+	// outside main, so subtract them too — otherwise the page overflows the viewport.
+	const headerBottom = document.querySelector("header").getBoundingClientRect().bottom;
+	const hrHeight = $("main-page-hr").getBoundingClientRect().height;
+
 	let finalHeight = window.innerHeight - unusedSpace + listWidget.getBoundingClientRect().height;
 	window.bMobile = navigator.userAgent.toLowerCase().includes("mobile");
 	if (window.bMobile)
-		finalHeight -= (footer.getBoundingClientRect().height);
+		finalHeight -= (footer.getBoundingClientRect().height + headerBottom + hrHeight);
 	else
-		finalHeight -= (listWidget.getBoundingClientRect().height + footer.getBoundingClientRect().height);
+		finalHeight -= (listWidget.getBoundingClientRect().height + footer.getBoundingClientRect().height + headerBottom + hrHeight);
 
 	if (mainEl.getBoundingClientRect().width < finalHeight)
 		finalHeight = mainEl.getBoundingClientRect().width - (getComputedStyle(startButtonWriterSection).paddingLeft.replace("px", "") * 2);
