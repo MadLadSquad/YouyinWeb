@@ -14,6 +14,8 @@ window.youyinThemes = {
 		error: "#c62828",
 		buttonActive: "#a56961",
 		cardText: "#444444",
+		strokeColor: "#545454",
+		outlineColor: "#c8c8c8",
 	},
 	dark: {
 		name: "Dark",
@@ -24,6 +26,8 @@ window.youyinThemes = {
 		error: "#ff8a8a",
 		buttonActive: "#c97f72",
 		cardText: "#b0b8c1",
+		strokeColor: "#abadb0",
+		outlineColor: "#454a52",
 	},
 	dracula: {
 		name: "Dracula",
@@ -34,6 +38,8 @@ window.youyinThemes = {
 		error: "#ff5555",
 		buttonActive: "#a679e0",
 		cardText: "#bfc7e0",
+		strokeColor: "#b3b4b4",
+		outlineColor: "#4c4e57",
 	},
 	matrix: {
 		name: "Matrix",
@@ -44,6 +50,8 @@ window.youyinThemes = {
 		error: "#da3333",
 		buttonActive: "#0fbf00",
 		cardText: "#7ad17a",
+		strokeColor: "#8cab89",
+		outlineColor: "#2d372c",
 	},
 	lavender: {
 		name: "Lavender",
@@ -54,6 +62,8 @@ window.youyinThemes = {
 		error: "#b00020",
 		buttonActive: "#5a1fb5",
 		cardText: "#4a4560",
+		strokeColor: "#585369",
+		outlineColor: "#a6a1b6",
 	},
 	nord: {
 		name: "Nord",
@@ -64,6 +74,8 @@ window.youyinThemes = {
 		error: "#ff7b7b",
 		buttonActive: "#6da3b3",
 		cardText: "#d8dee9",
+		strokeColor: "#adb1b9",
+		outlineColor: "#4f555f",
 	},
 	"8008": {
 		name: "8008",
@@ -74,6 +86,8 @@ window.youyinThemes = {
 		error: "#ea8e8e",
 		buttonActive: "#f11c5d",
 		cardText: "#939eae",
+		strokeColor: "#adb1b8",
+		outlineColor: "#535963",
 	},
 	"80s_after_dark": {
 		name: "80s After Dark",
@@ -84,6 +98,8 @@ window.youyinThemes = {
 		error: "#fffb85",
 		buttonActive: "#fa75b8",
 		cardText: "#99d6ea",
+		strokeColor: "#a0a4b0",
+		outlineColor: "#3d4056",
 	},
 	"9009": {
 		name: "9009",
@@ -94,6 +110,8 @@ window.youyinThemes = {
 		error: "#a44d41",
 		buttonActive: "#000000",
 		cardText: "#88836c",
+		strokeColor: "#545451",
+		outlineColor: "#b8b6af",
 	},
 	aether: {
 		name: "Aether",
@@ -104,6 +122,8 @@ window.youyinThemes = {
 		error: "#ff5253",
 		buttonActive: "#deb7d6",
 		cardText: "#cf6bdd",
+		strokeColor: "#a59aa7",
+		outlineColor: "#3b3e47",
 	},
 	alduin: {
 		name: "Alduin",
@@ -114,6 +134,8 @@ window.youyinThemes = {
 		error: "#bb7777",
 		buttonActive: "#d0c58b",
 		cardText: "#6a6a6a",
+		strokeColor: "#adaca8",
+		outlineColor: "#424140",
 	},
 	alpine: {
 		name: "Alpine",
@@ -124,6 +146,8 @@ window.youyinThemes = {
 		error: "#fdeded",
 		buttonActive: "#e6e6e6",
 		cardText: "#c8c5d9",
+		strokeColor: "#f2f1f3",
+		outlineColor: "#918ea0",
 	},
 	anti_hero: {
 		name: "Anti Hero",
@@ -134,6 +158,8 @@ window.youyinThemes = {
 		error: "#8fecff",
 		buttonActive: "#ff7a7a",
 		cardText: "#ff3d8b",
+		strokeColor: "#a195af",
+		outlineColor: "#343057",
 	},
 	arch: {
 		name: "Arch",
@@ -144,6 +170,8 @@ window.youyinThemes = {
 		error: "#ff4754",
 		buttonActive: "#5da8a2",
 		cardText: "#5c6085",
+		strokeColor: "#a9a8aa",
+		outlineColor: "#393a3d",
 	},
 	aurora: {
 		name: "Aurora",
@@ -154,6 +182,8 @@ window.youyinThemes = {
 		error: "#c263ad",
 		buttonActive: "#00b664",
 		cardText: "#2c7080",
+		strokeColor: "#abb3b7",
+		outlineColor: "#2d414c",
 	},
 	beach: {
 		name: "Beach",
@@ -164,6 +194,8 @@ window.youyinThemes = {
 		error: "#d40800",
 		buttonActive: "#346e53",
 		cardText: "#b37b00",
+		strokeColor: "#567062",
+		outlineColor: "#bfbf91",
 	},
 	bento: {
 		name: "Bento",
@@ -174,6 +206,8 @@ window.youyinThemes = {
 		error: "#f5848d",
 		buttonActive: "#ff4765",
 		cardText: "#588ca8",
+		strokeColor: "#babac0",
+		outlineColor: "#525b6b",
 	},
 	bingsu: {
 		name: "Bingsu",
@@ -184,6 +218,8 @@ window.youyinThemes = {
 		error: "#770f35",
 		buttonActive: "#4c373f",
 		cardText: "#48373d",
+		strokeColor: "#483a45",
+		outlineColor: "#908086",
 	},
 	bliss: {
 		name: "Bliss",
@@ -194,6 +230,8 @@ window.youyinThemes = {
 		error: "#d17979",
 		buttonActive: "#e5b2a1",
 		cardText: "#82716e",
+		strokeColor: "#b7b8b8",
+		outlineColor: "#474848",
 	},
 	blue_dolphin: {
 		name: "Blue Dolphin",
@@ -204,6 +242,8 @@ window.youyinThemes = {
 		error: "#ffbde6",
 		buttonActive: "#ff9bf7",
 		cardText: "#00e4ff",
+		strokeColor: "#57b0c5",
+		outlineColor: "#195b72",
 	},
 	blueberry_dark: {
 		name: "Blueberry Dark",
@@ -214,6 +254,8 @@ window.youyinThemes = {
 		error: "#e67196",
 		buttonActive: "#7abeff",
 		cardText: "#5c7da5",
+		strokeColor: "#7997b6",
+		outlineColor: "#3d4e67",
 	},
 	blueberry_light: {
 		name: "Blueberry Light",
@@ -224,6 +266,8 @@ window.youyinThemes = {
 		error: "#b82050",
 		buttonActive: "#3b4a59",
 		cardText: "#627ca1",
+		strokeColor: "#4f6375",
+		outlineColor: "#a6b1c5",
 	},
 	botanical: {
 		name: "Botanical",
@@ -234,6 +278,8 @@ window.youyinThemes = {
 		error: "#4b1e09",
 		buttonActive: "#1b2b2f",
 		cardText: "#3b4645",
+		strokeColor: "#1e2f33",
+		outlineColor: "#5a7574",
 	},
 	bouquet: {
 		name: "Bouquet",
@@ -244,6 +290,8 @@ window.youyinThemes = {
 		error: "#e68f7d",
 		buttonActive: "#e17872",
 		cardText: "#439581",
+		strokeColor: "#a4ab9e",
+		outlineColor: "#405e53",
 	},
 	breeze: {
 		name: "Breeze",
@@ -254,6 +302,8 @@ window.youyinThemes = {
 		error: "#64508d",
 		buttonActive: "#64508d",
 		cardText: "#307e9a",
+		strokeColor: "#3a616d",
+		outlineColor: "#a8aaa4",
 	},
 	bushido: {
 		name: "Bushido",
@@ -264,6 +314,8 @@ window.youyinThemes = {
 		error: "#ef6870",
 		buttonActive: "#e71e2a",
 		cardText: "#6d778c",
+		strokeColor: "#b1aead",
+		outlineColor: "#494c53",
 	},
 	cafe: {
 		name: "Cafe",
@@ -274,6 +326,8 @@ window.youyinThemes = {
 		error: "#841b20",
 		buttonActive: "#000000",
 		cardText: "#605c5a",
+		strokeColor: "#4e4336",
+		outlineColor: "#9f896d",
 	},
 	camping: {
 		name: "Camping",
@@ -284,6 +338,8 @@ window.youyinThemes = {
 		error: "#a94d4c",
 		buttonActive: "#4b6c43",
 		cardText: "#95846c",
+		strokeColor: "#6c6c65",
+		outlineColor: "#c2bdb2",
 	},
 	carbon: {
 		name: "Carbon",
@@ -294,6 +350,8 @@ window.youyinThemes = {
 		error: "#f07b7b",
 		buttonActive: "#c95807",
 		cardText: "#7d7d7d",
+		strokeColor: "#b4aa96",
+		outlineColor: "#53504b",
 	},
 	catppuccin: {
 		name: "Catppuccin",
@@ -304,6 +362,8 @@ window.youyinThemes = {
 		error: "#f38ba8",
 		buttonActive: "#b077f3",
 		cardText: "#7f849c",
+		strokeColor: "#9399b3",
+		outlineColor: "#404254",
 	},
 	chaos_theory: {
 		name: "Chaos Theory",
@@ -314,6 +374,8 @@ window.youyinThemes = {
 		error: "#fd77d7",
 		buttonActive: "#fc45c8",
 		cardText: "#676e8a",
+		strokeColor: "#9b9faa",
+		outlineColor: "#3b3b49",
 	},
 	cheesecake: {
 		name: "Cheesecake",
@@ -324,6 +386,8 @@ window.youyinThemes = {
 		error: "#0b7a1d",
 		buttonActive: "#661e35",
 		cardText: "#d91c81",
+		strokeColor: "#736a63",
+		outlineColor: "#c8bca9",
 	},
 	cherry_blossom: {
 		name: "Cherry Blossom",
@@ -334,6 +398,8 @@ window.youyinThemes = {
 		error: "#dd8a93",
 		buttonActive: "#cc33bf",
 		cardText: "#7d8287",
+		strokeColor: "#a0a099",
+		outlineColor: "#545555",
 	},
 	comfy: {
 		name: "Comfy",
@@ -344,6 +410,8 @@ window.youyinThemes = {
 		error: "#f0ccd3",
 		buttonActive: "#f2a599",
 		cardText: "#9ec1cc",
+		strokeColor: "#d5d3d6",
+		outlineColor: "#727e8c",
 	},
 	copper: {
 		name: "Copper",
@@ -354,6 +422,8 @@ window.youyinThemes = {
 		error: "#e48686",
 		buttonActive: "#995643",
 		cardText: "#7ebab5",
+		strokeColor: "#b1a6a2",
+		outlineColor: "#64514c",
 	},
 	creamsicle: {
 		name: "Creamsicle",
@@ -364,6 +434,8 @@ window.youyinThemes = {
 		error: "#610c9f",
 		buttonActive: "#393919",
 		cardText: "#a43400",
+		strokeColor: "#46451e",
+		outlineColor: "#bd7a4e",
 	},
 	cy_red: {
 		name: "Cy Red",
@@ -374,6 +446,8 @@ window.youyinThemes = {
 		error: "#a0acde",
 		buttonActive: "#e13636",
 		cardText: "#ff6060",
+		strokeColor: "#e99696",
+		outlineColor: "#934848",
 	},
 	cyberspace: {
 		name: "Cyberspace",
@@ -384,6 +458,8 @@ window.youyinThemes = {
 		error: "#ff5f5f",
 		buttonActive: "#009b5d",
 		cardText: "#9578d3",
+		strokeColor: "#8ab19f",
+		outlineColor: "#36433b",
 	},
 	dark_magic_girl: {
 		name: "Dark Magic Girl",
@@ -394,6 +470,8 @@ window.youyinThemes = {
 		error: "#e45c96",
 		buttonActive: "#ef84ae",
 		cardText: "#93e8d3",
+		strokeColor: "#917cc6",
+		outlineColor: "#394062",
 	},
 	dark_note: {
 		name: "Dark Note",
@@ -404,6 +482,8 @@ window.youyinThemes = {
 		error: "#ff3d3d",
 		buttonActive: "#edab4d",
 		cardText: "#768f95",
+		strokeColor: "#97a0ae",
+		outlineColor: "#424448",
 	},
 	darling: {
 		name: "Darling",
@@ -414,6 +494,8 @@ window.youyinThemes = {
 		error: "#1a59a5",
 		buttonActive: "#5a5a5a",
 		cardText: "#a30000",
+		strokeColor: "#5b5a5a",
+		outlineColor: "#c09ea2",
 	},
 	deku: {
 		name: "Deku",
@@ -424,6 +506,8 @@ window.youyinThemes = {
 		error: "#190706",
 		buttonActive: "#310e0d",
 		cardText: "#173538",
+		strokeColor: "#100d07",
+		outlineColor: "#086665",
 	},
 	desert_oasis: {
 		name: "Desert Oasis",
@@ -434,6 +518,8 @@ window.youyinThemes = {
 		error: "#4b7729",
 		buttonActive: "#7a5c01",
 		cardText: "#0061fe",
+		strokeColor: "#766b46",
+		outlineColor: "#cbbf9f",
 	},
 	dev: {
 		name: "Dev",
@@ -444,6 +530,8 @@ window.youyinThemes = {
 		error: "#e75c6b",
 		buttonActive: "#1c86a9",
 		cardText: "#5d6e91",
+		strokeColor: "#929386",
+		outlineColor: "#414546",
 	},
 	diner: {
 		name: "Diner",
@@ -454,6 +542,8 @@ window.youyinThemes = {
 		error: "#ffffff",
 		buttonActive: "#d3c588",
 		cardText: "#ced7e5",
+		strokeColor: "#fdfefe",
+		outlineColor: "#829eb3",
 	},
 	dino: {
 		name: "Dino",
@@ -464,6 +554,8 @@ window.youyinThemes = {
 		error: "#e90000",
 		buttonActive: "#1b7c3b",
 		cardText: "#909090",
+		strokeColor: "#686b69",
+		outlineColor: "#cacbcb",
 	},
 	discord: {
 		name: "Discord",
@@ -474,6 +566,8 @@ window.youyinThemes = {
 		error: "#e8827f",
 		buttonActive: "#3f4ce6",
 		cardText: "#7d808c",
+		strokeColor: "#a4a6ab",
+		outlineColor: "#525459",
 	},
 	dmg: {
 		name: "Dmg",
@@ -484,6 +578,8 @@ window.youyinThemes = {
 		error: "#ae185e",
 		buttonActive: "#811246",
 		cardText: "#3846b1",
+		strokeColor: "#5e5e5e",
+		outlineColor: "#aaabab",
 	},
 	dollar: {
 		name: "Dollar",
@@ -494,6 +590,8 @@ window.youyinThemes = {
 		error: "#c70000",
 		buttonActive: "#536953",
 		cardText: "#758458",
+		strokeColor: "#5f645f",
+		outlineColor: "#b1b3a7",
 	},
 	dots: {
 		name: "Dots",
@@ -504,6 +602,8 @@ window.youyinThemes = {
 		error: "#df5151",
 		buttonActive: "#e6e6e6",
 		cardText: "#676e8a",
+		strokeColor: "#b1b2b5",
+		outlineColor: "#3b3e47",
 	},
 	drowning: {
 		name: "Drowning",
@@ -514,6 +614,8 @@ window.youyinThemes = {
 		error: "#c66b74",
 		buttonActive: "#3b5991",
 		cardText: "#526a8f",
+		strokeColor: "#838396",
+		outlineColor: "#3d3c4c",
 	},
 	dualshot: {
 		name: "Dualshot",
@@ -524,6 +626,8 @@ window.youyinThemes = {
 		error: "#ffffff",
 		buttonActive: "#080808",
 		cardText: "#d3d3d3",
+		strokeColor: "#fefefe",
+		outlineColor: "#999999",
 	},
 	earthsong: {
 		name: "Earthsong",
@@ -534,6 +638,8 @@ window.youyinThemes = {
 		error: "#d1757f",
 		buttonActive: "#3e7340",
 		cardText: "#f5ae2d",
+		strokeColor: "#a8927b",
+		outlineColor: "#51483e",
 	},
 	everblush: {
 		name: "Everblush",
@@ -544,6 +650,8 @@ window.youyinThemes = {
 		error: "#e57474",
 		buttonActive: "#6bc159",
 		cardText: "#838887",
+		strokeColor: "#999b9c",
+		outlineColor: "#3a4042",
 	},
 	evil_eye: {
 		name: "Evil Eye",
@@ -554,6 +662,8 @@ window.youyinThemes = {
 		error: "#1a0709",
 		buttonActive: "#e9dbc5",
 		cardText: "#013158",
+		strokeColor: "#0b0f10",
+		outlineColor: "#03608c",
 	},
 	ez_mode: {
 		name: "Ez Mode",
@@ -564,6 +674,8 @@ window.youyinThemes = {
 		error: "#d5f7d4",
 		buttonActive: "#fa7bdc",
 		cardText: "#93cafb",
+		strokeColor: "#e3eef9",
+		outlineColor: "#4691d6",
 	},
 	fire: {
 		name: "Fire",
@@ -574,6 +686,8 @@ window.youyinThemes = {
 		error: "#6570d7",
 		buttonActive: "#8e0f0f",
 		cardText: "#914848",
+		strokeColor: "#b0abab",
+		outlineColor: "#3e3131",
 	},
 	fledgling: {
 		name: "Fledgling",
@@ -584,6 +698,8 @@ window.youyinThemes = {
 		error: "#f98193",
 		buttonActive: "#fb3c58",
 		cardText: "#ae778a",
+		strokeColor: "#aea1a2",
+		outlineColor: "#5c555c",
 	},
 	fleuriste: {
 		name: "Fleuriste",
@@ -594,6 +710,8 @@ window.youyinThemes = {
 		error: "#8f0000",
 		buttonActive: "#2b3c37",
 		cardText: "#64374d",
+		strokeColor: "#404539",
+		outlineColor: "#968b73",
 	},
 	floret: {
 		name: "Floret",
@@ -604,6 +722,8 @@ window.youyinThemes = {
 		error: "#e66b00",
 		buttonActive: "#ffd13a",
 		cardText: "#779097",
+		strokeColor: "#99a6a8",
+		outlineColor: "#2c4c50",
 	},
 	froyo: {
 		name: "Froyo",
@@ -614,6 +734,8 @@ window.youyinThemes = {
 		error: "#b12211",
 		buttonActive: "#5d5e5e",
 		cardText: "#887541",
+		strokeColor: "#5b5d5d",
+		outlineColor: "#afaba1",
 	},
 	frozen_llama: {
 		name: "Frozen Llama",
@@ -624,6 +746,8 @@ window.youyinThemes = {
 		error: "#bf181a",
 		buttonActive: "#553582",
 		cardText: "#9259fc",
+		strokeColor: "#626262",
+		outlineColor: "#85bcb7",
 	},
 	fruit_chew: {
 		name: "Fruit Chew",
@@ -634,6 +758,8 @@ window.youyinThemes = {
 		error: "#ac231e",
 		buttonActive: "#361238",
 		cardText: "#886789",
+		strokeColor: "#5a575a",
+		outlineColor: "#a6a3a6",
 	},
 	fundamentals: {
 		name: "Fundamentals",
@@ -644,6 +770,8 @@ window.youyinThemes = {
 		error: "#ffffff",
 		buttonActive: "#acc4ae",
 		cardText: "#d8d3cf",
+		strokeColor: "#fefefe",
+		outlineColor: "#999a9a",
 	},
 	future_funk: {
 		name: "Future Funk",
@@ -654,6 +782,8 @@ window.youyinThemes = {
 		error: "#f0539b",
 		buttonActive: "#e9dbc5",
 		cardText: "#c18fff",
+		strokeColor: "#b5abb4",
+		outlineColor: "#514063",
 	},
 	github: {
 		name: "Github",
@@ -664,6 +794,8 @@ window.youyinThemes = {
 		error: "#d57673",
 		buttonActive: "#2daf46",
 		cardText: "#788386",
+		strokeColor: "#949faa",
+		outlineColor: "#424b53",
 	},
 	godspeed: {
 		name: "Godspeed",
@@ -674,6 +806,8 @@ window.youyinThemes = {
 		error: "#b0333f",
 		buttonActive: "#3f6980",
 		cardText: "#827d67",
+		strokeColor: "#636467",
+		outlineColor: "#b7b4a8",
 	},
 	graen: {
 		name: "Graen",
@@ -684,6 +818,8 @@ window.youyinThemes = {
 		error: "#e78c9a",
 		buttonActive: "#8e7d66",
 		cardText: "#758c7e",
+		strokeColor: "#b1a493",
+		outlineColor: "#565b52",
 	},
 	grand_prix: {
 		name: "Grand Prix",
@@ -694,6 +830,8 @@ window.youyinThemes = {
 		error: "#fda187",
 		buttonActive: "#9dab28",
 		cardText: "#8998aa",
+		strokeColor: "#afb6c7",
+		outlineColor: "#59687b",
 	},
 	grape: {
 		name: "Grape",
@@ -704,6 +842,8 @@ window.youyinThemes = {
 		error: "#ff4081",
 		buttonActive: "#cc7200",
 		cardText: "#b03697",
+		strokeColor: "#b9abbf",
+		outlineColor: "#553163",
 	},
 	gruvbox_dark: {
 		name: "Gruvbox Dark",
@@ -714,6 +854,8 @@ window.youyinThemes = {
 		error: "#fb5b48",
 		buttonActive: "#ab7a1a",
 		cardText: "#7f7369",
+		strokeColor: "#aba084",
+		outlineColor: "#4e4b43",
 	},
 	gruvbox_light: {
 		name: "Gruvbox Light",
@@ -724,6 +866,8 @@ window.youyinThemes = {
 		error: "#cc241d",
 		buttonActive: "#4b734c",
 		cardText: "#958369",
+		strokeColor: "#706a5d",
+		outlineColor: "#c7be9f",
 	},
 	hammerhead: {
 		name: "Hammerhead",
@@ -734,6 +878,8 @@ window.youyinThemes = {
 		error: "#e53939",
 		buttonActive: "#34b5a1",
 		cardText: "#37648a",
+		strokeColor: "#98a3aa",
+		outlineColor: "#333843",
 	},
 	hanok: {
 		name: "Hanok",
@@ -744,6 +890,8 @@ window.youyinThemes = {
 		error: "#a02e3a",
 		buttonActive: "#2f2219",
 		cardText: "#886d5a",
+		strokeColor: "#575855",
+		outlineColor: "#a9a69b",
 	},
 	hedge: {
 		name: "Hedge",
@@ -754,6 +902,8 @@ window.youyinThemes = {
 		error: "#efc5c6",
 		buttonActive: "#71a353",
 		cardText: "#ede5b4",
+		strokeColor: "#d1d2b3",
+		outlineColor: "#687d54",
 	},
 	honey: {
 		name: "Honey",
@@ -764,6 +914,8 @@ window.youyinThemes = {
 		error: "#8c1616",
 		buttonActive: "#322f00",
 		cardText: "#825400",
+		strokeColor: "#4e4612",
+		outlineColor: "#b78606",
 	},
 	horizon: {
 		name: "Horizon",
@@ -774,6 +926,8 @@ window.youyinThemes = {
 		error: "#d9617e",
 		buttonActive: "#b38f68",
 		cardText: "#db886f",
+		strokeColor: "#8a8a8d",
+		outlineColor: "#414349",
 	},
 	husqy: {
 		name: "Husqy",
@@ -784,6 +938,8 @@ window.youyinThemes = {
 		error: "#dc3c3c",
 		buttonActive: "#ac57ff",
 		cardText: "#972fff",
+		strokeColor: "#9d90ab",
+		outlineColor: "#37323c",
 	},
 	iceberg_dark: {
 		name: "Iceberg Dark",
@@ -794,6 +950,8 @@ window.youyinThemes = {
 		error: "#e27878",
 		buttonActive: "#6185b6",
 		cardText: "#626782",
+		strokeColor: "#8c8e97",
+		outlineColor: "#3c3e47",
 	},
 	iceberg_light: {
 		name: "Iceberg Light",
@@ -804,6 +962,8 @@ window.youyinThemes = {
 		error: "#b53560",
 		buttonActive: "#223e76",
 		cardText: "#7b81a0",
+		strokeColor: "#606474",
+		outlineColor: "#b6b8c0",
 	},
 	incognito: {
 		name: "Incognito",
@@ -814,6 +974,8 @@ window.youyinThemes = {
 		error: "#e44545",
 		buttonActive: "#cc7a00",
 		cardText: "#626262",
+		strokeColor: "#898989",
+		outlineColor: "#393939",
 	},
 	ishtar: {
 		name: "Ishtar",
@@ -824,6 +986,8 @@ window.youyinThemes = {
 		error: "#f0594c",
 		buttonActive: "#a91b0e",
 		cardText: "#847869",
+		strokeColor: "#b2a18d",
+		outlineColor: "#46423c",
 	},
 	iv_clover: {
 		name: "Iv Clover",
@@ -834,6 +998,8 @@ window.youyinThemes = {
 		error: "#403031",
 		buttonActive: "#39292a",
 		cardText: "#353535",
+		strokeColor: "#3e303e",
+		outlineColor: "#7c777c",
 	},
 	iv_spade: {
 		name: "Iv Spade",
@@ -844,6 +1010,8 @@ window.youyinThemes = {
 		error: "#9d7b7d",
 		buttonActive: "#a07e4e",
 		cardText: "#616161",
+		strokeColor: "#918687",
+		outlineColor: "#3b3737",
 	},
 	joker: {
 		name: "Joker",
@@ -854,6 +1022,8 @@ window.youyinThemes = {
 		error: "#e74646",
 		buttonActive: "#7ab118",
 		cardText: "#7756a6",
+		strokeColor: "#a59cb0",
+		outlineColor: "#42374d",
 	},
 	laser: {
 		name: "Laser",
@@ -864,6 +1034,8 @@ window.youyinThemes = {
 		error: "#a8d400",
 		buttonActive: "#00707c",
 		cardText: "#d22862",
+		strokeColor: "#9ea4b2",
+		outlineColor: "#464364",
 	},
 	leather: {
 		name: "Leather",
@@ -874,6 +1046,8 @@ window.youyinThemes = {
 		error: "#060202",
 		buttonActive: "#ffcf89",
 		cardText: "#402415",
+		strokeColor: "#050302",
+		outlineColor: "#7a4c34",
 	},
 	lil_dragon: {
 		name: "Lil Dragon",
@@ -884,6 +1058,8 @@ window.youyinThemes = {
 		error: "#bb0e6c",
 		buttonActive: "#6d33cb",
 		cardText: "#8d74a8",
+		strokeColor: "#5c6075",
+		outlineColor: "#b4afc0",
 	},
 	lilac_mist: {
 		name: "Lilac Mist",
@@ -894,6 +1070,8 @@ window.youyinThemes = {
 		error: "#e30900",
 		buttonActive: "#93346d",
 		cardText: "#d369a9",
+		strokeColor: "#8b6685",
+		outlineColor: "#d2c1cf",
 	},
 	lime: {
 		name: "Lime",
@@ -904,6 +1082,8 @@ window.youyinThemes = {
 		error: "#350d05",
 		buttonActive: "#111707",
 		cardText: "#33383c",
+		strokeColor: "#141c23",
+		outlineColor: "#5a646b",
 	},
 	luna: {
 		name: "Luna",
@@ -914,6 +1094,8 @@ window.youyinThemes = {
 		error: "#efc050",
 		buttonActive: "#f34576",
 		cardText: "#855bb4",
+		strokeColor: "#b6a1af",
+		outlineColor: "#483f55",
 	},
 	macroblank: {
 		name: "Macroblank",
@@ -924,6 +1106,8 @@ window.youyinThemes = {
 		error: "#9d2813",
 		buttonActive: "#932512",
 		cardText: "#676e6d",
+		strokeColor: "#6c4b48",
+		outlineColor: "#979f97",
 	},
 	magic_girl: {
 		name: "Magic Girl",
@@ -934,6 +1118,8 @@ window.youyinThemes = {
 		error: "#906b00",
 		buttonActive: "#e53379",
 		cardText: "#22a182",
+		strokeColor: "#08826c",
+		outlineColor: "#a5d1c9",
 	},
 	mashu: {
 		name: "Mashu",
@@ -944,6 +1130,8 @@ window.youyinThemes = {
 		error: "#e17963",
 		buttonActive: "#655985",
 		cardText: "#d8a0a6",
+		strokeColor: "#b0a6a7",
+		outlineColor: "#4d4b4c",
 	},
 	matcha_moccha: {
 		name: "Matcha Moccha",
@@ -954,6 +1142,8 @@ window.youyinThemes = {
 		error: "#fc887a",
 		buttonActive: "#63ab43",
 		cardText: "#b57e60",
+		strokeColor: "#b9a695",
+		outlineColor: "#705645",
 	},
 	material: {
 		name: "Material",
@@ -964,6 +1154,8 @@ window.youyinThemes = {
 		error: "#fc7161",
 		buttonActive: "#5cbcb3",
 		cardText: "#608391",
+		strokeColor: "#a7afb5",
+		outlineColor: "#475359",
 	},
 	menthol: {
 		name: "Menthol",
@@ -974,6 +1166,8 @@ window.youyinThemes = {
 		error: "#751313",
 		buttonActive: "#3b3b3b",
 		cardText: "#176141",
+		strokeColor: "#3a3c3c",
+		outlineColor: "#149471",
 	},
 	metaverse: {
 		name: "Metaverse",
@@ -984,6 +1178,8 @@ window.youyinThemes = {
 		error: "#e36767",
 		buttonActive: "#ae2029",
 		cardText: "#707070",
+		strokeColor: "#a7a7a7",
+		outlineColor: "#454545",
 	},
 	metropolis: {
 		name: "Metropolis",
@@ -994,6 +1190,8 @@ window.youyinThemes = {
 		error: "#dc634a",
 		buttonActive: "#3caa9e",
 		cardText: "#36728f",
+		strokeColor: "#9ea9b0",
+		outlineColor: "#34434e",
 	},
 	mexican: {
 		name: "Mexican",
@@ -1004,6 +1202,8 @@ window.youyinThemes = {
 		error: "#8d1a1a",
 		buttonActive: "#861968",
 		cardText: "#333333",
+		strokeColor: "#4a4948",
+		outlineColor: "#ba893b",
 	},
 	miami: {
 		name: "Miami",
@@ -1014,6 +1214,8 @@ window.youyinThemes = {
 		error: "#262200",
 		buttonActive: "#011212",
 		cardText: "#74203c",
+		strokeColor: "#322228",
+		outlineColor: "#b24468",
 	},
 	miami_nights: {
 		name: "Miami Nights",
@@ -1024,6 +1226,8 @@ window.youyinThemes = {
 		error: "#fff591",
 		buttonActive: "#dd3480",
 		cardText: "#47bac0",
+		strokeColor: "#b3b3b3",
+		outlineColor: "#404042",
 	},
 	midnight: {
 		name: "Midnight",
@@ -1034,6 +1238,8 @@ window.youyinThemes = {
 		error: "#c27070",
 		buttonActive: "#4d5e7f",
 		cardText: "#506386",
+		strokeColor: "#747f92",
+		outlineColor: "#343a44",
 	},
 	milkshake: {
 		name: "Milkshake",
@@ -1044,6 +1250,8 @@ window.youyinThemes = {
 		error: "#df2042",
 		buttonActive: "#101521",
 		cardText: "#1d9bb6",
+		strokeColor: "#6a7181",
+		outlineColor: "#c7c9cf",
 	},
 	mint: {
 		name: "Mint",
@@ -1054,6 +1262,8 @@ window.youyinThemes = {
 		error: "#f67ba3",
 		buttonActive: "#32d27a",
 		cardText: "#2b8ab8",
+		strokeColor: "#a0b7b5",
+		outlineColor: "#325d75",
 	},
 	mizu: {
 		name: "Mizu",
@@ -1064,6 +1274,8 @@ window.youyinThemes = {
 		error: "#84363d",
 		buttonActive: "#4f461a",
 		cardText: "#4a6d85",
+		strokeColor: "#425361",
+		outlineColor: "#869eae",
 	},
 	modern_dolch: {
 		name: "Modern Dolch",
@@ -1074,6 +1286,8 @@ window.youyinThemes = {
 		error: "#d97e8c",
 		buttonActive: "#56d2c5",
 		cardText: "#767c81",
+		strokeColor: "#a7a9ad",
+		outlineColor: "#4d4e51",
 	},
 	modern_dolch_light: {
 		name: "Modern Dolch Light",
@@ -1084,6 +1298,8 @@ window.youyinThemes = {
 		error: "#b12038",
 		buttonActive: "#265e52",
 		cardText: "#787777",
+		strokeColor: "#5c5c5c",
+		outlineColor: "#acacac",
 	},
 	modern_ink: {
 		name: "Modern Ink",
@@ -1094,6 +1310,8 @@ window.youyinThemes = {
 		error: "#d70000",
 		buttonActive: "#d92500",
 		cardText: "#919191",
+		strokeColor: "#545454",
+		outlineColor: "#c8c8c8",
 	},
 	monokai: {
 		name: "Monokai",
@@ -1104,6 +1322,8 @@ window.youyinThemes = {
 		error: "#fa538f",
 		buttonActive: "#8ac21b",
 		cardText: "#e6db74",
+		strokeColor: "#a4a59f",
+		outlineColor: "#4b4c46",
 	},
 	moonlight: {
 		name: "Moonlight",
@@ -1114,6 +1334,8 @@ window.youyinThemes = {
 		error: "#e65867",
 		buttonActive: "#b68745",
 		cardText: "#5d6e91",
+		strokeColor: "#919386",
+		outlineColor: "#3f4446",
 	},
 	mountain: {
 		name: "Mountain",
@@ -1124,6 +1346,8 @@ window.youyinThemes = {
 		error: "#ac8c8c",
 		buttonActive: "#cecece",
 		cardText: "#636363",
+		strokeColor: "#a0a0a0",
+		outlineColor: "#393939",
 	},
 	mr_sleeves: {
 		name: "Mr Sleeves",
@@ -1134,6 +1358,8 @@ window.youyinThemes = {
 		error: "#943d3d",
 		buttonActive: "#8e4834",
 		cardText: "#6e7476",
+		strokeColor: "#585a5b",
+		outlineColor: "#a3a8aa",
 	},
 	ms_cupcakes: {
 		name: "Ms Cupcakes",
@@ -1144,6 +1370,8 @@ window.youyinThemes = {
 		error: "#597b14",
 		buttonActive: "#0a748f",
 		cardText: "#d64090",
+		strokeColor: "#5b6f74",
+		outlineColor: "#c1c8ca",
 	},
 	muted: {
 		name: "Muted",
@@ -1154,6 +1382,8 @@ window.youyinThemes = {
 		error: "#edc1cd",
 		buttonActive: "#a88fd5",
 		cardText: "#9ca6b5",
+		strokeColor: "#a5d1d0",
+		outlineColor: "#6a7777",
 	},
 	nautilus: {
 		name: "Nautilus",
@@ -1164,6 +1394,8 @@ window.youyinThemes = {
 		error: "#e36262",
 		buttonActive: "#c99912",
 		cardText: "#1176a8",
+		strokeColor: "#1a9d96",
+		outlineColor: "#154c57",
 	},
 	nebula: {
 		name: "Nebula",
@@ -1174,6 +1406,8 @@ window.youyinThemes = {
 		error: "#d56f79",
 		buttonActive: "#9b316f",
 		cardText: "#19b3b8",
+		strokeColor: "#8a8d8d",
+		outlineColor: "#424351",
 	},
 	night_runner: {
 		name: "Night Runner",
@@ -1184,6 +1418,8 @@ window.youyinThemes = {
 		error: "#e36262",
 		buttonActive: "#cfd000",
 		cardText: "#7664b5",
+		strokeColor: "#a6a6a6",
+		outlineColor: "#444444",
 	},
 	nord_light: {
 		name: "Nord Light",
@@ -1194,6 +1430,8 @@ window.youyinThemes = {
 		error: "#b04751",
 		buttonActive: "#436f6e",
 		cardText: "#6a7791",
+		strokeColor: "#45706f",
+		outlineColor: "#adbfc2",
 	},
 	norse: {
 		name: "Norse",
@@ -1204,6 +1442,8 @@ window.youyinThemes = {
 		error: "#d17575",
 		buttonActive: "#2a5c69",
 		cardText: "#657377",
+		strokeColor: "#958e83",
+		outlineColor: "#484643",
 	},
 	oblivion: {
 		name: "Oblivion",
@@ -1214,6 +1454,8 @@ window.youyinThemes = {
 		error: "#e88070",
 		buttonActive: "#8d877b",
 		cardText: "#7b8183",
+		strokeColor: "#b6b5b2",
+		outlineColor: "#535452",
 	},
 	olive: {
 		name: "Olive",
@@ -1224,6 +1466,8 @@ window.youyinThemes = {
 		error: "#ba2a2a",
 		buttonActive: "#616349",
 		cardText: "#837e61",
+		strokeColor: "#646358",
+		outlineColor: "#b8b5a2",
 	},
 	olivia: {
 		name: "Olivia",
@@ -1234,6 +1478,8 @@ window.youyinThemes = {
 		error: "#c57078",
 		buttonActive: "#d19077",
 		cardText: "#7e6464",
+		strokeColor: "#aba9a8",
+		outlineColor: "#414041",
 	},
 	onedark: {
 		name: "Onedark",
@@ -1244,6 +1490,8 @@ window.youyinThemes = {
 		error: "#e5858d",
 		buttonActive: "#3398ea",
 		cardText: "#eceff4",
+		strokeColor: "#86ab6f",
+		outlineColor: "#4a584e",
 	},
 	our_theme: {
 		name: "Our Theme",
@@ -1254,6 +1502,8 @@ window.youyinThemes = {
 		error: "#feec9e",
 		buttonActive: "#dcb403",
 		cardText: "#f5b4bb",
+		strokeColor: "#fae5e7",
+		outlineColor: "#de616e",
 	},
 	pale_nimbus: {
 		name: "Pale Nimbus",
@@ -1264,6 +1514,8 @@ window.youyinThemes = {
 		error: "#ff8f8f",
 		buttonActive: "#61ffa5",
 		cardText: "#ffaca3",
+		strokeColor: "#c0bfac",
+		outlineColor: "#646065",
 	},
 	paper: {
 		name: "Paper",
@@ -1274,6 +1526,8 @@ window.youyinThemes = {
 		error: "#d20000",
 		buttonActive: "#2b2b2b",
 		cardText: "#848484",
+		strokeColor: "#686868",
+		outlineColor: "#bcbcbc",
 	},
 	passion_fruit: {
 		name: "Passion Fruit",
@@ -1284,6 +1538,8 @@ window.youyinThemes = {
 		error: "#deb80b",
 		buttonActive: "#ef758f",
 		cardText: "#9994b8",
+		strokeColor: "#d4b6c1",
+		outlineColor: "#954c67",
 	},
 	pastel: {
 		name: "Pastel",
@@ -1294,6 +1550,8 @@ window.youyinThemes = {
 		error: "#990800",
 		buttonActive: "#3f3803",
 		cardText: "#006a95",
+		strokeColor: "#534654",
+		outlineColor: "#ab8995",
 	},
 	peach_blossom: {
 		name: "Peach Blossom",
@@ -1304,6 +1562,8 @@ window.youyinThemes = {
 		error: "#ff6961",
 		buttonActive: "#7ba37a",
 		cardText: "#757575",
+		strokeColor: "#b8987e",
+		outlineColor: "#524942",
 	},
 	peaches: {
 		name: "Peaches",
@@ -1314,6 +1574,8 @@ window.youyinThemes = {
 		error: "#b80900",
 		buttonActive: "#a03d22",
 		cardText: "#b15e26",
+		strokeColor: "#6b594d",
+		outlineColor: "#b5a996",
 	},
 	phantom: {
 		name: "Phantom",
@@ -1324,6 +1586,8 @@ window.youyinThemes = {
 		error: "#f7768e",
 		buttonActive: "#4a80f4",
 		cardText: "#535c84",
+		strokeColor: "#8187aa",
+		outlineColor: "#31334b",
 	},
 	pink_lemonade: {
 		name: "Pink Lemonade",
@@ -1334,6 +1598,8 @@ window.youyinThemes = {
 		error: "#bb0700",
 		buttonActive: "#b2280f",
 		cardText: "#d34c11",
+		strokeColor: "#62622a",
+		outlineColor: "#beac6b",
 	},
 	pulse: {
 		name: "Pulse",
@@ -1344,6 +1610,8 @@ window.youyinThemes = {
 		error: "#e05656",
 		buttonActive: "#118c90",
 		cardText: "#64686d",
+		strokeColor: "#a1abab",
+		outlineColor: "#3c3e3e",
 	},
 	purpleish: {
 		name: "Purpleish",
@@ -1354,6 +1622,8 @@ window.youyinThemes = {
 		error: "#ff6666",
 		buttonActive: "#6237b9",
 		cardText: "#6969a5",
+		strokeColor: "#8787ac",
+		outlineColor: "#404059",
 	},
 	rainbow_trail: {
 		name: "Rainbow Trail",
@@ -1364,6 +1634,8 @@ window.youyinThemes = {
 		error: "#db0007",
 		buttonActive: "#1c1c1c",
 		cardText: "#4f4f4f",
+		strokeColor: "#666666",
+		outlineColor: "#bfbfbf",
 	},
 	red_dragon: {
 		name: "Red Dragon",
@@ -1374,6 +1646,8 @@ window.youyinThemes = {
 		error: "#d85359",
 		buttonActive: "#fe0a00",
 		cardText: "#e2a528",
+		strokeColor: "#7b8081",
+		outlineColor: "#3f3738",
 	},
 	red_samurai: {
 		name: "Red Samurai",
@@ -1384,6 +1658,8 @@ window.youyinThemes = {
 		error: "#56c7e0",
 		buttonActive: "#b98549",
 		cardText: "#e17784",
+		strokeColor: "#ceb3ae",
+		outlineColor: "#9c4f56",
 	},
 	repose_dark: {
 		name: "Repose Dark",
@@ -1394,6 +1670,8 @@ window.youyinThemes = {
 		error: "#ff737e",
 		buttonActive: "#c3bd9c",
 		cardText: "#8f8e84",
+		strokeColor: "#9f9e90",
+		outlineColor: "#535554",
 	},
 	repose_light: {
 		name: "Repose Light",
@@ -1404,6 +1682,8 @@ window.youyinThemes = {
 		error: "#b5374c",
 		buttonActive: "#464645",
 		cardText: "#838277",
+		strokeColor: "#666661",
+		outlineColor: "#bbb8a6",
 	},
 	retro: {
 		name: "Retro",
@@ -1414,6 +1694,8 @@ window.youyinThemes = {
 		error: "#933c44",
 		buttonActive: "#010100",
 		cardText: "#777164",
+		strokeColor: "#5b584f",
+		outlineColor: "#aaa496",
 	},
 	retrocast: {
 		name: "Retrocast",
@@ -1424,6 +1706,8 @@ window.youyinThemes = {
 		error: "#ffe7e8",
 		buttonActive: "#60cfd4",
 		cardText: "#f3e03b",
+		strokeColor: "#dfedee",
+		outlineColor: "#46979c",
 	},
 	rgb: {
 		name: "Rgb",
@@ -1434,6 +1718,8 @@ window.youyinThemes = {
 		error: "#eeeeee",
 		buttonActive: "#d5d5d5",
 		cardText: "#656565",
+		strokeColor: "#a5a5a5",
+		outlineColor: "#3c3c3c",
 	},
 	rose_pine: {
 		name: "Rose Pine",
@@ -1444,6 +1730,8 @@ window.youyinThemes = {
 		error: "#eb6f92",
 		buttonActive: "#77bdca",
 		cardText: "#c4a7e7",
+		strokeColor: "#a09eb0",
+		outlineColor: "#44424f",
 	},
 	rose_pine_dawn: {
 		name: "Rose Pine Dawn",
@@ -1454,6 +1742,8 @@ window.youyinThemes = {
 		error: "#ab526c",
 		buttonActive: "#44757e",
 		cardText: "#a477da",
+		strokeColor: "#40798f",
+		outlineColor: "#b7cace",
 	},
 	rose_pine_moon: {
 		name: "Rose Pine Moon",
@@ -1464,6 +1754,8 @@ window.youyinThemes = {
 		error: "#eb6f92",
 		buttonActive: "#77bdca",
 		cardText: "#c4a7e7",
+		strokeColor: "#a4a2b8",
+		outlineColor: "#4d4b62",
 	},
 	rudy: {
 		name: "Rudy",
@@ -1474,6 +1766,8 @@ window.youyinThemes = {
 		error: "#cb7e85",
 		buttonActive: "#917447",
 		cardText: "#587aa4",
+		strokeColor: "#8f9494",
+		outlineColor: "#3f4d5a",
 	},
 	ryujinscales: {
 		name: "Ryujinscales",
@@ -1484,6 +1778,8 @@ window.youyinThemes = {
 		error: "#d05b66",
 		buttonActive: "#ed5225",
 		cardText: "#ffbc90",
+		strokeColor: "#ad9f8a",
+		outlineColor: "#383c43",
 	},
 	serika: {
 		name: "Serika",
@@ -1494,6 +1790,8 @@ window.youyinThemes = {
 		error: "#bd2222",
 		buttonActive: "#635109",
 		cardText: "#777d85",
+		strokeColor: "#5e5f62",
+		outlineColor: "#b1b2b4",
 	},
 	serika_dark: {
 		name: "Serika Dark",
@@ -1504,6 +1802,8 @@ window.youyinThemes = {
 		error: "#dd8a93",
 		buttonActive: "#b39110",
 		cardText: "#808286",
+		strokeColor: "#a0a099",
+		outlineColor: "#545555",
 	},
 	sewing_tin: {
 		name: "Sewing Tin",
@@ -1514,6 +1814,8 @@ window.youyinThemes = {
 		error: "#c6915e",
 		buttonActive: "#edbc55",
 		cardText: "#486dd6",
+		strokeColor: "#b7b3cc",
+		outlineColor: "#4a417e",
 	},
 	sewing_tin_light: {
 		name: "Sewing Tin Light",
@@ -1524,6 +1826,8 @@ window.youyinThemes = {
 		error: "#946910",
 		buttonActive: "#1e154e",
 		cardText: "#385eca",
+		strokeColor: "#726aa3",
+		outlineColor: "#cac6dc",
 	},
 	shadow: {
 		name: "Shadow",
@@ -1534,6 +1838,8 @@ window.youyinThemes = {
 		error: "#ffffff",
 		buttonActive: "#d5d5d5",
 		cardText: "#5e5e5e",
+		strokeColor: "#9f9f9f",
+		outlineColor: "#333333",
 	},
 	shoko: {
 		name: "Shoko",
@@ -1544,6 +1850,8 @@ window.youyinThemes = {
 		error: "#973d46",
 		buttonActive: "#1f5c73",
 		cardText: "#527891",
+		strokeColor: "#4b5b67",
+		outlineColor: "#9da9b3",
 	},
 	slambook: {
 		name: "Slambook",
@@ -1554,6 +1862,8 @@ window.youyinThemes = {
 		error: "#d000a0",
 		buttonActive: "#000000",
 		cardText: "#1c82ad",
+		strokeColor: "#615386",
+		outlineColor: "#ccc7c2",
 	},
 	snes: {
 		name: "Snes",
@@ -1564,6 +1874,8 @@ window.youyinThemes = {
 		error: "#892731",
 		buttonActive: "#402e70",
 		cardText: "#6e4ebe",
+		strokeColor: "#4a494a",
+		outlineColor: "#949496",
 	},
 	soaring_skies: {
 		name: "Soaring Skies",
@@ -1574,6 +1886,8 @@ window.youyinThemes = {
 		error: "#da1a05",
 		buttonActive: "#0e7499",
 		cardText: "#1e107a",
+		strokeColor: "#686664",
+		outlineColor: "#cac6c0",
 	},
 	solarized_dark: {
 		name: "Solarized Dark",
@@ -1584,6 +1898,8 @@ window.youyinThemes = {
 		error: "#de68a1",
 		buttonActive: "#596600",
 		cardText: "#2aa198",
+		strokeColor: "#3696d9",
+		outlineColor: "#114d6a",
 	},
 	solarized_light: {
 		name: "Solarized Light",
@@ -1594,6 +1910,8 @@ window.youyinThemes = {
 		error: "#c92c78",
 		buttonActive: "#556100",
 		cardText: "#289990",
+		strokeColor: "#64615c",
+		outlineColor: "#c7c2b4",
 	},
 	solarized_osaka: {
 		name: "Solarized Osaka",
@@ -1604,6 +1922,8 @@ window.youyinThemes = {
 		error: "#e04c49",
 		buttonActive: "#596600",
 		cardText: "#2aa198",
+		strokeColor: "#9fa297",
+		outlineColor: "#2e3d3e",
 	},
 	sonokai: {
 		name: "Sonokai",
@@ -1614,6 +1934,8 @@ window.youyinThemes = {
 		error: "#fc6784",
 		buttonActive: "#84c34c",
 		cardText: "#e7c664",
+		strokeColor: "#a6a7a9",
+		outlineColor: "#4f5156",
 	},
 	spiderman: {
 		name: "Spiderman",
@@ -1624,6 +1946,8 @@ window.youyinThemes = {
 		error: "#0a7efb",
 		buttonActive: "#c81d1d",
 		cardText: "#0476f2",
+		strokeColor: "#a5a7a9",
+		outlineColor: "#393d43",
 	},
 	stealth: {
 		name: "Stealth",
@@ -1634,6 +1958,8 @@ window.youyinThemes = {
 		error: "#e25303",
 		buttonActive: "#3f464a",
 		cardText: "#5e676e",
+		strokeColor: "#6f7b83",
+		outlineColor: "#2f3538",
 	},
 	strawberry: {
 		name: "Strawberry",
@@ -1644,6 +1970,8 @@ window.youyinThemes = {
 		error: "#403201",
 		buttonActive: "#2b2b13",
 		cardText: "#9c152b",
+		strokeColor: "#383718",
+		outlineColor: "#b4675f",
 	},
 	striker: {
 		name: "Striker",
@@ -1654,6 +1982,8 @@ window.youyinThemes = {
 		error: "#fda398",
 		buttonActive: "#bcc4c1",
 		cardText: "#5d9ce0",
+		strokeColor: "#adbcc7",
+		outlineColor: "#406a97",
 	},
 	suisei: {
 		name: "Suisei",
@@ -1664,6 +1994,8 @@ window.youyinThemes = {
 		error: "#f8a8af",
 		buttonActive: "#8be4ff",
 		cardText: "#fe9841",
+		strokeColor: "#b6bccb",
+		outlineColor: "#5d6a7f",
 	},
 	sunset: {
 		name: "Sunset",
@@ -1674,6 +2006,8 @@ window.youyinThemes = {
 		error: "#66a1ff",
 		buttonActive: "#f47247",
 		cardText: "#6b67a2",
+		strokeColor: "#aea093",
+		outlineColor: "#4a4444",
 	},
 	superuser: {
 		name: "Superuser",
@@ -1684,6 +2018,8 @@ window.youyinThemes = {
 		error: "#ff5f5f",
 		buttonActive: "#10ff99",
 		cardText: "#61798c",
+		strokeColor: "#a6b3b1",
+		outlineColor: "#474e54",
 	},
 	sweden: {
 		name: "Sweden",
@@ -1694,6 +2030,8 @@ window.youyinThemes = {
 		error: "#f8c8c8",
 		buttonActive: "#cea400",
 		cardText: "#6cb5df",
+		strokeColor: "#bfd5e8",
+		outlineColor: "#3c7fb9",
 	},
 	tangerine: {
 		name: "Tangerine",
@@ -1704,6 +2042,8 @@ window.youyinThemes = {
 		error: "#507300",
 		buttonActive: "#b93d01",
 		cardText: "#f14e00",
+		strokeColor: "#7d5e4d",
+		outlineColor: "#ceb7a8",
 	},
 	taro: {
 		name: "Taro",
@@ -1714,6 +2054,8 @@ window.youyinThemes = {
 		error: "#574a00",
 		buttonActive: "#000000",
 		cardText: "#646182",
+		strokeColor: "#484766",
+		outlineColor: "#8a8fc5",
 	},
 	terminal: {
 		name: "Terminal",
@@ -1724,6 +2066,8 @@ window.youyinThemes = {
 		error: "#e75151",
 		buttonActive: "#587911",
 		cardText: "#686a6d",
+		strokeColor: "#a3a59f",
+		outlineColor: "#3d3e3d",
 	},
 	terra: {
 		name: "Terra",
@@ -1734,6 +2078,8 @@ window.youyinThemes = {
 		error: "#d3ca78",
 		buttonActive: "#6fae3d",
 		cardText: "#4d6e2f",
+		strokeColor: "#a5a491",
+		outlineColor: "#383b34",
 	},
 	terrazzo: {
 		name: "Terrazzo",
@@ -1744,6 +2090,8 @@ window.youyinThemes = {
 		error: "#a01034",
 		buttonActive: "#ab471d",
 		cardText: "#628586",
+		strokeColor: "#436b66",
+		outlineColor: "#b0b7ae",
 	},
 	terror_below: {
 		name: "Terror Below",
@@ -1754,6 +2102,8 @@ window.youyinThemes = {
 		error: "#c36c74",
 		buttonActive: "#4e9178",
 		cardText: "#017a6e",
+		strokeColor: "#97a7a2",
+		outlineColor: "#344641",
 	},
 	tiramisu: {
 		name: "Tiramisu",
@@ -1764,6 +2114,8 @@ window.youyinThemes = {
 		error: "#8d330f",
 		buttonActive: "#65482c",
 		cardText: "#88613c",
+		strokeColor: "#6b483e",
+		outlineColor: "#a9978b",
 	},
 	trackday: {
 		name: "Trackday",
@@ -1774,6 +2126,8 @@ window.youyinThemes = {
 		error: "#f4b4b4",
 		buttonActive: "#e25e4b",
 		cardText: "#8aa3cd",
+		strokeColor: "#c3c3c6",
+		outlineColor: "#696e81",
 	},
 	trance: {
 		name: "Trance",
@@ -1784,6 +2138,8 @@ window.youyinThemes = {
 		error: "#02d3b0",
 		buttonActive: "#b60f5e",
 		cardText: "#4a5d94",
+		strokeColor: "#abacb4",
+		outlineColor: "#313347",
 	},
 	tron_orange: {
 		name: "Tron Orange",
@@ -1794,6 +2150,8 @@ window.youyinThemes = {
 		error: "#ff2e2e",
 		buttonActive: "#bdb700",
 		cardText: "#ff6600",
+		strokeColor: "#afb4b4",
+		outlineColor: "#374343",
 	},
 	vaporwave: {
 		name: "Vaporwave",
@@ -1804,6 +2162,8 @@ window.youyinThemes = {
 		error: "#442f83",
 		buttonActive: "#6b1465",
 		cardText: "#505484",
+		strokeColor: "#4d364e",
+		outlineColor: "#857fb2",
 	},
 	vesper: {
 		name: "Vesper",
@@ -1814,6 +2174,8 @@ window.youyinThemes = {
 		error: "#ff8080",
 		buttonActive: "#ffab66",
 		cardText: "#a0a0a0",
+		strokeColor: "#b0b0b0",
+		outlineColor: "#3a3a3a",
 	},
 	vesper_light: {
 		name: "Vesper Light",
@@ -1824,6 +2186,8 @@ window.youyinThemes = {
 		error: "#e31325",
 		buttonActive: "#b95300",
 		cardText: "#919191",
+		strokeColor: "#545454",
+		outlineColor: "#c8c8c8",
 	},
 	viridescent: {
 		name: "Viridescent",
@@ -1834,6 +2198,8 @@ window.youyinThemes = {
 		error: "#ff6f6f",
 		buttonActive: "#70c797",
 		cardText: "#84a98c",
+		strokeColor: "#abb5a4",
+		outlineColor: "#4d5550",
 	},
 	voc: {
 		name: "Voc",
@@ -1844,6 +2210,8 @@ window.youyinThemes = {
 		error: "#cd5b59",
 		buttonActive: "#d2b287",
 		cardText: "#993c91",
+		strokeColor: "#a89fa1",
+		outlineColor: "#423240",
 	},
 	vscode: {
 		name: "Vscode",
@@ -1854,6 +2222,8 @@ window.youyinThemes = {
 		error: "#f44c4c",
 		buttonActive: "#005b99",
 		cardText: "#6c6c6c",
+		strokeColor: "#989898",
+		outlineColor: "#414141",
 	},
 	watermelon: {
 		name: "Watermelon",
@@ -1864,6 +2234,8 @@ window.youyinThemes = {
 		error: "#ea969a",
 		buttonActive: "#cc444d",
 		cardText: "#4d987e",
+		strokeColor: "#acada3",
+		outlineColor: "#486256",
 	},
 	wavez: {
 		name: "Wavez",
@@ -1874,6 +2246,8 @@ window.youyinThemes = {
 		error: "#d87780",
 		buttonActive: "#51c521",
 		cardText: "#297d8f",
+		strokeColor: "#a5aeaa",
+		outlineColor: "#404b4f",
 	},
 	witch_girl: {
 		name: "Witch Girl",
@@ -1884,6 +2258,8 @@ window.youyinThemes = {
 		error: "#735a50",
 		buttonActive: "#415a50",
 		cardText: "#b9664b",
+		strokeColor: "#4b675b",
+		outlineColor: "#b3afaa",
 	},
 };
 
@@ -1914,8 +2290,24 @@ window.applyTheme = function (id)
 		"--deck-card-text-colour:" + t.cardText + ";" +
 		"}";
 
-	// Keep the hanzi-writer radical highlight in sync with the accent colour
+	// Keep the hanzi-writer colours in sync with the theme. The radical highlight follows the
+	// accent; the filled strokes (strokeColor) and the faint unfilled guide (outlineColor) come
+	// from per-theme overrides, falling back to hanzi-writer's own defaults if a theme omits them.
 	window.WRITER_RADICAL_COLOUR = t.accent;
+	window.WRITER_STROKE_COLOUR = t.strokeColor || "#555";
+	window.WRITER_OUTLINE_COLOUR = t.outlineColor || "#DDD";
+
+	// If a writer is already on screen (e.g. previewing a theme mid-session), recolour it live.
+	// The radical is only recoloured when it's currently shown: main-page.js sets radicalColor to
+	// null to hide it at higher knowledge levels, and we must not force a hidden radical back on.
+	if (window.writer && typeof window.writer.updateColor === "function")
+	{
+		window.writer.updateColor("strokeColor", window.WRITER_STROKE_COLOUR, { duration: 0 });
+		window.writer.updateColor("outlineColor", window.WRITER_OUTLINE_COLOUR, { duration: 0 });
+		if (window.writer._options && window.writer._options.radicalColor)
+			window.writer.updateColor("radicalColor", window.WRITER_RADICAL_COLOUR, { duration: 0 });
+	}
+
 	document.documentElement.setAttribute("data-theme", id);
 
 	// Briefly cross-fade the colours on every change *after* the initial page paint (the first

@@ -541,6 +541,8 @@ function createStartButton()
 			padding: window.WRITER_PADDING,
 			showHintAfterMisses: window.WRITER_SHOW_HINT_ON_ERRORS,
 			radicalColor: window.WRITER_RADICAL_COLOUR,
+			strokeColor: window.WRITER_STROKE_COLOUR,
+			outlineColor: window.WRITER_OUTLINE_COLOUR,
 			charDataLoader: charDataLoader,
 		});
 		window.writer.quiz({

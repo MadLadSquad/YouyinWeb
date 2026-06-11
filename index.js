@@ -13,7 +13,12 @@ window.CARD_DEFAULT_CHARACTER = "是"
 window.CARD_DEFAULT_PREVIEW_NAME = "Preview Name"
 
 window.WRITER_PADDING = 5;
-window.WRITER_RADICAL_COLOUR = "#c87e74";
+// hanzi-writer stroke colours. theme.js runs first (it's in <head>) and sets these from the
+// active theme, so guard with `||` to keep the themed values instead of clobbering them back to
+// these fallbacks. The fallbacks only apply if theme.js somehow didn't load.
+window.WRITER_RADICAL_COLOUR = window.WRITER_RADICAL_COLOUR || "#c87e74";
+window.WRITER_STROKE_COLOUR = window.WRITER_STROKE_COLOUR || "#555";
+window.WRITER_OUTLINE_COLOUR = window.WRITER_OUTLINE_COLOUR || "#DDD";
 window.WRITER_SLEEP_AFTER_COMPLETE = 1200; 			// In ms
 
 window.WRITER_SHOW_HINT_ON_ERRORS = 3;
