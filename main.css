@@ -103,7 +103,7 @@ ul li a {
  * Divide the main page into 2 parts, 25% for the sidebar and 75% for the writer widget.
  * This is only applies in landscape mode.
  **/
-#main-content {
+.writer-page {
 	display: grid;
 	gap: 0;
 	grid-template-columns: 25% 75%;
@@ -121,7 +121,7 @@ ul li a {
 
 /* This may cause problems, check out main-page.js on top of the definition of the "getDrawElementHeight" function */
 @media (orientation: portrait) {
-	#main-content {
+	.writer-page {
 		display: block;
 	}
 }
