@@ -316,7 +316,7 @@ header {
 	width: min(20rem, 90vw);
 	max-height: min(22rem, 60vh);
 	box-sizing: border-box;
-	padding: 0.5rem;
+	padding: 0;
 	background-color: var(--main-background-colour);
 	border: 1px solid var(--main-accent-colour);
 	border-radius: 8px;
@@ -330,14 +330,20 @@ header {
 #theme-popup-search {
 	box-sizing: border-box;
 	width: 100%;
-	padding: 6px 8px;
-	margin-bottom: 0.5rem;
+	padding: 8px 12px;
 	background-color: transparent;
 	color: var(--main-text-colour);
-	border: 1px solid var(--main-border-colour);
-	border-radius: 4px;
+	border: none;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
 	font-family: inherit;
 	font-size: 16px;
+}
+
+#theme-popup-search:focus {
+	outline: none;
 }
 
 #theme-popup-list {
@@ -345,6 +351,7 @@ header {
 	display: flex;
 	flex-direction: column;
 	gap: 2px;
+	padding: 0.5rem;
 }
 
 .theme-option {
