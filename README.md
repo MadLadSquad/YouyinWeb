@@ -36,6 +36,6 @@ This project uses the following third party libraries:
 1. [Makemeahanzi](https://github.com/skishore/makemeahanzi)
 1. [Hanziwriter](https://github.com/chanind/hanzi-writer)
 
-Additionally, we want to thank to the following contributors for helping with translating the project into multiple languages:
+Additionally, we want to thank the following contributors for helping with translating the project into multiple languages:
 1. [Hristian Rusev](https://github.com/ProHunter67BG) for providing German translations
 1. [Neyko Naydenov](https://github.com/Neyko641) for providing Japanese translations

@@ -20,15 +20,18 @@ function find_visual_studio_directory()
   return
 }
 
-cpus=$(grep -c processor /proc/cpuinfo)
+cpus=$(grep -c processor /proc/cpuinfo 2> /dev/null) || cpus=$(sysctl -n hw.ncpu)
 
 find_visual_studio_directory
 
+git submodule update --init --recursive
+
+cd UVKBuildTool || exit
 cp "../UBTCustomFunctions" src/Web/ -r || exit
 
 mkdir build
 cd build || exit
-if windows; then
+if [ "${windows}" = true ]; then
   cmake .. -G "Visual Studio ${VSShortVer} ${VSVer}" -DUBT_COMPILING_FOR_WEB=ON -DCMAKE_BUILD_TYPE=RELEASE
   MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="${cpus}" || exit
 else
