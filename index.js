@@ -214,12 +214,178 @@ function fixLegacyCharacterVariants()
 }
 
 /**
+ * Creates a custom dropdown select box styled like the theme switcher.
+ * @param {HTMLElement} button - The button element that will act as the trigger.
+ * @param {string} ariaLabel - Accessibility label.
+ * @param {Array<{value: string, text: string}>} options - Array of option objects.
+ * @param {string} initialValue - Initial selected value.
+ * @param {Function} onChange - Callback triggered when the value changes.
+ * @returns {HTMLElement} The button element.
+ */
+function createCustomSelect(button, ariaLabel, options, initialValue, onChange)
+{
+	// Ensure the trigger button has the correct classes and attributes
+	button.className = "list-select-button centered";
+	button.setAttribute("aria-haspopup", "dialog");
+	button.setAttribute("aria-expanded", "false");
+	button.setAttribute("aria-label", ariaLabel);
+
+	// Create a wrapper container to position the popup relative to the button
+	const container = document.createElement("div");
+	container.className = "list-select-container";
+
+	// Insert the wrapper into the DOM and move the button inside it
+	if (button.parentNode)
+	{
+		button.parentNode.insertBefore(container, button);
+	}
+	container.appendChild(button);
+
+	let activeValue = initialValue;
+
+	// Find the text for initial value
+	const initialOpt = options.find(o => o.value === initialValue);
+	button.textContent = initialOpt ? initialOpt.text : initialValue;
+
+	// Create popup
+	const popup = document.createElement("div");
+	popup.className = "list-select-popup";
+	popup.setAttribute("role", "dialog");
+	popup.setAttribute("aria-label", ariaLabel);
+	container.appendChild(popup);
+
+	// Create list container
+	const list = document.createElement("div");
+	list.className = "list-select-list";
+	popup.appendChild(list);
+
+	const optionButtons = {};
+
+	// Helper functions
+	function openPopup()
+	{
+		// Close any other open list-select popups first
+		document.querySelectorAll(".list-select-popup.open").forEach(p => {
+			if (p !== popup) {
+				p.classList.remove("open");
+				const btn = p.previousElementSibling;
+				if (btn && btn.tagName === "BUTTON") {
+					btn.setAttribute("aria-expanded", "false");
+				}
+			}
+		});
+
+		// Close theme popup if open
+		const themePopup = document.getElementById("theme-popup");
+		if (themePopup && themePopup.classList.contains("open")) {
+			themePopup.classList.remove("open");
+			const themeBtn = document.getElementById("theme-button");
+			if (themeBtn) themeBtn.setAttribute("aria-expanded", "false");
+		}
+
+		popup.classList.add("open");
+		button.setAttribute("aria-expanded", "true");
+		
+		// Focus active option if exists
+		if (optionButtons[activeValue]) {
+			optionButtons[activeValue].focus();
+		}
+	}
+
+	function closePopup()
+	{
+		popup.classList.remove("open");
+		button.setAttribute("aria-expanded", "false");
+	}
+
+	// Build options
+	for (const opt of options)
+	{
+		const optBtn = document.createElement("button");
+		optBtn.type = "button";
+		optBtn.className = "list-select-option" + (opt.value === activeValue ? " active" : "");
+		optBtn.textContent = opt.text;
+		
+		optBtn.addEventListener("click", function(e) {
+			e.stopPropagation();
+			activeValue = opt.value;
+			button.textContent = opt.text;
+			
+			for (const val in optionButtons) {
+				optionButtons[val].classList.toggle("active", val === activeValue);
+			}
+			
+			closePopup();
+			button.focus();
+			
+			if (onChange) {
+				onChange(activeValue);
+			}
+		});
+		
+		list.appendChild(optBtn);
+		optionButtons[opt.value] = optBtn;
+	}
+
+	button.addEventListener("click", function(e) {
+		e.stopPropagation();
+		popup.classList.contains("open") ? closePopup() : openPopup();
+	});
+
+	// Close on click outside and escape key
+	document.addEventListener("click", function(e) {
+		if (popup.classList.contains("open") && !container.contains(e.target)) {
+			closePopup();
+		}
+	});
+
+	document.addEventListener("keydown", function(e) {
+		if (e.key === "Escape" && popup.classList.contains("open")) {
+			closePopup();
+			button.focus();
+		}
+	});
+
+	// Return an object that mirrors a select element's value property
+	// so it can be queried or set from elsewhere if needed.
+	Object.defineProperty(button, "value", {
+		get() { return activeValue; },
+		set(val) {
+			const found = options.find(o => o.value === val);
+			if (found) {
+				activeValue = val;
+				button.textContent = found.text;
+				for (const v in optionButtons) {
+					optionButtons[v].classList.toggle("active", v === val);
+				}
+			}
+		},
+		configurable: true
+	});
+
+	return button;
+}
+
+// Some legacy users may be lacking variants as part of their character card objects, so this function fixes this
+function fixLegacyCharacterVariants()
+{
+	for (let i in window.localStorageData.cards)
+	{
+		let card = window.localStorageData.cards[i];
+		if (!card["variant"])
+		{
+			card["variant"] = card.character.substring(1);
+			card["character"] = card.character.charAt(0);
+		}
+	}
+}
+
+/**
  * Redirects the user when selecting a new language from the language select box
- * @param { HTMLElement } selectWidget - The select box widget
  * @param { string } localStorageLang - Current language
  * @param { string|null } previous - Previous language
  */
-function redirectWithLanguage(selectWidget, localStorageLang, previous)
+function redirectWithLanguage(localStorageLang, previous)
 {
 	let url = location.href.split("/");
 	// Skip [1] because it will be empty because of the second / in https://
@@ -230,14 +396,12 @@ function redirectWithLanguage(selectWidget, localStorageLang, previous)
 		if (url[i] !== "")
 			redirect += url[i] + "/";
 	
-	selectWidget.value = localStorageLang;
 	location.href = redirect.slice(0, -1);
 }
 
 function setLanguage()
 {
 	let localStorageLang = window.localStorage.getItem("language");
-	let selectWidget = $("lang-select");
 
 	if (localStorageLang === null)
 	{
@@ -246,19 +410,38 @@ function setLanguage()
 	}
 	else if (!location.href.includes(localStorageLang))
 	{
-		redirectWithLanguage(selectWidget, localStorageLang, null);
+		redirectWithLanguage(localStorageLang, null);
 		return;
 	}
-	selectWidget.value = localStorageLang;
+	let selectWidget = $("lang-select");
+	if (selectWidget)
+		selectWidget.value = localStorageLang;
 }
 
 function setLanguageBox()
 {
-	$("lang-select").addEventListener("change", function(){
+	let selectWidget = $("lang-select");
+	if (selectWidget === null)
+		return;
+
+	const languages = [
+		{ value: "en_US", text: "🇬🇧   EN" },
+		{ value: "bg_BG", text: "🇧🇬   BG" },
+		{ value: "zh_CN", text: "🇨🇳   CN" },
+		{ value: "zh_TW", text: "🇹🇼   CN-T" },
+		{ value: "de_DE", text: "🇩🇪   DE" },
+		{ value: "mk_MK", text: "🇲🇰   MK" },
+		{ value: "ru_RU", text: "🇷🇺   RU" },
+		{ value: "jp_JP", text: "🇯🇵   JP" }
+	];
+
+	let localStorageLang = window.localStorage.getItem("language") || "en_US";
+
+	createCustomSelect(selectWidget, "Language select box", languages, localStorageLang, function(newValue) {
 		let old = window.localStorage.getItem("language");
-		window.localStorage.setItem("language", this.value);
-		redirectWithLanguage(this, this.value, old);
-	})
+		window.localStorage.setItem("language", newValue);
+		redirectWithLanguage(newValue, old);
+	});
 }
 
 /**
@@ -277,11 +460,13 @@ function setThemeBox()
 	// Build the popup container, search box and list
 	const popup = document.createElement("div");
 	popup.id = "theme-popup";
+	popup.className = "list-select-popup";
 	popup.setAttribute("role", "dialog");
 	popup.setAttribute("aria-label", lc.theme_button);
 
 	const search = document.createElement("input");
 	search.id = "theme-popup-search";
+	search.className = "list-select-search";
 	search.type = "text";
 	search.placeholder = lc.theme_search_placeholder;
 	search.setAttribute("aria-label", lc.theme_search_placeholder);
@@ -289,6 +474,7 @@ function setThemeBox()
 
 	const list = document.createElement("div");
 	list.id = "theme-popup-list";
+	list.className = "list-select-list";
 	popup.appendChild(list);
 
 	// One button per theme. Object key order can't be relied on (integer-like ids such as
@@ -304,7 +490,7 @@ function setThemeBox()
 	{
 		const opt = document.createElement("button");
 		opt.type = "button";
-		opt.className = "theme-option" + (id === current ? " active" : "");
+		opt.className = "list-select-option" + (id === current ? " active" : "");
 		opt.textContent = window.youyinThemes[id].name;
 		opt.addEventListener("click", function(){
 			window.applyTheme(id);
@@ -329,6 +515,15 @@ function setThemeBox()
 
 	function openPopup()
 	{
+		// Close any other open list-select popups first
+		document.querySelectorAll(".list-select-popup.open").forEach(p => {
+			p.classList.remove("open");
+			const btn = p.previousElementSibling;
+			if (btn && btn.tagName === "BUTTON") {
+				btn.setAttribute("aria-expanded", "false");
+			}
+		});
+
 		popup.classList.add("open");
 		button.setAttribute("aria-expanded", "true");
 		search.value = "";

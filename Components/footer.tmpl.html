@@ -2,17 +2,8 @@
 	<p>
 		{{ _ footer {{ raw <a href="https://madladsquad.com/">MadLadSquad</a>}} }}
 	</p>
-	<select aria-label="Language select box" name="lang" id="lang-select" class="centered">
-		<option value="en_US">🇬🇧   EN</option>
-		<option value="bg_BG">🇧🇬   BG</option>
-		<option value="zh_CN">🇨🇳   CN</option>
-		<option value="zh_TW">🇹🇼   CN-T</option>
-		<option value="de_DE">🇩🇪   DE</option>
-		<option value="mk_MK">🇲🇰   MK</option>
-		<option value="ru_RU">🇷🇺   RU</option>
-		<option value="jp_JP">🇯🇵   JP</option>
-	</select>
-	<button type="button" id="theme-button" class="centered" aria-haspopup="dialog" aria-expanded="false">🎨 {{ _ theme_button }}</button>
+	<button type="button" id="lang-select" class="centered list-select-button" aria-haspopup="dialog" aria-expanded="false"></button>
+	<button type="button" id="theme-button" class="centered list-select-button" aria-haspopup="dialog" aria-expanded="false">🎨 {{ _ theme_button }}</button>
 </footer>
 <script src="./{{ _ locale }}i18n.js"></script>
 <script src="./{{ _ locale }}index.js"></script>

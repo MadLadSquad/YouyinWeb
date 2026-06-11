@@ -169,19 +169,27 @@ async function testVariantExists(character, postfix)
  */
 async function constructCharacterVariantSelect(container, id, classT, ariaLabel, name, it)
 {
-	let select = addElement("select", "", id, classT, "", container);
-	select.setAttribute("aria-label", ariaLabel);
-	select.setAttribute("name", name);
-	select.ownerReference = it;
+	let selectButton = addElement("button", "", id, classT, "", container);
+	selectButton.setAttribute("type", "button");
+	selectButton.setAttribute("name", name);
 
-	addElement("option", lc.character_variant_default, "", "", "", select).setAttribute("value", "");
+	let options = [
+		{ value: "", text: lc.character_variant_default }
+	];
 	if (await testVariantExists(it.character, "-jp") !== undefined)
-		addElement("option", `🇯🇵   ${lc.character_variant_kanji}`, "", "", "", select).setAttribute("value", "-jp");
+		options.push({ value: "-jp", text: `🇯🇵   ${lc.character_variant_kanji}` });
 	if (await testVariantExists(it.character, "-ko") !== undefined)
-		addElement("option", `🇰🇷   ${lc.character_variant_hanja}`, "", "", "", select).setAttribute("value", "-ko");
+		options.push({ value: "-ko", text: `🇰🇷   ${lc.character_variant_hanja}` });
 
-	select.addEventListener("change", function() {
-		this.ownerReference.variant = this.value;
+	createCustomSelect(selectButton, ariaLabel, options, it.variant || "", function(newValue) {
+		it.variant = newValue;
+		const parts = id.split("-");
+		const idx = parts[parts.length - 1];
+		const writerEl = $(`card-character-target-div-preview-${idx}`);
+		if (writerEl && writerEl.writer)
+		{
+			writerEl.writer.setCharacter(it.character + newValue);
+		}
 	});
 }
 

@@ -284,10 +284,14 @@ header {
 	}
 }
 
-/* ---------------------------------- Theme switcher ---------------------------------- */
+/* ---------------------------------- List select boxes & dropdowns ---------------------------------- */
 
-/* The footer theme button mirrors the language select's look */
-#theme-button {
+.list-select-container {
+	position: relative;
+	display: inline-block;
+}
+
+.list-select-button {
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
@@ -304,16 +308,14 @@ header {
 	cursor: pointer;
 }
 
-/* The popup that lists the available themes, anchored to the footer */
-#theme-popup {
-	position: fixed;
-	bottom: 3.5rem;
+.list-select-popup {
+	position: absolute;
+	bottom: calc(100% + 0.5rem);
 	left: 50%;
-	transform: translateX(-50%);
 	z-index: 50;
-	display: none;
+	display: flex;
 	flex-direction: column;
-	width: min(20rem, 90vw);
+	width: min(15rem, 80vw);
 	max-height: min(22rem, 60vh);
 	box-sizing: border-box;
 	padding: 0;
@@ -321,10 +323,32 @@ header {
 	border: 1px solid var(--main-accent-colour);
 	border-radius: 8px;
 	box-shadow: 0 4px 16px var(--main-border-colour);
+
+	/* Smooth entry/exit animation */
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transform: translate(-50%, 10px) scale(0.95);
+	transition: opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+	            transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+	            visibility 0s 0.2s;
 }
 
-#theme-popup.open {
-	display: flex;
+.list-select-popup.open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+	transform: translate(-50%, 0) scale(1);
+	transition: opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+	            transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+	            visibility 0s 0s;
+}
+
+/* Specific positioning & width override for the theme selection popup */
+#theme-popup {
+	position: fixed;
+	bottom: 3.5rem;
+	width: min(20rem, 90vw);
 }
 
 #theme-popup-search {
@@ -346,7 +370,7 @@ header {
 	outline: none;
 }
 
-#theme-popup-list {
+.list-select-list {
 	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
@@ -354,7 +378,7 @@ header {
 	padding: 0.5rem;
 }
 
-.theme-option {
+.list-select-option {
 	display: block;
 	width: 100%;
 	box-sizing: border-box;
@@ -367,13 +391,14 @@ header {
 	font-family: inherit;
 	font-size: 16px;
 	cursor: pointer;
+	white-space: nowrap;
 }
 
-.theme-option:hover, .theme-option:focus-visible {
+.list-select-option:hover, .list-select-option:focus-visible {
 	border-color: var(--main-accent-colour);
 }
 
-.theme-option.active {
+.list-select-option.active {
 	color: var(--main-background-colour);
 	background-color: var(--main-accent-colour);
 }
