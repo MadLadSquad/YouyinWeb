@@ -1,6 +1,7 @@
 #pragma once
 #ifdef UBT_TARGET_WEB
-#include "../Utils.hpp"
+#include "../../Uniform/UniformUtility.h"
+#include <Generator.hpp>
 
 namespace UBT
 {

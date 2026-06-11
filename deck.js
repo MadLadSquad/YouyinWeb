@@ -76,8 +76,8 @@ function setProfileCardData()
 	let sessionLenTmp = averageSessionLen / window.localStorageData.sessions;
 	if (isNaN(sessionLenTmp))
 		sessionLenTmp = 0;
-	$("average-session-length-field").textContent += (sessionLenTmp.toFixed(2).toString() + sessionLenPostfix);
-	$("time-spent-in-sessions-field").textContent += (averageSessionLen.toFixed(2).toString() + sessionLenPostfix);
+	$("average-session-length-field").textContent += (formatDecimal(sessionLenTmp) + sessionLenPostfix);
+	$("time-spent-in-sessions-field").textContent += (formatDecimal(averageSessionLen) + sessionLenPostfix);
 
 	const lastDate = window.localStorageData.lastDate;
 	if (lastDate !== 0)
@@ -104,7 +104,7 @@ function setProfileCardData()
 	knowledge /= window.localStorageData.cards.length;
 	if (isNaN(knowledge))
 		knowledge = 0;
-	averageKnowledge.textContent = `${lc.average_knowledge_level}: ${knowledge.toFixed(2)}/${window.MAX_KNOWLEDGE_LEVEL}`;
+	averageKnowledge.textContent = `${lc.average_knowledge_level}: ${formatDecimal(knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`;
 }
 
 /**
@@ -120,7 +120,7 @@ function constructCard(it, index, container, localIndex)
 	let div = addElement("div", "", `card-container-${index}`, "card centered", "", container)
 
 	// Add title, character render div and the definitions text
-	addElement("h3", `${it.name} ${it.knowledge}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
+	addElement("h3", `${it.name} ${formatDecimal(it.knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
 	const target = it["character"]
 									? addElement("div", "", `card-character-target-div-${index}`, "", "", div)
 									: addElement("h1", it.phrase, `card-character-target-div-${index}`, "phrase-card-header", "", div);
@@ -204,11 +204,11 @@ function setupGameModifiers()
 
 	const levelReduce = $("level-reduce-slider");
 	levelReduce.value = window.gameModifiers.levelReduce;
-	levelReduce.labels[0].childNodes[0].textContent = `${lc.level_reduce_label} ${parseFloat(levelReduce.value).toFixed(2).toString()} `;
+	levelReduce.labels[0].childNodes[0].textContent = `${lc.level_reduce_label} ${formatDecimal(levelReduce.value)} `;
 
 	levelReduce.addEventListener("input", (e) => {
 		window.gameModifiers.levelReduce = e.target.value;
-		e.target.labels[0].childNodes[0].textContent = `${lc.level_reduce_label} ${parseFloat(e.target.value).toFixed(2).toString()} `;
+		e.target.labels[0].childNodes[0].textContent = `${lc.level_reduce_label} ${formatDecimal(e.target.value)} `;
 		saveGameModifiers();
 	});
 }

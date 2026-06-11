@@ -191,7 +191,7 @@ function showFinishedSessionPage(st)
 		[ "h3", 		lc.finish_page_header, 														null 				],
 		[ "p", 			`${lc.finish_page_characters_reviewed}: ${window.cardsReviewedCounter}`, 	null 				],
 		[ "p", 			`${lc.finish_page_phrases_reviewed}: ${window.phrasesReviewedCounter}`, 	null 				],
-		[ "p", 			`${lc.finish_page_session_len}: ${result.time}${result.postfix}`,			null 				],
+		[ "p", 			`${lc.finish_page_session_len}: ${formatDecimal(result.time)}${result.postfix}`,			null 				],
 		[ "button", 	lc.finish_page_continue, 													"card-button-edit" 	]
 	]
 

@@ -1,13 +1,5 @@
-/* Colours as CSS variables */
-:root {
-	--main-background-colour: #ffffff;
-	--main-accent-colour: #c87e74;
-	--main-border-colour: #CCC;
-	--main-text-colour: #000000;
-	--main-error-colour: #c62828;
-	--deck-button-active-colour: #a56961;
-	--deck-card-text-colour: #444444;
-}
+/* The colour palette lives in theme.js, which injects these CSS variables into :root at
+   runtime (see the #youyin-theme-style element). main.css only consumes them. */
 
 html {
 	accent-color: var(--main-accent-colour);
@@ -18,6 +10,10 @@ body {
 	padding: 0;
 	margin: 0;
 	background-color: var(--main-background-colour);
+	/* Default text colour for all copy (paragraphs, headers, …). Without this, text falls
+	   back to browser-default black and becomes unreadable on dark themes. Elements that
+	   need the accent colour (links, etc.) set it explicitly and override this. */
+	color: var(--main-text-colour);
 	font-family: 'Ubuntu', sans-serif;
 }
 
@@ -278,4 +274,91 @@ header {
 	to {
 		transform: translateX(0);
 	}
+}
+
+/* ---------------------------------- Theme switcher ---------------------------------- */
+
+/* The footer theme button mirrors the language select's look */
+#theme-button {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	background-color: transparent;
+	border: 1px solid var(--main-accent-colour);
+	border-radius: 4px;
+	color: var(--main-text-colour);
+	font-family: inherit;
+	font-size: 18px;
+	line-height: inherit;
+	box-sizing: border-box;
+	padding: 2px 8px;
+	margin-inline: 0.33rem;
+	cursor: pointer;
+}
+
+/* The popup that lists the available themes, anchored to the footer */
+#theme-popup {
+	position: fixed;
+	bottom: 3.5rem;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 50;
+	display: none;
+	flex-direction: column;
+	width: min(20rem, 90vw);
+	max-height: min(22rem, 60vh);
+	box-sizing: border-box;
+	padding: 0.5rem;
+	background-color: var(--main-background-colour);
+	border: 1px solid var(--main-accent-colour);
+	border-radius: 8px;
+	box-shadow: 0 4px 16px var(--main-border-colour);
+}
+
+#theme-popup.open {
+	display: flex;
+}
+
+#theme-popup-search {
+	box-sizing: border-box;
+	width: 100%;
+	padding: 6px 8px;
+	margin-bottom: 0.5rem;
+	background-color: transparent;
+	color: var(--main-text-colour);
+	border: 1px solid var(--main-border-colour);
+	border-radius: 4px;
+	font-family: inherit;
+	font-size: 16px;
+}
+
+#theme-popup-list {
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.theme-option {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	text-align: left;
+	padding: 6px 8px;
+	background-color: transparent;
+	color: var(--main-text-colour);
+	border: 1px solid transparent;
+	border-radius: 4px;
+	font-family: inherit;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+.theme-option:hover, .theme-option:focus-visible {
+	border-color: var(--main-accent-colour);
+}
+
+.theme-option.active {
+	color: var(--main-background-colour);
+	background-color: var(--main-accent-colour);
 }

@@ -32,6 +32,10 @@ translations:
     text: " страницата, за да добавите!"
   - id: footer
     text: "Проект на {}!"
+  - id: theme_button
+    text: "Цветови теми"
+  - id: theme_search_placeholder
+    text: "Търсене на цветови теми…"
   - id: about-us
     text: "За нас"
   - id: account

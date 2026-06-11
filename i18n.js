@@ -82,3 +82,7 @@ lc.deck_download = "{{ _ deck_download }}";
 lc.official = "{{ _ official }}";
 lc.community = "{{ _ community }}";
 lc.release = "{{ _ release }}";
+
+// theme switcher (index.js)
+lc.theme_button = "{{ _ theme_button }}";
+lc.theme_search_placeholder = "{{ _ theme_search_placeholder }}";

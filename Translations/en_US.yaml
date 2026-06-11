@@ -32,6 +32,10 @@ translations:
     text: " page to add some!"
   - id: footer
     text: "A {} project!"
+  - id: theme_button
+    text: "Theme"
+  - id: theme_search_placeholder
+    text: "Search themes…"
   - id: about-us
     text: "About"
   - id: account

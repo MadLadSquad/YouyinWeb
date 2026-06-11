@@ -40,6 +40,20 @@ function $(x)
 }
 
 /**
+ * Formats a number to 2 decimal places using a dot as the decimal separator.
+ * @param { number|string } num - The number to format
+ * @returns { string } - Formatted string
+ */
+function formatDecimal(num)
+{
+	const parsed = parseFloat(num);
+	if (isNaN(parsed))
+		return "0.00";
+	return parsed.toFixed(2);
+}
+
+
+/**
  * Returns a localised postfix given a time. Also converts time units
  * @param { number } time - in milliseconds
  * @returns { Object<number, string> } - The postfix
@@ -247,7 +261,108 @@ function setLanguageBox()
 	})
 }
 
-// I'm a C/C++ programmer, I ain't trusting this toy language with anything + it's stupid to not have a main function tbh
+/**
+ * Builds the footer theme switcher: a button that toggles a searchable popup listing every
+ * theme in window.youyinThemes. Selecting a theme applies it live (no reload) and persists
+ * the choice under the "youyinTheme" localStorage key. Themes are applied by theme.js.
+ */
+function setThemeBox()
+{
+	const button = $("theme-button");
+	if (button === null)
+		return;
+
+	const current = window.localStorage.getItem("youyinTheme") || "default";
+
+	// Build the popup container, search box and list
+	const popup = document.createElement("div");
+	popup.id = "theme-popup";
+	popup.setAttribute("role", "dialog");
+	popup.setAttribute("aria-label", lc.theme_button);
+
+	const search = document.createElement("input");
+	search.id = "theme-popup-search";
+	search.type = "text";
+	search.placeholder = lc.theme_search_placeholder;
+	search.setAttribute("aria-label", lc.theme_search_placeholder);
+	popup.appendChild(search);
+
+	const list = document.createElement("div");
+	list.id = "theme-popup-list";
+	popup.appendChild(list);
+
+	// One button per theme. Object key order can't be relied on (integer-like ids such as
+	// "8008" get hoisted to the front), so sort explicitly: Default first, then by name.
+	const themeIds = Object.keys(window.youyinThemes).sort(function (a, b) {
+		if (a === "default") return -1;
+		if (b === "default") return 1;
+		return window.youyinThemes[a].name.localeCompare(window.youyinThemes[b].name);
+	});
+
+	const options = {};
+	for (const id of themeIds)
+	{
+		const opt = document.createElement("button");
+		opt.type = "button";
+		opt.className = "theme-option" + (id === current ? " active" : "");
+		opt.textContent = window.youyinThemes[id].name;
+		opt.addEventListener("click", function(){
+			window.applyTheme(id);
+			window.localStorage.setItem("youyinTheme", id);
+			for (const k in options)
+				options[k].classList.toggle("active", k === id);
+			closePopup();
+		});
+		list.appendChild(opt);
+		options[id] = opt;
+	}
+
+	document.body.appendChild(popup);
+
+	function filter(query)
+	{
+		query = query.toLowerCase();
+		for (const id in options)
+			options[id].style.display =
+				window.youyinThemes[id].name.toLowerCase().includes(query) ? "block" : "none";
+	}
+
+	function openPopup()
+	{
+		popup.classList.add("open");
+		button.setAttribute("aria-expanded", "true");
+		search.value = "";
+		filter("");
+		search.focus();
+	}
+
+	function closePopup()
+	{
+		popup.classList.remove("open");
+		button.setAttribute("aria-expanded", "false");
+	}
+
+	button.addEventListener("click", function(e){
+		e.stopPropagation();
+		popup.classList.contains("open") ? closePopup() : openPopup();
+	});
+
+	search.addEventListener("input", function(){ filter(this.value); });
+
+	// Close on outside click and on Escape
+	document.addEventListener("click", function(e){
+		if (popup.classList.contains("open") && !popup.contains(e.target) && e.target !== button)
+			closePopup();
+	});
+	document.addEventListener("keydown", function(e){
+		if (e.key === "Escape" && popup.classList.contains("open"))
+		{
+			closePopup();
+			button.focus();
+		}
+	});
+}
+
 function main()
 {
 	// Saves us performance costs of loading and saving things many times
@@ -297,6 +412,7 @@ function main()
 	setTitleName();
 	setLanguage();
 	setLanguageBox();
+	setThemeBox();
 }
 
 main();
