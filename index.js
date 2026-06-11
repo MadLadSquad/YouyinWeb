@@ -720,6 +720,30 @@ function main()
 	setLanguageBox();
 	setThemeBox();
 	initEmojiReplacement();
+
+	// Register service worker for PWA support
+	if ('serviceWorker' in navigator) {
+		window.addEventListener('load', () => {
+			navigator.serviceWorker.register('./sw.js')
+				.then(reg => {
+					console.log('Youyin Service Worker registered successfully with scope:', reg.scope);
+					// Notify service worker to check/sync character database
+					if (reg.active) {
+						reg.active.postMessage({ type: 'SYNC_CHARACTERS' });
+					}
+				})
+				.catch(err => {
+					console.error('Youyin Service Worker registration failed:', err);
+				});
+		});
+
+		// Listen for sync progress reports from the service worker
+		navigator.serviceWorker.addEventListener('message', (event) => {
+			if (event.data && event.data.type === 'CHARACTER_SYNC_PROGRESS') {
+				console.log(`Character Sync Progress: ${event.data.loaded} / ${event.data.total}`);
+			}
+		});
+	}
 }
 
 main();
