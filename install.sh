@@ -33,7 +33,7 @@ mkdir build
 cd build || exit
 if [ "${windows}" = true ]; then
   cmake .. -G "Visual Studio ${VSShortVer} ${VSVer}" -DUBT_COMPILING_FOR_WEB=ON -DCMAKE_BUILD_TYPE=RELEASE
-  MSBuild.exe UVKBuildTool.sln -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="${cpus}" || exit
+  MSBuild.exe UVKBuildTool.sln* -property:Configuration=Release -property:Platform=x64 -property:maxCpuCount="${cpus}" || exit
 else
   cmake .. -G "Unix Makefiles" -DUBT_COMPILING_FOR_WEB=ON -DCMAKE_BUILD_TYPE=RELEASE || exit
   make -j "${cpus}" || exit

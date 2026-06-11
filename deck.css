@@ -1,22 +1,21 @@
-/* Set deck-specific colours */
-:root {
-	--deck-button-active-colour: #a56961;
-	--deck-card-text-colour: #555555;
-}
-
 /* Display the deck or marketplace as a grid of cards */
 .deck, #deck-community {
 	display: grid;
 	gap: 0.5rem;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	padding-left: 0.5rem;
-	padding-right: 0.5rem;
+	padding-inline: 0.5rem;
 	box-sizing: border-box;
 }
 
 /* Add border to the cards for better UI/UX */
 .card {
 	border: 1px solid var(--main-border-colour);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+	transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 /* I totally didn't cop this from somewhere I don't even remember */
@@ -41,11 +40,11 @@
 	cursor: pointer;
 	touch-action: manipulation;
 
-	transition: 0.25s;
+	transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
 
-.card-button-edit:after {
+.card-button-edit::after {
 	content: "";
 	background: var(--main-border-colour);
 	display: block;
@@ -58,7 +57,7 @@
 	transition: all 0.8s;
 }
 
-.card-button-edit:active:after {
+.card-button-edit:active::after {
 	padding: 0;
 	margin: 0;
 	opacity: 1;
@@ -84,9 +83,7 @@
 	border-radius: 12px;
 }
 
-/* TF is this??? */
 button {
-	/*text-transform: visible;*/
 	overflow: visible;
 	-webkit-appearance: button;
 }
@@ -157,17 +154,13 @@ ol li {
 	margin: 0;
 }
 
-/* Configure input text fields to be border boxes */
-input[type=text]::before, input[type=text]::after, input[type=text] {
-	box-sizing: border-box;
-}
-
 /* Configure input text fields to follow our style */
 input[type=text] {
+	box-sizing: border-box;
 	max-width: 85%;
 	font-size: 16px;
 	font-family: inherit;
-	padding: 2px 2px 2px 2px;
+	padding: 2px;
 	background-color: var(--main-background-colour);
 	border: 1px solid var(--main-accent-colour);
 	border-radius: 4px;

@@ -6,7 +6,7 @@
 	margin-bottom: 2rem;
 }
 
-/* Colour the error text in bright red */
+/* Colour the error text */
 .error-text {
-	color: rgb(255, 0, 0);
+	color: var(--main-error-colour);
 }

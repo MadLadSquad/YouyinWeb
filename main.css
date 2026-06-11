@@ -4,12 +4,21 @@
 	--main-accent-colour: #c87e74;
 	--main-border-colour: #CCC;
 	--main-text-colour: #000000;
+	--main-error-colour: #c62828;
+	--deck-button-active-colour: #a56961;
+	--deck-card-text-colour: #555555;
+}
+
+html {
+	accent-color: var(--main-accent-colour);
 }
 
 /* Remove body padding, otherwise bound calculations will be really hard */
 body {
 	padding: 0;
 	margin: 0;
+	background-color: var(--main-background-colour);
+	font-family: 'Ubuntu', sans-serif;
 }
 
 /**
@@ -25,20 +34,16 @@ main {
 }
 
 .article {
-	padding-left: 0.5rem;
-	padding-right: 0.5rem;
+	padding-inline: 0.5rem;
+}
+
+main.article {
+	max-width: 70ch;
+	margin-inline: auto;
 }
 
 #start-button-writer-section {
-	padding-left: 0.5rem;
-	padding-right: 0.5rem;
-}
-
-/* Set the background and accent colour */
-* {
-	background-color: var(--main-background-colour);
-	accent-color: var(--main-accent-colour);
-	font-family: 'Ubuntu', sans-serif;
+	padding-inline: 0.5rem;
 }
 
 a {
@@ -67,7 +72,7 @@ ul li a {
 	display: block;
 	color: var(--main-accent-colour);
 	text-align: center;
-	padding: 0 24px 0 24px;
+	padding: 0 24px;
 	text-decoration: none;
 	font-size: 32px;
 	line-height: 1.5;
@@ -102,14 +107,9 @@ ul li a {
 
 /* Define uniform styling for footer elements */
 footer p, footer select {
-	padding: 0 0.33rem 0 0.33rem;
+	padding-inline: 0.33rem;
 	font-size: 18px;
 	color: var(--main-text-colour);
-}
-
-/* Make sure selects are border boxes */
-select::before, select::after {
-	box-sizing: border-box;
 }
 
 /* Make the select members shrink to fit since they would take too much space */
@@ -128,8 +128,8 @@ select {
 	outline: none;
 	box-sizing: border-box;
 
-	padding: 2px 2px 2px 2px;
-	margin: 0 0 0 0;
+	padding: 2px;
+	margin: 0;
 	max-width: max-content;
 	resize: horizontal;
 }
@@ -144,7 +144,6 @@ option {
 	display: flex;
 	min-width: 0;
 	flex-direction: row;
-	border-color: red;
 	box-sizing: border-box;
 }
 
@@ -192,8 +191,8 @@ option {
 
 /* Style the hr element is stupid can confirm, why have an hr? because a border on the footer will break */
 #main-page-hr {
-	padding: 0 0 0 0;
-	margin: 0 0 0 0;
+	padding: 0;
+	margin: 0;
 	border: 0;
 	border-top: 1px solid var(--main-border-colour);
 	background-color: var(--main-border-colour);
@@ -210,16 +209,16 @@ header {
 }
 
 #coming-soon-header {
-	font-size: 3vw;
+	font-size: clamp(1.5rem, 3vw, 3rem);
 }
 
 #coming-soon-text {
-	font-size: 1.5vw;
+	font-size: clamp(0.95rem, 1.5vw, 1.25rem);
 }
 
 /* Make the 404 emoji take up more or less the whole page */
 #err-404-emoji {
-	font-size: 18vw;
+	font-size: clamp(4rem, 18vw, 16rem);
 }
 
 /* The generic centered class */
