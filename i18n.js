@@ -8,7 +8,10 @@ var lc = {};
 // deck.js
 lc.import_deck_confirm_text = "{{ _ import_deck_confirm_text }}";
 lc.clear_deck_confirm_text = "{{ _ clear_deck_confirm_text }}";
-lc.streak_field_days = "{{ _ streak_field_days }}"
+// Singular/plural pair baked from one ui18n switch pattern; daily-streak.js picks a variant at
+// runtime and substitutes the literal {streak} placeholder with the live count
+lc.streak_days_count = "{{ _ streak_days_count {{ dict streak_days 2 }} }}"
+lc.streak_days_count_one = "{{ _ streak_days_count {{ dict streak_days 1 }} }}"
 
 lc.hours = "{{ _ hours }}";
 lc.milliseconds = "{{ _ milliseconds }}";
@@ -48,6 +51,12 @@ lc.finish_page_header = "{{ _ finish_page_header }}"
 lc.finish_page_characters_reviewed = "{{ _ finish_page_characters_reviewed }}"
 lc.finish_page_phrases_reviewed = "{{ _ finish_page_phrases_reviewed }}"
 lc.finish_page_session_len = "{{ _ finish_page_session_len }}"
+// The day/days wording is a ui18n switch pattern on the streak_days variable, resolved at build
+// time — so the plural and singular variants are baked separately and the code picks one at
+// runtime. The {streak} placeholder survives the build (no variable is passed for it) and is
+// substituted with the live count in main-page.js
+lc.finish_page_streak_increased = "{{ _ finish_page_streak_increased {{ dict streak_days 2 }} }}"
+lc.finish_page_streak_increased_one = "{{ _ finish_page_streak_increased {{ dict streak_days 1 }} }}"
 lc.finish_page_continue = "{{ _ finish_page_continue }}"
 
 lc.phrases_count_phrase = "{{ _ deck-phrases-header }}";

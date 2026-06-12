@@ -305,6 +305,66 @@ header {
     }
 }
 
+/* -------------------------- New-streak encouragement fire emoji burst -------------------------- */
+
+/* Covers the area the writer widget occupied without intercepting clicks on the finished-session
+   page below it. Lives on <body>; main-page.js sets left/top/width/height inline to the writer's
+   rectangle captured just before it was removed */
+.streak-fire-container {
+    position: absolute;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Per-emoji flight path and timing come from CSS variables set inline by main-page.js */
+.streak-fire-emoji {
+    position: absolute;
+    bottom: 0;
+    left: var(--fire-left);
+    opacity: 0;
+    -webkit-animation: var(--fire-duration) streak-fire-fly var(--fire-delay) ease-out forwards;
+    animation: var(--fire-duration) streak-fire-fly var(--fire-delay) ease-out forwards;
+}
+
+@-webkit-keyframes streak-fire-fly {
+    0% {
+        -webkit-transform: translate(0, 100%) scale(0.5) rotate(0deg);
+        transform: translate(0, 100%) scale(0.5) rotate(0deg);
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    100% {
+        -webkit-transform: translate(var(--fire-drift), var(--fire-rise)) scale(1.1) rotate(var(--fire-spin));
+        transform: translate(var(--fire-drift), var(--fire-rise)) scale(1.1) rotate(var(--fire-spin));
+        opacity: 0;
+    }
+}
+
+@keyframes streak-fire-fly {
+    0% {
+        -webkit-transform: translate(0, 100%) scale(0.5) rotate(0deg);
+        transform: translate(0, 100%) scale(0.5) rotate(0deg);
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    100% {
+        -webkit-transform: translate(var(--fire-drift), var(--fire-rise)) scale(1.1) rotate(var(--fire-spin));
+        transform: translate(var(--fire-drift), var(--fire-rise)) scale(1.1) rotate(var(--fire-spin));
+        opacity: 0;
+    }
+}
+
+/* Belt and braces alongside the matchMedia guard in main-page.js */
+@media (prefers-reduced-motion: reduce) {
+    .streak-fire-container {
+        display: none;
+    }
+}
+
 /* ---------------------------------- List select boxes & dropdowns ---------------------------------- */
 
 .list-select-container {

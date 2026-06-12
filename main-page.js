@@ -181,7 +181,54 @@ function setupSlideInElement(data, i, container, f)
     return el;
 }
 
-function showFinishedSessionPage(st)
+/**
+ * Celebrates a user who just advanced their daily streak (started a new one or extended it): fire
+ * emojis fly out from the bottom of the play field and burn out on the way up. The twemoji
+ * MutationObserver picks the emojis up automatically, so they render as SVGs like everywhere else
+ * on the site. Skipped entirely for users who prefer reduced motion
+ */
+function playStreakFireAnimation()
+{
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+        return;
+
+    // Pin the overlay to the document area the writer occupied, captured just before it was
+    // removed. Anchoring to #start-button-writer-section instead would be wrong twice over: the
+    // section shrink-wraps to the finished-session text, clipping the fire to a narrow column,
+    // and margin: auto re-centres it while the lines slide in, drifting its bottom towards the
+    // footer
+    const rect = window.lastWriterRect;
+    let container = addElement("div", "", "streak-fire-container", "streak-fire-container", "", document.body);
+    container.setAttribute("aria-hidden", "true");
+    container.style.setProperty("left", rect.left + "px");
+    container.style.setProperty("top", rect.top + "px");
+    container.style.setProperty("width", rect.width + "px");
+    container.style.setProperty("height", rect.height + "px");
+
+    const FIRE_EMOJI_COUNT = 36;
+    let finished = 0;
+    for (let i = 0; i < FIRE_EMOJI_COUNT; i++)
+    {
+        let emoji = addElement("span", "🔥", "", "streak-fire-emoji", "", container);
+
+        // Each emoji gets its own start position, flight path and timing so the burst looks
+        // organic instead of a synchronised wall of fire
+        emoji.style.setProperty("--fire-left", (5 + Math.random() * 90) + "%");
+        emoji.style.setProperty("--fire-rise", -((0.55 + Math.random() * 0.45) * rect.height) + "px");
+        emoji.style.setProperty("--fire-drift", ((Math.random() - 0.5) * 6) + "rem");
+        emoji.style.setProperty("--fire-spin", ((Math.random() - 0.5) * 90) + "deg");
+        emoji.style.setProperty("--fire-duration", (1 + Math.random() * 0.8) + "s");
+        emoji.style.setProperty("--fire-delay", (Math.random() * 1) + "s");
+        emoji.style.setProperty("font-size", (1.25 + Math.random() * 1.25) + "rem");
+
+        emoji.addEventListener("animationend", (_) => {
+            if (++finished === FIRE_EMOJI_COUNT)
+                container.remove();
+        });
+    }
+}
+
+function showFinishedSessionPage(st, bStreakAdvanced)
 {
     const result = getLocalisedTimePostfix(st);
 
@@ -196,6 +243,17 @@ function showFinishedSessionPage(st)
         [ "p",          `${lc.finish_page_session_len}: ${formatDecimal(result.time)}${result.postfix}`,            null                ],
         [ "button",     lc.finish_page_continue,                                                    "card-button-edit"  ]
     ]
+
+    // Sessions that started or extended the daily streak get to brag about its new length. The
+    // singular/plural wording was resolved at build time by the ui18n switch pattern; here we
+    // only pick the right baked variant and fill in the count
+    if (bStreakAdvanced)
+    {
+        const streak = window.localStorageData.streak;
+        const text = (streak === 1 ? lc.finish_page_streak_increased_one : lc.finish_page_streak_increased)
+            .replace("{streak}", streak);
+        elData.splice(elData.length - 1, 0, [ "p", text, null ]);
+    }
 
     setupSlideInElement(elData, 0, container, (e, data, i) => {
         if (data[i][0] === "button")
@@ -456,7 +514,17 @@ async function writerOnComplete(_)
         }
     }
 
-    // If there are no cards, remove the writer and recreate the initial view
+    // If there are no cards, remove the writer and recreate the initial view. Capture where the
+    // writer was first — the new-streak fire animation below covers exactly that area, and it
+    // cannot be measured later: the finished-session layout that replaces the writer shrink-wraps
+    // and re-centres itself while its lines slide in
+    const writerRect = $("character-target-div").getBoundingClientRect();
+    window.lastWriterRect = {
+        left: writerRect.left + window.scrollX,
+        top: writerRect.top + window.scrollY,
+        width: writerRect.width,
+        height: writerRect.height
+    };
     $("character-target-div").remove();
 
     // Save user data
@@ -465,7 +533,13 @@ async function writerOnComplete(_)
     data.totalTimeInSessions += st;
     window.sessionTime = now;
 
-    showFinishedSessionPage(st);
+    // A day only counts towards the daily streak when a session is fully completed. Persisted by
+    // the saveToLocalStorage call below. Starting or extending a streak gets a little celebration
+    const bStreakAdvanced = updateDailyStreak();
+    if (bStreakAdvanced)
+        playStreakFireAnimation();
+
+    showFinishedSessionPage(st, bStreakAdvanced);
 
     // Reset data
     resetSessionData();

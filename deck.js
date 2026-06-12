@@ -62,7 +62,7 @@ function clearDeck() {
 function setProfileCardData()
 {
     $("total-sessions-field").textContent += window.localStorageData.sessions;
-    $("streak-field").textContent += (window.localStorageData.streak + lc.streak_field_days);
+    renderStreakField();
     $("deck-card-num-field").textContent += window.localStorageData.cards.length;
     $("deck-phrase-num-field").textContent += window.localStorageData.phrases.length;
 

@@ -19,6 +19,7 @@ const PAGES = [
 const SCRIPTS = [
     'theme.js',
     'index.js',
+    'daily-streak.js',
     'i18n.js',
     'main-page.js',
     'deck.js',

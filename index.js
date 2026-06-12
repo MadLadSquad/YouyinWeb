@@ -340,6 +340,8 @@ function main()
             sessions: 0,
             streak: 0,
             lastDate: 0,
+            lastStreakDay: 0,
+            lastLevelReduceDay: 0,
             totalTimeInSessions: 0,
             cards: [],
             phrases: [],
@@ -349,6 +351,19 @@ function main()
     else if (!window.localStorageData["phrases"])
     {
         window.localStorageData["phrases"] = [];
+        saveToLocalStorage(window.localStorageData);
+    }
+
+    // Users from before the daily-streak feature: derive the last play-day once from lastDate in
+    // the current timezone. daily-streak.js loads after this file, so its localDayIndex helper is
+    // not available yet — the formula is inlined here (keep the two in sync)
+    if (window.localStorageData["lastStreakDay"] === undefined)
+    {
+        const last = window.localStorageData.lastDate;
+        const d = new Date(last);
+        window.localStorageData["lastStreakDay"] = last !== 0
+            ? Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000)
+            : 0;
         saveToLocalStorage(window.localStorageData);
     }
 

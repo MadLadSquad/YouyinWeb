@@ -62,6 +62,14 @@ translations:
     text: "Прегледани фрази"
   - id: finish_page_session_len
     text: "Дължина на сесията"
+  - id: finish_page_streak_increased
+    text: "Увеличихте дневната си серия днес - {streak}{streak_days}"
+    switch:
+      - var: streak_days
+        default: " дни"
+        cases:
+          - case: "1"
+            result: " ден"
   - id: finish_page_continue
     text: "Продължи"
 
@@ -165,8 +173,14 @@ translations:
     text: "Карти за символи"
   - id: clear_deck_confirm_text
     text: "Сигурни ли сте, че искате да ИЗТРИЕТЕ сегашното си тесте? ТОВА НЕ МОЖЕ ДА БЪДЕ ОТМЕНЕНО! Препоръчително е да запазите данните си за всеки случай!"
-  - id: streak_field_days
-    text: " дни"
+  - id: streak_days_count
+    text: "{streak}{streak_days}"
+    switch:
+      - var: streak_days
+        default: " дни"
+        cases:
+          - case: "1"
+            result: " ден"
   - id: hours
     text: "ч."
   - id: milliseconds

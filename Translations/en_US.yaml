@@ -62,6 +62,14 @@ translations:
     text: "Total phrases reviewed"
   - id: finish_page_session_len
     text: "Session length"
+  - id: finish_page_streak_increased
+    text: "You increased your streak today - {streak}{streak_days}"
+    switch:
+      - var: streak_days
+        default: " days"
+        cases:
+          - case: "1"
+            result: " day"
   - id: finish_page_continue
     text: "Continue"
 
@@ -165,8 +173,14 @@ translations:
     text: "Character cards"
   - id: clear_deck_confirm_text
     text: "Are you sure you want to DELETE the current deck, THIS CANNOT BE UNDONE! Export your data to save it just in case!"
-  - id: streak_field_days
-    text: " days"
+  - id: streak_days_count
+    text: "{streak}{streak_days}"
+    switch:
+      - var: streak_days
+        default: " days"
+        cases:
+          - case: "1"
+            result: " day"
   - id: hours
     text: "h."
   - id: milliseconds
