@@ -87,30 +87,6 @@ soundTables.pinyin =
     convert: pinyinify,
 };
 
-soundTables.cyrillic =
-{
-    table:
-    {
-        "a": "",
-        "b": "",
-        "v": "",
-        "g": "",
-        "gh": "",
-        "g'": "",
-        "dj": "",
-        "e": "",
-        "yo": "",
-        "je": "",
-        "zh": "",
-        "z": "",
-        "dz": "",
-        "ii": "",
-        "yi": "",
-        "j": "",
-        "": "",
-    },
-}
-
 soundTables.romaji =
 {
     table:

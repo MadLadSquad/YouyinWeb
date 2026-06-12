@@ -210,6 +210,8 @@ translations:
     text: "Source"
   - id: deck_download
     text: "Download"
+  - id: marketplace_load_error
+    text: "Error {}: Couldn't load the {} marketplace, retry later!"
   - id: official
     text: "Official"
   - id: community

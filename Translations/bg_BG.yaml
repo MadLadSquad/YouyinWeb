@@ -209,6 +209,8 @@ translations:
     text: "Източник"
   - id: deck_download
     text: "Изтегли"
+  - id: marketplace_load_error
+    text: "Грешка {}: Пазарът ({}) не можа да бъде зареден, опитайте отново по-късно!"
   - id: official
     text: "Официален"
   - id: community

@@ -77,7 +77,8 @@ lc.deck_import = "{{ _ import-deck-button }}";
 lc.deck_source = "{{ _ deck_source }}";
 lc.deck_download = "{{ _ deck_download }}";
 
-// TODO: Add translation for the error element
+// The {} placeholders are filled at runtime by createErrorElement (status code, marketplace type)
+lc.marketplace_load_error = "{{ _ marketplace_load_error }}";
 
 lc.official = "{{ _ official }}";
 lc.community = "{{ _ community }}";
