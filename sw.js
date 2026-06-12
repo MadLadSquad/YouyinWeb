@@ -1,65 +1,54 @@
-const CACHE_NAME = 'youyin-static-v1';
+const CACHE_NAME = 'youyin-static-v2';
 const CHAR_CACHE_NAME = 'youyin-chars-v1';
 const CHARACTER_MAP_URL = 'https://raw.githubusercontent.com/MadLadSquad/hanzi-writer-data-youyin/master/character-map.json';
 const CHARACTER_FETCH_BASE = 'https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/data/';
 
+// The site is built once per locale, so every page and script exists at the root and once per
+// locale directory — generate the pre-cache list instead of hand-maintaining each combination
+const LOCALES = ['en_US', 'bg_BG'];
+// index.html is deliberately absent: the directory URLs ('./' and './<locale>/') already serve
+// it, and the CI's URL rewriting would otherwise turn an index.html entry into a duplicate of
+// the directory URL — cache.addAll() rejects duplicate entries, failing the whole install
+const PAGES = [
+    'deck.html',
+    'account.html',
+    'marketplace.html',
+    'deck-edit-card.html',
+    '404.html'
+];
+const SCRIPTS = [
+    'theme.js',
+    'index.js',
+    'i18n.js',
+    'main-page.js',
+    'deck.js',
+    'deck-new.js',
+    'marketplace.js',
+    'IME.js'
+];
+const ROOT_ONLY_ASSETS = [
+    'main.css',
+    'deck.css',
+    'marketplace.css',
+    'favicon.png',
+    'favicon-new.png',
+    'icon-192.png',
+    'icon-512.png',
+    'manifest.json'
+];
+
 const STATIC_ASSETS = [
     './',
-    './index.html',
-    './deck.html',
-    './account.html',
-    './marketplace.html',
-    './deck-edit-card.html',
-    './404.html',
-    './main.css',
-    './deck.css',
-    './marketplace.css',
-    './theme.js',
-    './index.js',
-    './i18n.js',
-    './main-page.js',
-    './deck.js',
-    './deck-new.js',
-    './marketplace.js',
-    './IME.js',
-    './favicon.png',
-    './favicon-new.png',
-    './icon-192.png',
-    './icon-512.png',
-    './manifest.json',
+    ...PAGES.map((page) => './' + page),
+    ...SCRIPTS.map((script) => './' + script),
+    ...ROOT_ONLY_ASSETS.map((asset) => './' + asset),
 
     // Language subdirectories and assets
-    './en_US/',
-    './en_US/index.html',
-    './en_US/deck.html',
-    './en_US/account.html',
-    './en_US/marketplace.html',
-    './en_US/deck-edit-card.html',
-    './en_US/404.html',
-    './en_US/index.js',
-    './en_US/i18n.js',
-    './en_US/main-page.js',
-    './en_US/deck.js',
-    './en_US/deck-new.js',
-    './en_US/marketplace.js',
-    './en_US/IME.js',
-    './en_US/theme.js',
-
-    './bg_BG/',
-    './bg_BG/index.html',
-    './bg_BG/deck.html',
-    './bg_BG/account.html',
-    './bg_BG/marketplace.html',
-    './bg_BG/deck-edit-card.html',
-    './bg_BG/404.html',
-    './bg_BG/index.js',
-    './bg_BG/i18n.js',
-    './bg_BG/main-page.js',
-    './bg_BG/deck.js',
-    './bg_BG/deck-new.js',
-    './bg_BG/marketplace.js',
-    './bg_BG/IME.js',
-    './bg_BG/theme.js',
+    ...LOCALES.flatMap((locale) => [
+        `./${locale}/`,
+        ...PAGES.map((page) => `./${locale}/${page}`),
+        ...SCRIPTS.map((script) => `./${locale}/${script}`),
+    ]),
 
     // Static CDN libraries
     'https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js',
@@ -208,53 +197,62 @@ function broadcastProgress(loaded, total) {
     });
 }
 
-// Intercepts fetch requests to serve cached assets
+// Hosts whose responses are safe to cache long-term (versioned, effectively immutable content)
+const CDN_HOSTS = ['fonts.gstatic.com', 'fonts.googleapis.com', 'cdn.jsdelivr.net'];
+
+// Network-first for same-origin requests so new deploys are picked up immediately, with the
+// cache as an offline fallback. Cross-origin CDN assets are cache-first since they don't change
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
 
     const url = new URL(event.request.url);
     if (!url.protocol.startsWith('http')) return;
 
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-                return cachedResponse;
-            }
-
-            // Try fallback for extensionless URLs or .html mismatches (local vs production)
-            return matchUrlFallback(event.request).then((fallbackResponse) => {
-                if (fallbackResponse) {
-                    return fallbackResponse;
-                }
-
-                // If not in cache, fetch from network
-                return fetch(event.request).then((networkResponse) => {
-                    if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-                        // Return remote response without caching (or handle external CDNs like Google Fonts)
-                        if (url.host === 'fonts.gstatic.com' || url.host === 'fonts.googleapis.com' || url.host === 'cdn.jsdelivr.net') {
-                            const responseToCache = networkResponse.clone();
-                            caches.open(CACHE_NAME).then((cache) => {
-                                cache.put(event.request, responseToCache);
-                            });
-                        }
-                        return networkResponse;
-                    }
-
-                    // Dynamic caching for local assets not caught in pre-cache
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseToCache);
-                    });
-
-                    return networkResponse;
-                }).catch(() => {
-                    // Offline fallback: return a default 404 or offline message page
-                    return caches.match('./404.html') || caches.match('./en_US/404.html');
-                });
-            });
-        })
-    );
+    if (url.origin === self.location.origin) {
+        event.respondWith(handleSameOriginRequest(event.request));
+    } else {
+        event.respondWith(handleCdnRequest(event.request, url));
+    }
 });
+
+async function handleSameOriginRequest(request) {
+    try {
+        const networkResponse = await fetch(request);
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            const cache = await caches.open(CACHE_NAME);
+            cache.put(request, networkResponse.clone());
+        }
+        return networkResponse;
+    } catch (err) {
+        // Offline: serve from the cache, accounting for extensionless vs .html URL mismatches
+        // between the local and production builds
+        const cachedResponse = await caches.match(request);
+        if (cachedResponse) return cachedResponse;
+
+        const fallbackResponse = await matchUrlFallback(request);
+        if (fallbackResponse) return fallbackResponse;
+
+        // Last resort for page navigations: the 404 page (or its locale-prefixed copy). Asset
+        // requests fall through and fail like a normal network error instead of receiving HTML
+        if (request.mode === 'navigate') {
+            return (await caches.match('./404.html')) || (await caches.match('./en_US/404.html'));
+        }
+        throw err;
+    }
+}
+
+async function handleCdnRequest(request, url) {
+    const cachedResponse = await caches.match(request);
+    if (cachedResponse) return cachedResponse;
+
+    const networkResponse = await fetch(request);
+    // Opaque (no-cors) responses report status 0, so check the type as well before caching
+    if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque') && CDN_HOSTS.includes(url.host)) {
+        const cache = await caches.open(CACHE_NAME);
+        cache.put(request, networkResponse.clone());
+    }
+    return networkResponse;
+}
 
 // Helper to handle extensionless / html routes matching
 async function matchUrlFallback(request) {
