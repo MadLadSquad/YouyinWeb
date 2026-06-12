@@ -463,12 +463,18 @@ function deckEditMain()
         if (window.previewPhrase !== null)
             window.localStorageData.phrases.push(window.previewPhrase);
 
-        window.localStorageData.cards.push(...window.previewCards.filter((value, index) => {
-            const v = JSON.stringify(value);
-            return index === window.previewCards.findIndex(obj => {
-                return JSON.stringify(obj) === v;
-            });
-        }));
+        // Deduplicate new cards by character + variant (a phrase can contain the same character
+        // several times), keeping the first occurrence of each
+        const seenCharacters = new Set();
+        for (const card of window.previewCards)
+        {
+            const key = card.character + card.variant;
+            if (!seenCharacters.has(key))
+            {
+                seenCharacters.add(key);
+                window.localStorageData.cards.push(card);
+            }
+        }
 
         saveToLocalStorage(window.localStorageData);
         location.href = "./deck.html";
