@@ -1,0 +1,177 @@
+'use strict';
+// ---------------- Shared plumbing for button-triggered popups (language/variant/theme) ----------------
+// Every popup registers a controller here; the single document-level click/keydown pair below
+// serves all of them, instead of each dropdown installing its own global listeners
+window.youyinPopupControllers = [];
+
+/**
+ * Creates the open/close plumbing for a button-triggered popup: aria-expanded upkeep, mutual
+ * exclusion with other popups, toggling on button click, outside-click and Escape handling
+ * @param { HTMLElement } button - The trigger button
+ * @param { HTMLElement } popup - The popup element
+ * @param { function|null } onOpen - Called after the popup opens
+ * @param { function|null } onClose - Called after the popup closes
+ * @returns { Object } - Controller exposing isOpen(), open(), close() and contains()
+ */
+function createPopupController(button, popup, onOpen, onClose)
+{
+    const controller = {
+        button: button,
+        popup: popup,
+        isOpen: () => popup.classList.contains("open"),
+        open: () =>
+        {
+            // Only one popup may be open at a time
+            for (const other of window.youyinPopupControllers)
+                if (other !== controller)
+                    other.close();
+
+            popup.classList.add("open");
+            button.setAttribute("aria-expanded", "true");
+            if (onOpen)
+                onOpen();
+        },
+        close: () =>
+        {
+            if (!controller.isOpen())
+                return;
+            popup.classList.remove("open");
+            button.setAttribute("aria-expanded", "false");
+            if (onClose)
+                onClose();
+        },
+        contains: (target) => popup.contains(target) || button.contains(target),
+    };
+
+    button.addEventListener("click", (e) => {
+        e.stopPropagation();
+        controller.isOpen() ? controller.close() : controller.open();
+    });
+
+    window.youyinPopupControllers.push(controller);
+    return controller;
+}
+
+// Close on click outside and on Escape, for every registered popup
+document.addEventListener("click", (e) => {
+    for (const controller of window.youyinPopupControllers)
+        if (controller.isOpen() && !controller.contains(e.target))
+            controller.close();
+});
+
+document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape")
+        return;
+    for (const controller of window.youyinPopupControllers)
+    {
+        if (controller.isOpen())
+        {
+            e.preventDefault();
+            controller.close();
+            controller.button.focus();
+        }
+    }
+});
+
+/**
+ * Creates a custom dropdown select box styled like the theme switcher.
+ * @param {HTMLElement} button - The button element that will act as the trigger.
+ * @param {string} ariaLabel - Accessibility label.
+ * @param {Array<{value: string, text: string}>} options - Array of option objects.
+ * @param {string} initialValue - Initial selected value.
+ * @param {Function} onChange - Callback triggered when the value changes.
+ * @returns {HTMLElement} The button element.
+ */
+function createCustomSelect(button, ariaLabel, options, initialValue, onChange)
+{
+    // Ensure the trigger button has the correct classes and attributes
+    button.className = "list-select-button centered";
+    button.setAttribute("aria-haspopup", "dialog");
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-label", ariaLabel);
+
+    // Create a wrapper container to position the popup relative to the button
+    const container = document.createElement("div");
+    container.className = "list-select-container";
+
+    // Insert the wrapper into the DOM and move the button inside it
+    if (button.parentNode)
+    {
+        button.parentNode.insertBefore(container, button);
+    }
+    container.appendChild(button);
+
+    let activeValue = initialValue;
+
+    // Find the text for initial value
+    const initialOpt = options.find(o => o.value === initialValue);
+    button.textContent = initialOpt ? initialOpt.text : initialValue;
+
+    // Create popup
+    const popup = document.createElement("div");
+    popup.className = "list-select-popup";
+    popup.setAttribute("role", "dialog");
+    popup.setAttribute("aria-label", ariaLabel);
+    container.appendChild(popup);
+
+    // Create list container
+    const list = document.createElement("div");
+    list.className = "list-select-list";
+    popup.appendChild(list);
+
+    const optionButtons = {};
+
+    const controller = createPopupController(button, popup, function() {
+        // Focus the active option when opening
+        if (optionButtons[activeValue])
+            optionButtons[activeValue].focus();
+    }, null);
+
+    // Build options
+    for (const opt of options)
+    {
+        const optBtn = document.createElement("button");
+        optBtn.type = "button";
+        optBtn.className = "list-select-option" + (opt.value === activeValue ? " active" : "");
+        optBtn.textContent = opt.text;
+
+        optBtn.addEventListener("click", function(e) {
+            e.stopPropagation();
+            activeValue = opt.value;
+            button.textContent = opt.text;
+
+            for (const val in optionButtons) {
+                optionButtons[val].classList.toggle("active", val === activeValue);
+            }
+
+            controller.close();
+            button.focus();
+
+            if (onChange) {
+                onChange(activeValue);
+            }
+        });
+
+        list.appendChild(optBtn);
+        optionButtons[opt.value] = optBtn;
+    }
+
+    // Return an object that mirrors a select element's value property
+    // so it can be queried or set from elsewhere if needed.
+    Object.defineProperty(button, "value", {
+        get() { return activeValue; },
+        set(val) {
+            const found = options.find(o => o.value === val);
+            if (found) {
+                activeValue = val;
+                button.textContent = found.text;
+                for (const v in optionButtons) {
+                    optionButtons[v].classList.toggle("active", v === val);
+                }
+            }
+        },
+        configurable: true
+    });
+
+    return button;
+}
