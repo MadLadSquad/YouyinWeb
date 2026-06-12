@@ -121,6 +121,19 @@ function addTextNode(container, text)
     container.appendChild(document.createTextNode(text));
 }
 
+/**
+ * Splits a string into an array of full Unicode characters. Indexing a string directly with []
+ * (or counting .length) works on UTF-16 code units, which cuts characters outside the BMP —
+ * rare CJK extension characters, for example — in half. Array.from iterates by code point and
+ * keeps them whole, so use this whenever indexing into phrase/character data
+ * @param { string } str - The string to split
+ * @returns { string[] } - One entry per character
+ */
+function toCharacters(str)
+{
+    return Array.from(str);
+}
+
 // This loads characters from the database. Change the URL to your own database.
 async function charDataLoader(character, _, __)
 {
@@ -243,8 +256,11 @@ function fixLegacyCharacterVariants()
         let card = window.localStorageData.cards[i];
         if (!card["variant"])
         {
-            card["variant"] = card.character.substring(1);
-            card["character"] = card.character.charAt(0);
+            // Split by code point — charAt(0)/substring(1) count UTF-16 units and would cut a
+            // character outside the BMP in half, corrupting both the character and the variant
+            const firstChar = toCharacters(card.character)[0] || "";
+            card["variant"] = card.character.slice(firstChar.length);
+            card["character"] = firstChar;
         }
     }
 }

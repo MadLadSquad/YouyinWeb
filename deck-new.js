@@ -37,11 +37,13 @@ function constructPreviewCardGeneric(index, it, owner)
     // Local it variable because phrases will require finding the card
     if (it === null || it["phrase"])
     {
+        // Index the phrase by code point so characters outside the BMP stay whole
+        const phraseChar = it !== null ? toCharacters(it.phrase)[index] : null;
         if (it !== null)
         {
             for (let i in window.localStorageData.cards)
             {
-                if (window.localStorageData.cards[i].character === it.phrase[index])
+                if (window.localStorageData.cards[i].character === phraseChar)
                 {
                     lit = window.localStorageData.cards[i];
                     break;
@@ -49,7 +51,7 @@ function constructPreviewCardGeneric(index, it, owner)
             }
 
             for (let i in window.previewCards)
-                if (window.previewCards[i].character === it.phrase[index])
+                if (window.previewCards[i].character === phraseChar)
                     return window.previewCards[i];
         }
 
@@ -57,7 +59,7 @@ function constructPreviewCardGeneric(index, it, owner)
         {
             window.previewCards.push({
                 name: lc.unknown_character,
-                character: it === null ? window.CARD_DEFAULT_CHARACTER : it.phrase[index],
+                character: it === null ? window.CARD_DEFAULT_CHARACTER : phraseChar,
                 variant: "",
                 knowledge: 0,
                 definitions: []
@@ -244,9 +246,11 @@ function constructEditCard(index, it, root, bPhrase)
     // Is a phrase object but not representing a phrase
     if (it["phrase"] && !bPhrase)
     {
+        // Index the phrase by code point so characters outside the BMP stay whole
+        const phraseChars = toCharacters(it.phrase);
         for (let f in window.localStorageData.cards)
         {
-            if (it.phrase[index] === window.localStorageData.cards[f].character)
+            if (phraseChars[index] === window.localStorageData.cards[f].character)
             {
                 lit = window.localStorageData.cards[f];
                 break;
@@ -255,13 +259,13 @@ function constructEditCard(index, it, root, bPhrase)
 
         for (let i in window.previewCards)
         {
-            if (window.previewCards[i].character === it.phrase[index])
+            if (window.previewCards[i].character === phraseChars[index])
             {
                 lit = window.previewCards[i];
                 bReadOnly = false;
 
                 for (let f = index - 1; f >= 0; --f)
-                    if (it.phrase[f] === it.phrase[index])
+                    if (phraseChars[f] === phraseChars[index])
                         return;
                 break;
             }
@@ -319,7 +323,10 @@ function constructEditCard(index, it, root, bPhrase)
                 window.previewCards = [];
                 constructPhraseEditCardPreview(lit, phrasePreviewContainer);
                 constructEditCard("phrase", lit, cardEditSection, true);
-                for (let i in lit.phrase)
+                // Iterate by code point — for…in over a string walks UTF-16 units and would
+                // visit both halves of a character outside the BMP
+                const phraseLength = toCharacters(lit.phrase).length;
+                for (let i = 0; i < phraseLength; i++)
                 {
                     constructPreviewCardGeneric(i, lit, phrasePreviewContainer);
                     constructEditCard(i, lit, cardEditSection, false);
@@ -421,7 +428,10 @@ function constructListElements()
             let phrasePreviewSectionContainer = $("phrase-preview-section-container");
             constructPhraseEditCardPreview(it);
             constructEditCard("phrase", it, cardEditSection, true);
-            for (let i in it["phrase"])
+            // Iterate by code point — for…in over a string walks UTF-16 units and would
+            // visit both halves of a character outside the BMP
+            const phraseLength = toCharacters(it.phrase).length;
+            for (let i = 0; i < phraseLength; i++)
             {
                 constructPreviewCardGeneric(i, it, phrasePreviewSectionContainer)
                 constructEditCard(i, it, cardEditSection, false);

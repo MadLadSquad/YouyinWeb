@@ -87,7 +87,7 @@ function writerOnMistake(strokeData)
     let num = window.localStorageData.cards.length;
     if (window.bInPhrase)
     {
-        num = window.localStorageData.phrases[window.currentPhraseIndex].phrase.length;
+        num = toCharacters(window.localStorageData.phrases[window.currentPhraseIndex].phrase).length;
         // Also update the phrase information. It's ugly, I know...
         $("phrase-info-widget-errors").textContent = `${lc.phrases_count_phrase}: ${window.currentPhraseIndex}/${window.localStorageData.phrases.length}; ${lc.phrases_count_errors}: ${window.totalPhraseErrors}`;
     }
@@ -284,10 +284,11 @@ function resetPlayForPhrases(data)
 {
     ++window.phrasesReviewedCounter;
     let currentPhrase = data.phrases[window.currentPhraseIndex];
+    const phraseChars = toCharacters(currentPhrase.phrase);
     let card = null;
     for (let i in data.cards)
     {
-        if (currentPhrase.phrase[currentIndex] === data.cards[i].character)
+        if (phraseChars[window.currentIndex] === data.cards[i].character)
         {
             card = data.cards[i];
             setWriterState(card);
@@ -298,9 +299,9 @@ function resetPlayForPhrases(data)
     if (card === null)
         setWriterState(currentPhrase);
 
-    window.writer.setCharacter(currentPhrase.phrase[window.currentIndex])
+    window.writer.setCharacter(phraseChars[window.currentIndex])
     window.writer.quiz();
-    changeSidebarText(currentPhrase, data.phrases.length, card, currentPhrase.phrase.length);
+    changeSidebarText(currentPhrase, data.phrases.length, card, phraseChars.length);
 }
 
 // Madman10K: This function is fucking depressing I want to kill myself by just thinking that I have to modify anything here
@@ -319,9 +320,10 @@ async function writerOnComplete(_)
         data.cards[(window.currentIndex - 1)].knowledge = computeScore(strokeNum, window.errors, data.cards[(window.currentIndex - 1)].knowledge);
     else
     {
+        const phraseChars = toCharacters(data.phrases[window.currentPhraseIndex].phrase);
         for (let i in data.cards)
         {
-            if (data.phrases[window.currentPhraseIndex].phrase[(window.currentIndex - 1)] === data.cards[i].character)
+            if (phraseChars[(window.currentIndex - 1)] === data.cards[i].character)
             {
                 data.cards[i].knowledge = computeScore(strokeNum, window.errors, data.cards[i].knowledge);
                 break;
@@ -379,7 +381,7 @@ async function writerOnComplete(_)
     // This code would be way more understandable and clearer if Javascript just had a goto statement
     if (window.currentPhraseIndex < data.phrases.length)
     {
-        if (window.currentIndex >= data.phrases[window.currentPhraseIndex].phrase.length)
+        if (window.currentIndex >= toCharacters(data.phrases[window.currentPhraseIndex].phrase).length)
         {
             data.phrases[window.currentPhraseIndex].knowledge = computeScore(window.totalPhraseStrokes, window.totalPhraseErrors, data.phrases[window.currentPhraseIndex].knowledge);
 
