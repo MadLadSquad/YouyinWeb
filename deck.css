@@ -1,198 +1,198 @@
 /* Display the deck or marketplace as a grid of cards */
 .deck, #deck-community {
-	display: grid;
-	gap: 0.5rem;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-	padding-inline: 0.5rem;
-	box-sizing: border-box;
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    padding-inline: 0.5rem;
+    box-sizing: border-box;
 }
 
 /* Add border to the cards for better UI/UX */
 .card {
-	border: 1px solid var(--main-border-colour);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-	transition: box-shadow 0.2s ease;
+    border: 1px solid var(--main-border-colour);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease;
 }
 
 .card:hover {
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 /* I totally didn't cop this from somewhere I don't even remember */
 .card-button-edit {
-	position: relative;
-	overflow: hidden;
+    position: relative;
+    overflow: hidden;
 
-	color: var(--main-background-colour);
-	background-color: var(--main-accent-colour);
-	margin-top: 12px;
-	margin-bottom: 12px;
+    color: var(--main-background-colour);
+    background-color: var(--main-accent-colour);
+    margin-top: 12px;
+    margin-bottom: 12px;
 
-	display: inline-block;
-	padding: 6px 12px;
-	text-align: center;
-	vertical-align: middle;
-	user-select: none;
-	-webkit-user-select: none;
-	background-image: none;
-	border: 2px solid transparent;
-	border-radius: 6px;
-	cursor: pointer;
-	touch-action: manipulation;
+    display: inline-block;
+    padding: 6px 12px;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    -webkit-user-select: none;
+    background-image: none;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    touch-action: manipulation;
 
-	transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
 
 /* Click ripple: scales out from center and fades after release */
 .card-button-edit::after {
-	content: "";
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	width: 5px;
-	height: 5px;
-	background: var(--main-border-colour);
-	border-radius: 50%;
-	transform: translate(-50%, -50%) scale(40);
-	opacity: 0;
-	transition: transform 0.8s, opacity 0.8s;
-	pointer-events: none;
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    background: var(--main-border-colour);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(40);
+    opacity: 0;
+    transition: transform 0.8s, opacity 0.8s;
+    pointer-events: none;
 }
 
 .card-button-edit:active::after {
-	transform: translate(-50%, -50%) scale(0);
-	opacity: 1;
-	transition: 0s;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+    transition: 0s;
 }
 
 .card-button-edit:hover {
-	color: var(--main-background-colour);
-	background-color: var(--deck-button-active-colour);
-	border-color: var(--deck-button-active-colour);
-	border-radius: 4px;
+    color: var(--main-background-colour);
+    background-color: var(--deck-button-active-colour);
+    border-color: var(--deck-button-active-colour);
+    border-radius: 4px;
 }
 
 .card-button-edit:active {
-	border-color: var(--main-accent-colour);
-	background-color: var(--deck-button-active-colour);
+    border-color: var(--main-accent-colour);
+    background-color: var(--deck-button-active-colour);
 }
 
 /* Some buttons, like the start button may require large text*/
 .large-button-text {
-	font-size: 32px;
-	border: 6px solid transparent;
-	border-radius: 12px;
+    font-size: 32px;
+    border: 6px solid transparent;
+    border-radius: 12px;
 }
 
 button {
-	overflow: visible;
-	-webkit-appearance: button;
+    overflow: visible;
+    -webkit-appearance: button;
 }
 
 /* Make small buttons smaller */
 .small-button {
-	padding: 0 5px;
-	margin-top: 0;
-	margin-bottom: 0;
+    padding: 0 5px;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 main {
-	width: 100%;
+    width: 100%;
 }
 
 /* Configure unordered lists to be left-aligned with some padding and deciman numbers */
 ol {
-	list-style: none;
-	text-align: left;
-	padding-right: 40px;
+    list-style: none;
+    text-align: left;
+    padding-right: 40px;
 }
 
 ol li {
-	padding-top: 0.25rem;
-	text-decoration: none;
-	list-style-type: decimal;
+    padding-top: 0.25rem;
+    text-decoration: none;
+    list-style-type: decimal;
 }
 
 /* override the style of main.css specifically for the deck page, since it doesn't look good with a border */
 .header-deck {
-	border: 0;
+    border: 0;
 }
 
 .card h1 {
-	font-size: 1.5rem;
+    font-size: 1.5rem;
 }
 
 .card h2 {
-	font-size: 1.3rem;
+    font-size: 1.3rem;
 }
 
 .card h3 {
-	font-size: 1.15rem;
+    font-size: 1.15rem;
 }
 
 #new-card-header {
-	font-size: 7.5rem;
-	color: var(--deck-card-text-colour);
+    font-size: 7.5rem;
+    color: var(--deck-card-text-colour);
 }
 
 .card .phrase-card-header {
-	font-size: 1.75rem;
-	color: var(--deck-card-text-colour);
+    font-size: 1.75rem;
+    color: var(--deck-card-text-colour);
 }
 
 /* Hide the default file upload widget */
 #fileupload {
-	display: block;
-	visibility: hidden;
-	width: 0;
-	height: 0;
+    display: block;
+    visibility: hidden;
+    width: 0;
+    height: 0;
 }
 
 #navigation-footer {
-	width: fit-content;
-	padding: 0;
-	margin: auto;
-	overflow: hidden;
+    width: fit-content;
+    padding: 0;
+    margin: auto;
+    overflow: hidden;
 }
 
 #input-mode {
-	display: grid;
-	gap: 1rem;
-	grid-template-columns: repeat(auto-fit, minmax(85px, max-content));
-	justify-content: center;
-	margin: auto auto 1rem auto;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(85px, max-content));
+    justify-content: center;
+    margin: auto auto 1rem auto;
 }
 
 #input-mode * {
-	margin: 0;
+    margin: 0;
 }
 
 /* Configure input text fields to follow our style */
 input[type=text] {
-	box-sizing: border-box;
-	max-width: 85%;
-	font-size: 16px;
-	font-family: inherit;
-	padding: 2px;
-	color: var(--main-text-colour);
-	background-color: var(--main-background-colour);
-	border: 1px solid var(--main-accent-colour);
-	border-radius: 4px;
+    box-sizing: border-box;
+    max-width: 85%;
+    font-size: 16px;
+    font-family: inherit;
+    padding: 2px;
+    color: var(--main-text-colour);
+    background-color: var(--main-background-colour);
+    border: 1px solid var(--main-accent-colour);
+    border-radius: 4px;
 }
 
 /* Level-reduce slider sits on its own line, separated from the checkbox above */
 .slider-label {
-	display: block;
-	margin-top: 0.5rem;
+    display: block;
+    margin-top: 0.5rem;
 }
 
 #level-reduce-slider {
-	margin: 0;
+    margin: 0;
 }
 
 /* Hidden by default; JS toggles display when editing/showing phrases */
 #phrase-preview-section,
 #delete-edit-button {
-	display: none;
+    display: none;
 }

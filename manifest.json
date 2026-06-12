@@ -1,24 +1,24 @@
 {
-  "name": "Youyin",
-  "short_name": "Youyin",
-  "description": "Learn how to write and read Chinese characters and other writing systems in a fun and easy way",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#121212",
-  "theme_color": "#c87e74",
-  "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "./icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    }
-  ]
+    "name": "Youyin",
+    "short_name": "Youyin",
+    "description": "Learn how to write and read Chinese characters and other writing systems in a fun and easy way",
+    "start_url": "./",
+    "display": "standalone",
+    "background_color": "#121212",
+    "theme_color": "#c87e74",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "./icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "./icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ]
 }

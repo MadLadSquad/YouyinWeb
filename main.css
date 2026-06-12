@@ -2,7 +2,7 @@
    runtime (see the #youyin-theme-style element). main.css only consumes them. */
 
 html {
-	accent-color: var(--main-accent-colour);
+    accent-color: var(--main-accent-colour);
 }
 
 /* Colour cross-fade applied only while switching/previewing a theme. theme.js toggles the
@@ -12,30 +12,30 @@ html {
 .theme-transition *,
 .theme-transition *::before,
 .theme-transition *::after {
-	transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
-	            fill 0.3s ease, box-shadow 0.3s ease, outline-color 0.3s ease !important;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
+                fill 0.3s ease, box-shadow 0.3s ease, outline-color 0.3s ease !important;
 }
 
 /* Respect users who ask for reduced motion: swap instantly, no fade. */
 @media (prefers-reduced-motion: reduce) {
-	.theme-transition,
-	.theme-transition *,
-	.theme-transition *::before,
-	.theme-transition *::after {
-		transition: none !important;
-	}
+    .theme-transition,
+    .theme-transition *,
+    .theme-transition *::before,
+    .theme-transition *::after {
+        transition: none !important;
+    }
 }
 
 /* Remove body padding, otherwise bound calculations will be really hard */
 body {
-	padding: 0;
-	margin: 0;
-	background-color: var(--main-background-colour);
-	/* Default text colour for all copy (paragraphs, headers, …). Without this, text falls
-	   back to browser-default black and becomes unreadable on dark themes. Elements that
-	   need the accent colour (links, etc.) set it explicitly and override this. */
-	color: var(--main-text-colour);
-	font-family: 'Ubuntu', sans-serif;
+    padding: 0;
+    margin: 0;
+    background-color: var(--main-background-colour);
+    /* Default text colour for all copy (paragraphs, headers, …). Without this, text falls
+       back to browser-default black and becomes unreadable on dark themes. Elements that
+       need the accent colour (links, etc.) set it explicitly and override this. */
+    color: var(--main-text-colour);
+    font-family: 'Ubuntu', sans-serif;
 }
 
 /**
@@ -44,76 +44,76 @@ body {
  * experience
  **/
 main {
-	/*padding-left: 0.5rem;*/
-	/*padding-right: 0.5rem;*/
-	box-sizing: border-box;
-	--main-padding-width: 1rem;
+    /*padding-left: 0.5rem;*/
+    /*padding-right: 0.5rem;*/
+    box-sizing: border-box;
+    --main-padding-width: 1rem;
 }
 
 .article {
-	padding-inline: 0.5rem;
+    padding-inline: 0.5rem;
 }
 
 main.article {
-	max-width: 70ch;
-	margin-inline: auto;
+    max-width: 70ch;
+    margin-inline: auto;
 }
 
 #start-button-writer-section {
-	padding-inline: 0.5rem;
+    padding-inline: 0.5rem;
 }
 
 a {
-	text-decoration: none;
-	color: var(--main-accent-colour);
+    text-decoration: none;
+    color: var(--main-accent-colour);
 }
 
 /* Make the ul and footer containers for a horizontal list */
 ul, footer {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 footer.centered {
-	justify-content: center;
+    justify-content: center;
 }
 
 /* Visible focus indicator for keyboard users */
 :focus-visible {
-	outline: 2px solid var(--main-accent-colour);
-	outline-offset: 2px;
+    outline: 2px solid var(--main-accent-colour);
+    outline-offset: 2px;
 }
 
 /* Skip-to-content link: hidden until focused via keyboard */
 .skip-link {
-	position: absolute;
-	left: -9999px;
-	top: 0;
-	z-index: 100;
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
 }
 
 .skip-link:focus {
-	left: 0.5rem;
-	top: 0.5rem;
-	padding: 0.5rem 1rem;
-	background-color: var(--main-background-colour);
-	border: 2px solid var(--main-accent-colour);
-	border-radius: 4px;
+    left: 0.5rem;
+    top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--main-background-colour);
+    border: 2px solid var(--main-accent-colour);
+    border-radius: 4px;
 }
 
 /* Basically the styling for the text on the top bar */
 ul li a {
-	display: block;
-	color: var(--main-accent-colour);
-	text-align: center;
-	padding: 0 24px;
-	text-decoration: none;
-	font-size: 32px;
-	line-height: 1.5;
+    display: block;
+    color: var(--main-accent-colour);
+    text-align: center;
+    padding: 0 24px;
+    text-decoration: none;
+    font-size: 32px;
+    line-height: 1.5;
 }
 
 /**
@@ -121,314 +121,314 @@ ul li a {
  * This is only applies in landscape mode.
  **/
 .writer-page {
-	display: grid;
-	gap: 0;
-	grid-template-columns: 25% 75%;
-	grid-auto-rows: 100%;
+    display: grid;
+    gap: 0;
+    grid-template-columns: 25% 75%;
+    grid-auto-rows: 100%;
 }
 
 /**
  * Settings for the SVG that will be used by the writer
  */
 .character-prop {
-	border: 2px solid var(--main-border-colour);
-	margin: auto;
-	position: relative;
+    border: 2px solid var(--main-border-colour);
+    margin: auto;
+    position: relative;
 }
 
 /* This may cause problems, check out main-page.js on top of the definition of the "getDrawElementHeight" function */
 @media (orientation: portrait) {
-	.writer-page {
-		display: block;
-	}
+    .writer-page {
+        display: block;
+    }
 }
 
 /* Define uniform styling for footer elements */
 footer p, footer select {
-	padding-inline: 0.33rem;
-	font-size: 18px;
-	color: var(--main-text-colour);
+    padding-inline: 0.33rem;
+    font-size: 18px;
+    color: var(--main-text-colour);
 }
 
 /* Make the select members shrink to fit since they would take too much space */
 select {
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	background-color: transparent;
-	/* Themed text colour for every select (e.g. the deck card variant box). Without this,
-	   selects outside the footer fall back to browser-default black and are unreadable on
-	   dark themes. */
-	color: var(--main-text-colour);
-	border: 1px solid var(--main-accent-colour);
-	border-radius: 4px;
-	font-family: inherit;
-	font-size: inherit;
-	cursor: inherit;
-	line-height: inherit;
-	z-index: 1;
-	outline: none;
-	box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    /* Themed text colour for every select (e.g. the deck card variant box). Without this,
+       selects outside the footer fall back to browser-default black and are unreadable on
+       dark themes. */
+    color: var(--main-text-colour);
+    border: 1px solid var(--main-accent-colour);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: inherit;
+    line-height: inherit;
+    z-index: 1;
+    outline: none;
+    box-sizing: border-box;
 
-	padding: 2px;
-	margin: 0;
-	max-width: max-content;
-	resize: horizontal;
+    padding: 2px;
+    margin: 0;
+    max-width: max-content;
+    resize: horizontal;
 }
 
 /* IDK what this does but why not keep it */
 select::-ms-expand {
-	display: none;
+    display: none;
 }
 
 /* Make options flex-boxes */
 option {
-	display: flex;
-	min-width: 0;
-	flex-direction: row;
-	box-sizing: border-box;
-	/* The select itself has a transparent background, so the open dropdown would otherwise
-	   use the system colours; theme the options so the popup stays readable on dark themes. */
-	color: var(--main-text-colour);
-	background-color: var(--main-background-colour);
+    display: flex;
+    min-width: 0;
+    flex-direction: row;
+    box-sizing: border-box;
+    /* The select itself has a transparent background, so the open dropdown would otherwise
+       use the system colours; theme the options so the popup stays readable on dark themes. */
+    color: var(--main-text-colour);
+    background-color: var(--main-background-colour);
 }
 
 /* Only display the right border on landscape since on portrait elements are not inline */
 @media (orientation: landscape) {
-	#main-page-info-container {
-		border-right: 1px solid var(--main-border-colour);
-	}
+    #main-page-info-container {
+        border-right: 1px solid var(--main-border-colour);
+    }
 
-	#main-page-info-container div {
-		border-bottom: 1px solid var(--main-border-colour);
-	}
+    #main-page-info-container div {
+        border-bottom: 1px solid var(--main-border-colour);
+    }
 }
 
 @media (orientation: portrait) {
-	#main-page-info-container {
-		float: left;
-		position: relative;
-		display: flex;
+    #main-page-info-container {
+        float: left;
+        position: relative;
+        display: flex;
 
-		width: 100%;
-		padding: 0;
-		overflow: hidden;
-		margin-bottom: 0.5rem;
-		border-bottom: 1px solid var(--main-border-colour);
-	}
+        width: 100%;
+        padding: 0;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--main-border-colour);
+    }
 
-	#main-page-info-container div {
-		max-width: 50%;
-	}
+    #main-page-info-container div {
+        max-width: 50%;
+    }
 
-	#phrase-info-widget {
-		border-right: 1px solid var(--main-border-colour);
-	}
+    #phrase-info-widget {
+        border-right: 1px solid var(--main-border-colour);
+    }
 }
 
 #phrase-info-widget {
-	display: none;
+    display: none;
 }
 
 /* Reduce margins for the text on the character info */
 #main-page-info-container p, #main-page-info-container ol {
-	margin: 3px 0.5rem;
+    margin: 3px 0.5rem;
 }
 
 /* Style the hr element is stupid can confirm, why have an hr? because a border on the footer will break */
 #main-page-hr {
-	padding: 0;
-	margin: 0;
-	border: 0;
-	border-top: 1px solid var(--main-border-colour);
-	background-color: var(--main-border-colour);
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--main-border-colour);
+    background-color: var(--main-border-colour);
 }
 
 /* Add a border to make the user not think or be distracted by the titlebar */
 header {
-	margin-top: 0.25rem;
-	border-bottom: 1px solid var(--main-border-colour);
+    margin-top: 0.25rem;
+    border-bottom: 1px solid var(--main-border-colour);
 }
 
 #site-title {
-	color: var(--main-text-colour);
+    color: var(--main-text-colour);
 }
 
 #coming-soon-header {
-	font-size: clamp(1.5rem, 3vw, 3rem);
+    font-size: clamp(1.5rem, 3vw, 3rem);
 }
 
 #coming-soon-text {
-	font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+    font-size: clamp(0.95rem, 1.5vw, 1.25rem);
 }
 
 /* Make the 404 emoji take up more or less the whole page */
 #err-404-emoji {
-	font-size: clamp(4rem, 18vw, 16rem);
+    font-size: clamp(4rem, 18vw, 16rem);
 }
 
 /* The generic centered class */
 .centered {
-	text-align: center;
+    text-align: center;
 }
 
 .vcentered {
-	margin: auto;
+    margin: auto;
 }
 
 /* This is the button you use to start a session */
 #start-button, #start-button-writer-section {
-	margin: auto;
+    margin: auto;
 }
 
 .slide-right {
-	overflow: hidden;
-	width: 100%;
-	/*animation-delay: 0.1s;*/
+    overflow: hidden;
+    width: 100%;
+    /*animation-delay: 0.1s;*/
 }
 
 .slide-right .slide-able {
-	-webkit-animation: 1.5s slide-right 0.25s forwards;
-	animation: 1.5s slide-right 0.25s forwards;
-	transform: translateX(-100%);
+    -webkit-animation: 1.5s slide-right 0.25s forwards;
+    animation: 1.5s slide-right 0.25s forwards;
+    transform: translateX(-100%);
 }
 
 @-webkit-keyframes slide-right {
-	to {
-		transform: translateX(0);
-	}
+    to {
+        transform: translateX(0);
+    }
 }
 
 @keyframes slide-right {
-	to {
-		transform: translateX(0);
-	}
+    to {
+        transform: translateX(0);
+    }
 }
 
 /* ---------------------------------- List select boxes & dropdowns ---------------------------------- */
 
 .list-select-container {
-	position: relative;
-	display: inline-block;
+    position: relative;
+    display: inline-block;
 }
 
 .list-select-button {
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	background-color: transparent;
-	border: 1px solid var(--main-accent-colour);
-	border-radius: 4px;
-	color: var(--main-text-colour);
-	font-family: inherit;
-	font-size: 18px;
-	line-height: inherit;
-	box-sizing: border-box;
-	padding: 2px 8px;
-	margin-inline: 0.33rem;
-	cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    border: 1px solid var(--main-accent-colour);
+    border-radius: 4px;
+    color: var(--main-text-colour);
+    font-family: inherit;
+    font-size: 18px;
+    line-height: inherit;
+    box-sizing: border-box;
+    padding: 2px 8px;
+    margin-inline: 0.33rem;
+    cursor: pointer;
 }
 
 .list-select-popup {
-	position: absolute;
-	bottom: calc(100% + 0.5rem);
-	left: 50%;
-	z-index: 50;
-	display: flex;
-	flex-direction: column;
-	width: min(15rem, 80vw);
-	max-height: min(22rem, 60vh);
-	box-sizing: border-box;
-	padding: 0;
-	background-color: var(--main-background-colour);
-	border: 1px solid var(--main-accent-colour);
-	border-radius: 8px;
-	box-shadow: 0 4px 16px var(--main-border-colour);
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    width: min(15rem, 80vw);
+    max-height: min(22rem, 60vh);
+    box-sizing: border-box;
+    padding: 0;
+    background-color: var(--main-background-colour);
+    border: 1px solid var(--main-accent-colour);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px var(--main-border-colour);
 
-	/* Smooth entry/exit animation */
-	opacity: 0;
-	visibility: hidden;
-	pointer-events: none;
-	transform: translate(-50%, 10px) scale(0.95);
-	transition: opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-	            transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-	            visibility 0s 0.2s;
+    /* Smooth entry/exit animation */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translate(-50%, 10px) scale(0.95);
+    transition: opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                visibility 0s 0.2s;
 }
 
 .list-select-popup.open {
-	opacity: 1;
-	visibility: visible;
-	pointer-events: auto;
-	transform: translate(-50%, 0) scale(1);
-	transition: opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-	            transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
-	            visibility 0s 0s;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translate(-50%, 0) scale(1);
+    transition: opacity 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                visibility 0s 0s;
 }
 
 /* Specific positioning & width override for the theme selection popup */
 #theme-popup {
-	position: fixed;
-	bottom: 3.5rem;
-	width: min(20rem, 90vw);
+    position: fixed;
+    bottom: 3.5rem;
+    width: min(20rem, 90vw);
 }
 
 #theme-popup-search {
-	box-sizing: border-box;
-	width: 100%;
-	padding: 8px 12px;
-	background-color: transparent;
-	color: var(--main-text-colour);
-	border: none;
-	border-top-left-radius: 8px;
-	border-top-right-radius: 8px;
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
-	font-family: inherit;
-	font-size: 16px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 8px 12px;
+    background-color: transparent;
+    color: var(--main-text-colour);
+    border: none;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    font-family: inherit;
+    font-size: 16px;
 }
 
 #theme-popup-search:focus {
-	outline: none;
+    outline: none;
 }
 
 .list-select-list {
-	overflow-y: auto;
-	display: flex;
-	flex-direction: column;
-	gap: 2px;
-	padding: 0.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.5rem;
 }
 
 .list-select-option {
-	display: block;
-	width: 100%;
-	box-sizing: border-box;
-	text-align: left;
-	padding: 6px 8px;
-	background-color: transparent;
-	color: var(--main-text-colour);
-	border: 1px solid transparent;
-	border-radius: 4px;
-	font-family: inherit;
-	font-size: 16px;
-	cursor: pointer;
-	white-space: nowrap;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    padding: 6px 8px;
+    background-color: transparent;
+    color: var(--main-text-colour);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 .list-select-option:hover, .list-select-option:focus-visible {
-	border-color: var(--main-accent-colour);
+    border-color: var(--main-accent-colour);
 }
 
 .list-select-option.active {
-	color: var(--main-background-colour);
-	background-color: var(--main-accent-colour);
+    color: var(--main-background-colour);
+    background-color: var(--main-accent-colour);
 }
 
 /* Twemoji styling to match surrounding text size */
 img.emoji {
-	height: 1em;
-	width: 1em;
-	margin: 0 .05em 0 .1em;
-	vertical-align: -0.1em;
-	display: inline-block;
+    height: 1em;
+    width: 1em;
+    margin: 0 .05em 0 .1em;
+    vertical-align: -0.1em;
+    display: inline-block;
 }

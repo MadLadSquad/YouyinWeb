@@ -1,12 +1,12 @@
 /* Smaller header because the cards are always physically smaller */
 #new-card-header-smaller {
-	font-size: 4.5rem;
-	color: var(--deck-card-text-colour);
-	margin-top: 2rem;
-	margin-bottom: 2rem;
+    font-size: 4.5rem;
+    color: var(--deck-card-text-colour);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
 }
 
 /* Colour the error text */
 .error-text {
-	color: var(--main-error-colour);
+    color: var(--main-error-colour);
 }
