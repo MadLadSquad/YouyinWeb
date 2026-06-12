@@ -315,11 +315,13 @@ function setLanguageBox()
 
 function main()
 {
-    // Saves us performance costs of loading and saving things many times
+    // Saves us performance costs of loading and saving things many times. Missing or partial
+    // data (a first visit, or decks from before phrases/levelReduce existed) is initialized in
+    // place and saved back — page scripts only run after this, so no reload is needed
     window.localStorageData = JSON.parse(window.localStorage.getItem("youyinCardData"));
     if (window.localStorageData === null)
     {
-        const data = {
+        window.localStorageData = {
             sessions: 0,
             streak: 0,
             lastDate: 0,
@@ -327,17 +329,12 @@ function main()
             cards: [],
             phrases: [],
         }
-        saveToLocalStorage(data);
-        document.location.reload();
-        return;
+        saveToLocalStorage(window.localStorageData);
     }
-
-    if (!window.localStorageData["phrases"])
+    else if (!window.localStorageData["phrases"])
     {
         window.localStorageData["phrases"] = [];
         saveToLocalStorage(window.localStorageData);
-        document.location.reload();
-        return;
     }
 
     window.gameModifiers = JSON.parse(window.localStorage.getItem("youyinGameModifiers"));
@@ -348,11 +345,8 @@ function main()
             levelReduce: 0
         }
         saveGameModifiers();
-        document.location.reload();
-        return;
     }
-
-    if (window.gameModifiers.levelReduce === null || window.gameModifiers.levelReduce === undefined)
+    else if (window.gameModifiers.levelReduce === null || window.gameModifiers.levelReduce === undefined)
     {
         window.gameModifiers.levelReduce = 0;
         saveGameModifiers();
