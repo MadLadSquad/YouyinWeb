@@ -74,8 +74,10 @@ function writerOnMistake(strokeData)
 	if (strokeData.isBackwards)
 		window.backwardsErrors++;
 
-	// Since we don't count backwards strokes as errors, remove them rom the mistakes and calculate errors correctly
-	if ((strokeData.mistakesOnStroke - window.backwardsErrors) === window.WRITER_SHOW_HINT_ON_ERRORS)
+	// Since we don't count backwards strokes as errors, remove them rom the mistakes and calculate errors correctly.
+	// Compare against the writer's current hint threshold — setWriterState lowers it to 1 at high
+	// knowledge levels, so a fixed comparison with 3 would never count those errors
+	if ((strokeData.mistakesOnStroke - window.backwardsErrors) === window.writer._options.showHintAfterMisses)
 	{
 		window.errors++;
 		window.totalPhraseErrors++;
@@ -256,7 +258,7 @@ function computeScore(strokes, errors, knowledge)
 	else
 		result = -window.ADD_POINTS_ON_ERROR_1_2;
 
-	knowledge = Math.min(knowledge + result, window.MAX_KNOWLEDGE_LEVEL);
+	knowledge = Math.min(Math.max(knowledge + result, 0), window.MAX_KNOWLEDGE_LEVEL);
 	return knowledge;
 }
 
@@ -611,7 +613,6 @@ function mainPageMain()
 		if (bInTest)
 			window.localStorageData.totalTimeInSessions += (Date.now() - window.sessionTime);
 		saveToLocalStorage(window.localStorageData);
-		return false;
 	});
 
 	// Shuffle the cards

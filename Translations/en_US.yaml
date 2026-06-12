@@ -187,13 +187,13 @@ translations:
     text: "Edit"
 
   # marketplace.html
-  - id: official-decks-header
+  - id: official_decks_header
     text: "Official decks"
   - id: new_deck_upload_info
     text: "Want to add your deck to the marketplace? Click below to learn more!"
   - id: upload-deck-public
     text: "Upload"
-  - id: community-decks-header
+  - id: community_decks_header
     text: "Community decks"
 
   - id: import_deck_confirm_text

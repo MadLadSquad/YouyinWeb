@@ -24,7 +24,7 @@ window.WRITER_SLEEP_AFTER_COMPLETE = 1200; 			// In ms
 window.WRITER_SHOW_HINT_ON_ERRORS = 3;
 window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
 
-window.HOUR_UNIX = 36000000;
+window.HOUR_UNIX = 3600000;
 window.MINUTE_UNIX = 60000;
 window.SECOND_UNIX = 1000;
 
@@ -799,6 +799,7 @@ function main()
 		window.localStorageData["phrases"] = [];
 		saveToLocalStorage(window.localStorageData);
 		document.location.reload();
+		return;
 	}
 
 	window.gameModifiers = JSON.parse(window.localStorage.getItem("youyinGameModifiers"));

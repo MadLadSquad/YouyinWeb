@@ -92,7 +92,7 @@ async function constructElement(val, deckContainer, it, type1, type2, folder)
  */
 function createErrorElement(deckContainer, response, marketplaceType)
 {
-	addElement("h1", `Error ${response.status}: Couldn't load the ${marketplaceType} marketplace, retry later!`, "", "error-text centered, vcentered", "", deckContainer);
+	addElement("h1", `Error ${response.status}: Couldn't load the ${marketplaceType} marketplace, retry later!`, "", "error-text centered vcentered", "", deckContainer);
 }
 
 /**

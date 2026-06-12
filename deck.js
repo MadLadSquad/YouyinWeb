@@ -49,6 +49,7 @@ function clearDeck() {
 	{
 		let dt = window.localStorageData;
 		dt.cards = [];
+		dt.phrases = [];
 
 		saveToLocalStorage(dt);
 		document.location.reload();
@@ -65,19 +66,20 @@ function setProfileCardData()
 	$("deck-card-num-field").textContent += window.localStorageData.cards.length;
 	$("deck-phrase-num-field").textContent += window.localStorageData.phrases.length;
 
-	let a = (window.localStorageData.totalTimeInSessions * 1);
-	let averageSessionLen = isNaN(a) ? 0 : a;
-	let sessionLenPostfix = lc.milliseconds;
+	let totalTime = (window.localStorageData.totalTimeInSessions * 1);
+	if (isNaN(totalTime))
+		totalTime = 0;
 
-	const result = getLocalisedTimePostfix(averageSessionLen);
-	sessionLenPostfix = result.postfix;
-	averageSessionLen = result.time;
+	// Average in milliseconds first, then localise each value separately — the average and the
+	// total usually land in different units (e.g. seconds vs hours)
+	let averageTime = totalTime / window.localStorageData.sessions;
+	if (isNaN(averageTime))
+		averageTime = 0;
 
-	let sessionLenTmp = averageSessionLen / window.localStorageData.sessions;
-	if (isNaN(sessionLenTmp))
-		sessionLenTmp = 0;
-	$("average-session-length-field").textContent += (formatDecimal(sessionLenTmp) + sessionLenPostfix);
-	$("time-spent-in-sessions-field").textContent += (formatDecimal(averageSessionLen) + sessionLenPostfix);
+	const average = getLocalisedTimePostfix(averageTime);
+	const total = getLocalisedTimePostfix(totalTime);
+	$("average-session-length-field").textContent += (formatDecimal(average.time) + average.postfix);
+	$("time-spent-in-sessions-field").textContent += (formatDecimal(total.time) + total.postfix);
 
 	const lastDate = window.localStorageData.lastDate;
 	if (lastDate !== 0)

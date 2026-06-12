@@ -385,7 +385,7 @@ function constructListElements()
 	if (urlParams.has("edit"))
 	{
 		dataContainer = window.localStorageData.cards;
-		index = urlParams.get("edit");
+		index = parseInt(urlParams.get("edit"), 10);
 		deleteButton.style.display = "inline-block";
 
 		deleteButton.cardIndex = index;
@@ -401,7 +401,7 @@ function constructListElements()
 	else if (urlParams.has("phrase-edit"))
 	{
 		dataContainer = window.localStorageData.phrases;
-		index = urlParams.get("phrase-edit");
+		index = parseInt(urlParams.get("phrase-edit"), 10);
 		$("phrase-preview-section").style.display = "block";
 		deleteButton.style.display = "inline-block";
 
@@ -417,7 +417,7 @@ function constructListElements()
 	}
 
 	let cardEditSection = $("card-edit-section");
-	if (dataContainer !== null && index <= dataContainer.length)
+	if (dataContainer !== null && index >= 0 && index < dataContainer.length)
 	{
 		let it = dataContainer[index];
 		
