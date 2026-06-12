@@ -284,11 +284,21 @@ function redirectWithLanguage(localStorageLang, previous)
     location.href = redirect.slice(0, -1);
 }
 
+// Locales that actually ship with the site — each needs a Translations/<locale>.yaml and gets
+// built into its own subdirectory. Keep in sync with sw.js's LOCALES when adding a language
+const SUPPORTED_LOCALES = [
+    { value: "en_US", text: "🇬🇧   EN" },
+    { value: "bg_BG", text: "🇧🇬   BG" },
+];
+
 function setLanguage()
 {
     let localStorageLang = window.localStorage.getItem("language");
 
-    if (localStorageLang === null)
+    // Reset to English when nothing is stored, or when the stored locale doesn't ship (the
+    // selector used to offer locales without translations) — redirecting to a locale directory
+    // that doesn't exist would strand the user on a 404 page
+    if (localStorageLang === null || !SUPPORTED_LOCALES.some((l) => l.value === localStorageLang))
     {
         localStorageLang = "en_US";
         window.localStorage.setItem("language", localStorageLang);
@@ -309,20 +319,9 @@ function setLanguageBox()
     if (selectWidget === null)
         return;
 
-    const languages = [
-        { value: "en_US", text: "🇬🇧   EN" },
-        { value: "bg_BG", text: "🇧🇬   BG" },
-        { value: "zh_CN", text: "🇨🇳   CN" },
-        { value: "zh_TW", text: "🇹🇼   CN-T" },
-        { value: "de_DE", text: "🇩🇪   DE" },
-        { value: "mk_MK", text: "🇲🇰   MK" },
-        { value: "ru_RU", text: "🇷🇺   RU" },
-        { value: "jp_JP", text: "🇯🇵   JP" }
-    ];
-
     let localStorageLang = window.localStorage.getItem("language") || "en_US";
 
-    createCustomSelect(selectWidget, "Language select box", languages, localStorageLang, function(newValue) {
+    createCustomSelect(selectWidget, "Language select box", SUPPORTED_LOCALES, localStorageLang, function(newValue) {
         let old = window.localStorage.getItem("language");
         window.localStorage.setItem("language", newValue);
         redirectWithLanguage(newValue, old);

@@ -82,7 +82,9 @@ function constructElement(val, deckContainer, it, marketplaceJSON, type1, type2,
         if (content === undefined)
             return;
 
-        let file = new Blob([content], { type: "application/json;charset=utf-8" });
+        // loadMarketplaceData returns the parsed object — serialize it back, otherwise the Blob
+        // would contain the string "[object Object]"
+        let file = new Blob([JSON.stringify(content)], { type: "application/json;charset=utf-8" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(file);
         link.download = e.target.getAttribute("arbitrary-data").split("/").at(-1);
