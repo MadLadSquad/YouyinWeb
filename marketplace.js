@@ -1,8 +1,10 @@
 'use strict';
 
+const MARKETPLACE_CDN = "https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest";
+
 async function loadMarketplaceData(file)
 {
-    let response = await fetch(`https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest/${file}`)
+    let response = await fetch(`${MARKETPLACE_CDN}/${file}`)
     if (response.status !== 200)
     {
         console.warn(`Bad response from the public deck repository, the deck file may be missing or the CDN may be unavailable. Response code: ${response.status}`);
@@ -12,42 +14,28 @@ async function loadMarketplaceData(file)
 }
 
 /**
- * Constructs a marketplace element
- * @param { number } val - Index in the deck directory
+ * Constructs a marketplace element from a deck's metadata entry in the marketplace map.
+ * @param { number } val - Running index, used purely to give elements unique ids
  * @param { HTMLElement } deckContainer - Container HTML element for the card
- * @param { Object } it - JSON object for the element
- * @param { Object|undefined } marketplaceJSON - Pre-fetched contents of the deck file. Undefined if loading failed
- * @param { string } type1 - Deck type
- * @param { string } type2 - Deck type as a UI string
- * @param { string } folder - Folder in which the marketplace element is in. Empty if it's not in a folder
+ * @param { Object } deck - Deck metadata: { name, cards, phrases, preset_levels, location }
+ * @param { string } type - Marketplace type, either "official" or "unofficial"
+ * @param { string } language - Language the deck belongs to
  */
-function constructElement(val, deckContainer, it, marketplaceJSON, type1, type2, folder)
+function constructElement(val, deckContainer, deck, type, language)
 {
-    // Skip decks whose contents couldn't be fetched — there is nothing useful to display
-    if (marketplaceJSON === undefined)
-        return;
-
-    let filename = folder + it.name;
-
-    let leveledUpType = lc.leveled_up_no;
-    let extension = ".yydeck.json"
-    if (it.name.endsWith(".presetlvl.yydeck.json"))
-    {
-        leveledUpType = lc.leveled_up_yes
-        extension = ".presetlvl.yydeck.json"
-    }
+    // The deck file lives at CDN/[official|unofficial]/language/[location] in the repository
+    const path = `${type}/${language}/${deck.location}`;
 
     // Create card
-    let div = addElement("div", "", `marketplace-${type1}-card-${val}`, "card centered", "", deckContainer);
-    let nm = it.name.replaceAll("-", " ").replaceAll(extension, "");
+    let div = addElement("div", "", `marketplace-${type}-card-${val}`, "card centered", "", deckContainer);
 
-    addElement("h1", nm, "", "", "", div);
-    addElement("p", `${lc.status}: ${type2}`, "", "", "", div);
-    addElement("p", `${lc.pre_leveled_up}: ${leveledUpType}`, "", "", "", div);
-    addElement("p", `${lc.phrases_count_cards}: ${marketplaceJSON.cards.length}`, "", "", "", div);
+    addElement("h1", deck.name, "", "", "", div);
+    addElement("p", `${lc.pre_leveled_up}: ${deck.preset_levels ? lc.leveled_up_yes : lc.leveled_up_no}`, "", "", "", div);
+    addElement("p", `${lc.phrases_count_cards}: ${deck.cards}`, "", "", "", div);
+    addElement("p", `${lc.phrases_count_phrase}: ${deck.phrases}`, "", "", "", div);
 
     // Import a deck from file
-    runEventAfterAnimation(addElement("button", lc.deck_import, `import-button-${type1}-${val}`, "card-button-edit", filename, div), "click", async function(e)
+    runEventAfterAnimation(addElement("button", lc.deck_import, `import-button-${type}-${val}`, "card-button-edit", path, div), "click", async function(e)
     {
         let bExecuted = confirm(lc.import_deck_confirm_text);
         if (bExecuted)
@@ -66,9 +54,9 @@ function constructElement(val, deckContainer, it, marketplaceJSON, type1, type2,
     });
 
     // Stupid ahhhh whitespace adding code because web dev is stupid
-    addTextNode(div, "\u00A0");
+    addTextNode(div, " ");
 
-    runEventAfterAnimation(addElement("button", lc.deck_source, `source-button-${type1}-${val}`, "card-button-edit", filename, div), "click", async function(e)
+    runEventAfterAnimation(addElement("button", lc.deck_source, `source-button-${type}-${val}`, "card-button-edit", path, div), "click", async function(e)
     {
         // If an element uses addElement, arbitrary data is also assigned
         window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository/blob/master/' + e.target.getAttribute("arbitrary-data"));
@@ -77,7 +65,7 @@ function constructElement(val, deckContainer, it, marketplaceJSON, type1, type2,
     addElement("br", "", "", "", "", div);
 
     // Download deck with this interesting code
-    runEventAfterAnimation(addElement("button", lc.deck_download, `download-button-${type1}-${val}`, "card-button-edit", filename, div), "click", async function(e)
+    runEventAfterAnimation(addElement("button", lc.deck_download, `download-button-${type}-${val}`, "card-button-edit", path, div), "click", async function(e)
     {
         let content = await loadMarketplaceData(e.target.getAttribute("arbitrary-data"));
         if (content === undefined)
@@ -98,94 +86,65 @@ function constructElement(val, deckContainer, it, marketplaceJSON, type1, type2,
  * Creates an error text element
  * @param { HTMLElement } deckContainer - Container HTML element
  * @param { Response } response - JSON response object
- * @param { string } marketplaceType - Localised marketplace type (lc.official or lc.community)
  */
-function createErrorElement(deckContainer, response, marketplaceType)
+function createErrorElement(deckContainer, response)
 {
-    const text = lc.marketplace_load_error.replace("{}", response.status).replace("{}", marketplaceType);
+    const text = lc.marketplace_load_error.replace("{}", response.status);
     addElement("h1", text, "", "error-text centered vcentered", "", deckContainer);
 }
 
 /**
- * Constructs elements for official decks
- * @param { HTMLElement } deckContainer - Container HTML element
- * @returns {Promise<void>}
+ * Renders every language of a single marketplace type (official/unofficial). Each language gets its own
+ * header followed by a grid of the decks belonging to it.
+ * @param { HTMLElement } container - Container HTML element for this marketplace type
+ * @param { Object[] } languages - Array of single-key objects, each mapping a language to its deck array
+ * @param { string } type - Marketplace type, either "official" or "unofficial"
  */
-async function handleOfficialRepos(deckContainer)
+function handleMarketplaceSection(container, languages, type)
 {
-    let response = await fetch("https://api.github.com/repos/MadLadSquad/YouyinPublicDeckRepository/contents/");
-    if (response.status !== 200)
+    let val = 0;
+    for (const entry of languages)
     {
-        createErrorElement(deckContainer, response, lc.official);
-        return;
-    }
-    const decks = (await response.json()).filter(it => it.name.endsWith(".yydeck.json"));
-
-    // Fetch the contents of every deck in parallel, then construct the cards in repository order
-    const contents = await Promise.all(decks.map(it => loadMarketplaceData(it.name)));
-    for (let i = 0; i < decks.length; i++)
-        constructElement(i, deckContainer, decks[i], contents[i], "official", lc.official, "");
-}
-
-/**
- * Constructs elements for community decks
- * @param { HTMLElement } deckContainer - Container HTML element
- * @returns {Promise<void>}
- */
-async function handleCommunityRepos(deckContainer)
-{
-    // Start from community, we will then iterate through all the release folders
-    let response = await fetch("https://api.github.com/repos/MadLadSquad/YouyinPublicDeckRepository/contents/community");
-    if (response.status !== 200)
-    {
-        createErrorElement(deckContainer, response, lc.community);
-        return;
-    }
-    const releases = (await response.json()).filter(it => it.name.startsWith("r") && it.type === "dir");
-
-    // Fetch all release folder listings in parallel. A failed listing only skips its own release
-    const listings = await Promise.all(releases.map(async (release) => {
-        const res = await fetch(`https://api.github.com/repos/MadLadSquad/YouyinPublicDeckRepository/contents/community/${release.name}`);
-        if (res.status !== 200)
-            return { error: res };
-        return { decks: (await res.json()).filter(it => it.name.endsWith(".yydeck.json")) };
-    }));
-
-    // Fetch the contents of every deck of every release in parallel
-    const contents = await Promise.all(listings.map((listing, i) =>
-        listing.decks === undefined
-            ? null
-            : Promise.all(listing.decks.map(it => loadMarketplaceData(`community/${releases[i].name}/${it.name}`)))
-    ));
-
-    // Construct the sections and cards in repository order
-    for (let i = 0; i < releases.length; i++)
-    {
-        if (listings[i].error !== undefined)
+        // Each entry maps one or more language names to their deck arrays. Iterate every key so a
+        // language is never dropped, regardless of whether the map groups languages per object or
+        // shares a single object between them
+        for (const language of Object.keys(entry))
         {
-            createErrorElement(deckContainer, listings[i].error, lc.community);
-            continue;
-        }
+            addElement("h1", language, "", "centered", "", container);
+            addElement("br", "", "", "", "", container);
+            let grid = addElement("section", "", `deck-${type}-${val}`, "deck", "", container);
 
-        addElement("h1", `${lc.release} ${releases[i].name.slice(1)}`, "", "centered", "", deckContainer);
-        addElement("br", "", "", "", "", deckContainer);
-        let el = addElement("section", "", "deck-community", "deck", "", deckContainer);
-        for (let j = 0; j < listings[i].decks.length; j++)
-            constructElement(j, el, listings[i].decks[j], contents[i][j], "community", lc.community, `community/${releases[i].name}/`);
+            for (const deck of entry[language])
+                constructElement(val++, grid, deck, type, language);
+        }
     }
 }
 
 async function marketplaceMain()
 {
-    const deckContainer = $("marketplace-deck-container");
-    const communityContainer = $("deck-community-master");
+    const officialContainer = $("marketplace-deck-container");
+    const unofficialContainer = $("deck-community-master");
 
-    // The official and community sections render into separate containers, so they can load
-    // concurrently without affecting each other's order
-    await Promise.all([
-        handleOfficialRepos(deckContainer),
-        handleCommunityRepos(communityContainer),
-    ]);
+    // Everything the page needs is described by a single metadata map, so one fetch and one error
+    // message cover the whole marketplace
+    const response = await fetch(`${MARKETPLACE_CDN}/marketplace-map.json`);
+    if (response.status !== 200)
+    {
+        createErrorElement(officialContainer, response);
+    }
+    else
+    {
+        const map = await response.json();
+        if (map.official !== undefined)
+            handleMarketplaceSection(officialContainer, map.official, "official");
+
+        // Only surface the community section when there is at least one community deck to show
+        if (map.unofficial !== undefined && map.unofficial.length > 0)
+        {
+            addElement("h1", lc.community_decks_header, "", "centered", "", unofficialContainer);
+            handleMarketplaceSection(unofficialContainer, map.unofficial, "unofficial");
+        }
+    }
 
     runEventAfterAnimation($("upload-deck-public"), "click", (_) => { window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository') });
 }

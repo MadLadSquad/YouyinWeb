@@ -216,8 +216,6 @@ translations:
     text: "No"
   - id: leveled_up_yes
     text: "Yes"
-  - id: status
-    text: "Status"
   - id: pre_leveled_up
     text: "Pre-leveled up"
   - id: deck_source
@@ -225,13 +223,7 @@ translations:
   - id: deck_download
     text: "Download"
   - id: marketplace_load_error
-    text: "Error {}: Couldn't load the {} marketplace, retry later!"
-  - id: official
-    text: "Official"
-  - id: community
-    text: "Community"
-  - id: release
-    text: "Release"
+    text: "Error {}: Couldn't load the marketplace, retry later!"
 
   - id: skip-to-content
     text: "Skip to content"

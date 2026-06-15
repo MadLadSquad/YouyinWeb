@@ -79,19 +79,16 @@ lc.deck_new_delete_phrase = "{{ _ deck-new-delete-phrase }}"
 // marketplace.js
 lc.leveled_up_no = "{{ _ leveled_up_no }}";
 lc.leveled_up_yes = "{{ _ leveled_up_yes }}";
-lc.status = "{{ _ status }}";
 lc.pre_leveled_up = "{{ _ pre_leveled_up }}";
 
 lc.deck_import = "{{ _ import-deck-button }}";
 lc.deck_source = "{{ _ deck_source }}";
 lc.deck_download = "{{ _ deck_download }}";
 
-// The {} placeholders are filled at runtime by createErrorElement (status code, marketplace type)
+// The {} placeholder is filled at runtime by createErrorElement (status code)
 lc.marketplace_load_error = "{{ _ marketplace_load_error }}";
 
-lc.official = "{{ _ official }}";
-lc.community = "{{ _ community }}";
-lc.release = "{{ _ release }}";
+lc.community_decks_header = "{{ _ community_decks_header }}";
 
 // theme switcher (index.js)
 lc.theme_button = "{{ _ theme_button }}";

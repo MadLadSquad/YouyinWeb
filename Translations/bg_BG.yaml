@@ -215,8 +215,6 @@ translations:
     text: "Не"
   - id: leveled_up_yes
     text: "Да"
-  - id: status
-    text: "Статут"
   - id: pre_leveled_up
     text: "Преварително поставено ниво"
   - id: deck_source
@@ -224,13 +222,7 @@ translations:
   - id: deck_download
     text: "Изтегли"
   - id: marketplace_load_error
-    text: "Грешка {}: Пазарът ({}) не можа да бъде зареден, опитайте отново по-късно!"
-  - id: official
-    text: "Официален"
-  - id: community
-    text: "Обществен"
-  - id: release
-    text: "Издание"
+    text: "Грешка {}: Пазарът не можа да бъде зареден, опитайте отново по-късно!"
 
   - id: skip-to-content
     text: "Към съдържанието"

@@ -1,3 +1,9 @@
+/* The "add a new deck" card is informational, not a real deck, so it carries no border or shadow */
+#new-deck-upload-card {
+    border: none;
+    box-shadow: none;
+}
+
 /* Smaller header because the cards are always physically smaller */
 #new-card-header-smaller {
     font-size: 4.5rem;

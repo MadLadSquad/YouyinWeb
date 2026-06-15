@@ -201,6 +201,11 @@ function broadcastProgress(loaded, total) {
 // Hosts whose responses are safe to cache long-term (versioned, effectively immutable content)
 const CDN_HOSTS = ['fonts.gstatic.com', 'fonts.googleapis.com', 'cdn.jsdelivr.net'];
 
+// jsDelivr serves the public deck repository from the mutable @latest tag, so its contents (the
+// marketplace map and the decks themselves) can change without the URL changing. These must be
+// fetched network-first, otherwise a stale cached copy would hide newly published decks
+const MUTABLE_CDN_PATH = '/gh/MadLadSquad/YouyinPublicDeckRepository';
+
 // Network-first for same-origin requests so new deploys are picked up immediately, with the
 // cache as an offline fallback. Cross-origin CDN assets are cache-first since they don't change
 self.addEventListener('fetch', (event) => {
@@ -243,6 +248,23 @@ async function handleSameOriginRequest(request) {
 }
 
 async function handleCdnRequest(request, url) {
+    // Network-first for the mutable deck repository so marketplace updates are picked up, falling
+    // back to the cache only when offline
+    if (url.pathname.startsWith(MUTABLE_CDN_PATH)) {
+        try {
+            const networkResponse = await fetch(request);
+            if (networkResponse && networkResponse.status === 200) {
+                const cache = await caches.open(CACHE_NAME);
+                cache.put(request, networkResponse.clone());
+            }
+            return networkResponse;
+        } catch (err) {
+            const cachedResponse = await caches.match(request);
+            if (cachedResponse) return cachedResponse;
+            throw err;
+        }
+    }
+
     const cachedResponse = await caches.match(request);
     if (cachedResponse) return cachedResponse;
 
