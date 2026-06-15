@@ -25,6 +25,19 @@ window.extensiveModeLevel = 4;
 window.cardsReviewedCounter = 1;
 window.phrasesReviewedCounter = 0;
 
+/**
+ * The number of cards (or phrases) that may be revised in the current session. The cards and
+ * phrases arrays are shuffled before each session and never resized mid-session, so capping the
+ * length to window.MAX_SESSION_REVISION_ITEMS limits revision to a stable, random subset of the
+ * deck. Pass the cards array to cap cards and the phrases array to cap phrases independently
+ * @param { Object[] } arr - The cards or phrases array
+ * @returns { number } - The capped count
+ */
+function sessionRevisionCount(arr)
+{
+    return Math.min(arr.length, window.MAX_SESSION_REVISION_ITEMS);
+}
+
 // This function uses some dark magic that works half the time in order to calculate the size of the main page viewport
 // and main elements. Here are some issues:
 // TODO: On portrait screens if the resolution changes this sometimes breaks and a refresh is needed, would be good if it was fixed. 
@@ -84,16 +97,17 @@ function writerOnMistake(strokeData)
     }
 
     // Either use the number of cards or the phrase-local number
-    let num = window.localStorageData.cards.length;
+    let num = sessionRevisionCount(window.localStorageData.cards);
     if (window.bInPhrase)
     {
         num = toCharacters(window.localStorageData.phrases[window.currentPhraseIndex].phrase).length;
         // Also update the phrase information. It's ugly, I know...
-        $("phrase-info-widget-errors").textContent = `${lc.phrases_count_phrase}: ${window.currentPhraseIndex}/${window.localStorageData.phrases.length}; ${lc.phrases_count_errors}: ${window.totalPhraseErrors}`;
+        // Display as 1-based to match changeSidebarText, which renders currentPhraseIndex + 1
+        $("phrase-info-widget-errors").textContent = `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${sessionRevisionCount(window.localStorageData.phrases)}; ${lc.phrases_count_errors}: ${window.totalPhraseErrors}`;
     }
 
-    // Update the card information
-    $("character-info-widget-errors").textContent = `${lc.phrases_count_cards}: ${window.currentIndex}/${num}; ${lc.phrases_count_errors}: ${window.errors}`;
+    // Update the card information. 1-based to match changeSidebarText, which renders currentIndex + 1
+    $("character-info-widget-errors").textContent = `${lc.phrases_count_cards}: ${window.currentIndex + 1}/${num}; ${lc.phrases_count_errors}: ${window.errors}`;
 }
 
 function writerOnCorrectStroke(_)
@@ -133,10 +147,10 @@ function changeSidebarText(phrase, phraseNum, card, cardNum)
     let definitionParagraph = $("character-info-widget-def-p");
 
     if (phrase !== null && phraseNum > 0)
-        updateIndividualSidebarElementText("phrase", phrase.name, `${lc.phrases_count_phrase}: ${window.currentPhraseIndex}/${phraseNum}; ${lc.phrases_count_errors}: ${window.totalPhraseErrors}`, phrase);
+        updateIndividualSidebarElementText("phrase", phrase.name, `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${phraseNum}; ${lc.phrases_count_errors}: ${window.totalPhraseErrors}`, phrase);
 
     if (card !== null && cardNum > 0)
-        updateIndividualSidebarElementText("character", `${lc.phrases_count_spelling}: ${card.name}`, `${lc.phrases_count_cards}: ${window.currentIndex}/${cardNum}; ${lc.phrases_count_errors}: 0`, card);
+        updateIndividualSidebarElementText("character", `${lc.phrases_count_spelling}: ${card.name}`, `${lc.phrases_count_cards}: ${window.currentIndex + 1}/${cardNum}; ${lc.phrases_count_errors}: 0`, card);
     else
     {
         updateIndividualSidebarElementText("character", lc.unknown_character, "", null);
@@ -359,7 +373,7 @@ function resetPlayForPhrases(data)
 
     window.writer.setCharacter(phraseChars[window.currentIndex])
     window.writer.quiz();
-    changeSidebarText(currentPhrase, data.phrases.length, card, phraseChars.length);
+    changeSidebarText(currentPhrase, sessionRevisionCount(data.phrases), card, phraseChars.length);
 }
 
 // Madman10K: This function is fucking depressing I want to kill myself by just thinking that I have to modify anything here
@@ -399,7 +413,7 @@ async function writerOnComplete(_)
     // This if statement handles switching to the next card
     if (!window.bInPhrase)
     {
-        if (window.currentIndex < data.cards.length)
+        if (window.currentIndex < sessionRevisionCount(data.cards))
         {
             // If we just had a goto statement in this retarded language
             const f = () => {
@@ -410,12 +424,12 @@ async function writerOnComplete(_)
                 window.writer.setCharacter(ref.character);
 
                 window.writer.quiz();
-                changeSidebarText(null, 0, ref, data.cards.length);
+                changeSidebarText(null, 0, ref, sessionRevisionCount(data.cards));
             }
 
             if (window.gameModifiers.extensive)
             {
-                for (; window.currentIndex < data.cards.length; ++window.currentIndex)
+                for (; window.currentIndex < sessionRevisionCount(data.cards); ++window.currentIndex)
                 {
                     if (data.cards[window.currentIndex].knowledge <= window.extensiveModeLevel)
                     {
@@ -437,7 +451,7 @@ async function writerOnComplete(_)
     }
 
     // This code would be way more understandable and clearer if Javascript just had a goto statement
-    if (window.currentPhraseIndex < data.phrases.length)
+    if (window.currentPhraseIndex < sessionRevisionCount(data.phrases))
     {
         if (window.currentIndex >= toCharacters(data.phrases[window.currentPhraseIndex].phrase).length)
         {
@@ -449,12 +463,12 @@ async function writerOnComplete(_)
         }
 
         // If the index is lower than the length
-        if (window.currentPhraseIndex < data.phrases.length)
+        if (window.currentPhraseIndex < sessionRevisionCount(data.phrases))
         {
             // A goto statement would have made this way simpler and way more readable
             if (window.gameModifiers.extensive)
             {
-                for (; window.currentPhraseIndex < data.phrases.length; ++window.currentPhraseIndex)
+                for (; window.currentPhraseIndex < sessionRevisionCount(data.phrases); ++window.currentPhraseIndex)
                 {
                     if (data.phrases[window.currentPhraseIndex].knowledge <= window.extensiveModeLevel)
                     {
@@ -479,7 +493,8 @@ async function writerOnComplete(_)
 
         for (; window.extensiveModeLevel >= 0; --window.extensiveModeLevel)
         {
-            for (let i in data.cards)
+            const cardCount = sessionRevisionCount(data.cards);
+            for (let i = 0; i < cardCount; ++i)
             {
                 if (data.cards[i].knowledge <= window.extensiveModeLevel)
                 {
@@ -492,11 +507,12 @@ async function writerOnComplete(_)
                     window.writer.setCharacter(ref.character);
 
                     window.writer.quiz();
-                    changeSidebarText(null, 0, ref, data.cards.length);
+                    changeSidebarText(null, 0, ref, cardCount);
                     return;
                 }
             }
-            for (let i in data.phrases)
+            const phraseCount = sessionRevisionCount(data.phrases);
+            for (let i = 0; i < phraseCount; ++i)
             {
                 if (data.phrases[i].knowledge <= window.extensiveModeLevel)
                 {
@@ -626,7 +642,7 @@ function createStartButton()
 
         // Modify sidebar text, as well as statistics data
         setWriterState(data.cards[window.currentIndex]);
-        changeSidebarText(null, 0, data.cards[window.currentIndex], data.cards.length);
+        changeSidebarText(null, 0, data.cards[window.currentIndex], sessionRevisionCount(data.cards));
         const now = Date.now();
         window.sessionTime = now;
 

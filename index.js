@@ -12,6 +12,11 @@ window.CARD_WRITER_DELAY_BETWEEN_STROKES = 50;
 window.CARD_DEFAULT_CHARACTER = "是"
 window.CARD_DEFAULT_PREVIEW_NAME = "Preview Name"
 
+// Hard cap on how many cards and how many phrases may be revised in a single play session. Decks
+// larger than this are shuffled and only the first entries are revised, so each session draws a
+// random subset of at most this many cards and (separately) this many phrases
+window.MAX_SESSION_REVISION_ITEMS = 16;
+
 window.WRITER_PADDING = 5;
 // The hanzi-writer colours (WRITER_RADICAL_COLOUR, WRITER_STROKE_COLOUR, WRITER_OUTLINE_COLOUR)
 // are owned by theme.js, which runs first (it's in <head>) and sets them from the active theme
