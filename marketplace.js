@@ -44,7 +44,7 @@ function constructElement(val, deckContainer, it, marketplaceJSON, type1, type2,
     addElement("h1", nm, "", "", "", div);
     addElement("p", `${lc.status}: ${type2}`, "", "", "", div);
     addElement("p", `${lc.pre_leveled_up}: ${leveledUpType}`, "", "", "", div);
-    addElement("p", `${lc.phrases_count_cards}: ${marketplaceJSON.length}`, "", "", "", div);
+    addElement("p", `${lc.phrases_count_cards}: ${marketplaceJSON.cards.length}`, "", "", "", div);
 
     // Import a deck from file
     runEventAfterAnimation(addElement("button", lc.deck_import, `import-button-${type1}-${val}`, "card-button-edit", filename, div), "click", async function(e)
@@ -58,7 +58,8 @@ function constructElement(val, deckContainer, it, marketplaceJSON, type1, type2,
                 return;
 
             let dt = window.localStorageData;
-            dt.cards.push.apply(dt.cards, content);
+            dt.cards.push.apply(dt.cards, content.cards);
+            dt.phrases.push.apply(dt.phrases, content.phrases);
             saveToLocalStorage(dt);
             location.href = "./deck.html";
         }
