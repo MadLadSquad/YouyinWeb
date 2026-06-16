@@ -110,6 +110,21 @@ function setProfileCardData()
 }
 
 /**
+ * Resolves the variant postfix for a phrase character by looking up a matching card in the deck.
+ * Phrases don't store per-character variants, so we borrow it from the character card if one exists.
+ * @param { string } character - The single character to resolve
+ * @returns { string } - The variant postfix (e.g. "-jp"), or "" if no matching card exists
+ */
+function findCharacterVariant(character)
+{
+    const cards = window.localStorageData.cards;
+    for (let i in cards)
+        if (cards[i].character === character)
+            return cards[i].variant || "";
+    return "";
+}
+
+/**
  * Constructs a card HTML element
  * @param { Object } it - Struct for the card data
  * @param { number } index - Used to create UUIDs. For normal cards, it's offset by the number of phrases
@@ -125,7 +140,7 @@ function constructCard(it, index, container, localIndex)
     addElement("h3", `${it.name} ${formatDecimal(it.knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
     const target = it["character"]
                                     ? addElement("div", "", `card-character-target-div-${index}`, "", "", div)
-                                    : addElement("h1", it.phrase, `card-character-target-div-${index}`, "phrase-card-header", "", div);
+                                    : addElement("div", "", `card-character-target-div-${index}`, "phrase-card-writers", "", div);
     addElement("p", `${lc.deck_definitions}`, "", "", "", div);
 
     // Add the list to the card and fill it with elements
@@ -178,9 +193,34 @@ function constructCard(it, index, container, localIndex)
     {
         // Create an instance of the writer
         let writer = createCardWriter(`card-character-target-div-${index}`, it.character + it.variant);
-        target.addEventListener('mouseover', function() 
+        target.addEventListener('mouseover', function()
         {
             writer.animateCharacter();
+        });
+    }
+    else
+    {
+        // Render each character of the phrase as its own normal-sized writer, then chain their
+        // animations so the phrase is drawn one character after another on hover
+        const phraseChars = toCharacters(it.phrase);
+        let writers = [];
+        for (let c = 0; c < phraseChars.length; c++)
+        {
+            const charTargetId = `card-phrase-character-target-div-${index}-${c}`;
+            addElement("div", "", charTargetId, "phrase-card-character", "", target);
+            writers.push(createCardWriter(charTargetId, phraseChars[c] + findCharacterVariant(phraseChars[c]), window.PHRASE_CARD_WRITER_SIZE));
+        }
+
+        // Guard against a fresh hover restarting the sequence while it's still running
+        let bAnimating = false;
+        target.addEventListener('mouseover', async function()
+        {
+            if (bAnimating)
+                return;
+            bAnimating = true;
+            for (const writer of writers)
+                await writer.animateCharacter();
+            bAnimating = false;
         });
     }
 }

@@ -566,7 +566,7 @@ header {
    motion: it is the minimal acknowledgement that replaces the flight there. The 0%/100% colour is
    left unspecified so it animates from the counter's own resting colour to the accent and back. */
 .counter-blink {
-    animation: counter-blink 0.5s ease-out;
+    animation: counter-blink 0.75s ease-out;
 }
 
 @keyframes counter-blink {

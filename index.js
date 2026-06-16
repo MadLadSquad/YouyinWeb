@@ -7,6 +7,9 @@ window.ADD_POINTS_ON_ERROR_1_2 = 0.025;             // 1/2 or 2/4 of 0.05
 window.ADD_POINTS_ON_ERROR_1_4 = 0.0125;            // 1/4 of 0.05
 
 window.CARD_WRITER_SIZE = 100;
+// Writer size for the per-character widgets on phrase cards. Sized so the rendered glyph matches a
+// normal h1 full-width character (the glyph fills size minus WRITER_PADDING on each side)
+window.PHRASE_CARD_WRITER_SIZE = 50;
 window.CARD_WRITER_STROKE_ANIMATION_SPEED = 1.25;
 window.CARD_WRITER_DELAY_BETWEEN_STROKES = 50;
 window.CARD_DEFAULT_CHARACTER = "是"
@@ -24,7 +27,7 @@ window.WRITER_SLEEP_AFTER_COMPLETE = 1200;          // In ms
 // How long the completed-character "fly into the progress counter" animation lasts. It is timed to
 // land right as the next character loads (after WRITER_SLEEP_AFTER_COMPLETE), so the snapshot sits
 // invisibly on top during the admire beat, then flies for the last stretch of the pause
-window.WRITER_FLY_TO_COUNTER_DURATION = 450;        // In ms
+window.WRITER_FLY_TO_COUNTER_DURATION = 650;        // In ms
 
 window.WRITER_SHOW_HINT_ON_ERRORS = 3;
 window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
@@ -177,13 +180,14 @@ function createWriter(targetId, character, overrides)
  * Creates the small animated writer used on deck and preview cards
  * @param { string } targetId - ID of the element that hosts the writer
  * @param { string } character - Character (plus optional variant postfix) to render
+ * @param { number } size - Width/height in pixels. Defaults to the standard card writer size
  * @returns { Object } - The writer instance
  */
-function createCardWriter(targetId, character)
+function createCardWriter(targetId, character, size = window.CARD_WRITER_SIZE)
 {
     return createWriter(targetId, character, {
-        width: window.CARD_WRITER_SIZE,
-        height: window.CARD_WRITER_SIZE,
+        width: size,
+        height: size,
         showOutline: true,
         strokeAnimationSpeed: window.CARD_WRITER_STROKE_ANIMATION_SPEED,
         delayBetweenStrokes: window.CARD_WRITER_DELAY_BETWEEN_STROKES,

@@ -141,6 +141,14 @@ ol li {
     color: var(--deck-card-text-colour);
 }
 
+/* Row of per-character writers that replaces the plain phrase text on phrase cards */
+.card .phrase-card-writers {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
 /* Hide the default file upload widget */
 #fileupload {
     display: block;
