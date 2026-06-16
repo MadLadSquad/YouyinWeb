@@ -60,6 +60,8 @@ translations:
     text: "Total characters reviewed"
   - id: finish_page_phrases_reviewed
     text: "Total phrases reviewed"
+  - id: finish_page_accuracy
+    text: "Accuracy"
   - id: finish_page_session_len
     text: "Round length"
   - id: finish_page_streak_increased

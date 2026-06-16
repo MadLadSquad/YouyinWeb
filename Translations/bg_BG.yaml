@@ -60,6 +60,8 @@ translations:
     text: "Преговорени символи"
   - id: finish_page_phrases_reviewed
     text: "Преговорени фрази"
+  - id: finish_page_accuracy
+    text: "Точност"
   - id: finish_page_session_len
     text: "Времетраене на серията"
   - id: finish_page_streak_increased

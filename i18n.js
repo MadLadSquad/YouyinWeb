@@ -50,6 +50,7 @@ lc.card_character = "{{ _ card_character }}";
 lc.finish_page_header = "{{ _ finish_page_header }}"
 lc.finish_page_characters_reviewed = "{{ _ finish_page_characters_reviewed }}"
 lc.finish_page_phrases_reviewed = "{{ _ finish_page_phrases_reviewed }}"
+lc.finish_page_accuracy = "{{ _ finish_page_accuracy }}"
 lc.finish_page_session_len = "{{ _ finish_page_session_len }}"
 // The day/days wording is a ui18n switch pattern on the streak_days variable, resolved at build
 // time — so the plural and singular variants are baked separately and the code picks one at

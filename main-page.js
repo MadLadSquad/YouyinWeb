@@ -7,6 +7,12 @@ window.totalPhraseErrors = 0;
 window.errors = 0;
 window.backwardsErrors = 0;
 
+// Running totals for the whole session (never reset per-card). totalSessionErrors backs the single
+// global "Errors" counter shown in the sidebar; together with totalSessionStrokes it yields the
+// accuracy percentage shown on the finished-round recap screen
+window.totalSessionErrors = 0;
+window.totalSessionStrokes = 0;
+
 window.bInTest = false;
 window.bInPhrase = false;
 
@@ -94,6 +100,7 @@ function writerOnMistake(strokeData)
     {
         window.errors++;
         window.totalPhraseErrors++;
+        window.totalSessionErrors++;
     }
 
     // Either use the number of cards or the phrase-local number
@@ -103,16 +110,33 @@ function writerOnMistake(strokeData)
         num = toCharacters(window.localStorageData.phrases[window.currentPhraseIndex].phrase).length;
         // Also update the phrase information. It's ugly, I know...
         // Display as 1-based to match changeSidebarText, which renders currentPhraseIndex + 1
-        $("phrase-info-widget-errors").textContent = `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${sessionRevisionCount(window.localStorageData.phrases)}; ${lc.phrases_count_errors}: ${window.totalPhraseErrors}`;
+        $("phrase-info-widget-errors").textContent = `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${sessionRevisionCount(window.localStorageData.phrases)}; ${lc.phrases_count_errors}: ${window.totalSessionErrors}`;
     }
 
-    // Update the card information. 1-based to match changeSidebarText, which renders currentIndex + 1
-    $("character-info-widget-errors").textContent = `${lc.phrases_count_cards}: ${window.currentIndex + 1}/${num}; ${lc.phrases_count_errors}: ${window.errors}`;
+    // Update the card information. 1-based to match changeSidebarText, which renders currentIndex + 1.
+    // The errors counter is the global session total, not per-card. While revising a phrase the phrase
+    // widget already shows it, so omit it here to avoid two identical counters
+    $("character-info-widget-errors").textContent = cardSidebarText(num);
 }
 
 function writerOnCorrectStroke(_)
 {
     window.backwardsErrors = 0;
+}
+
+/**
+ * Builds the card widget's count line. The global errors counter is appended only when revising a
+ * standalone card - while inside a phrase the phrase widget already shows it, so we omit it here to
+ * avoid two identical counters
+ * @param { number } cardNum - Number of cards (or phrase characters) the position is counted against
+ * @returns { string } - The localised count line
+ */
+function cardSidebarText(cardNum)
+{
+    let text = `${lc.phrases_count_cards}: ${window.currentIndex + 1}/${cardNum}`;
+    if (!window.bInPhrase)
+        text += `; ${lc.phrases_count_errors}: ${window.totalSessionErrors}`;
+    return text;
 }
 
 /**
@@ -147,10 +171,10 @@ function changeSidebarText(phrase, phraseNum, card, cardNum)
     let definitionParagraph = $("character-info-widget-def-p");
 
     if (phrase !== null && phraseNum > 0)
-        updateIndividualSidebarElementText("phrase", phrase.name, `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${phraseNum}; ${lc.phrases_count_errors}: ${window.totalPhraseErrors}`, phrase);
+        updateIndividualSidebarElementText("phrase", phrase.name, `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${phraseNum}; ${lc.phrases_count_errors}: ${window.totalSessionErrors}`, phrase);
 
     if (card !== null && cardNum > 0)
-        updateIndividualSidebarElementText("character", `${lc.phrases_count_spelling}: ${card.name}`, `${lc.phrases_count_cards}: ${window.currentIndex + 1}/${cardNum}; ${lc.phrases_count_errors}: 0`, card);
+        updateIndividualSidebarElementText("character", `${lc.phrases_count_spelling}: ${card.name}`, cardSidebarText(cardNum), card);
     else
     {
         updateIndividualSidebarElementText("character", lc.unknown_character, "", null);
@@ -278,6 +302,21 @@ function playStreakFireAnimation(rect = window.lastWriterRect)
     }
 }
 
+/**
+ * Computes the session accuracy as a whole-number percentage from the global error and stroke
+ * totals - e.g. 3 errors over 12 strokes yields 75%. At most one error is counted per stroke, so
+ * accuracy stays within [0, 100]; defaults to 100% when nothing was reviewed
+ * @returns { number } - The accuracy percentage, rounded to a whole number
+ */
+function computeSessionAccuracy()
+{
+    if (window.totalSessionStrokes <= 0)
+        return 100;
+
+    const accuracy = (1 - window.totalSessionErrors / window.totalSessionStrokes) * 100;
+    return Math.round(Math.min(Math.max(accuracy, 0), 100));
+}
+
 function showFinishedSessionPage(st, bStreakAdvanced)
 {
     const result = getLocalisedTimePostfix(st);
@@ -293,6 +332,7 @@ function showFinishedSessionPage(st, bStreakAdvanced)
         { text: lc.finish_page_header },
         { text: `${lc.finish_page_characters_reviewed}: ${window.cardsReviewedCounter}` },
         { text: `${lc.finish_page_phrases_reviewed}: ${window.phrasesReviewedCounter}` },
+        { text: `${lc.finish_page_accuracy}: ${computeSessionAccuracy()}%` },
         { text: `${lc.finish_page_session_len}: ${formatDecimal(result.time)}${result.postfix}` }
     ];
 
@@ -419,6 +459,10 @@ async function writerOnComplete(_)
     // Calculate how many points to add to your knowledge
     const strokeNum = window.writer._character.strokes.length;
     window.totalPhraseStrokes += strokeNum;
+
+    // Accumulate every stroke the user drew this session (cards and phrase characters alike, and
+    // each repeat in extensive mode) - this is the denominator for the recap accuracy percentage
+    window.totalSessionStrokes += strokeNum;
 
     if (!window.bInPhrase)
         data.cards[(window.currentIndex - 1)].knowledge = computeScore(strokeNum, window.errors, data.cards[(window.currentIndex - 1)].knowledge);
@@ -592,6 +636,8 @@ async function writerOnComplete(_)
     resetSessionData();
     window.cardsReviewedCounter = 1;
     window.phrasesReviewedCounter = 0;
+    window.totalSessionErrors = 0;
+    window.totalSessionStrokes = 0;
 
     // Recreate initial view
     saveToLocalStorage(data);
