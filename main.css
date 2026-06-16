@@ -424,6 +424,11 @@ header {
 
 /* ---------------------------------- List select boxes & dropdowns ---------------------------------- */
 
+/* Keeps the rebuildable variant select on the same line as the character input */
+.character-variant-wrapper {
+    display: inline-block;
+}
+
 .list-select-container {
     position: relative;
     display: inline-block;

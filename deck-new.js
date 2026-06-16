@@ -151,8 +151,13 @@ async function testVariantExists(character, postfix)
 }
 
 /**
- * Constructs the character variant select box
- * @param { HTMLElement } container - The parent HTML element
+ * Constructs the character variant select box.
+ *
+ * The available variants depend on the current character, so this is also called
+ * to rebuild the box whenever the character changes. It always clears the wrapper
+ * first so a stale set of options is never left behind, and it resets the stored
+ * variant when the previously-selected one isn't available for the new character.
+ * @param { HTMLElement } container - The stable wrapper element the select is rendered into
  * @param { string } id - ID for the select box
  * @param { string } classT - Class for the select box
  * @param { string } ariaLabel - Aria label attribute for the select box
@@ -162,6 +167,8 @@ async function testVariantExists(character, postfix)
  */
 async function constructCharacterVariantSelect(container, id, classT, ariaLabel, name, it)
 {
+    container.replaceChildren();
+
     let selectButton = addElement("button", "", id, classT, "", container);
     selectButton.setAttribute("type", "button");
     selectButton.setAttribute("name", name);
@@ -173,6 +180,10 @@ async function constructCharacterVariantSelect(container, id, classT, ariaLabel,
         options.push({ value: "-jp", text: `🇯🇵   ${lc.character_variant_kanji}` });
     if (await testVariantExists(it.character, "-ko") !== undefined)
         options.push({ value: "-ko", text: `🇰🇷   ${lc.character_variant_hanja}` });
+
+    // Drop a previously-selected variant that the new character doesn't offer
+    if (!options.some(o => o.value === (it.variant || "")))
+        it.variant = "";
 
     createCustomSelect(selectButton, ariaLabel, options, it.variant || "", function(newValue) {
         it.variant = newValue;
@@ -336,8 +347,19 @@ function constructEditCard(index, it, root, bPhrase)
         else if (lit["character"])
         {
             characterInput.addEventListener("change", (e) => {
-                $(`card-character-target-div-preview-${index}`).writer.setCharacter(e.target.value + lit.variant);
                 lit.character = e.target.value;
+
+                // Rebuild the variant box for the new character; the writer is then
+                // refreshed with whatever variant survived the rebuild
+                let variantWrapper = $(`character-variant-wrapper-${index}`);
+                if (variantWrapper)
+                {
+                    constructCharacterVariantSelect(variantWrapper, `character-variant-box-${index}`, "centered", lc.character_variant_box_aria, lc.character_variant_box_aria, lit).then(() => {
+                        $(`card-character-target-div-preview-${index}`).writer.setCharacter(lit.character + lit.variant);
+                    });
+                }
+                else
+                    $(`card-character-target-div-preview-${index}`).writer.setCharacter(lit.character + lit.variant);
             })
         }
     }
@@ -346,7 +368,10 @@ function constructEditCard(index, it, root, bPhrase)
     {
         // A little padding
         addTextNode(container, " ");
-        constructCharacterVariantSelect(container, `character-variant-box-${index}`, "centered", lc.character_variant_box_aria, lc.character_variant_box_aria, lit).then(_ => {});
+        // Stable wrapper so the variant box can be rebuilt in place when the character changes.
+        // Inline-block keeps it on the same line as the character input, like the original layout
+        let variantWrapper = addElement("div", "", `character-variant-wrapper-${index}`, "character-variant-wrapper", "", container);
+        constructCharacterVariantSelect(variantWrapper, `character-variant-box-${index}`, "centered", lc.character_variant_box_aria, lc.character_variant_box_aria, lit).then(_ => {});
     }
 
     addElement("h3", `${lc.deck_definitions}`, "", "", "", container);
