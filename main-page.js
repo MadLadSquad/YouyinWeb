@@ -448,9 +448,155 @@ function resetPlayForPhrases(data)
     changeSidebarText(currentPhrase, sessionRevisionCount(data.phrases), card, phraseChars.length);
 }
 
+/**
+ * Rewrites every id in a cloned subtree to a fresh unique value, fixing up the references to them
+ * (url(#id) in clip-path/mask/fill/... and href="#id") so the clone is self-contained. Needed
+ * because the snapshot is inserted into the live document next to the writer it was cloned from -
+ * duplicate ids would make url(#id) resolve to whichever element comes first, corrupting both.
+ * @param { Element } root - The cloned subtree to rewrite in place
+ */
+function uniquifyElementIds(root)
+{
+    const ided = root.querySelectorAll("[id]");
+    if (ided.length === 0)
+        return;
+
+    // Collect the old ids longest-first so that an id which is a prefix of another (e.g. "x1" vs
+    // "x10") can't be partially matched when we rewrite references
+    const oldIds = [];
+    ided.forEach(el => oldIds.push(el.getAttribute("id")));
+    oldIds.sort((a, b) => b.length - a.length);
+
+    const suffix = "-fly-" + Math.random().toString(36).slice(2, 9);
+    ided.forEach(el => el.setAttribute("id", el.getAttribute("id") + suffix));
+
+    const escapeForRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // A reference is "#id" not immediately followed by another id character, so the prefix case
+    // above is handled and "#x1" won't be matched inside "#x10"
+    const patterns = oldIds.map(id => new RegExp("#" + escapeForRegex(id) + "(?![\\w-])", "g"));
+
+    root.querySelectorAll("*").forEach(el => {
+        for (const attr of Array.from(el.attributes))
+        {
+            if (attr.value.indexOf("#") === -1)
+                continue;
+            let value = attr.value;
+            for (let i = 0; i < oldIds.length; i++)
+                value = value.replace(patterns[i], "#" + oldIds[i] + suffix);
+            if (value !== attr.value)
+                el.setAttribute(attr.name, value);
+        }
+    });
+}
+
+/**
+ * Snapshots the just-completed character and flies it into the progress counter, shrinking it away
+ * as it lands - a small reward for finishing a character. The snapshot is deliberately deferred
+ * until the flight starts (after a short "admire" beat) rather than taken the moment onComplete
+ * fires: hanzi-writer is still animating the final stroke into place at that point, so an early
+ * copy would freeze a half-drawn frame and, sitting on top, hide the writer's own settle animation.
+ * By the time the beat is over the stroke has settled, so the copy matches the widget. A static
+ * copy is lifted onto a fixed overlay placed exactly over the writer, the real character is cleared,
+ * and the copy flies to the counter, timed to land right as the next character loads. Purely
+ * cosmetic and fully guarded - it must never break a round. Skipped by the caller under reduced
+ * motion.
+ * @param { HTMLElement } counterEl - The progress counter element the copy flies into
+ */
+function flyCharacterToCounter(counterEl)
+{
+    if (counterEl === null)
+        return;
+
+    // Wait out most of the post-complete pause before snapshotting, so hanzi-writer has finished
+    // settling the final stroke; the copy then flies for the remaining stretch, landing as the next
+    // character loads
+    const admireDelay = Math.max(0, window.WRITER_SLEEP_AFTER_COMPLETE - window.WRITER_FLY_TO_COUNTER_DURATION);
+    setTimeout(() => {
+        const writerSvg = $("character-target-div");
+        if (writerSvg === null)
+            return;
+
+        const writerRect = writerSvg.getBoundingClientRect();
+
+        // Build the static snapshot from the (now settled) live writer SVG
+        const snapshot = writerSvg.cloneNode(true);
+        snapshot.removeAttribute("id");
+        snapshot.removeAttribute("class");
+        // Drop the background grid lines - we only want the character itself
+        snapshot.querySelectorAll("line").forEach(l => l.remove());
+        // hanzi-writer draws each stroke as a thick, round-capped path clipped to the stroke's
+        // outline, so the clip-paths are essential - without them the strokes render fat and bubbly.
+        // Keep the defs/clip-paths but rewrite their ids to be unique: the snapshot lives in the
+        // document alongside the live writer, and url(#id) resolves to the first match, so shared
+        // ids would have the two fight over each other's clip-paths
+        uniquifyElementIds(snapshot);
+        snapshot.setAttribute("width", writerRect.width);
+        snapshot.setAttribute("height", writerRect.height);
+
+        // Overlay placed exactly over the writer, so the copy is pixel-identical as it lifts off
+        const overlay = addElement("div", "", "", "fly-overlay", "", document.body);
+        overlay.setAttribute("aria-hidden", "true");
+        overlay.style.setProperty("left", writerRect.left + "px");
+        overlay.style.setProperty("top", writerRect.top + "px");
+        overlay.style.setProperty("width", writerRect.width + "px");
+        overlay.style.setProperty("height", writerRect.height + "px");
+        overlay.appendChild(snapshot);
+
+        const counterRect = counterEl.getBoundingClientRect();
+        const dx = (counterRect.left + counterRect.width / 2) - (writerRect.left + writerRect.width / 2);
+        const dy = (counterRect.top + counterRect.height / 2) - (writerRect.top + writerRect.height / 2);
+
+        // Clear the real character now that the copy covers it, so the writer field is left empty as
+        // the copy lifts off (the writer instance is reused for the next character a moment later)
+        try
+        {
+            if (window.writer !== null)
+                window.writer.hideCharacter({ duration: 0 });
+        }
+        catch (_) { /* writer may already be gone on the last card - the copy still flies */ }
+
+        const anim = overlay.animate([
+            { transform: "translate(0, 0) scale(1)", opacity: 1 },
+            { transform: `translate(${dx}px, ${dy}px) scale(0)`, opacity: 0.15 }
+        ], {
+            duration: window.WRITER_FLY_TO_COUNTER_DURATION,
+            easing: "ease-in",
+            fill: "forwards"
+        });
+        anim.finished.then(() => overlay.remove(), () => overlay.remove());
+    }, admireDelay);
+}
+
+/**
+ * Plays a short pulse on the progress counter as its value ticks up. This is the whole reward under
+ * reduced motion, and punctuates the flying copy's arrival otherwise
+ * @param { HTMLElement } counterEl - The progress counter element to pulse
+ */
+function blinkCounter(counterEl)
+{
+    if (counterEl === null)
+        return;
+    counterEl.classList.remove("counter-blink");
+    // Force a reflow so the animation restarts even on back-to-back completions
+    void counterEl.offsetWidth;
+    counterEl.classList.add("counter-blink");
+    counterEl.addEventListener("animationend", () => counterEl.classList.remove("counter-blink"), { once: true });
+}
+
 // Madman10K: This function is fucking depressing I want to kill myself by just thinking that I have to modify anything here
 async function writerOnComplete(_)
 {
+    // Reward animation: snapshot the finished character and fly it into the progress counter, then
+    // blink the counter as it ticks up. Kicked off up front so it runs regardless of which branch
+    // below advances the session. Skipped under reduced motion, where only the counter pulses
+    const counterEl = $("character-info-widget-errors");
+    const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reducedMotion)
+        flyCharacterToCounter(counterEl);
+    // The counter value updates when the next character loads, after WRITER_SLEEP_AFTER_COMPLETE -
+    // pulse it then, in step with the flying copy's arrival
+    setTimeout(() => blinkCounter(counterEl), window.WRITER_SLEEP_AFTER_COMPLETE);
+
     // Go to the next card
     ++window.currentIndex;
 

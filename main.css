@@ -541,6 +541,38 @@ header {
     background-color: var(--main-accent-colour);
 }
 
+/* ---------------------- Completed-character "fly into the progress counter" reward ---------------------- */
+
+/* Holds a static snapshot of the just-completed character. main-page.js positions it exactly over
+   the writer (so the copy is invisible to begin with) and animates it into the progress counter via
+   the Web Animations API. Never intercepts pointer events. */
+.fly-overlay {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+    transform-origin: center center;
+    will-change: transform, opacity;
+}
+
+.fly-overlay svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* Quick, subtle colour flash on the progress counter as it ticks up when a character lands. Only
+   the colour changes - no size/geometry change, which is disorienting. Kept even under reduced
+   motion: it is the minimal acknowledgement that replaces the flight there. The 0%/100% colour is
+   left unspecified so it animates from the counter's own resting colour to the accent and back. */
+.counter-blink {
+    animation: counter-blink 0.5s ease-out;
+}
+
+@keyframes counter-blink {
+    40% { color: var(--main-accent-colour); }
+}
+
 /* Twemoji styling to match surrounding text size */
 img.emoji {
     height: 1em;

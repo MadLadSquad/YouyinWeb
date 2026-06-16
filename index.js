@@ -21,6 +21,10 @@ window.WRITER_PADDING = 5;
 // The hanzi-writer colours (WRITER_RADICAL_COLOUR, WRITER_STROKE_COLOUR, WRITER_OUTLINE_COLOUR)
 // are owned by theme.js, which runs first (it's in <head>) and sets them from the active theme
 window.WRITER_SLEEP_AFTER_COMPLETE = 1200;          // In ms
+// How long the completed-character "fly into the progress counter" animation lasts. It is timed to
+// land right as the next character loads (after WRITER_SLEEP_AFTER_COMPLETE), so the snapshot sits
+// invisibly on top during the admire beat, then flies for the last stretch of the pause
+window.WRITER_FLY_TO_COUNTER_DURATION = 450;        // In ms
 
 window.WRITER_SHOW_HINT_ON_ERRORS = 3;
 window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
