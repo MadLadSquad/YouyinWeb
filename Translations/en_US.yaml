@@ -13,7 +13,7 @@ translations:
   - id: character-info-widget-spelling
     text: "Spelling: To be loaded"
   - id: start-button
-    text: "Click to start session"
+    text: "Click to start revising"
   - id: 404-text
     text: "Unfortunately, this page doesn't exist"
   - id: phrases_count_errors
@@ -55,13 +55,13 @@ translations:
   - id: game_modifiers_header
     text: "Game modifiers"
   - id: finish_page_header
-    text: "Session complete"
+    text: "Round complete"
   - id: finish_page_characters_reviewed
     text: "Total characters reviewed"
   - id: finish_page_phrases_reviewed
     text: "Total phrases reviewed"
   - id: finish_page_session_len
-    text: "Session length"
+    text: "Round length"
   - id: finish_page_streak_increased
     text: "You increased your streak today - {streak}{streak_days}"
     switch:
@@ -138,7 +138,7 @@ translations:
   - id: profile-statistics-header
     text: "Profile Statistics"
   - id: total-sessions-field
-    text: "Total Sessions"
+    text: "Total revision rounds"
   - id: streak-field
     text: "Streak"
   - id: deck-card-num-field
@@ -146,13 +146,13 @@ translations:
   - id: deck-phrase-num-field
     text: "Phrases in deck"
   - id: last-session-date-field
-    text: "Last Session"
+    text: "Last round"
   - id: average-knowledge-level-field
     text: "Average knowledge level"
   - id: average-session-length-field
-    text: "Average session length"
+    text: "Average revision round length"
   - id: time-spent-in-sessions-field
-    text: "Time spent in sessions"
+    text: "Time spent revising"
   - id: new-card-header
     text: "Add a new card or phrase to the deck"
   - id: new-card-button
@@ -192,7 +192,7 @@ translations:
   - id: js_locale
     text: "en-US"
   - id: no_sessions_recorded
-    text: "No sessions yet recorded!"
+    text: "No revision rounds yet recorded"
   - id: average_knowledge_level
     text: "Average knowledge level"
   - id: part_of

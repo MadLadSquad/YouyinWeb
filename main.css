@@ -117,10 +117,16 @@ ul li a {
 }
 
 /**
- * Divide the main page into 2 parts, 25% for the sidebar and 75% for the writer widget.
- * This is only applies in landscape mode.
+ * Idle (not revising): the sidebar is hidden and the start button takes the whole page. Only once
+ * a revision round begins (the .in-session class is added to #main-content) do we split the page
+ * into 2 parts, 25% for the sidebar and 75% for the writer widget. This split only applies in
+ * landscape mode.
  **/
 .writer-page {
+    display: block;
+}
+
+.writer-page.in-session {
     display: grid;
     gap: 0;
     grid-template-columns: 25% 75%;
@@ -138,7 +144,7 @@ ul li a {
 
 /* This may cause problems, check out main-page.js on top of the definition of the "getDrawElementHeight" function */
 @media (orientation: portrait) {
-    .writer-page {
+    .writer-page.in-session {
         display: block;
     }
 }
@@ -193,6 +199,17 @@ option {
     background-color: var(--main-background-colour);
 }
 
+/* The sidebar is only relevant while a revision round is in progress. #main-content gets the
+   .in-session class for the duration of the round (see main-page.js). These live before the
+   portrait rule below so source order lets the portrait flex layout win when in session. */
+#main-page-info-container {
+    display: none;
+}
+
+.in-session #main-page-info-container {
+    display: block;
+}
+
 /* Only display the right border on landscape since on portrait elements are not inline */
 @media (orientation: landscape) {
     #main-page-info-container {
@@ -202,10 +219,21 @@ option {
     #main-page-info-container div {
         border-bottom: 1px solid var(--main-border-colour);
     }
+
+    /* Keep the idle start screen clean: hide the nav divider and the hr until a round begins.
+       :has(.writer-page) scopes this to the main page so the shared header keeps its border on
+       every other page; both are restored once the writer page gains .in-session. */
+    body:has(.writer-page:not(.in-session)) header {
+        border-bottom: none;
+    }
+
+    .writer-page:not(.in-session) + #main-page-hr {
+        display: none;
+    }
 }
 
 @media (orientation: portrait) {
-    #main-page-info-container {
+    .in-session #main-page-info-container {
         float: left;
         position: relative;
         display: flex;
@@ -281,25 +309,54 @@ header {
     margin: auto;
 }
 
-.slide-right {
-    overflow: hidden;
+/* In the idle (block) layout this section spans the full page width, so centre its inline-block
+   start button - and the finished-round deck - horizontally within it */
+#start-button-writer-section {
+    text-align: center;
+}
+
+/* The finished-round screen is a slide deck: a writer-sized stage (height set inline by JS to
+   match the play field it replaces) over which each stat slides in from the right, stacking on
+   top of the previous one. The last slide carries the Continue button. */
+#finished-session-section {
+    position: relative;
     width: 100%;
-    /*animation-delay: 0.1s;*/
+    overflow: hidden;
 }
 
-.slide-right .slide-able {
-    -webkit-animation: 1.5s slide-right 0.25s forwards;
-    animation: 1.5s slide-right 0.25s forwards;
-    transform: translateX(-100%);
+/* Each slide fills the stage and centres its single header/button. Stacking is what lets a new
+   slide cover the one before it. */
+.finish-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-align: center;
+    margin: 0;
+    font-size: 32px;
+    /* Opaque so the incoming slide hides the one it slides over (which is then removed in JS) */
+    background-color: var(--main-background-colour);
 }
 
-@-webkit-keyframes slide-right {
+/* Each stat slide, and the Continue button on the final slide, slide in from the right with the
+   same timing. The button is a normal column child, so it lands below the text without covering it. */
+.finish-slide.slide-able,
+.finish-continue {
+    -webkit-animation: 1.5s slide-from-right 0.25s forwards;
+    animation: 1.5s slide-from-right 0.25s forwards;
+    transform: translateX(100%);
+}
+
+@-webkit-keyframes slide-from-right {
     to {
         transform: translateX(0);
     }
 }
 
-@keyframes slide-right {
+@keyframes slide-from-right {
     to {
         transform: translateX(0);
     }

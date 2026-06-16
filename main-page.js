@@ -173,26 +173,65 @@ function resetSidebar()
 }
 
 /**
- * Sets up slide-in elements with an option callback
- * @param { Array<Array> } data - Data object, an array of arrays, where each element is an array of strings that represent
- * @param { number } i - Current index into the data array
- * @param { HTMLElement } container - Container element
- * @param { function } f - Callback function that will be called after creating the element
- * @returns { HTMLElement | null} - The element in question or null if out of bounds
+ * Shows the finished-round stats one slide at a time. Each slide slides in from the right over the
+ * previous one (slides are opaque), and the covered slide is then removed so only the current stat
+ * stays on screen. The streak slide, if present, is the last one, and its fire celebration kicks
+ * off as it begins sliding over. The final stat stays put and addFinishContinueButton drops the
+ * Continue button in below it.
+ * @param { Array } stats - Per-slide { text, streak? } descriptors
+ * @param { number } i - Current index into the stats array
+ * @param { HTMLElement } container - The deck stage the slides stack inside
+ * @param { HTMLElement | null } previous - The slide to remove once this one has covered it
  */
-function setupSlideInElement(data, i, container, f)
+function slideInFinishStat(stats, i, container, previous)
 {
-    if (i >= data.length)
-        return null;
+    if (i >= stats.length)
+        return;
 
-    let el = addElement(data[i][0], data[i][1], "", data[i][2] === null ? "" : data[i][2], "", container);
-    el.classList.add("slide-able");
-    f(el, data, i);
+    const entry = stats[i];
+    let slide = addElement("div", "", "", "finish-slide slide-able", "", container);
+    addElement("h3", entry.text, "", "", "", slide);
 
-    el.addEventListener("animationend", (_) => {
-        setupSlideInElement(data, i + 1, container, f);
+    // The fire celebration starts the moment the streak slide begins sliding over. The slide itself
+    // is still off to the right at this point, so aim the burst at the stage it is sliding into
+    if (entry.streak)
+    {
+        slide.addEventListener("animationstart", (_) => {
+            const r = container.getBoundingClientRect();
+            playStreakFireAnimation({
+                left: r.left + window.scrollX,
+                top: r.top + window.scrollY,
+                width: r.width,
+                height: r.height
+            });
+        }, { once: true });
+    }
+
+    slide.addEventListener("animationend", (_) => {
+        // The incoming slide has fully covered the previous one, so drop it now
+        if (previous !== null)
+            previous.remove();
+
+        if (i === stats.length - 1)
+            addFinishContinueButton(slide);
+        else
+            slideInFinishStat(stats, i + 1, container, slide);
+    }, { once: true });
+}
+
+/**
+ * Slides the Continue button in below the final stat. It shares that slide (a centred column), so
+ * it sits under the text rather than covering it, and dismisses the finished-round screen on click.
+ * @param { HTMLElement } slide - The final stat slide to append the button to
+ */
+function addFinishContinueButton(slide)
+{
+    const button = addElement("button", lc.finish_page_continue, "", "card-button-edit finish-continue", "", slide);
+    runEventAfterAnimation(button, "click", (_) => {
+        $("finished-session-section").remove();
+        createStartButton();
+        resetSidebar();
     });
-    return el;
 }
 
 /**
@@ -200,18 +239,15 @@ function setupSlideInElement(data, i, container, f)
  * emojis fly out from the bottom of the play field and burn out on the way up. The twemoji
  * MutationObserver picks the emojis up automatically, so they render as SVGs like everywhere else
  * on the site. Skipped entirely for users who prefer reduced motion
+ * @param { Object } rect - Document-space { left, top, width, height } the burst covers. Defaults
+ *                          to the writer area the play field occupied; the finished-round deck
+ *                          passes the streak slide's rectangle so the fire plays over that slide
  */
-function playStreakFireAnimation()
+function playStreakFireAnimation(rect = window.lastWriterRect)
 {
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)
         return;
 
-    // Pin the overlay to the document area the writer occupied, captured just before it was
-    // removed. Anchoring to #start-button-writer-section instead would be wrong twice over: the
-    // section shrink-wraps to the finished-session text, clipping the fire to a narrow column,
-    // and margin: auto re-centres it while the lines slide in, drifting its bottom towards the
-    // footer
-    const rect = window.lastWriterRect;
     let container = addElement("div", "", "streak-fire-container", "streak-fire-container", "", document.body);
     container.setAttribute("aria-hidden", "true");
     container.style.setProperty("left", rect.left + "px");
@@ -248,17 +284,19 @@ function showFinishedSessionPage(st, bStreakAdvanced)
 
     let mainContainer = $("start-button-writer-section");
     let container = addElement("section", "", "finished-session-section", "centered", "", mainContainer);
-    container.classList.add("slide-right")
+    // Give the deck the same footprint the writer had, so the stacked slides have room to overlap
+    container.style.setProperty("height", getDrawElementHeight() + "px");
 
-    const elData = [
-        [ "h3",         lc.finish_page_header,                                                      null                ],
-        [ "p",          `${lc.finish_page_characters_reviewed}: ${window.cardsReviewedCounter}`,    null                ],
-        [ "p",          `${lc.finish_page_phrases_reviewed}: ${window.phrasesReviewedCounter}`,     null                ],
-        [ "p",          `${lc.finish_page_session_len}: ${formatDecimal(result.time)}${result.postfix}`,            null                ],
-        [ "button",     lc.finish_page_continue,                                                    "card-button-edit"  ]
-    ]
+    // One entry per stat slide, in arrival order. The streak slide is flagged so we can burst the
+    // fire over it. The Continue button is not a slide of its own - it lands below the final stat.
+    const stats = [
+        { text: lc.finish_page_header },
+        { text: `${lc.finish_page_characters_reviewed}: ${window.cardsReviewedCounter}` },
+        { text: `${lc.finish_page_phrases_reviewed}: ${window.phrasesReviewedCounter}` },
+        { text: `${lc.finish_page_session_len}: ${formatDecimal(result.time)}${result.postfix}` }
+    ];
 
-    // Sessions that started or extended the daily streak get to brag about its new length. The
+    // Rounds that started or extended the daily streak get to brag about its new length. The
     // singular/plural wording was resolved at build time by the ui18n switch pattern; here we
     // only pick the right baked variant and fill in the count
     if (bStreakAdvanced)
@@ -266,19 +304,10 @@ function showFinishedSessionPage(st, bStreakAdvanced)
         const streak = window.localStorageData.streak;
         const text = (streak === 1 ? lc.finish_page_streak_increased_one : lc.finish_page_streak_increased)
             .replace("{streak}", streak);
-        elData.splice(elData.length - 1, 0, [ "p", text, null ]);
+        stats.push({ text: text, streak: true });
     }
 
-    setupSlideInElement(elData, 0, container, (e, data, i) => {
-        if (data[i][0] === "button")
-        {
-            runEventAfterAnimation(e, "click", (_) => {
-                $("finished-session-section").remove();
-                createStartButton();
-                resetSidebar();
-            })
-        }
-    });
+    slideInFinishStat(stats, 0, container, null);
 }
 
 function setWriterState(ref)
@@ -354,7 +383,10 @@ function resetSessionData()
  */
 function resetPlayForPhrases(data)
 {
-    ++window.phrasesReviewedCounter;
+    // This runs once per character of a phrase, so only count a phrase as reviewed when we're
+    // setting up its first character (currentIndex === 0) - otherwise the tally counts characters
+    if (window.currentIndex === 0)
+        ++window.phrasesReviewedCounter;
     let currentPhrase = data.phrases[window.currentPhraseIndex];
     const phraseChars = toCharacters(currentPhrase.phrase);
     let card = null;
@@ -530,10 +562,9 @@ async function writerOnComplete(_)
         }
     }
 
-    // If there are no cards, remove the writer and recreate the initial view. Capture where the
-    // writer was first — the new-streak fire animation below covers exactly that area, and it
-    // cannot be measured later: the finished-session layout that replaces the writer shrink-wraps
-    // and re-centres itself while its lines slide in
+    // The round is over: remove the writer and hide the sidebar (the finished-round deck is shown
+    // full-width). Capture the writer's rectangle first as a fallback fire target, in case it is
+    // ever needed before a slide rect is available
     const writerRect = $("character-target-div").getBoundingClientRect();
     window.lastWriterRect = {
         left: writerRect.left + window.scrollX,
@@ -542,6 +573,7 @@ async function writerOnComplete(_)
         height: writerRect.height
     };
     $("character-target-div").remove();
+    $("main-content").classList.remove("in-session");
 
     // Save user data
     const now = Date.now();
@@ -549,11 +581,10 @@ async function writerOnComplete(_)
     data.totalTimeInSessions += st;
     window.sessionTime = now;
 
-    // A day only counts towards the daily streak when a session is fully completed. Persisted by
-    // the saveToLocalStorage call below. Starting or extending a streak gets a little celebration
+    // A day only counts towards the daily streak when a round is fully completed. Persisted by the
+    // saveToLocalStorage call below. Starting or extending a streak gets a little celebration,
+    // played on the streak slide itself from inside showFinishedSessionPage
     const bStreakAdvanced = updateDailyStreak();
-    if (bStreakAdvanced)
-        playStreakFireAnimation();
 
     showFinishedSessionPage(st, bStreakAdvanced);
 
@@ -612,6 +643,10 @@ function createStartButton()
         // Remove the start session button and set the global to indicate that we're in a test
         $("start-button").remove();
         window.bInTest = true;
+
+        // Reveal the sidebar for the duration of the revision round (see main.css). It is removed
+        // again in writerOnComplete when we switch to the finished-round slide deck
+        $("main-content").classList.add("in-session");
 
         // Append HTML for the writer background, which is just a star
         const page = $("start-button-writer-section");

@@ -5,15 +5,15 @@ translations:
   - id: phrase-info-widget-errors
     text: "Фрази: {}; Грешки: {}"
   - id: character-info-widget-def-p
-    text: "Определения:"
+    text: "Значения:"
   - id: character-info-widget-info-default
     text: "Ще бъде попълнено, когато започнете сесия"
   - id: character-info-widget-errors
     text: "Карти: {}; Грешки: {}"
   - id: character-info-widget-spelling
-    text: "Произношение: Ще бъде попълнено, когато започнете сесия"
+    text: "Произношение: Ще бъде попълнено, когато започнете серия"
   - id: start-button
-    text: "Играй!"
+    text: "Започване на нова серия!"
   - id: 404-text
     text: "За съжаление, тази страница не съществува"
   - id: phrases_count_errors
@@ -23,11 +23,11 @@ translations:
   - id: phrases_count_spelling
     text: "Произношение"
   - id: to_be_loaded
-    text: "To be loaded"
+    text: "Ще бъде заредено скоро"
   - id: no_cards_link_deck
     text: "Тесте"
   - id: no_cards_text
-    text: "В момента нямате карти, влезте в You currently have no cards, go to the "
+    text: "В момента нямате карти, влезте в "
   - id: no_cards_text_postfix
     text: " страницата, за да добавите!"
   - id: footer
@@ -41,27 +41,27 @@ translations:
   - id: locale
     text: "bg_BG/"
   - id: extensive-mode-title
-    text: "Включва т.н. подробен режим. Вместо преглеждане на картите само веднъж, картите се преглеждат няколко пъти, като постепенно се премахват картите с най-високо ниво на познание."
+    text: "Включва т.н. подробен режим. Вместо преговаряне на картите само веднъж, картите се преглеждат няколко пъти, като постепенно се премахват картите с най-високо ниво на познание."
   - id: extensive-mode-aria-label
     text: "Чекбокс за подробен режим"
   - id: extensive-mode-label
     text: "Подробен режим"
   - id: level-reduce-title
-    text: "Понижава нивото на познанието ви за всички символи и фрази, със зададеното от вас количество точки, всеки ден."
+    text: "Понижава нивото на познанието Ви за всички символи и фрази със зададеното от вас количество точки всеки ден."
   - id: level-reduce-aria-label
     text: "Слайдер за дневно понижаване на нивото"
   - id: level-reduce-label
-    text: "Дневно понижаване на нитовото:"
+    text: "Дневно понижаване на нивовото:"
   - id: game_modifiers_header
-    text: "Настройки за играта"
+    text: "Настройки"
   - id: finish_page_header
-    text: "Тестето е прегледано"
+    text: "Тестето е преговорено"
   - id: finish_page_characters_reviewed
-    text: "Прегледани символи"
+    text: "Преговорени символи"
   - id: finish_page_phrases_reviewed
-    text: "Прегледани фрази"
+    text: "Преговорени фрази"
   - id: finish_page_session_len
-    text: "Дължина на сесията"
+    text: "Времетраене на серията"
   - id: finish_page_streak_increased
     text: "Увеличихте дневната си серия днес - {streak}{streak_days}"
     switch:
@@ -78,9 +78,9 @@ translations:
     text: "Очаквайте скоро!"
     # Add coming soon text 1
   - id: coming-soon-text-1
-    text: ""
+    text: "Може да разгледате главният сайт на {}, или {}!"
   - id: coming-soon-text-2
-    text: "Благодарим за търпението ви!"
+    text: "Благодарим за търпението Ви!"
 
   # deck-edit-card.html
   - id: edit-card-site-title
@@ -90,13 +90,13 @@ translations:
   - id: input-mode-p
     text: "Метод на въвеждане: "
   - id: input-mode-none
-    text: "Нормално"
+    text: "Нормален"
   - id: pinyin-input-description
-    text: "Позволява ви да използвате формата на Pinyin с числа в полетата за въвеждане на текст. Ще превърне текста във валиден pinyin. Пример: 'pin1 yin1' става 'pīn yīn'."
+    text: "Позволява Ви да използвате Pinyin с числа в полетата за въвеждане на текст. Ще превърне текста във валиден Pinyin. Пример: 'pin1 yin1' става 'pīn yīn'."
   - id: romaji-hiragana-input-description
-    text: "Позволява ви да използвате Romaji за да пишете на Хирагана. Забележка 1: Слагайки 'x' преди звука ви позволява пишете малка Хирагана. Забележка 2: Единственият начин да напишете 'っ', е като напишете 'xtsu'. Забележка 3: Използвайте '-' за 'ー'."
+    text: "Позволява Ви да използвате Romaji за да пишете на Хирагана. Забележка 1: Слагайки 'x' преди звука Ви позволява пишете малка Хирагана. Забележка 2: Единственият начин да напишете 'っ', е като напишете 'xtsu'. Забележка 3: Използвайте '-' за 'ー'."
   - id: romaji-katakana-input-description
-    text: "Позволява ви да използвате Romaji за да пишете на Катакана. Забележка 1: Слагайки 'x' преди звука ви позволява пишете малка Катакана. Забележка 2: Единственият начин да напишете 'ッ', е като напишете 'xtsu'. Забележка 3: Използвайте '-' за 'ー'."
+    text: "Позволява Ви да използвате Romaji за да пишете на Катакана. Забележка 1: Слагайки 'x' преди звука Ви позволява пишете малка Катакана. Забележка 2: Единственият начин да напишете 'ッ', е като напишете 'xtsu'. Забележка 3: Използвайте '-' за 'ー'."
   - id: phrase-preview-section-header
     text: "Визуализации"
   - id: finish-edit-button
@@ -110,9 +110,9 @@ translations:
   - id: character_variant_default
     text: "Стандартен"
   - id: character_variant_kanji
-    text: "Канджи"
+    text: "Канжи"
   - id: character_variant_hanja
-    text: "Ханджа"
+    text: "Ханжа"
   - id: name_text_field_aria
     text: "Текстово поле за името"
   - id: character_text_field_aria
@@ -138,7 +138,7 @@ translations:
   - id: profile-statistics-header
     text: "Статистика за потребителя"
   - id: total-sessions-field
-    text: "Общ брой сесии"
+    text: "Общ брой серии"
   - id: streak-field
     text: "Дневна серия"
   - id: deck-card-num-field
@@ -146,13 +146,13 @@ translations:
   - id: deck-phrase-num-field
     text: "Фрази в тестето"
   - id: last-session-date-field
-    text: "Последна сесия"
+    text: "Дата на последната серия"
   - id: average-knowledge-level-field
     text: "Средно ниво на познанията"
   - id: average-session-length-field
-    text: "Средна дължина на сесиите"
+    text: "Средна дължина на серия"
   - id: time-spent-in-sessions-field
-    text: "Време прекарано в игра"
+    text: "Време прекарано в преговаряне"
   - id: new-card-header
     text: "Добавете нова карта или фраза в тестето си"
   - id: new-card-button
@@ -192,7 +192,7 @@ translations:
   - id: js_locale
     text: "bg-BG"
   - id: no_sessions_recorded
-    text: "Няма записани сесии!"
+    text: "Няма записани серии!"
   - id: average_knowledge_level
     text: "Средно ниво на познанията"
   - id: part_of
@@ -210,7 +210,7 @@ translations:
   - id: community_decks_header
     text: "Обществени тестета"
   - id: import_deck_confirm_text
-    text: "Внасянето на тесте ЩЕ слее сегашното ви тесте с новото! За да внесете само новото, първо изчистете тестето си!"
+    text: "Внасянето на тесте ЩЕ слее сегашното Ви тесте с новото! За да внесете само новото, първо изчистете тестето си!"
   - id: leveled_up_no
     text: "Не"
   - id: leveled_up_yes
