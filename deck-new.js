@@ -41,11 +41,11 @@ function constructPreviewCardGeneric(index, it, owner)
         const phraseChar = it !== null ? toCharacters(it.phrase)[index] : null;
         if (it !== null)
         {
-            for (let i in window.localStorageData.cards)
+            for (let i in window.profileData.cards)
             {
-                if (window.localStorageData.cards[i].character === phraseChar)
+                if (window.profileData.cards[i].character === phraseChar)
                 {
-                    lit = window.localStorageData.cards[i];
+                    lit = window.profileData.cards[i];
                     break;
                 }
             }
@@ -259,11 +259,11 @@ function constructEditCard(index, it, root, bPhrase)
     {
         // Index the phrase by code point so characters outside the BMP stay whole
         const phraseChars = toCharacters(it.phrase);
-        for (let f in window.localStorageData.cards)
+        for (let f in window.profileData.cards)
         {
-            if (phraseChars[index] === window.localStorageData.cards[f].character)
+            if (phraseChars[index] === window.profileData.cards[f].character)
             {
-                lit = window.localStorageData.cards[f];
+                lit = window.profileData.cards[f];
                 break;
             }
         }
@@ -404,7 +404,7 @@ function constructListElements()
     let deleteButton = $("delete-edit-button");
     if (urlParams.has("edit"))
     {
-        dataContainer = window.localStorageData.cards;
+        dataContainer = window.profileData.cards;
         index = parseInt(urlParams.get("edit"), 10);
         deleteButton.style.display = "inline-block";
 
@@ -412,15 +412,14 @@ function constructListElements()
         runEventAfterAnimation(deleteButton, "click", (e) => {
             if (confirm(lc.deck_new_delete_card))
             {
-                window.localStorageData.cards.splice(e.target.cardIndex, 1);
-                saveToLocalStorage(window.localStorageData);
-                location.href = "./deck.html";
+                window.profileData.cards.splice(e.target.cardIndex, 1);
+                saveProfileData(window.profileData).then(() => { location.href = "./deck.html"; });
             }
         });
     }
     else if (urlParams.has("phrase-edit"))
     {
-        dataContainer = window.localStorageData.phrases;
+        dataContainer = window.profileData.phrases;
         index = parseInt(urlParams.get("phrase-edit"), 10);
         $("phrase-preview-section").style.display = "block";
         deleteButton.style.display = "inline-block";
@@ -429,9 +428,8 @@ function constructListElements()
         runEventAfterAnimation(deleteButton, "click", (e) => {
             if (confirm(lc.deck_new_delete_phrase))
             {
-                window.localStorageData.phrases.splice(e.target.cardIndex, 1);
-                saveToLocalStorage(window.localStorageData);
-                location.href = "./deck.html";
+                window.profileData.phrases.splice(e.target.cardIndex, 1);
+                saveProfileData(window.profileData).then(() => { location.href = "./deck.html"; });
             }
         });
     }
@@ -486,7 +484,7 @@ function deckEditMain()
     constructListElements();
     runEventAfterAnimation($("finish-edit-button"), "click", function(_) {
         if (window.previewPhrase !== null)
-            window.localStorageData.phrases.push(window.previewPhrase);
+            window.profileData.phrases.push(window.previewPhrase);
 
         // Deduplicate new cards by character + variant (a phrase can contain the same character
         // several times), keeping the first occurrence of each
@@ -497,14 +495,15 @@ function deckEditMain()
             if (!seenCharacters.has(key))
             {
                 seenCharacters.add(key);
-                window.localStorageData.cards.push(card);
+                window.profileData.cards.push(card);
             }
         }
 
-        saveToLocalStorage(window.localStorageData);
-        location.href = "./deck.html";
+        // Wait for the write to commit before navigating back to the deck page
+        saveProfileData(window.profileData).then(() => { location.href = "./deck.html"; });
     });
     runEventAfterAnimation($("cancel-edit-button"), "click", function() { location.href = './deck.html' })
 }
 
-deckEditMain();
+// Wait until index.js has loaded the profile data from IndexedDB before running the editor
+window.youyinStorageReady.then(() => deckEditMain());

@@ -45,10 +45,12 @@ function constructElement(val, deckContainer, deck, type, language)
             if (content === undefined)
                 return;
 
-            let dt = window.localStorageData;
+            let dt = window.profileData;
             dt.cards.push.apply(dt.cards, content.cards);
             dt.phrases.push.apply(dt.phrases, content.phrases);
-            saveToLocalStorage(dt);
+            // Wait for the write to commit before navigating, otherwise the imported deck may not
+            // be persisted by the time the deck page loads
+            await saveProfileData(dt);
             location.href = "./deck.html";
         }
     });
@@ -149,4 +151,5 @@ async function marketplaceMain()
     runEventAfterAnimation($("upload-deck-public"), "click", (_) => { window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository') });
 }
 
-marketplaceMain().then(_ => {});
+// Wait until index.js has loaded the profile data from IndexedDB before running the marketplace
+window.youyinStorageReady.then(() => marketplaceMain());

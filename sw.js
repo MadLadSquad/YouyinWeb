@@ -38,6 +38,8 @@ const ROOT_ONLY_ASSETS = [
     'manifest.json'
 ];
 
+// Same-origin app shell: always served from our own host, so these are reliable and cached
+// atomically — a failure here means a genuinely broken build worth surfacing
 const STATIC_ASSETS = [
     './',
     ...PAGES.map((page) => './' + page),
@@ -50,8 +52,13 @@ const STATIC_ASSETS = [
         ...PAGES.map((page) => `./${locale}/${page}`),
         ...SCRIPTS.map((script) => `./${locale}/${script}`),
     ]),
+];
 
-    // Static CDN libraries
+// Cross-origin CDN libraries: these can be blocked by content/privacy extensions, fail to resolve
+// on restricted networks, or be unreachable in some regions. They must be cached best-effort —
+// rolling them into the atomic addAll() above would let a single blocked request reject the whole
+// install, breaking the PWA (and spamming a registration error) on every page for affected users
+const CDN_ASSETS = [
     'https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js',
     'https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js',
     'https://fonts.googleapis.com/css2?family=Ubuntu&display=swap'
@@ -60,9 +67,22 @@ const STATIC_ASSETS = [
 // Installs the service worker and caches basic page shells and styles
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
+        caches.open(CACHE_NAME).then(async (cache) => {
             console.log('Youyin Service Worker: Pre-caching static assets');
-            return cache.addAll(STATIC_ASSETS);
+            // Required app shell, atomic
+            await cache.addAll(STATIC_ASSETS);
+            // Optional CDN assets, best-effort so a blocked/unreachable one can't fail the install.
+            // Each is fetched with a timeout so a hanging CDN can't stall activation either
+            const cdnResults = await Promise.allSettled(CDN_ASSETS.map(async (url) => {
+                const response = await fetch(url, { signal: AbortSignal.timeout(10000) });
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                await cache.put(url, response);
+            }));
+            cdnResults.forEach((result, i) => {
+                if (result.status === 'rejected') {
+                    console.warn('Youyin Service Worker: Skipped uncacheable CDN asset', CDN_ASSETS[i], result.reason);
+                }
+            });
         }).then(() => self.skipWaiting())
     );
 });

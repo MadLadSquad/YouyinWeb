@@ -39,8 +39,78 @@ window.SECOND_UNIX = 1000;
 window.CHARACTER_FETCH_URL = "https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/data/";
 // ---------------------------------- CONSTANT BLOCK END ----------------------------------
 
-window.localStorageData = null;
+// In-memory copy of the user's profile data. It is loaded from IndexedDB once at startup (see
+// main()) and every synchronous read across the page scripts goes through this object — only the
+// initial load and the saveProfileData/saveGameModifiers writes touch IndexedDB
+window.profileData = null;
 window.gameModifiers = null;
+
+// ----------------------------- IndexedDB profile storage layer --------------------------------
+// Profile data (decks, sessions, streak, game modifiers) lives in IndexedDB. UI-only settings
+// (theme, language) deliberately stay in localStorage — they are tiny and read synchronously
+// before the page renders. Values are stored as structured-clonable objects under string keys,
+// so no JSON.stringify is needed
+window.YOUYIN_DB_NAME = "youyin";
+window.YOUYIN_DB_VERSION = 1;
+window.YOUYIN_DB_STORE = "profile";
+window.YOUYIN_CARD_DATA_KEY = "youyinCardData";
+window.YOUYIN_GAME_MODIFIERS_KEY = "youyinGameModifiers";
+
+// Cached open-connection promise so we only open the database once per page
+let youyinDBPromise = null;
+
+/**
+ * Opens (and lazily creates) the Youyin IndexedDB database, caching the connection promise
+ * @returns { Promise<IDBDatabase> } - The open database connection
+ */
+function openYouyinDB()
+{
+    if (youyinDBPromise === null)
+    {
+        youyinDBPromise = new Promise((resolve, reject) => {
+            const request = indexedDB.open(window.YOUYIN_DB_NAME, window.YOUYIN_DB_VERSION);
+            request.onupgradeneeded = () => {
+                const db = request.result;
+                if (!db.objectStoreNames.contains(window.YOUYIN_DB_STORE))
+                    db.createObjectStore(window.YOUYIN_DB_STORE);
+            };
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+    return youyinDBPromise;
+}
+
+/**
+ * Reads a value from the profile store by key
+ * @param { string } key - The key to read
+ * @returns { Promise<*> } - The stored value, or null when nothing is stored under the key
+ */
+function idbGet(key)
+{
+    return openYouyinDB().then((db) => new Promise((resolve, reject) => {
+        const transaction = db.transaction(window.YOUYIN_DB_STORE, "readonly");
+        const request = transaction.objectStore(window.YOUYIN_DB_STORE).get(key);
+        request.onsuccess = () => resolve(request.result === undefined ? null : request.result);
+        request.onerror = () => reject(request.error);
+    }));
+}
+
+/**
+ * Writes a value to the profile store under the given key
+ * @param { string } key - The key to write
+ * @param { * } value - A structured-clonable value to store
+ * @returns { Promise<void> } - Resolves once the write transaction commits
+ */
+function idbPut(key, value)
+{
+    return openYouyinDB().then((db) => new Promise((resolve, reject) => {
+        const transaction = db.transaction(window.YOUYIN_DB_STORE, "readwrite");
+        transaction.objectStore(window.YOUYIN_DB_STORE).put(value, key);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+    }));
+}
 
 /**
  * Troll jQuery developers. Returns the element with the given id
@@ -195,17 +265,30 @@ function createCardWriter(targetId, character, size = window.CARD_WRITER_SIZE)
 }
 
 /**
- * Saves an object to the "youyinCardData" entry in the browser's local storage
- * @param { Object } obj - The object in question
+ * Persists the profile data object to IndexedDB under the card-data key. Updates the in-memory
+ * copy too, so callers passing a fresh object keep window.profileData in sync. The returned promise
+ * resolves once the write commits — await it before navigating away, otherwise the browser may tear
+ * the page down before the transaction flushes
+ * @param { Object } obj - The profile data object to persist
+ * @returns { Promise<void> } - Resolves once the write commits
  */
-function saveToLocalStorage(obj)
+function saveProfileData(obj)
 {
-    window.localStorage.setItem("youyinCardData", JSON.stringify(obj));
+    window.profileData = obj;
+    return idbPut(window.YOUYIN_CARD_DATA_KEY, obj).catch((err) => {
+        console.error("Youyin: failed to save profile data", err);
+    });
 }
 
+/**
+ * Persists the game modifiers to IndexedDB
+ * @returns { Promise<void> } - Resolves once the write commits
+ */
 function saveGameModifiers()
 {
-    window.localStorage.setItem("youyinGameModifiers", JSON.stringify(window.gameModifiers));
+    return idbPut(window.YOUYIN_GAME_MODIFIERS_KEY, window.gameModifiers).catch((err) => {
+        console.error("Youyin: failed to save game modifiers", err);
+    });
 }
 
 /**
@@ -264,9 +347,9 @@ function fisherYates(array)
 // Some legacy users may be lacking variants as part of their character card objects, so this function fixes this
 function fixLegacyCharacterVariants()
 {
-    for (let i in window.localStorageData.cards)
+    for (let i in window.profileData.cards)
     {
-        let card = window.localStorageData.cards[i];
+        let card = window.profileData.cards[i];
         if (!card["variant"])
         {
             // Split by code point — charAt(0)/substring(1) count UTF-16 units and would cut a
@@ -341,15 +424,69 @@ function setLanguageBox()
     });
 }
 
-function main()
+/**
+ * Loads profile data and game modifiers from IndexedDB into the in-memory globals. Legacy users
+ * still have their data in localStorage — the first time we find nothing in IndexedDB but a legacy
+ * entry in localStorage, we move it across (write to IndexedDB, then drop the localStorage key) so
+ * subsequent visits read straight from IndexedDB. Leaves the globals as null when nothing exists
+ * yet; main() initializes the defaults
+ * @returns { Promise<void> } - Resolves once both globals are populated from storage
+ */
+async function loadProfileData()
 {
-    // Saves us performance costs of loading and saving things many times. Missing or partial
-    // data (a first visit, or decks from before phrases/levelReduce existed) is initialized in
-    // place and saved back — page scripts only run after this, so no reload is needed
-    window.localStorageData = JSON.parse(window.localStorage.getItem("youyinCardData"));
-    if (window.localStorageData === null)
+    let cardData = await idbGet(window.YOUYIN_CARD_DATA_KEY);
+    let modifiers = await idbGet(window.YOUYIN_GAME_MODIFIERS_KEY);
+
+    // One-time migration of legacy localStorage users to IndexedDB
+    if (cardData === null)
     {
-        window.localStorageData = {
+        const legacy = window.localStorage.getItem("youyinCardData");
+        if (legacy !== null)
+        {
+            cardData = JSON.parse(legacy);
+            await idbPut(window.YOUYIN_CARD_DATA_KEY, cardData);
+            window.localStorage.removeItem("youyinCardData");
+        }
+    }
+    if (modifiers === null)
+    {
+        const legacy = window.localStorage.getItem("youyinGameModifiers");
+        if (legacy !== null)
+        {
+            modifiers = JSON.parse(legacy);
+            await idbPut(window.YOUYIN_GAME_MODIFIERS_KEY, modifiers);
+            window.localStorage.removeItem("youyinGameModifiers");
+        }
+    }
+
+    window.profileData = cardData;
+    window.gameModifiers = modifiers;
+}
+
+async function main()
+{
+    // Load the profile data once into memory. Missing or partial data (a first visit, or decks
+    // from before phrases/levelReduce existed) is initialized in place and saved back — page
+    // scripts wait on window.youyinStorageReady, so the data is ready before they run
+    try
+    {
+        await loadProfileData();
+    }
+    catch (err)
+    {
+        // IndexedDB can be unavailable (e.g. some private-browsing modes). Fall back to whatever is
+        // still in localStorage (legacy users keep their decks; the migration just never completes)
+        // so the app still works this session, even if writes won't persist
+        console.error("Youyin: failed to load profile data from IndexedDB", err);
+        const legacyCardData = window.localStorage.getItem("youyinCardData");
+        const legacyModifiers = window.localStorage.getItem("youyinGameModifiers");
+        window.profileData = legacyCardData !== null ? JSON.parse(legacyCardData) : null;
+        window.gameModifiers = legacyModifiers !== null ? JSON.parse(legacyModifiers) : null;
+    }
+
+    if (window.profileData === null)
+    {
+        window.profileData = {
             sessions: 0,
             streak: 0,
             lastDate: 0,
@@ -359,28 +496,27 @@ function main()
             cards: [],
             phrases: [],
         }
-        saveToLocalStorage(window.localStorageData);
+        saveProfileData(window.profileData);
     }
-    else if (!window.localStorageData["phrases"])
+    else if (!window.profileData["phrases"])
     {
-        window.localStorageData["phrases"] = [];
-        saveToLocalStorage(window.localStorageData);
+        window.profileData["phrases"] = [];
+        saveProfileData(window.profileData);
     }
 
     // Users from before the daily-streak feature: derive the last play-day once from lastDate in
     // the current timezone. daily-streak.js loads after this file, so its localDayIndex helper is
     // not available yet — the formula is inlined here (keep the two in sync)
-    if (window.localStorageData["lastStreakDay"] === undefined)
+    if (window.profileData["lastStreakDay"] === undefined)
     {
-        const last = window.localStorageData.lastDate;
+        const last = window.profileData.lastDate;
         const d = new Date(last);
-        window.localStorageData["lastStreakDay"] = last !== 0
+        window.profileData["lastStreakDay"] = last !== 0
             ? Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000)
             : 0;
-        saveToLocalStorage(window.localStorageData);
+        saveProfileData(window.profileData);
     }
 
-    window.gameModifiers = JSON.parse(window.localStorage.getItem("youyinGameModifiers"));
     if (window.gameModifiers === null)
     {
         window.gameModifiers = {
@@ -428,4 +564,6 @@ function main()
     }
 }
 
-main();
+// Loading profile data from IndexedDB is asynchronous, so page scripts must wait for this promise
+// before touching window.profileData / window.gameModifiers. They do so via window.youyinStorageReady
+window.youyinStorageReady = main();

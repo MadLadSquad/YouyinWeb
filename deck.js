@@ -5,7 +5,7 @@
  */
 function updateExportButton()
 {
-    const dt = window.localStorageData;
+    const dt = window.profileData;
     const data = {
         cards: dt.cards,
         phrases: dt.phrases
@@ -30,14 +30,15 @@ function importDeck(f) {
     {
         const reader = new FileReader();
         reader.addEventListener("load", (e) => {
-            let dt = window.localStorageData;
+            let dt = window.profileData;
             let data = JSON.parse(e.target.result.toString());
 
             dt.cards.push.apply(dt.cards, data.cards);
             dt.phrases.push.apply(dt.phrases, data.phrases);
 
-            saveToLocalStorage(dt);
-            document.location.reload();
+            // Wait for the IndexedDB write to commit before reloading, otherwise the reload can
+            // tear the page down before the transaction flushes
+            saveProfileData(dt).then(() => document.location.reload());
         });
         reader.readAsText(f.target.files[0])
     }
@@ -47,12 +48,11 @@ function clearDeck() {
     let bExecuted = confirm(lc.clear_deck_confirm_text);
     if (bExecuted)
     {
-        let dt = window.localStorageData;
+        let dt = window.profileData;
         dt.cards = [];
         dt.phrases = [];
 
-        saveToLocalStorage(dt);
-        document.location.reload();
+        saveProfileData(dt).then(() => document.location.reload());
     }
 }
 
@@ -61,18 +61,18 @@ function clearDeck() {
  */
 function setProfileCardData()
 {
-    $("total-sessions-field").textContent += window.localStorageData.sessions;
+    $("total-sessions-field").textContent += window.profileData.sessions;
     renderStreakField();
-    $("deck-card-num-field").textContent += window.localStorageData.cards.length;
-    $("deck-phrase-num-field").textContent += window.localStorageData.phrases.length;
+    $("deck-card-num-field").textContent += window.profileData.cards.length;
+    $("deck-phrase-num-field").textContent += window.profileData.phrases.length;
 
-    let totalTime = (window.localStorageData.totalTimeInSessions * 1);
+    let totalTime = (window.profileData.totalTimeInSessions * 1);
     if (isNaN(totalTime))
         totalTime = 0;
 
     // Average in milliseconds first, then localise each value separately — the average and the
     // total usually land in different units (e.g. seconds vs hours)
-    let averageTime = totalTime / window.localStorageData.sessions;
+    let averageTime = totalTime / window.profileData.sessions;
     if (isNaN(averageTime))
         averageTime = 0;
 
@@ -81,7 +81,7 @@ function setProfileCardData()
     $("average-session-length-field").textContent += (formatDecimal(average.time) + average.postfix);
     $("time-spent-in-sessions-field").textContent += (formatDecimal(total.time) + total.postfix);
 
-    const lastDate = window.localStorageData.lastDate;
+    const lastDate = window.profileData.lastDate;
     if (lastDate !== 0)
     {
         const date = new Date(lastDate);
@@ -100,10 +100,10 @@ function setProfileCardData()
 
     const averageKnowledge = $("average-knowledge-level-field");
     let knowledge = 0;
-    for (let i in window.localStorageData.cards)
-        knowledge += window.localStorageData.cards[i].knowledge;
+    for (let i in window.profileData.cards)
+        knowledge += window.profileData.cards[i].knowledge;
 
-    knowledge /= window.localStorageData.cards.length;
+    knowledge /= window.profileData.cards.length;
     if (isNaN(knowledge))
         knowledge = 0;
     averageKnowledge.textContent = `${lc.average_knowledge_level}: ${formatDecimal(knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`;
@@ -117,7 +117,7 @@ function setProfileCardData()
  */
 function findCharacterVariant(character)
 {
-    const cards = window.localStorageData.cards;
+    const cards = window.profileData.cards;
     for (let i in cards)
         if (cards[i].character === character)
             return cards[i].variant || "";
@@ -154,7 +154,7 @@ function constructCard(it, index, container, localIndex)
     // If it's a character find which phrases contain it
     if (it["character"])
     {
-        const data = window.localStorageData;
+        const data = window.profileData;
         // Actual optimisation
         if (data.phrases.length > 0)
         {
@@ -266,7 +266,7 @@ function deckmain()
     runEventAfterAnimation($("new-phrase-button"), "click", function() { location.href = './deck-edit-card.html?phrase-new' });
     runEventAfterAnimation($("marketplace-deck-button"), "click", function() { location.href = './marketplace.html' });
 
-    const data = window.localStorageData;
+    const data = window.profileData;
     let cardsContainer = $("deck-characters-section");
     let phrasesContainer = $("deck-phrases-section");
 
@@ -301,4 +301,5 @@ function deckmain()
     }
 }
 
-deckmain();
+// Wait until index.js has loaded the profile data from IndexedDB before rendering the deck
+window.youyinStorageReady.then(() => deckmain());

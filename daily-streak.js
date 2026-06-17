@@ -30,7 +30,7 @@ function renderStreakField()
 
     // The singular/plural wording was resolved at build time by the ui18n switch pattern; pick
     // the right baked variant and fill in the count
-    const streak = window.localStorageData.streak;
+    const streak = window.profileData.streak;
     el.textContent = el.getAttribute("data-streak-label")
         + (streak === 1 ? lc.streak_days_count_one : lc.streak_days_count).replace("{streak}", streak);
 }
@@ -38,13 +38,13 @@ function renderStreakField()
 /**
  * Advances the streak when a session is fully completed. The same local day as the last completion
  * is a no-op, the day right after grows the streak and anything else starts a new one. Does NOT
- * save — the completion path in main-page.js calls saveToLocalStorage right after
+ * save — the completion path in main-page.js calls saveProfileData right after
  * @returns { boolean } - True when this completion advanced the streak, either by starting a new
  *                        one or by extending it to today; false when today was already counted
  */
 function updateDailyStreak()
 {
-    let data = window.localStorageData;
+    let data = window.profileData;
     const today = localDayIndex(new Date());
 
     // >= instead of === also covers a clock or timezone moved backwards — never punish that. The
@@ -73,14 +73,14 @@ function updateDailyStreak()
  */
 function checkStreakExpiry()
 {
-    let data = window.localStorageData;
+    let data = window.profileData;
     if (data.streak === 0 || !data.lastStreakDay)
         return;
 
     if (localDayIndex(new Date()) - data.lastStreakDay > 1)
     {
         data.streak = 0;
-        saveToLocalStorage(data);
+        saveProfileData(data);
         renderStreakField();
     }
 }
@@ -93,7 +93,7 @@ function checkStreakExpiry()
  */
 function applyDailyLevelReduction()
 {
-    let data = window.localStorageData;
+    let data = window.profileData;
     const today = localDayIndex(new Date());
 
     // First run (fresh user or a deck from before the feature shipped): start counting from today
@@ -101,7 +101,7 @@ function applyDailyLevelReduction()
     if (!data.lastLevelReduceDay)
     {
         data.lastLevelReduceDay = today;
-        saveToLocalStorage(data);
+        saveProfileData(data);
         return;
     }
 
@@ -124,7 +124,7 @@ function applyDailyLevelReduction()
     // Advance even when the slider sits at 0, so that raising it later only counts the days
     // after the change
     data.lastLevelReduceDay = today;
-    saveToLocalStorage(data);
+    saveProfileData(data);
 }
 
 /**
@@ -159,12 +159,15 @@ function scheduleDailyMidnightCheck()
     }, msUntilNextLocalMidnight() + window.SECOND_UNIX);
 }
 
-// index.js's main() has already populated window.localStorageData and window.gameModifiers — it
-// runs synchronously at parse time and this script is loaded right after it in the footer. The
-// reduction runs before the page scripts, so the deck page renders already-reduced levels
-applyDailyLevelReduction();
-checkStreakExpiry();
-scheduleDailyMidnightCheck();
+// index.js's main() loads window.profileData and window.gameModifiers from IndexedDB asynchronously,
+// so wait on window.youyinStorageReady before reducing levels and checking the streak. This still
+// runs before the page scripts' own youyinStorageReady callbacks chain, so the deck page renders
+// already-reduced levels
+window.youyinStorageReady.then(() => {
+    applyDailyLevelReduction();
+    checkStreakExpiry();
+    scheduleDailyMidnightCheck();
+});
 
 // Timers are throttled or paused in background tabs and across system sleep, and the timezone may
 // have changed while suspended — re-evaluate whenever the tab becomes visible again

@@ -104,13 +104,13 @@ function writerOnMistake(strokeData)
     }
 
     // Either use the number of cards or the phrase-local number
-    let num = sessionRevisionCount(window.localStorageData.cards);
+    let num = sessionRevisionCount(window.profileData.cards);
     if (window.bInPhrase)
     {
-        num = toCharacters(window.localStorageData.phrases[window.currentPhraseIndex].phrase).length;
+        num = toCharacters(window.profileData.phrases[window.currentPhraseIndex].phrase).length;
         // Also update the phrase information. It's ugly, I know...
         // Display as 1-based to match changeSidebarText, which renders currentPhraseIndex + 1
-        $("phrase-info-widget-errors").textContent = `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${sessionRevisionCount(window.localStorageData.phrases)}; ${lc.phrases_count_errors}: ${window.totalSessionErrors}`;
+        $("phrase-info-widget-errors").textContent = `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${sessionRevisionCount(window.profileData.phrases)}; ${lc.phrases_count_errors}: ${window.totalSessionErrors}`;
     }
 
     // Update the card information. 1-based to match changeSidebarText, which renders currentIndex + 1.
@@ -341,7 +341,7 @@ function showFinishedSessionPage(st, bStreakAdvanced)
     // only pick the right baked variant and fill in the count
     if (bStreakAdvanced)
     {
-        const streak = window.localStorageData.streak;
+        const streak = window.profileData.streak;
         const text = (streak === 1 ? lc.finish_page_streak_increased_one : lc.finish_page_streak_increased)
             .replace("{streak}", streak);
         stats.push({ text: text, streak: true });
@@ -600,7 +600,7 @@ async function writerOnComplete(_)
     // Go to the next card
     ++window.currentIndex;
 
-    let data = window.localStorageData;
+    let data = window.profileData;
 
     // Calculate how many points to add to your knowledge
     const strokeNum = window.writer._character.strokes.length;
@@ -772,7 +772,7 @@ async function writerOnComplete(_)
     window.sessionTime = now;
 
     // A day only counts towards the daily streak when a round is fully completed. Persisted by the
-    // saveToLocalStorage call below. Starting or extending a streak gets a little celebration,
+    // saveProfileData call below. Starting or extending a streak gets a little celebration,
     // played on the streak slide itself from inside showFinishedSessionPage
     const bStreakAdvanced = updateDailyStreak();
 
@@ -786,7 +786,7 @@ async function writerOnComplete(_)
     window.totalSessionStrokes = 0;
 
     // Recreate initial view
-    saveToLocalStorage(data);
+    saveProfileData(data);
     fisherYates(data.cards);
     fisherYates(data.phrases);
 
@@ -851,7 +851,7 @@ function createStartButton()
             </svg>
         `;
 
-        let data = window.localStorageData;
+        let data = window.profileData;
 
         // Get the width of the writer border, since the element will not be truly centered if we do not subtract from it
         const borderWidth = window.getComputedStyle($("character-target-div")).borderWidth.replace("px", "") * 2;
@@ -883,7 +883,7 @@ function mainPageMain()
     getDrawElementHeight();
 
     // If there are no cards there, create a widget to inform the user that they need to create a deck
-    if (window.localStorageData.cards.length === 0)
+    if (window.profileData.cards.length === 0)
     {
         $("start-button").remove();
 
@@ -925,13 +925,14 @@ function mainPageMain()
     window.addEventListener("beforeunload", function(_)
     {
         if (bInTest)
-            window.localStorageData.totalTimeInSessions += (Date.now() - window.sessionTime);
-        saveToLocalStorage(window.localStorageData);
+            window.profileData.totalTimeInSessions += (Date.now() - window.sessionTime);
+        saveProfileData(window.profileData);
     });
 
     // Shuffle the cards
-    fisherYates(window.localStorageData.cards);
-    fisherYates(window.localStorageData.phrases);
+    fisherYates(window.profileData.cards);
+    fisherYates(window.profileData.phrases);
 }
 
-mainPageMain();
+// Wait until index.js has loaded the profile data from IndexedDB before starting the practice page
+window.youyinStorageReady.then(() => mainPageMain());
