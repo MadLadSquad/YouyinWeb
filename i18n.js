@@ -94,3 +94,8 @@ lc.community_decks_header = "{{ _ community_decks_header }}";
 // theme switcher (index.js)
 lc.theme_button = "{{ _ theme_button }}";
 lc.theme_search_placeholder = "{{ _ theme_search_placeholder }}";
+
+// character database loading UI (index.js)
+lc.char_loading_title = "{{ _ char_loading_title }}";
+lc.char_loading_subtitle = "{{ _ char_loading_subtitle }}";
+lc.char_updating_label = "{{ _ char_updating_label }}";

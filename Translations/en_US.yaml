@@ -229,3 +229,11 @@ translations:
 
   - id: skip-to-content
     text: "Skip to content"
+
+  # character database loading UI (index.js)
+  - id: char_loading_title
+    text: "Downloading characters"
+  - id: char_loading_subtitle
+    text: "Setting up the character database for offline use. This only happens once."
+  - id: char_updating_label
+    text: "Updating characters…"

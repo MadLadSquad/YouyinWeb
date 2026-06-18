@@ -1,7 +1,4 @@
-const CACHE_NAME = 'youyin-static-v2';
-const CHAR_CACHE_NAME = 'youyin-chars-v1';
-const CHARACTER_MAP_URL = 'https://raw.githubusercontent.com/MadLadSquad/hanzi-writer-data-youyin/master/character-map.json';
-const CHARACTER_FETCH_BASE = 'https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/data/';
+const CACHE_NAME = 'youyin-static-v4';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination
@@ -19,6 +16,7 @@ const PAGES = [
 const SCRIPTS = [
     'theme.js',
     'index.js',
+    'char-loading-ui.js',
     'daily-streak.js',
     'i18n.js',
     'main-page.js',
@@ -29,6 +27,7 @@ const SCRIPTS = [
 ];
 const ROOT_ONLY_ASSETS = [
     'main.css',
+    'char-loading.css',
     'deck.css',
     'marketplace.css',
     'favicon.png',
@@ -93,130 +92,15 @@ self.addEventListener('activate', (event) => {
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME && cacheName !== CHAR_CACHE_NAME) {
+                    if (cacheName !== CACHE_NAME) {
                         console.log('Youyin Service Worker: Deleting old cache', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
-        }).then(() => self.clients.claim()).then(() => {
-            // Start background character synchronization once activated
-            syncCharacterDatabase();
-        })
+        }).then(() => self.clients.claim())
     );
 });
-
-// Listen for messages from client pages to manually start/resume sync
-self.addEventListener('message', (event) => {
-    if (event.data && event.data.type === 'SYNC_CHARACTERS') {
-        syncCharacterDatabase();
-    }
-});
-
-// Keep track of sync state to prevent overlapping sync loops
-let isSyncing = false;
-
-async function syncCharacterDatabase() {
-    if (isSyncing) return;
-    isSyncing = true;
-
-    console.log('Youyin Service Worker: Checking for character database updates...');
-    try {
-        const response = await fetch(CHARACTER_MAP_URL);
-        if (!response.ok) {
-            isSyncing = false;
-            return;
-        }
-
-        const newMapText = await response.text();
-        const staticCache = await caches.open(CACHE_NAME);
-
-        // Get the previously cached character-map.json
-        const cachedMapResponse = await staticCache.match(CHARACTER_MAP_URL);
-        let needsUpdate = false;
-
-        if (cachedMapResponse) {
-            const oldMapText = await cachedMapResponse.text();
-            if (oldMapText !== newMapText) {
-                console.log('Youyin Service Worker: Character map update detected!');
-                needsUpdate = true;
-            } else {
-                console.log('Youyin Service Worker: Character database is up to date.');
-            }
-        } else {
-            console.log('Youyin Service Worker: Initial character database caching started.');
-            needsUpdate = true;
-        }
-
-        if (needsUpdate) {
-            const characterList = JSON.parse(newMapText);
-            // Cache the updated character-map.json
-            await staticCache.put(CHARACTER_MAP_URL, new Response(newMapText));
-            // Download missing characters progressively in the background
-            //await updateCharacterDatabase(characterList);
-        }
-    } catch (err) {
-        console.error('Youyin Service Worker: Error syncing character database:', err);
-    } finally {
-        isSyncing = false;
-    }
-}
-
-// Progressively download character data in small batches
-async function updateCharacterDatabase(characterList) {
-    const charCache = await caches.open(CHAR_CACHE_NAME);
-    const total = characterList.length;
-    let loaded = 0;
-    
-    const BATCH_SIZE = 10;
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-    console.log(`Youyin Service Worker: Starting download of ${total} character files in batches of ${BATCH_SIZE}...`);
-
-    for (let i = 0; i < total; i += BATCH_SIZE) {
-        const batch = characterList.slice(i, i + BATCH_SIZE);
-
-        await Promise.all(batch.map(async (char) => {
-            const url = `${CHARACTER_FETCH_BASE}${encodeURIComponent(char)}.json`;
-            
-            // Check if already cached to save bandwidth
-            const cached = await charCache.match(url);
-            if (!cached) {
-                try {
-                    const res = await fetch(url);
-                    if (res.ok) {
-                        await charCache.put(url, res);
-                    }
-                } catch (e) {
-                    // Silent warning; we can retry on next wakeup
-                }
-            }
-        }));
-
-        loaded = Math.min(i + BATCH_SIZE, total);
-        
-        // Broadcast progress to active client pages
-        broadcastProgress(loaded, total);
-
-        // Yield control to the browser thread
-        await delay(100);
-    }
-
-    console.log('Youyin Service Worker: Character database sync completed successfully.');
-}
-
-// Notify all clients of the download progress
-function broadcastProgress(loaded, total) {
-    self.clients.matchAll().then((clients) => {
-        clients.forEach((client) => {
-            client.postMessage({
-                type: 'CHARACTER_SYNC_PROGRESS',
-                loaded,
-                total
-            });
-        });
-    });
-}
 
 // Hosts whose responses are safe to cache long-term (versioned, effectively immutable content)
 const CDN_HOSTS = ['fonts.gstatic.com', 'fonts.googleapis.com', 'cdn.jsdelivr.net'];
@@ -225,6 +109,13 @@ const CDN_HOSTS = ['fonts.gstatic.com', 'fonts.googleapis.com', 'cdn.jsdelivr.ne
 // marketplace map and the decks themselves) can change without the URL changing. These must be
 // fetched network-first, otherwise a stale cached copy would hide newly published decks
 const MUTABLE_CDN_PATH = '/gh/MadLadSquad/YouyinPublicDeckRepository';
+
+// The character database (manifest + chunks) is downloaded and persisted by the page (into
+// IndexedDB), but the service worker still caches whatever chunks it sees go by so they remain
+// available offline. It is fetched network-first so a package update is actually picked up — a
+// cache-first copy would pin the database forever. Both the jsDelivr chunk host and the
+// raw.githubusercontent manifest host carry the repository name in the path
+const CHARACTER_DATA_REPO = 'hanzi-writer-data-youyin';
 
 // Network-first for same-origin requests so new deploys are picked up immediately, with the
 // cache as an offline fallback. Cross-origin CDN assets are cache-first since they don't change
@@ -268,9 +159,9 @@ async function handleSameOriginRequest(request) {
 }
 
 async function handleCdnRequest(request, url) {
-    // Network-first for the mutable deck repository so marketplace updates are picked up, falling
-    // back to the cache only when offline
-    if (url.pathname.startsWith(MUTABLE_CDN_PATH)) {
+    // Network-first for the mutable deck repository (so marketplace updates are picked up) and the
+    // character database (so package updates land), falling back to the cache only when offline
+    if (url.pathname.startsWith(MUTABLE_CDN_PATH) || url.pathname.includes(CHARACTER_DATA_REPO)) {
         try {
             const networkResponse = await fetch(request);
             if (networkResponse && networkResponse.status === 200) {

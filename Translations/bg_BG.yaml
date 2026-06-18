@@ -228,3 +228,11 @@ translations:
 
   - id: skip-to-content
     text: "Към съдържанието"
+
+  # character database loading UI (index.js)
+  - id: char_loading_title
+    text: "Изтегляне на нужните символи"
+  - id: char_loading_subtitle
+    text: "Предварително изтегляне на данни за работа офлайн. Това се случва само веднъж."
+  - id: char_updating_label
+    text: "Обновяване на символите…"

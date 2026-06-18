@@ -140,14 +140,14 @@ function constructPhraseEditCardPreview(it) {
 }
 
 /**
- * Checks if a given character variant exists
+ * Checks if a given character variant exists in the in-memory character database
  * @param { string } character - The character in question
  * @param { string } postfix - Variant postfix, like "-jp" or "-ko" for Japanese and Korean respectively
- * @returns {Promise<undefined|Object>} - JSON data about the given character
+ * @returns { undefined|Object } - The character's stroke data, or undefined when the variant is absent
  */
-async function testVariantExists(character, postfix)
+function testVariantExists(character, postfix)
 {
-    return await charDataLoader(character + postfix, null, null);
+    return charDataLoader(character + postfix, null, null);
 }
 
 /**

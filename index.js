@@ -36,7 +36,20 @@ window.HOUR_UNIX = 3600000;
 window.MINUTE_UNIX = 60000;
 window.SECOND_UNIX = 1000;
 
-window.CHARACTER_FETCH_URL = "https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/data/";
+// The character stroke database is shipped as numbered chunks. The manifest lists the chunk count
+// and a per-chunk content hash so we can re-download only the chunks that actually changed. The
+// manifest is read from raw.githubusercontent (always fresh — jsDelivr edge-caches too long for
+// reliable change detection); the bulky chunks come from jsDelivr (cacheable, fast)
+window.CHARACTER_MANIFEST_URL = "https://raw.githubusercontent.com/MadLadSquad/hanzi-writer-data-youyin/master/character-map-chunks.json";
+window.CHARACTER_CHUNK_URL_BASE = "https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/character-map-chunks/character-map-full-";
+// Chunks are fetched in batches with a cooldown between batches so we don't hammer the CDN
+window.CHARACTER_CHUNK_BATCH_SIZE = 5;
+window.CHARACTER_CHUNK_COOLDOWN_MS = 300;
+// Each manifest/chunk fetch is retried a few times. This rides out transient failures, most notably
+// the brief window when a freshly-installed service worker activates and takes over mid-download —
+// the outgoing worker aborts the requests it was handling, which would otherwise fail the download
+window.CHARACTER_FETCH_RETRIES = 4;
+window.CHARACTER_FETCH_RETRY_DELAY_MS = 600;
 // ---------------------------------- CONSTANT BLOCK END ----------------------------------
 
 // In-memory copy of the user's profile data. It is loaded from IndexedDB once at startup (see
@@ -44,6 +57,12 @@ window.CHARACTER_FETCH_URL = "https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writ
 // initial load and the saveProfileData/saveGameModifiers writes touch IndexedDB
 window.profileData = null;
 window.gameModifiers = null;
+
+// In-memory copy of the entire character stroke database, keyed by character (including the regional
+// variant postfix, e.g. "漢-jp"), mapping to the hanzi-writer content object. Populated once at
+// startup from IndexedDB (see loadCharacterDataFromIDB) and kept fresh by backgroundUpdate().
+// charDataLoader reads straight from this map — there is no per-character network fetch anymore
+window.characterData = {};
 
 // ----------------------------- IndexedDB profile storage layer --------------------------------
 // Profile data (decks, sessions, streak, game modifiers) lives in IndexedDB. UI-only settings
@@ -55,6 +74,11 @@ window.YOUYIN_DB_VERSION = 1;
 window.YOUYIN_DB_STORE = "profile";
 window.YOUYIN_CARD_DATA_KEY = "youyinCardData";
 window.YOUYIN_GAME_MODIFIERS_KEY = "youyinGameModifiers";
+// The character database lives in the same store: one manifest entry plus one entry per chunk. Per
+// chunk storage lets background updates replace only the chunks that changed and rebuild the
+// in-memory map cleanly (so characters that move between or drop out of chunks are handled)
+window.YOUYIN_CHAR_MANIFEST_KEY = "youyinCharManifest";
+window.YOUYIN_CHAR_CHUNK_PREFIX = "youyinCharChunk:";
 
 // Cached open-connection promise so we only open the database once per page
 let youyinDBPromise = null;
@@ -107,6 +131,21 @@ function idbPut(key, value)
     return openYouyinDB().then((db) => new Promise((resolve, reject) => {
         const transaction = db.transaction(window.YOUYIN_DB_STORE, "readwrite");
         transaction.objectStore(window.YOUYIN_DB_STORE).put(value, key);
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error);
+    }));
+}
+
+/**
+ * Deletes a value from the profile store by key
+ * @param { string } key - The key to delete
+ * @returns { Promise<void> } - Resolves once the delete transaction commits
+ */
+function idbDelete(key)
+{
+    return openYouyinDB().then((db) => new Promise((resolve, reject) => {
+        const transaction = db.transaction(window.YOUYIN_DB_STORE, "readwrite");
+        transaction.objectStore(window.YOUYIN_DB_STORE).delete(key);
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error);
     }));
@@ -216,16 +255,13 @@ function toCharacters(str)
     return Array.from(str);
 }
 
-// This loads characters from the database. Change the URL to your own database.
-async function charDataLoader(character, _, __)
+// hanzi-writer's data loader. The whole character database is already in memory (downloaded once and
+// cached in IndexedDB — see the character store section below), so this is a synchronous map lookup.
+// Returns undefined for a character that isn't in the database, which hanzi-writer handles the same
+// way it used to handle a 404 from the old per-character fetch
+function charDataLoader(character, _, __)
 {
-    let response = await fetch(`${window.CHARACTER_FETCH_URL}${character}.json`)
-    if (response.status !== 200)
-    {
-        console.warn(`Bad response from the character database, this is mainly caused by missing characters. Response code: ${response.status}`);
-        return;
-    }
-    return await response.json();
+    return window.characterData[character];
 }
 
 /**
@@ -463,6 +499,215 @@ async function loadProfileData()
     window.gameModifiers = modifiers;
 }
 
+// ----------------------------- Character database storage layer -------------------------------
+// The character stroke database is downloaded once (all chunks), cached per-chunk in IndexedDB, and
+// held in memory in window.characterData. On every later visit the in-memory copy is rebuilt from
+// IndexedDB and a background task diffs the upstream manifest against the stored one, re-downloading
+// only the chunks whose content hash changed
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Converts a downloaded chunk array into a { charKey: content } map for cheap merging
+ * @param { Array<{ char: string, content: Object }> } arr - The chunk exactly as downloaded
+ * @returns { Object<string, Object> } - Map from character key to its hanzi-writer content
+ */
+function chunkArrayToMap(arr)
+{
+    const map = {};
+    for (let i = 0; i < arr.length; i++)
+        map[arr[i].char] = arr[i].content;
+    return map;
+}
+
+/**
+ * Loads the stored character database from IndexedDB into window.characterData. Builds a fresh object
+ * and swaps it in atomically so the map is never momentarily empty (a writer rendering mid-load would
+ * otherwise see undefined)
+ * @returns { Promise<Object|null> } - The stored manifest, or null when nothing has been downloaded
+ */
+async function loadCharacterDataFromIDB()
+{
+    const manifest = await idbGet(window.YOUYIN_CHAR_MANIFEST_KEY);
+    if (manifest === null)
+        return null;
+
+    const data = {};
+    for (let i = 0; i < manifest.num; i++)
+    {
+        const chunk = await idbGet(window.YOUYIN_CHAR_CHUNK_PREFIX + i);
+        if (chunk !== null)
+            Object.assign(data, chunk);
+    }
+    window.characterData = data;
+    return manifest;
+}
+
+/**
+ * Fetches a URL, retrying a few times with a delay between attempts to ride out transient failures
+ * (see CHARACTER_FETCH_RETRIES). Throws the last error if every attempt fails
+ * @param { string } url - The URL to fetch
+ * @param { Object } [options] - fetch() options
+ * @returns { Promise<Response> } - The successful (ok) response
+ */
+async function fetchWithRetry(url, options)
+{
+    let lastErr = null;
+    for (let attempt = 0; attempt < window.CHARACTER_FETCH_RETRIES; attempt++)
+    {
+        try
+        {
+            const response = await fetch(url, options);
+            if (!response.ok)
+                throw new Error(`HTTP ${response.status}`);
+            return response;
+        }
+        catch (err)
+        {
+            lastErr = err;
+            if (attempt < window.CHARACTER_FETCH_RETRIES - 1)
+                await sleep(window.CHARACTER_FETCH_RETRY_DELAY_MS);
+        }
+    }
+    throw lastErr;
+}
+
+/**
+ * Fetches the upstream chunk manifest { num, version: [...] }
+ * @returns { Promise<Object|null> } - The manifest, or null if it couldn't be fetched/parsed
+ */
+async function fetchUpstreamManifest()
+{
+    try
+    {
+        const response = await fetchWithRetry(window.CHARACTER_MANIFEST_URL, { cache: "no-store" });
+        return await response.json();
+    }
+    catch (err)
+    {
+        console.warn("Youyin: could not fetch character manifest", err);
+        return null;
+    }
+}
+
+/**
+ * Downloads the given chunk indices in throttled batches, persisting each to IndexedDB and merging it
+ * into window.characterData. Reports progress after every chunk completes
+ * @param { number[] } indices - Chunk indices to download
+ * @param { function(number, number): void } onProgress - Called with (completed, total)
+ * @returns { Promise<void> } - Resolves once every requested chunk is stored and merged
+ */
+async function downloadChunks(indices, onProgress)
+{
+    const total = indices.length;
+    let done = 0;
+    for (let i = 0; i < indices.length; i += window.CHARACTER_CHUNK_BATCH_SIZE)
+    {
+        const batch = indices.slice(i, i + window.CHARACTER_CHUNK_BATCH_SIZE);
+        await Promise.all(batch.map(async (index) => {
+            const response = await fetchWithRetry(`${window.CHARACTER_CHUNK_URL_BASE}${index}.json`);
+            const map = chunkArrayToMap(await response.json());
+            await idbPut(window.YOUYIN_CHAR_CHUNK_PREFIX + index, map);
+            Object.assign(window.characterData, map);
+            done++;
+            if (onProgress)
+                onProgress(done, total);
+        }));
+        // Cooldown between batches so we don't overload the CDN (no need after the last batch)
+        if (i + window.CHARACTER_CHUNK_BATCH_SIZE < indices.length)
+            await sleep(window.CHARACTER_CHUNK_COOLDOWN_MS);
+    }
+}
+
+/**
+ * First-visit path: downloads the entire character database behind a blocking progress modal and
+ * stores it (chunks + manifest) in IndexedDB
+ * @returns { Promise<void> } - Resolves once the database is in memory (or the download failed)
+ */
+async function firstTimeDownload()
+{
+    const manifest = await fetchUpstreamManifest();
+    if (manifest === null)
+    {
+        // Offline / unreachable on a first visit: nothing to load. The app still runs, writers just
+        // render nothing until a later visit succeeds
+        console.error("Youyin: character database unavailable on first load");
+        return;
+    }
+
+    const overlay = showCharLoadOverlay();
+    try
+    {
+        const indices = [];
+        for (let i = 0; i < manifest.num; i++)
+            indices.push(i);
+        await downloadChunks(indices, (done, total) => updateCharLoadOverlay(overlay, done, total));
+        // Only record the manifest once every chunk is stored, so an interrupted download is retried
+        // wholesale on the next visit rather than being mistaken for a complete database
+        await idbPut(window.YOUYIN_CHAR_MANIFEST_KEY, manifest);
+    }
+    catch (err)
+    {
+        console.error("Youyin: character database download failed", err);
+    }
+    finally
+    {
+        hideCharLoadOverlay(overlay);
+    }
+}
+
+/**
+ * Return-visit path: diffs the upstream manifest against the stored one and re-downloads only the
+ * chunks whose content hash changed (plus any new chunks when the count grew, dropping stored chunks
+ * when it shrank). Runs unobtrusively in the background and is a no-op when nothing changed
+ * @param { Object } localManifest - The manifest currently stored in IndexedDB
+ * @returns { Promise<void> } - Resolves once any update has been applied
+ */
+async function backgroundUpdate(localManifest)
+{
+    const upstream = await fetchUpstreamManifest();
+    if (upstream === null)
+        return;
+
+    // Chunks to (re)download: content hash differs, or the chunk is new because the count grew
+    const changed = [];
+    for (let i = 0; i < upstream.num; i++)
+        if (i >= localManifest.num || upstream.version[i] !== localManifest.version[i])
+            changed.push(i);
+
+    // Chunks that no longer exist because the count shrank
+    const removed = [];
+    for (let i = upstream.num; i < localManifest.num; i++)
+        removed.push(i);
+
+    if (changed.length === 0 && removed.length === 0)
+        return;
+
+    const pill = showCharUpdatePill();
+    try
+    {
+        if (changed.length > 0)
+            await downloadChunks(changed, (done, total) => updateCharUpdatePill(pill, done, total));
+        for (const index of removed)
+            await idbDelete(window.YOUYIN_CHAR_CHUNK_PREFIX + index);
+        await idbPut(window.YOUYIN_CHAR_MANIFEST_KEY, upstream);
+        // Rebuild the in-memory map from the updated chunks so removed characters and characters that
+        // moved between chunks are reflected, not just the newly downloaded ones
+        await loadCharacterDataFromIDB();
+    }
+    catch (err)
+    {
+        console.error("Youyin: background character update failed", err);
+    }
+    finally
+    {
+        hideCharUpdatePill(pill);
+    }
+}
+
+// The character-database loading UI (showCharLoadOverlay / showCharUpdatePill and their
+// update/hide helpers, used above) lives in char-loading-ui.js, loaded before this file
+
 async function main()
 {
     // Load the profile data once into memory. Missing or partial data (a first visit, or decks
@@ -539,29 +784,28 @@ async function main()
     setThemeBox();
     initEmojiReplacement();
 
-    // Register service worker for PWA support
+    // Register service worker for PWA support. It transparently caches the character chunks it sees
+    // fetched (see sw.js) — the download itself is driven here on the page thread
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
                 .then(reg => {
                     console.log('Youyin Service Worker registered successfully with scope:', reg.scope);
-                    // Notify service worker to check/sync character database
-                    if (reg.active) {
-                        reg.active.postMessage({ type: 'SYNC_CHARACTERS' });
-                    }
                 })
                 .catch(err => {
                     console.error('Youyin Service Worker registration failed:', err);
                 });
         });
-
-        // Listen for sync progress reports from the service worker
-        navigator.serviceWorker.addEventListener('message', (event) => {
-            if (event.data && event.data.type === 'CHARACTER_SYNC_PROGRESS') {
-                console.log(`Character Sync Progress: ${event.data.loaded} / ${event.data.total}`);
-            }
-        });
     }
+
+    // Bring the character stroke database into memory. A first visit downloads every chunk behind a
+    // blocking modal (awaited, so page scripts only run once the data is ready); later visits load
+    // the cached copy instantly and reconcile changed chunks in the background without blocking
+    const localCharManifest = await loadCharacterDataFromIDB();
+    if (localCharManifest === null)
+        await firstTimeDownload();
+    else
+        backgroundUpdate(localCharManifest);
 }
 
 // Loading profile data from IndexedDB is asynchronous, so page scripts must wait for this promise

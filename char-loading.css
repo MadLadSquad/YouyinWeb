@@ -1,0 +1,107 @@
+/* Styles for the character-database download UI rendered by char-loading-ui.js. The colour palette
+   variables come from theme.js (see main.css). */
+
+/* Blocking modal shown while the character database downloads for the first time. Covers and blurs
+   the whole page so nothing is interactive until the download finishes */
+.char-load-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--main-padding-width);
+    background-color: color-mix(in srgb, var(--main-background-colour) 70%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.char-load-box {
+    width: min(420px, 100%);
+    box-sizing: border-box;
+    padding: 2rem;
+    text-align: center;
+    background-color: var(--main-background-colour);
+    border: 2px solid var(--main-accent-colour);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px var(--main-border-colour);
+}
+
+.char-load-title {
+    margin: 0 0 0.5rem;
+    color: var(--main-accent-colour);
+}
+
+.char-load-subtitle {
+    margin: 0 0 1.5rem;
+    color: var(--main-text-colour);
+}
+
+/* Progress bar track + fill, shared visual language between the modal and the background pill */
+.char-load-bar {
+    height: 10px;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 999px;
+    background-color: var(--main-border-colour);
+}
+
+.char-load-bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background-color: var(--main-accent-colour);
+    transition: width 0.2s ease-out;
+}
+
+.char-load-count {
+    margin: 0.75rem 0 0;
+    color: var(--main-text-colour);
+}
+
+/* Small, non-blocking indicator shown while a background update downloads changed chunks. Pinned to
+   the bottom-right and pointer-transparent so it never gets in the way of the page */
+.char-update-pill {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1500;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.6rem 0.9rem;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    background-color: var(--main-background-colour);
+    border: 1px solid var(--main-accent-colour);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px var(--main-border-colour);
+}
+
+.char-update-pill.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.char-update-label {
+    font-size: 0.85rem;
+    color: var(--main-text-colour);
+}
+
+.char-update-bar {
+    height: 5px;
+    width: 160px;
+    overflow: hidden;
+    border-radius: 999px;
+    background-color: var(--main-border-colour);
+}
+
+.char-update-bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background-color: var(--main-accent-colour);
+    transition: width 0.2s ease-out;
+}
