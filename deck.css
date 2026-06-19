@@ -23,6 +23,10 @@
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     padding-inline: 0.5rem;
     box-sizing: border-box;
+
+    /* Isolate each block's layout and paint from the rest of the page, so rendering/collapsing one
+       block (or a writer animating inside it) can't trigger reflow or repaint of the others */
+    contain: layout paint;
 }
 
 /* Match the in-grid row gap between stacked blocks */

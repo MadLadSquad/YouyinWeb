@@ -10,7 +10,9 @@
         {{ include Components/header.tmpl.html }}
         <h1 class="centered">{{ _ no_cards_link_deck }}</h1>
         <main id="main-content">
-            <script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
+            <!-- Deferred: nothing needs HanziWriter until the first card hover (resting cards are
+                 hand-built SVG), so it must not block initial parse/render of the deck -->
+            <script defer src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
             <section class="deck" id="deck-generic-info-section">
                 <div id="profile-card" class="card centered">
                     <h3>{{ _ profile-statistics-header }}</h3>
