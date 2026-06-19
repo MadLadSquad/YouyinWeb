@@ -41,17 +41,29 @@ function setThemeBox()
     });
 
     const options = {};
-    for (const id of themeIds)
+
+    // The site ships ~190 themes, and building a button (plus its hover/click listeners) for each is
+    // the bulk of this function's work — yet the picker is rarely opened. Defer that to the first open
+    // so an ordinary page load doesn't construct ~190 footer DOM nodes for a popup the user may never
+    // touch. Everything below keys off `options`, which stays empty until buildOptions runs.
+    let optionsBuilt = false;
+    function buildOptions()
     {
-        const opt = document.createElement("button");
-        opt.type = "button";
-        opt.className = "list-select-option" + (id === current ? " active" : "");
-        opt.textContent = window.youyinThemes[id].name;
-        // Hovering previews a theme live, exactly like arrow-key navigation does.
-        opt.addEventListener("mouseenter", function(){ setPreview(id, false); });
-        opt.addEventListener("click", function(){ commitAndClose(id); });
-        list.appendChild(opt);
-        options[id] = opt;
+        if (optionsBuilt)
+            return;
+        optionsBuilt = true;
+        for (const id of themeIds)
+        {
+            const opt = document.createElement("button");
+            opt.type = "button";
+            opt.className = "list-select-option" + (id === current ? " active" : "");
+            opt.textContent = window.youyinThemes[id].name;
+            // Hovering previews a theme live, exactly like arrow-key navigation does.
+            opt.addEventListener("mouseenter", function(){ setPreview(id, false); });
+            opt.addEventListener("click", function(){ commitAndClose(id); });
+            list.appendChild(opt);
+            options[id] = opt;
+        }
     }
 
     document.body.appendChild(popup);
@@ -118,6 +130,8 @@ function setThemeBox()
     // Opening re-reads the persisted theme (it may have changed since the page loaded) and resets
     // the search; closing reverts any un-committed live preview back to the committed theme.
     const controller = createPopupController(button, popup, function() {
+        // Build the (large) option list lazily the first time the picker opens
+        buildOptions();
         committedId = window.localStorage.getItem("youyinTheme") || "default";
         previewId = committedId;
         setActiveHighlight(committedId);

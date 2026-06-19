@@ -723,6 +723,25 @@ let resolveCharDataReady;
 window.youyinProfileReady = new Promise((resolve) => { resolveProfileReady = resolve; });
 window.youyinCharDataReady = new Promise((resolve) => { resolveCharDataReady = resolve; });
 
+/**
+ * Whether the current page actually draws characters and therefore needs the (large) stroke database
+ * in memory. Only the main practice page, the deck and the card/phrase editor instantiate writers; the
+ * marketplace, account and 404 pages never do, so loading the whole database there only wastes memory
+ * and startup time. Detection is by URL so it doesn't depend on script load timing: directory roots
+ * ("/", "/<locale>/") serve the index/main page, and the remaining pages are matched by their last
+ * path segment, with or without the .html the CI strips
+ * @returns { boolean } - True on index/deck/deck-edit-card, false everywhere else
+ */
+function pageNeedsCharacterData()
+{
+    const path = location.pathname;
+    // A directory root serves index.html (the main practice page), which renders characters
+    if (path.endsWith("/"))
+        return true;
+    const last = path.substring(path.lastIndexOf("/") + 1).replace(/\.html$/, "");
+    return last === "index" || last === "deck" || last === "deck-edit-card";
+}
+
 async function main()
 {
     // Load the profile data once into memory. Missing or partial data (a first visit, or decks
@@ -818,21 +837,32 @@ async function main()
         });
     }
 
-    // Bring the character stroke database into memory. A first visit downloads every chunk behind a
-    // blocking modal (awaited, so character data is ready before youyinCharDataReady resolves); later
-    // visits load the cached copy instantly and reconcile changed chunks in the background
-    try
+    // Bring the character stroke database into memory, but only on the pages that actually draw
+    // characters (see pageNeedsCharacterData). A first visit downloads every chunk behind a blocking
+    // modal (awaited, so character data is ready before youyinCharDataReady resolves); later visits
+    // load the cached copy instantly and reconcile changed chunks in the background
+    if (pageNeedsCharacterData())
     {
-        const localCharManifest = await loadCharacterDataFromIDB();
-        if (localCharManifest === null)
-            await firstTimeDownload();
-        else
-            backgroundUpdate(localCharManifest);
+        try
+        {
+            const localCharManifest = await loadCharacterDataFromIDB();
+            if (localCharManifest === null)
+                await firstTimeDownload();
+            else
+                backgroundUpdate(localCharManifest);
+        }
+        finally
+        {
+            // Always signal readiness, even if loading failed — writers then simply render nothing (as
+            // they did when a per-character fetch 404'd) instead of consumers waiting on this forever
+            resolveCharDataReady();
+        }
     }
-    finally
+    else
     {
-        // Always signal readiness, even if loading failed — writers then simply render nothing (as
-        // they did when a per-character fetch 404'd) instead of consumers waiting on this forever
+        // This page never instantiates a writer, so the database was never loaded. Resolve anyway so
+        // any incidental consumer of youyinCharDataReady (and youyinStorageReady, which is main()
+        // itself) doesn't hang waiting on data that isn't coming
         resolveCharDataReady();
     }
 }
