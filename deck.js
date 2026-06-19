@@ -283,8 +283,9 @@ function constructCard(it, index, container, localIndex)
     {
         div.hydrateWriter = () =>
         {
-            // Create an instance of the writer
+            // Create an instance of the writer. Stash it on the card so the block teardown can stop it
             let writer = createCardWriter(`card-character-target-div-${index}`, it.character + it.variant);
+            div.writers = [writer];
             target.addEventListener('mouseover', function()
             {
                 writer.animateCharacter();
@@ -305,6 +306,8 @@ function constructCard(it, index, container, localIndex)
                 addElement("div", "", charTargetId, "phrase-card-character", "", target);
                 writers.push(createCardWriter(charTargetId, phraseChars[c] + findCharacterVariant(phraseChars[c]), window.PHRASE_CARD_WRITER_SIZE));
             }
+            // Stash the writers on the card so the block teardown can stop them
+            div.writers = writers;
 
             // Guard against a fresh hover restarting the sequence while it's still running
             let bAnimating = false;
@@ -368,9 +371,9 @@ function applySpacerEstimate(section)
 }
 
 /**
- * Builds a block's card shells into its element and records how tall it ends up, so its spacer can
- * match once it's later collapsed. The first block measured in a section also seeds the spacer
- * estimate used for every block that hasn't been rendered yet
+ * Builds a block's card shells and records how tall it ends up, so its spacer can match once it's
+ * later collapsed. The first block measured in a section also seeds the spacer estimate used for
+ * every block that hasn't been rendered yet
  * @param { Object } block - The block descriptor to render
  */
 function renderBlock(block)
@@ -379,20 +382,63 @@ function renderBlock(block)
         return;
     block.rendered = true;
 
-    // Drop the spacer height and build the real cards. localIndex is the card's global position in
-    // its list (the edit page navigates by it); the DOM id is offset past the phrases so ids are unique
+    // Build the cards into a fragment and attach it in one shot, so a block's worth of inserts is a
+    // single DOM mutation rather than one per card. localIndex is the card's global position in its
+    // list (the edit page navigates by it); the DOM id is offset past the phrases so ids are unique
     block.el.style.minHeight = "";
+    const fragment = document.createDocumentFragment();
     for (let j = 0; j < block.items.length; j++)
     {
         const pos = block.start + j;
-        constructCard(block.items[j], block.domOffset + pos, block.el, pos);
+        constructCard(block.items[j], block.domOffset + pos, fragment, pos);
     }
+    block.el.appendChild(fragment);
 
-    block.measuredHeight = block.el.offsetHeight;
-    if (block.section.estimate === null && block.measuredHeight > 0)
+    // Defer the height read to the next frame. Several blocks can render in a single observer
+    // callback while scrolling fast; measuring each one inline would force a synchronous reflow
+    // between every build (layout thrash). Batching the reads into a frame lets the first read lay
+    // out once and the rest come back from a clean layout
+    measureBlockSoon(block);
+}
+
+/**
+ * Measures a freshly rendered block on the next animation frame and seeds the section's spacer
+ * estimate from the first block it manages to measure. No-ops if the block was torn down again before
+ * the frame fired
+ * @param { Object } block - The block descriptor to measure
+ */
+function measureBlockSoon(block)
+{
+    requestAnimationFrame(() => {
+        if (!block.rendered)
+            return;
+        block.measuredHeight = block.el.offsetHeight;
+        if (block.section.estimate === null && block.measuredHeight > 0)
+        {
+            block.section.estimate = block.measuredHeight;
+            applySpacerEstimate(block.section);
+        }
+    });
+}
+
+/**
+ * Stops a hanzi-writer instance so a tear-down doesn't leave an animation's requestAnimationFrame loop
+ * running against detached SVG nodes (which would keep them alive until the animation happened to
+ * finish). pauseAnimation is feature-checked because the CDN build's API can vary
+ * @param { Object } writer - The hanzi-writer instance to stop
+ */
+function cleanupWriter(writer)
+{
+    if (writer && typeof writer.pauseAnimation === "function")
     {
-        block.section.estimate = block.measuredHeight;
-        applySpacerEstimate(block.section);
+        try
+        {
+            writer.pauseAnimation();
+        }
+        catch (e)
+        {
+            // A writer that never started animating can throw; nothing to stop in that case
+        }
     }
 }
 
@@ -406,6 +452,12 @@ function teardownBlock(block)
     if (!block.rendered)
         return;
     block.rendered = false;
+
+    // Stop any live writers first so their animation loops let go of the SVG we're about to detach
+    for (const card of block.el.children)
+        if (card.writers)
+            for (const writer of card.writers)
+                cleanupWriter(writer);
 
     const height = block.measuredHeight || block.section.estimate || block.initialEstimate;
     block.el.style.minHeight = `${height}px`;
