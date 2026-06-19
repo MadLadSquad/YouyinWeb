@@ -241,9 +241,9 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 /**
  * Draws a cheap, static outline of a character into a target element from the stroke data already in
- * memory: a plain group of filled <path>s, with none of hanzi-writer's animation controller, clip
- * paths or per-stroke machinery — a fraction of the cost of a writer instance. This is what a resting
- * card shows; the full writer is only built when the card is hovered (see the hydrate closures).
+ * memory: a single filled <path> (all strokes merged), with none of hanzi-writer's animation
+ * controller, clip paths or per-stroke machinery — a fraction of the cost of a writer instance. This
+ * is what a resting card shows; the full writer is only built when the card is hovered (see below).
  *
  * The transform replicates hanzi-writer's Positioner exactly so the static glyph lines up with the
  * animated one: the stroke data lives in a 1024-wide box whose y runs from -124 to 900 with the
@@ -270,16 +270,14 @@ function createStaticOutline(targetEl, character, size)
     svg.setAttribute("width", size);
     svg.setAttribute("height", size);
 
-    const group = document.createElementNS(SVG_NS, "g");
-    group.setAttribute("transform", `translate(${tx}, ${ty}) scale(${scale}, ${-scale})`);
-    for (const stroke of data.strokes)
-    {
-        const path = document.createElementNS(SVG_NS, "path");
-        path.setAttribute("d", stroke);
-        path.setAttribute("fill", window.WRITER_STROKE_COLOUR);
-        group.appendChild(path);
-    }
-    svg.appendChild(group);
+    // Merge every stroke into one filled <path>. Each stroke's "d" is its own subpath (it starts with
+    // a moveto), so joining them is valid path data, and the default nonzero fill renders their union
+    // solid — visually identical to one filled path per stroke, but a single SVG node per card
+    const path = document.createElementNS(SVG_NS, "path");
+    path.setAttribute("d", data.strokes.join(" "));
+    path.setAttribute("fill", window.WRITER_STROKE_COLOUR);
+    path.setAttribute("transform", `translate(${tx}, ${ty}) scale(${scale}, ${-scale})`);
+    svg.appendChild(path);
     targetEl.appendChild(svg);
     return true;
 }
