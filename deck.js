@@ -100,8 +100,8 @@ function setProfileCardData()
 
     const averageKnowledge = $("average-knowledge-level-field");
     let knowledge = 0;
-    for (let i in window.profileData.cards)
-        knowledge += window.profileData.cards[i].knowledge;
+    for (const card of window.profileData.cards)
+        knowledge += card.knowledge;
 
     knowledge /= window.profileData.cards.length;
     if (isNaN(knowledge))
@@ -304,11 +304,8 @@ function constructCard(it, index, container, localIndex)
 
     // Add the list to the card and fill it with elements
     let list = addElement("ol", "", "", "", "", div);
-    for (let i in it.definitions)
-    {
-        let f = it.definitions[i];
+    for (const f of it.definitions)
         addElement("li", `${f}`, "", "", "", list);
-    }
 
     // If it's a character, list the phrases that contain it. Looked up from the prebuilt membership
     // map, so this is a single lookup instead of a scan over every phrase for every card

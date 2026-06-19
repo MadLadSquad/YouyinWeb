@@ -343,7 +343,10 @@ function addElement(elType, content, id, classType, data, parentEl)
     el.className = classType;
     el.id = id;
     el.textContent = content;
-    el.setAttribute("arbitrary-data", data);
+    // Most callers pass no arbitrary-data; only write the attribute when there's actually a value,
+    // so building a multi-thousand-card deck doesn't pay an empty setAttribute per element
+    if (data)
+        el.setAttribute("arbitrary-data", data);
 
     if (parentEl !== null)
         parentEl.appendChild(el);
@@ -383,9 +386,8 @@ function fisherYates(array)
 // Some legacy users may be lacking variants as part of their character card objects, so this function fixes this
 function fixLegacyCharacterVariants()
 {
-    for (let i in window.profileData.cards)
+    for (let card of window.profileData.cards)
     {
-        let card = window.profileData.cards[i];
         if (!card["variant"])
         {
             // Split by code point — charAt(0)/substring(1) count UTF-16 units and would cut a

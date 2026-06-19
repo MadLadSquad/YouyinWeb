@@ -155,8 +155,8 @@ function updateIndividualSidebarElementText(prefix, spelling, errors, obj)
     list.replaceChildren();
 
     if (obj !== null)
-        for (let i in obj.definitions)
-            addElement("li", obj.definitions[i], "", "", "", list);
+        for (const def of obj.definitions)
+            addElement("li", def, "", "", "", list);
 }
 
 /**
@@ -430,11 +430,11 @@ function resetPlayForPhrases(data)
     let currentPhrase = data.phrases[window.currentPhraseIndex];
     const phraseChars = toCharacters(currentPhrase.phrase);
     let card = null;
-    for (let i in data.cards)
+    for (const c of data.cards)
     {
-        if (phraseChars[window.currentIndex] === data.cards[i].character)
+        if (phraseChars[window.currentIndex] === c.character)
         {
-            card = data.cards[i];
+            card = c;
             setWriterState(card);
             break;
         }
@@ -615,11 +615,11 @@ async function writerOnComplete(_)
     else
     {
         const phraseChars = toCharacters(data.phrases[window.currentPhraseIndex].phrase);
-        for (let i in data.cards)
+        for (const card of data.cards)
         {
-            if (phraseChars[(window.currentIndex - 1)] === data.cards[i].character)
+            if (phraseChars[(window.currentIndex - 1)] === card.character)
             {
-                data.cards[i].knowledge = computeScore(strokeNum, window.errors, data.cards[i].knowledge);
+                card.knowledge = computeScore(strokeNum, window.errors, card.knowledge);
                 break;
             }
         }
@@ -840,16 +840,18 @@ function createStartButton()
         // again in writerOnComplete when we switch to the finished-round slide deck
         $("main-content").classList.add("in-session");
 
-        // Append HTML for the writer background, which is just a star
+        // Append HTML for the writer background, which is just a star. insertAdjacentHTML parses only
+        // this fragment and appends it, rather than innerHTML += which reserializes and reparses the
+        // section's existing DOM (and would drop any listeners already bound inside it)
         const page = $("start-button-writer-section");
-        page.innerHTML += `
+        page.insertAdjacentHTML("beforeend", `
             <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" id="character-target-div" class="centered character-div character-prop">
                 <line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
                 <line x1="100%" y1="0" x2="0" y2="100%" stroke="#DDD" />
                 <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#DDD" />
                 <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#DDD" />
             </svg>
-        `;
+        `);
 
         let data = window.profileData;
 

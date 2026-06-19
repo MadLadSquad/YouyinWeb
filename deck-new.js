@@ -41,18 +41,18 @@ function constructPreviewCardGeneric(index, it, owner)
         const phraseChar = it !== null ? toCharacters(it.phrase)[index] : null;
         if (it !== null)
         {
-            for (let i in window.profileData.cards)
+            for (const card of window.profileData.cards)
             {
-                if (window.profileData.cards[i].character === phraseChar)
+                if (card.character === phraseChar)
                 {
-                    lit = window.profileData.cards[i];
+                    lit = card;
                     break;
                 }
             }
 
-            for (let i in window.previewCards)
-                if (window.previewCards[i].character === phraseChar)
-                    return window.previewCards[i];
+            for (const card of window.previewCards)
+                if (card.character === phraseChar)
+                    return card;
         }
 
         if (it === null || lit === it)
@@ -75,8 +75,8 @@ function constructPreviewCardGeneric(index, it, owner)
     addElement("p", `${lc.deck_definitions}`, "", "", "", root);
     let list = addElement("ol", "", `card-preview-list-${index}`, "", "", root);
 
-    for (let definition in lit.definitions)
-        addElement("li", lit.definitions[definition], "", "", "", list);
+    for (const definition of lit.definitions)
+        addElement("li", definition, "", "", "", list);
 
     writerArea.writer = createCardWriter(`card-character-target-div-preview-${index}`, lit.character + lit.variant);
     writerArea.addEventListener("mouseover", function(){
@@ -134,8 +134,8 @@ function constructPhraseEditCardPreview(it) {
     addElement("h1", lit.phrase, "card-character-target-div-phrase", "phrase-card-header", "", phrasePreviewRoot);
     addElement("p", `${lc.deck_definitions}`, "", "", "", phrasePreviewRoot);
     let list = addElement("ol", "", "card-preview-list-phrase", "", "", phrasePreviewRoot)
-    for (let definition in lit.definitions)
-        addElement("li", lit.definitions[definition], "", "", "", list);
+    for (const definition of lit.definitions)
+        addElement("li", definition, "", "", "", list);
     return lit;
 }
 
@@ -212,7 +212,7 @@ function reconstructDefinitionList(previewList, editList, definitions, bReadOnly
 
     previewList.replaceChildren();
     editList.replaceChildren();
-    for (let i in definitions)
+    for (let i = 0; i < definitions.length; i++)
     {
         addElement("li", definitions[i], "", "", "", previewList);
 
@@ -259,20 +259,20 @@ function constructEditCard(index, it, root, bPhrase)
     {
         // Index the phrase by code point so characters outside the BMP stay whole
         const phraseChars = toCharacters(it.phrase);
-        for (let f in window.profileData.cards)
+        for (const card of window.profileData.cards)
         {
-            if (phraseChars[index] === window.profileData.cards[f].character)
+            if (phraseChars[index] === card.character)
             {
-                lit = window.profileData.cards[f];
+                lit = card;
                 break;
             }
         }
 
-        for (let i in window.previewCards)
+        for (const card of window.previewCards)
         {
-            if (window.previewCards[i].character === phraseChars[index])
+            if (card.character === phraseChars[index])
             {
-                lit = window.previewCards[i];
+                lit = card;
                 bReadOnly = false;
 
                 for (let f = index - 1; f >= 0; --f)

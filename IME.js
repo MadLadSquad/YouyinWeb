@@ -13,7 +13,7 @@ function pinyinify(string, _) {
     let arr = string.toLowerCase().split(' ');
 
     // Pinyin-ify every element
-    for (let i in arr)
+    for (let i = 0; i < arr.length; i++)
     {
         for (const [key, val] of Object.entries(soundTables.pinyin.table))
         {

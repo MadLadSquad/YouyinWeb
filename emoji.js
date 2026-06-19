@@ -23,8 +23,18 @@ function parseEmojis(root)
  */
 function initEmojiReplacement()
 {
+    // twemoji.min.js is loaded with defer, so it may not have executed yet when index.js's main()
+    // calls this (a deferred head script runs after the regular body scripts). Rather than silently
+    // skip emoji replacement for the whole page, wait for the script to finish loading and retry.
+    // Once it has executed, window.twemoji is set and we fall straight through
     if (!window.twemoji)
     {
+        const script = document.querySelector('script[src*="twemoji"]');
+        if (script)
+        {
+            script.addEventListener("load", initEmojiReplacement, { once: true });
+            return;
+        }
         console.warn("Twemoji library not loaded; falling back to native emojis.");
         return;
     }
