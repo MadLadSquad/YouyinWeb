@@ -38,6 +38,44 @@ body {
     font-family: 'Ubuntu', sans-serif;
 }
 
+/* ---------------------------------- Custom themed scrollbars ---------------------------------- */
+
+/* Apply to every scrollable element so the whole site shares one themed scrollbar instead of the
+   browser default. Standard properties (Firefox, and any modern engine) come first; the WebKit
+   pseudo-elements below give Chromium/Safari the same look with a hover state. The track is left
+   transparent so the scrollbar blends into whatever widget it sits in. */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--main-border-colour) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* The transparent border + background-clip leaves a little breathing room around the thumb so it
+   reads as a rounded pill rather than filling the whole gutter. */
+*::-webkit-scrollbar-thumb {
+    background-color: var(--main-border-colour);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: var(--main-accent-colour);
+}
+
+/* The little square where the vertical and horizontal bars meet */
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
 /**
  * Add padding to the side of the main block, because we still
  * need some spacing from the border of the screen for good user

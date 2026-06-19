@@ -113,8 +113,8 @@ const MUTABLE_CDN_PATH = '/gh/MadLadSquad/YouyinPublicDeckRepository';
 // The character database (manifest + chunks) is downloaded and persisted by the page (into
 // IndexedDB), but the service worker still caches whatever chunks it sees go by so they remain
 // available offline. It is fetched network-first so a package update is actually picked up — a
-// cache-first copy would pin the database forever. Both the jsDelivr chunk host and the
-// raw.githubusercontent manifest host carry the repository name in the path
+// cache-first copy would pin the database forever. Both the manifest and the chunks come from
+// jsDelivr and carry the repository name in the path
 const CHARACTER_DATA_REPO = 'hanzi-writer-data-youyin';
 
 // Network-first for same-origin requests so new deploys are picked up immediately, with the

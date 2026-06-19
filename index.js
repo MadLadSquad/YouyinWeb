@@ -37,10 +37,9 @@ window.MINUTE_UNIX = 60000;
 window.SECOND_UNIX = 1000;
 
 // The character stroke database is shipped as numbered chunks. The manifest lists the chunk count
-// and a per-chunk content hash so we can re-download only the chunks that actually changed. The
-// manifest is read from raw.githubusercontent (always fresh — jsDelivr edge-caches too long for
-// reliable change detection); the bulky chunks come from jsDelivr (cacheable, fast)
-window.CHARACTER_MANIFEST_URL = "https://raw.githubusercontent.com/MadLadSquad/hanzi-writer-data-youyin/master/character-map-chunks.json";
+// and a per-chunk content hash so we can re-download only the chunks that actually changed. Both the
+// manifest and the bulky chunks come from jsDelivr (cacheable, fast)
+window.CHARACTER_MANIFEST_URL = "https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/character-map-chunks.json";
 window.CHARACTER_CHUNK_URL_BASE = "https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/character-map-chunks/character-map-full-";
 // Chunks are fetched in batches with a cooldown between batches so we don't hammer the CDN
 window.CHARACTER_CHUNK_BATCH_SIZE = 5;
