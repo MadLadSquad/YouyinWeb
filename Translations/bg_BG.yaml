@@ -211,6 +211,8 @@ translations:
     text: "Качване на тесте"
   - id: community_decks_header
     text: "Обществени тестета"
+  - id: marketplace_search_placeholder
+    text: "Търсене на тестета…"
   - id: import_deck_confirm_text
     text: "Внасянето на тесте ЩЕ слее сегашното Ви тесте с новото! За да внесете само новото, първо изчистете тестето си!"
   - id: leveled_up_no

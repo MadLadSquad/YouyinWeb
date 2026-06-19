@@ -95,6 +95,7 @@ function hideImportOverlay(overlay)
  * @param { Object } deck - Deck metadata: { name, cards, phrases, preset_levels, location }
  * @param { string } type - Marketplace type, either "official" or "unofficial"
  * @param { string } language - Language the deck belongs to
+ * @returns { HTMLElement } - The card element, so the caller can register it for searching
  */
 function constructElement(val, deckContainer, deck, type, language)
 {
@@ -176,6 +177,8 @@ function constructElement(val, deckContainer, deck, type, language)
         link.click();
         URL.revokeObjectURL(link.href);
     });
+
+    return div;
 }
 
 /**
@@ -187,6 +190,107 @@ function createErrorElement(deckContainer, response)
 {
     const text = lc.marketplace_load_error.replace("{}", response.status);
     addElement("h1", text, "", "error-text centered vcentered", "", deckContainer);
+}
+
+// Every rendered deck, registered so the search bar can filter cards by name. `name` is pre-lowercased
+// for matching; `card` is the element to show/hide.
+const searchableDecks = [];
+// Each language section (header + spacer + grid + its cards), so a whole group can be hidden when none
+// of its decks match the current query instead of leaving a lone header above an empty grid.
+const languageGroups = [];
+
+/**
+ * Case-insensitive subsequence fuzzy match: returns true when every character of `query` appears in
+ * order somewhere within `target`. Both are expected to be lower-cased already. An empty query matches
+ * everything.
+ * @param { string } query - The search text
+ * @param { string } target - The deck name to test against
+ * @returns { boolean }
+ */
+function fuzzyMatch(query, target)
+{
+    if (query === "")
+        return true;
+
+    let i = 0;
+    for (let j = 0; j < target.length && i < query.length; j++)
+        if (target[j] === query[i])
+            i++;
+    return i === query.length;
+}
+
+// How long the filter layout animation runs. Kept short so typing feels responsive rather than laggy.
+const DECK_FILTER_ANIM_MS = 220;
+
+/**
+ * Shows the decks whose names fuzzily match the query and hides the rest, then collapses any language
+ * group left with no visible decks.
+ *
+ * The grid reflows whenever cards appear or disappear, so the surviving cards are animated into their
+ * new positions with the FLIP technique: record each visible card's box (First), apply the visibility
+ * changes (Last), then play the old→new delta as a transform that settles to nothing. Cards that
+ * become newly visible fade/scale in instead. Hidden cards are removed instantly (display:none) — the
+ * survivors sliding to fill the gap is what conveys the change. Honours prefers-reduced-motion.
+ * @param { string } rawQuery - The raw value of the search box
+ */
+function applyDeckFilter(rawQuery)
+{
+    const query = rawQuery.trim().toLowerCase();
+    const animate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // First: capture the current position of every visible card. getBoundingClientRect reflects any
+    // transform from an in-flight animation, so rapid typing animates from where cards visually are.
+    const first = new Map();
+    if (animate)
+        for (const deck of searchableDecks)
+            if (deck.card.style.display !== "none")
+                first.set(deck.card, deck.card.getBoundingClientRect());
+
+    for (const deck of searchableDecks)
+        deck.card.style.display = fuzzyMatch(query, deck.name) ? "" : "none";
+
+    for (const group of languageGroups)
+    {
+        const display = group.cards.some((d) => d.card.style.display !== "none") ? "" : "none";
+        group.header.style.display = display;
+        group.spacer.style.display = display;
+        group.grid.style.display = display;
+    }
+
+    if (!animate)
+        return;
+
+    // Last + Invert + Play: for each card still visible, slide it from its old box to the new one.
+    for (const deck of searchableDecks)
+    {
+        const card = deck.card;
+        if (card.style.display === "none")
+            continue;
+
+        // Cancel any running FLIP first so its lingering transform doesn't skew the resting box we
+        // measure; transforms never affect layout, so this can't disturb the other cards' boxes.
+        if (card.flipAnimation !== undefined)
+            card.flipAnimation.cancel();
+
+        const last = card.getBoundingClientRect();
+        const prev = first.get(card);
+        if (prev !== undefined)
+        {
+            const dx = prev.left - last.left;
+            const dy = prev.top - last.top;
+            if (dx !== 0 || dy !== 0)
+                card.flipAnimation = card.animate(
+                    [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }],
+                    { duration: DECK_FILTER_ANIM_MS, easing: "ease" });
+        }
+        else
+        {
+            // Newly shown card: fade and scale it in rather than popping into place.
+            card.flipAnimation = card.animate(
+                [{ opacity: 0, transform: "scale(0.92)" }, { opacity: 1, transform: "none" }],
+                { duration: DECK_FILTER_ANIM_MS, easing: "ease" });
+        }
+    }
 }
 
 /**
@@ -206,12 +310,20 @@ function handleMarketplaceSection(container, languages, type)
         // shares a single object between them
         for (const language of Object.keys(entry))
         {
-            addElement("h1", language, "", "centered", "", container);
-            addElement("br", "", "", "", "", container);
-            let grid = addElement("section", "", `deck-${type}-${val}`, "deck", "", container);
+            const header = addElement("h1", language, "", "centered", "", container);
+            const spacer = addElement("br", "", "", "", "", container);
+            const grid = addElement("section", "", `deck-${type}-${val}`, "deck", "", container);
+
+            const group = { header, spacer, grid, cards: [] };
+            languageGroups.push(group);
 
             for (const deck of entry[language])
-                constructElement(val++, grid, deck, type, language);
+            {
+                const card = constructElement(val++, grid, deck, type, language);
+                const record = { name: (deck.name || "").toLowerCase(), card };
+                searchableDecks.push(record);
+                group.cards.push(record);
+            }
         }
     }
 }
@@ -243,6 +355,11 @@ async function marketplaceMain()
     }
 
     runEventAfterAnimation($("upload-deck-public"), "click", (_) => { window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository') });
+
+    // Filter the rendered decks live as the user types in the search box
+    const search = $("marketplace-search");
+    if (search !== null)
+        search.addEventListener("input", (e) => applyDeckFilter(e.target.value));
 }
 
 // Wait until index.js has loaded the profile data from IndexedDB before running the marketplace
