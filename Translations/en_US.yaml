@@ -237,3 +237,9 @@ translations:
     text: "Setting up the character database for offline use. This only happens once."
   - id: char_updating_label
     text: "Updating characters…"
+
+  # deck import loading UI (marketplace.js)
+  - id: deck_import_title
+    text: "Importing deck"
+  - id: deck_import_subtitle
+    text: "Downloading the deck and merging it into your collection."

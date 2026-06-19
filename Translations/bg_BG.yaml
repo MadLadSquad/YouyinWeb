@@ -236,3 +236,9 @@ translations:
     text: "Предварително изтегляне на данни за работа офлайн. Това се случва само веднъж."
   - id: char_updating_label
     text: "Обновяване на символите…"
+
+  # deck import loading UI (marketplace.js)
+  - id: deck_import_title
+    text: "Внасяне на тесте"
+  - id: deck_import_subtitle
+    text: "Изтегляне на тестето и сливането му с Вашата колекция."

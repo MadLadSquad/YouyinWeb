@@ -2,7 +2,15 @@
 
 const MARKETPLACE_CDN = "https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest";
 
-async function loadMarketplaceData(file)
+/**
+ * Fetches and parses a deck/metadata file from the public deck repository.
+ * @param { string } file - Path of the file within the marketplace repository
+ * @param { function(number): void } [onProgress] - Optional callback receiving a 0..1 download
+ *        fraction. When supplied (the blocking import flow) the body is streamed so the loading bar
+ *        can advance as bytes arrive; without it the response is read in one go.
+ * @returns { Promise<Object|undefined> } - The parsed JSON, or undefined when the fetch failed
+ */
+async function loadMarketplaceData(file, onProgress)
 {
     let response = await fetch(`${MARKETPLACE_CDN}/${file}`)
     if (response.status !== 200)
@@ -10,7 +18,74 @@ async function loadMarketplaceData(file)
         console.warn(`Bad response from the public deck repository, the deck file may be missing or the CDN may be unavailable. Response code: ${response.status}`);
         return;
     }
+
+    // Stream the body when a progress callback is supplied so the import loading bar can track the
+    // download. Content-Length is absent (or, under gzip, the compressed size) for some responses,
+    // so onProgress is only called when we have a usable total; the overlay stays indeterminate
+    // otherwise.
+    if (onProgress && response.body)
+    {
+        const total = Number(response.headers.get("Content-Length")) || 0;
+        const reader = response.body.getReader();
+        const chunks = [];
+        let received = 0;
+        for (;;)
+        {
+            const { done, value } = await reader.read();
+            if (done)
+                break;
+            chunks.push(value);
+            received += value.length;
+            if (total > 0)
+                onProgress(received / total);
+        }
+        return JSON.parse(await new Blob(chunks).text());
+    }
+
     return await response.json();
+}
+
+/**
+ * Builds and shows the blocking, blurred modal used while a deck is being imported. Reuses the shared
+ * loading-modal component (.char-load-* in char-loading.css) so it matches the character-database
+ * download overlay. The bar starts indeterminate and switches to a real percentage once the download
+ * reports measurable progress.
+ * @returns { HTMLElement } - The overlay element (pass it to updateImportOverlay/hideImportOverlay)
+ */
+function showImportOverlay()
+{
+    const overlay = document.createElement("div");
+    overlay.className = "char-load-overlay";
+
+    const box = addElement("div", "", "", "char-load-box", "", overlay);
+    addElement("h2", lc.deck_import_title, "", "char-load-title", "", box);
+    addElement("p", lc.deck_import_subtitle, "", "char-load-subtitle", "", box);
+
+    const bar = addElement("div", "", "", "char-load-bar", "", box);
+    overlay.fill = addElement("div", "", "", "char-load-bar-fill indeterminate", "", bar);
+
+    document.body.appendChild(overlay);
+    return overlay;
+}
+
+/**
+ * Advances the import overlay's progress bar.
+ * @param { HTMLElement } overlay - The overlay returned by showImportOverlay
+ * @param { number } fraction - Progress in the range 0..1
+ */
+function updateImportOverlay(overlay, fraction)
+{
+    overlay.fill.classList.remove("indeterminate");
+    overlay.fill.style.width = `${Math.max(0, Math.min(1, fraction)) * 100}%`;
+}
+
+/**
+ * Removes the import overlay.
+ * @param { HTMLElement } overlay - The overlay returned by showImportOverlay
+ */
+function hideImportOverlay(overlay)
+{
+    overlay.remove();
 }
 
 /**
@@ -40,18 +115,37 @@ function constructElement(val, deckContainer, deck, type, language)
         let bExecuted = confirm(lc.import_deck_confirm_text);
         if (bExecuted)
         {
-            // If an element is created using addElement, arbitrary data is also assigned
-            let content = await loadMarketplaceData(e.target.getAttribute("arbitrary-data"));
-            if (content === undefined)
-                return;
+            // Block the page behind the loading modal for the whole import so nothing else can be
+            // touched while the deck downloads and is merged in
+            const overlay = showImportOverlay();
+            try
+            {
+                // If an element is created using addElement, arbitrary data is also assigned
+                let content = await loadMarketplaceData(e.target.getAttribute("arbitrary-data"),
+                    (fraction) => updateImportOverlay(overlay, fraction));
+                if (content === undefined)
+                {
+                    hideImportOverlay(overlay);
+                    return;
+                }
 
-            let dt = window.profileData;
-            dt.cards.push.apply(dt.cards, content.cards);
-            dt.phrases.push.apply(dt.phrases, content.phrases);
-            // Wait for the write to commit before navigating, otherwise the imported deck may not
-            // be persisted by the time the deck page loads
-            await saveProfileData(dt);
-            location.href = "./deck.html";
+                // Download done; the remaining merge + IndexedDB write is the last sliver of the bar
+                updateImportOverlay(overlay, 1);
+
+                let dt = window.profileData;
+                dt.cards.push.apply(dt.cards, content.cards);
+                dt.phrases.push.apply(dt.phrases, content.phrases);
+                // Wait for the write to commit before navigating, otherwise the imported deck may not
+                // be persisted by the time the deck page loads. The overlay stays up through the
+                // navigation so the page never becomes interactive mid-import
+                await saveProfileData(dt);
+                location.href = "./deck.html";
+            }
+            catch (err)
+            {
+                console.error("Youyin: deck import failed", err);
+                hideImportOverlay(overlay);
+            }
         }
     });
 

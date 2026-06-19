@@ -1,5 +1,6 @@
 /* Styles for the character-database download UI rendered by char-loading-ui.js. The colour palette
-   variables come from theme.js (see main.css). */
+   variables come from theme.js (see main.css). The blocking-modal classes here (.char-load-*) are
+   also reused as the shared loading-modal component by the marketplace deck import (marketplace.js). */
 
 /* Blocking modal shown while the character database downloads for the first time. Covers and blurs
    the whole page so nothing is interactive until the download finishes */
@@ -52,6 +53,27 @@
     border-radius: 999px;
     background-color: var(--main-accent-colour);
     transition: width 0.2s ease-out;
+}
+
+/* Indeterminate state for the shared loading bar: used when progress can't be measured (e.g. a deck
+   download whose response carries no Content-Length). A slice of fill slides back and forth instead
+   of tracking a real percentage. */
+.char-load-bar-fill.indeterminate {
+    width: 40%;
+    transition: none;
+    animation: char-load-indeterminate 1.2s ease-in-out infinite;
+}
+
+@keyframes char-load-indeterminate {
+    0% { transform: translateX(-110%); }
+    100% { transform: translateX(275%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .char-load-bar-fill.indeterminate {
+        animation: none;
+        width: 100%;
+    }
 }
 
 .char-load-count {

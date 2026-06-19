@@ -99,3 +99,7 @@ lc.theme_search_placeholder = "{{ _ theme_search_placeholder }}";
 lc.char_loading_title = "{{ _ char_loading_title }}";
 lc.char_loading_subtitle = "{{ _ char_loading_subtitle }}";
 lc.char_updating_label = "{{ _ char_updating_label }}";
+
+// deck import loading UI (marketplace.js)
+lc.deck_import_title = "{{ _ deck_import_title }}";
+lc.deck_import_subtitle = "{{ _ deck_import_subtitle }}";
