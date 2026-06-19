@@ -109,19 +109,98 @@ function setProfileCardData()
     averageKnowledge.textContent = `${lc.average_knowledge_level}: ${formatDecimal(knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`;
 }
 
+// A deck can hold a couple thousand cards, so the page is rendered progressively: card shells are
+// built in batches across animation frames (so the initial render never blocks on the whole deck),
+// and each card's writer — the expensive part, an animated SVG — is only instantiated once the card
+// scrolls near the viewport (see cardWriterObserver). These two maps are prebuilt once so per-card
+// construction stays O(1) instead of scanning the whole deck for every card.
+
+// How many card shells to build per animation frame. The page paints between batches, so cards
+// stream in instead of the tab locking up while a multi-thousand-card deck is laid out
+window.DECK_RENDER_BATCH_SIZE = 30;
+// How far ahead of the viewport a card's writer is hydrated, so it's ready by the time it's visible
+window.DECK_WRITER_HYDRATE_MARGIN = "400px";
+
+// Map: character -> array of phrase names that contain it. Prebuilt from the deck's phrases so the
+// "part of" list on each character card is a single lookup rather than a scan over every phrase
+let deckPhraseMembership = null;
+// Map: character -> variant postfix, taken from the matching character card (first one wins)
+let deckCharacterVariants = null;
+// Shared IntersectionObserver that hydrates each card's writer when it nears the viewport
+let cardWriterObserver = null;
+
 /**
- * Resolves the variant postfix for a phrase character by looking up a matching card in the deck.
+ * Builds the character -> [phrase names] membership map from the deck's phrases
+ * @param { Array } phrases - The deck's phrase objects
+ * @returns { Map<string, string[]> } - Each character mapped to the phrases that contain it
+ */
+function buildPhraseMembership(phrases)
+{
+    const map = new Map();
+    for (const p of phrases)
+    {
+        // A character that appears twice in a phrase should still list that phrase only once
+        const seen = new Set();
+        for (const ch of toCharacters(p.phrase))
+        {
+            if (seen.has(ch))
+                continue;
+            seen.add(ch);
+            if (!map.has(ch))
+                map.set(ch, []);
+            map.get(ch).push(p.name);
+        }
+    }
+    return map;
+}
+
+/**
+ * Builds the character -> variant postfix map from the deck's character cards
+ * @param { Array } cards - The deck's character card objects
+ * @returns { Map<string, string> } - Each character mapped to its variant postfix
+ */
+function buildCharacterVariants(cards)
+{
+    const map = new Map();
+    for (const c of cards)
+        if (!map.has(c.character))
+            map.set(c.character, c.variant || "");
+    return map;
+}
+
+/**
+ * Resolves the variant postfix for a phrase character by looking it up in the prebuilt map.
  * Phrases don't store per-character variants, so we borrow it from the character card if one exists.
  * @param { string } character - The single character to resolve
  * @returns { string } - The variant postfix (e.g. "-jp"), or "" if no matching card exists
  */
 function findCharacterVariant(character)
 {
-    const cards = window.profileData.cards;
-    for (let i in cards)
-        if (cards[i].character === character)
-            return cards[i].variant || "";
-    return "";
+    return (deckCharacterVariants && deckCharacterVariants.get(character)) || "";
+}
+
+/**
+ * Creates the IntersectionObserver that lazily hydrates card writers. Each observed card stores a
+ * hydrateWriter() closure; the first time the card crosses into the pre-load margin we run it once
+ * (creating the SVG writer) and stop observing. This caps the initial render at roughly a screenful
+ * of writers instead of one per card in the whole deck
+ * @returns { IntersectionObserver } - The configured observer
+ */
+function createCardWriterObserver()
+{
+    return new IntersectionObserver((entries, observer) => {
+        for (const entry of entries)
+        {
+            if (!entry.isIntersecting)
+                continue;
+            observer.unobserve(entry.target);
+            if (entry.target.hydrateWriter)
+            {
+                entry.target.hydrateWriter();
+                entry.target.hydrateWriter = null;
+            }
+        }
+    }, { rootMargin: window.DECK_WRITER_HYDRATE_MARGIN });
 }
 
 /**
@@ -136,10 +215,11 @@ function constructCard(it, index, container, localIndex)
     // Add parent div
     let div = addElement("div", "", `card-container-${index}`, "card centered", "", container)
 
-    // Add title, character render div and the definitions text
+    // Add title, character render div and the definitions text. The render div reserves space via CSS
+    // (card-writer-target / phrase-card-writers) so hydrating its writer later doesn't shift layout
     addElement("h3", `${it.name} ${formatDecimal(it.knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
     const target = it["character"]
-                                    ? addElement("div", "", `card-character-target-div-${index}`, "", "", div)
+                                    ? addElement("div", "", `card-character-target-div-${index}`, "card-writer-target", "", div)
                                     : addElement("div", "", `card-character-target-div-${index}`, "phrase-card-writers", "", div);
     addElement("p", `${lc.deck_definitions}`, "", "", "", div);
 
@@ -151,32 +231,17 @@ function constructCard(it, index, container, localIndex)
         addElement("li", `${f}`, "", "", "", list);
     }
 
-    // If it's a character find which phrases contain it
+    // If it's a character, list the phrases that contain it. Looked up from the prebuilt membership
+    // map, so this is a single lookup instead of a scan over every phrase for every card
     if (it["character"])
     {
-        const data = window.profileData;
-        // Actual optimisation
-        if (data.phrases.length > 0)
+        const phraseNames = deckPhraseMembership.get(it.character);
+        if (phraseNames && phraseNames.length > 0)
         {
-            // This is really not performant...
-            let paragraph = addElement("p", `${lc.part_of}:`, "", "", "", div);
-            let ol = document.createElement("ol");
-            let bPartOfPhrase = false;
-
-            for (let i in data.phrases)
-            {
-                if (data.phrases[i].phrase.includes(it.character))
-                {
-                    bPartOfPhrase = true;
-                    addElement("li", `${data.phrases[i].name}`, "", "", "", ol);
-                }
-            }
-
-            // Not ideal...
-            if (bPartOfPhrase)
-                div.appendChild(ol);
-            else
-                paragraph.remove();
+            addElement("p", `${lc.part_of}:`, "", "", "", div);
+            let ol = addElement("ol", "", "", "", "", div);
+            for (const name of phraseNames)
+                addElement("li", `${name}`, "", "", "", ol);
         }
     }
 
@@ -189,40 +254,72 @@ function constructCard(it, index, container, localIndex)
         location.href = `./deck-edit-card.html?${e.target.phrase}edit=${e.target.attributes["arbitrary-data"].nodeValue}`;
     });
 
+    // Defer the writer — the expensive, SVG-heavy part of a card — until it nears the viewport. The
+    // observer runs this closure once and then forgets the card (see createCardWriterObserver)
     if (it["character"])
     {
-        // Create an instance of the writer
-        let writer = createCardWriter(`card-character-target-div-${index}`, it.character + it.variant);
-        target.addEventListener('mouseover', function()
+        div.hydrateWriter = () =>
         {
-            writer.animateCharacter();
-        });
+            // Create an instance of the writer
+            let writer = createCardWriter(`card-character-target-div-${index}`, it.character + it.variant);
+            target.addEventListener('mouseover', function()
+            {
+                writer.animateCharacter();
+            });
+        };
     }
     else
     {
-        // Render each character of the phrase as its own normal-sized writer, then chain their
-        // animations so the phrase is drawn one character after another on hover
-        const phraseChars = toCharacters(it.phrase);
-        let writers = [];
-        for (let c = 0; c < phraseChars.length; c++)
+        div.hydrateWriter = () =>
         {
-            const charTargetId = `card-phrase-character-target-div-${index}-${c}`;
-            addElement("div", "", charTargetId, "phrase-card-character", "", target);
-            writers.push(createCardWriter(charTargetId, phraseChars[c] + findCharacterVariant(phraseChars[c]), window.PHRASE_CARD_WRITER_SIZE));
-        }
+            // Render each character of the phrase as its own normal-sized writer, then chain their
+            // animations so the phrase is drawn one character after another on hover
+            const phraseChars = toCharacters(it.phrase);
+            let writers = [];
+            for (let c = 0; c < phraseChars.length; c++)
+            {
+                const charTargetId = `card-phrase-character-target-div-${index}-${c}`;
+                addElement("div", "", charTargetId, "phrase-card-character", "", target);
+                writers.push(createCardWriter(charTargetId, phraseChars[c] + findCharacterVariant(phraseChars[c]), window.PHRASE_CARD_WRITER_SIZE));
+            }
 
-        // Guard against a fresh hover restarting the sequence while it's still running
-        let bAnimating = false;
-        target.addEventListener('mouseover', async function()
-        {
-            if (bAnimating)
-                return;
-            bAnimating = true;
-            for (const writer of writers)
-                await writer.animateCharacter();
-            bAnimating = false;
-        });
+            // Guard against a fresh hover restarting the sequence while it's still running
+            let bAnimating = false;
+            target.addEventListener('mouseover', async function()
+            {
+                if (bAnimating)
+                    return;
+                bAnimating = true;
+                for (const writer of writers)
+                    await writer.animateCharacter();
+                bAnimating = false;
+            });
+        };
     }
+
+    cardWriterObserver.observe(div);
+}
+
+/**
+ * Renders a list of cards/phrases into a container in batches across animation frames, so a large
+ * deck streams in instead of blocking the main thread while the whole list is laid out at once
+ * @param { Array } items - The card or phrase objects to render
+ * @param { HTMLElement } container - The section to append the cards to
+ * @param { number } indexOffset - Added to each item's position to form its unique DOM id (cards are
+ *                                  offset past the phrases so the two lists' ids never collide)
+ */
+function renderCardsProgressively(items, container, indexOffset)
+{
+    let i = 0;
+    function renderBatch()
+    {
+        const end = Math.min(i + window.DECK_RENDER_BATCH_SIZE, items.length);
+        for (; i < end; i++)
+            constructCard(items[i], indexOffset + i, container, i);
+        if (i < items.length)
+            requestAnimationFrame(renderBatch);
+    }
+    renderBatch();
 }
 
 function setupGameModifiers()
@@ -270,20 +367,20 @@ function deckmain()
     let cardsContainer = $("deck-characters-section");
     let phrasesContainer = $("deck-phrases-section");
 
-    // Remove phrases elements if none are available
+    // Prebuild the per-card lookup maps and the lazy-writer observer once, before rendering, so
+    // constructCard stays cheap for every card in a multi-thousand-card deck
+    deckPhraseMembership = buildPhraseMembership(data.phrases);
+    deckCharacterVariants = buildCharacterVariants(data.cards);
+    cardWriterObserver = createCardWriterObserver();
+
+    // Remove phrases elements if none are available, otherwise stream the phrase cards in
     if (data.phrases.length === 0)
     {
         $("deck-phrases-header").remove();
         phrasesContainer.remove();
     }
-    else // Load phrases
-    {
-        for (let val in data.phrases)
-        {
-            const it = data.phrases[val];
-            constructCard(it, val, phrasesContainer, val);
-        }
-    }
+    else
+        renderCardsProgressively(data.phrases, phrasesContainer, 0);
 
     // Remove cards elements if none are available
     if (data.cards.length === 0)
@@ -293,12 +390,8 @@ function deckmain()
         return;
     }
 
-    // Load normal cards
-    for (let val in data.cards)
-    {
-        const it = data.cards[val];
-        constructCard(it, (val + data.phrases.length), cardsContainer, val);
-    }
+    // Stream the character cards in, their ids offset past the phrases so the two lists never collide
+    renderCardsProgressively(data.cards, cardsContainer, data.phrases.length);
 }
 
 // Wait until index.js has loaded the profile data from IndexedDB before rendering the deck

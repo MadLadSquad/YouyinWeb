@@ -12,6 +12,12 @@
     border: 1px solid var(--main-border-colour);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     transition: box-shadow 0.2s ease;
+
+    /* Let the browser skip rendering and layout for off-screen cards entirely. The auto intrinsic
+       size keeps the scrollbar honest before a card has ever been rendered (and is remembered once
+       it has), so a multi-thousand-card deck stays cheap to scroll on low-powered devices */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
 }
 
 .card:hover {
@@ -141,12 +147,20 @@ ol li {
     color: var(--deck-card-text-colour);
 }
 
-/* Row of per-character writers that replaces the plain phrase text on phrase cards */
+/* Single-character writer target. Writers are hydrated lazily as cards scroll into view, so reserve
+   the writer's footprint up front (matches CARD_WRITER_SIZE in index.js) to avoid layout shift */
+.card .card-writer-target {
+    min-height: 100px;
+}
+
+/* Row of per-character writers that replaces the plain phrase text on phrase cards. min-height
+   matches PHRASE_CARD_WRITER_SIZE so lazily-hydrated phrase writers don't shift the card either */
 .card .phrase-card-writers {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.25rem;
+    min-height: 50px;
 }
 
 /* Hide the default file upload widget */
