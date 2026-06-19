@@ -109,17 +109,33 @@ function setProfileCardData()
     averageKnowledge.textContent = `${lc.average_knowledge_level}: ${formatDecimal(knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`;
 }
 
-// A deck can hold a couple thousand cards, so the page is rendered progressively: card shells are
-// built in batches across animation frames (so the initial render never blocks on the whole deck),
-// and each card's writer — the expensive part, an animated SVG — is only instantiated once the card
-// scrolls near the viewport (see cardWriterObserver). These two maps are prebuilt once so per-card
-// construction stays O(1) instead of scanning the whole deck for every card.
+// A deck can hold a couple thousand cards, so the lists are virtualized: items are partitioned into
+// blocks and only blocks near the viewport keep their card shells in the DOM, the rest collapse to a
+// spacer of the block's last-measured height (see blockObserver / buildBlocks). This keeps the live
+// DOM proportional to the viewport rather than to the deck. On top of that, each card's writer — the
+// expensive part, an animated SVG — is only instantiated once the card scrolls near the viewport
+// (cardWriterObserver). The two lookup maps below are prebuilt once so per-card construction stays
+// O(1) instead of scanning the whole deck for every card.
+//
+// Each block lays out its own grid, so a block whose card count isn't a whole number of rows would
+// leave a ragged partial row at the boundary with the next block. To avoid that, a block holds an
+// exact multiple of the current column count (DECK_ROWS_PER_BLOCK rows). The column count is read
+// from the realized grid and the blocks are rebuilt whenever it changes (see renderDeckLists).
 
-// How many card shells to build per animation frame. The page paints between batches, so cards
-// stream in instead of the tab locking up while a multi-thousand-card deck is laid out
-window.DECK_RENDER_BATCH_SIZE = 30;
-// How far ahead of the viewport a card's writer is hydrated, so it's ready by the time it's visible
+// How many grid rows make up one virtualization block. Block size is this times the live column
+// count, so a wide screen (more columns) gets proportionally larger blocks. More rows per block means
+// a wider DOM window but fewer block boundaries
+window.DECK_ROWS_PER_BLOCK = 12;
+// How far beyond the viewport a block is kept live, so fast scrolling doesn't reveal un-rendered gaps
+window.DECK_BLOCK_HYDRATE_MARGIN = "800px";
+// Rough rendered height (px) of one card row, used to estimate a not-yet-rendered block's spacer
+// height before it has ever been measured. Tracks the card's contain-intrinsic-size plus the row gap
+window.DECK_ROW_HEIGHT_ESTIMATE = 340;
+// How far ahead of the viewport a card's writer is hydrated, so it's ready by the time it's visible.
+// Kept smaller than the block margin so a card's block always exists before its writer is wanted
 window.DECK_WRITER_HYDRATE_MARGIN = "400px";
+// Debounce window (ms) for reacting to viewport resizes (orientation changes, window drags)
+window.DECK_RESIZE_DEBOUNCE_MS = 200;
 
 // Map: character -> array of phrase names that contain it. Prebuilt from the deck's phrases so the
 // "part of" list on each character card is a single lookup rather than a scan over every phrase
@@ -128,6 +144,13 @@ let deckPhraseMembership = null;
 let deckCharacterVariants = null;
 // Shared IntersectionObserver that hydrates each card's writer when it nears the viewport
 let cardWriterObserver = null;
+// Shared IntersectionObserver that renders/collapses whole blocks as they enter/leave the viewport
+let blockObserver = null;
+// The non-empty lists to virtualize: [{ items, container, domOffset }]. Kept so a resize that changes
+// the column count can rebuild every block at the new row-aligned size
+let deckLists = [];
+// Column count the blocks were last built for, so a resize only rebuilds when it actually changes
+let deckColumnCount = 0;
 
 /**
  * Builds the character -> [phrase names] membership map from the deck's phrases
@@ -301,25 +324,196 @@ function constructCard(it, index, container, localIndex)
 }
 
 /**
- * Renders a list of cards/phrases into a container in batches across animation frames, so a large
- * deck streams in instead of blocking the main thread while the whole list is laid out at once
- * @param { Array } items - The card or phrase objects to render
- * @param { HTMLElement } container - The section to append the cards to
- * @param { number } indexOffset - Added to each item's position to form its unique DOM id (cards are
- *                                  offset past the phrases so the two lists' ids never collide)
+ * Reads the realized number of grid columns by dropping a throwaway .deck-block into the container and
+ * asking the browser how many tracks auto-fill resolved to. Reading the computed grid rather than
+ * recomputing it from width + gap keeps us correct regardless of rem-based gaps or sub-pixel rounding.
+ * The probe is added and removed within this synchronous call, so it never paints
+ * @param { HTMLElement } container - The section the blocks live in
+ * @returns { number } - The number of columns the deck grid currently has (at least 1)
  */
-function renderCardsProgressively(items, container, indexOffset)
+function getDeckColumnCount(container)
 {
-    let i = 0;
-    function renderBatch()
+    const probe = document.createElement("div");
+    probe.className = "deck-block";
+    container.appendChild(probe);
+    // getComputedStyle forces layout, so the auto-fill track list is resolved by the time we read it
+    const template = getComputedStyle(probe).gridTemplateColumns;
+    probe.remove();
+    const count = (template && template !== "none") ? template.split(" ").length : 1;
+    return Math.max(1, count);
+}
+
+/**
+ * Estimates the rendered height of a block before it has ever been laid out, from the column count and
+ * the number of cards in the block
+ * @param { number } columns - The deck grid's current column count
+ * @param { number } itemCount - How many cards the block holds
+ * @returns { number } - Estimated block height in pixels
+ */
+function estimateBlockHeight(columns, itemCount)
+{
+    return Math.ceil(itemCount / columns) * window.DECK_ROW_HEIGHT_ESTIMATE;
+}
+
+/**
+ * Pushes a section's refined per-block height estimate onto every block that is still an
+ * un-measured spacer, so the scrollbar settles once the first block of the section has been measured
+ * @param { Object } section - The section descriptor (its blocks share one running estimate)
+ */
+function applySpacerEstimate(section)
+{
+    for (const block of section.blocks)
+        if (!block.rendered && block.measuredHeight === null)
+            block.el.style.minHeight = `${section.estimate}px`;
+}
+
+/**
+ * Builds a block's card shells into its element and records how tall it ends up, so its spacer can
+ * match once it's later collapsed. The first block measured in a section also seeds the spacer
+ * estimate used for every block that hasn't been rendered yet
+ * @param { Object } block - The block descriptor to render
+ */
+function renderBlock(block)
+{
+    if (block.rendered)
+        return;
+    block.rendered = true;
+
+    // Drop the spacer height and build the real cards. localIndex is the card's global position in
+    // its list (the edit page navigates by it); the DOM id is offset past the phrases so ids are unique
+    block.el.style.minHeight = "";
+    for (let j = 0; j < block.items.length; j++)
     {
-        const end = Math.min(i + window.DECK_RENDER_BATCH_SIZE, items.length);
-        for (; i < end; i++)
-            constructCard(items[i], indexOffset + i, container, i);
-        if (i < items.length)
-            requestAnimationFrame(renderBatch);
+        const pos = block.start + j;
+        constructCard(block.items[j], block.domOffset + pos, block.el, pos);
     }
-    renderBatch();
+
+    block.measuredHeight = block.el.offsetHeight;
+    if (block.section.estimate === null && block.measuredHeight > 0)
+    {
+        block.section.estimate = block.measuredHeight;
+        applySpacerEstimate(block.section);
+    }
+}
+
+/**
+ * Collapses a rendered block back to an empty spacer of the height it last occupied, so scroll
+ * position is preserved while its DOM (cards and their writers) is released
+ * @param { Object } block - The block descriptor to tear down
+ */
+function teardownBlock(block)
+{
+    if (!block.rendered)
+        return;
+    block.rendered = false;
+
+    const height = block.measuredHeight || block.section.estimate || block.initialEstimate;
+    block.el.style.minHeight = `${height}px`;
+    // replaceChildren() with no arguments empties the block; the removed card divs drop out of the
+    // writer observer (it holds them weakly) and are garbage-collected along with their writers
+    block.el.replaceChildren();
+}
+
+/**
+ * Creates the IntersectionObserver that drives block virtualization: a block renders when it enters
+ * the pre-load margin and collapses back to a spacer when it leaves
+ * @returns { IntersectionObserver } - The configured observer
+ */
+function createBlockObserver()
+{
+    return new IntersectionObserver((entries) => {
+        for (const entry of entries)
+        {
+            const block = entry.target.blockData;
+            if (!block)
+                continue;
+            if (entry.isIntersecting)
+                renderBlock(block);
+            else
+                teardownBlock(block);
+        }
+    }, { rootMargin: window.DECK_BLOCK_HYDRATE_MARGIN });
+}
+
+/**
+ * Partitions a list of cards/phrases into virtualization blocks. Each block holds a whole number of
+ * grid rows (DECK_ROWS_PER_BLOCK × columns cards) so its boundary always lands on a row boundary and
+ * never leaves a ragged partial row. Each block starts life as an empty spacer div of estimated
+ * height and is observed; the block observer fills it in and empties it again as it scrolls in and out
+ * @param { Array } items - The card or phrase objects to virtualize
+ * @param { HTMLElement } container - The section to append the blocks to
+ * @param { number } domOffset - Added to each card's global position to form its unique DOM id (cards
+ *                               are offset past the phrases so the two lists' ids never collide)
+ * @param { number } columns - The deck grid's current column count, so blocks stay row-aligned
+ */
+function buildBlocks(items, container, domOffset, columns)
+{
+    const blockSize = columns * window.DECK_ROWS_PER_BLOCK;
+    const section = { blocks: [], estimate: null };
+    for (let start = 0; start < items.length; start += blockSize)
+    {
+        const blockItems = items.slice(start, start + blockSize);
+        const el = document.createElement("div");
+        el.className = "deck-block";
+        const initialEstimate = estimateBlockHeight(columns, blockItems.length);
+        el.style.minHeight = `${initialEstimate}px`;
+
+        const block = {
+            items: blockItems,
+            start,
+            domOffset,
+            el,
+            initialEstimate,
+            rendered: false,
+            measuredHeight: null,
+            section,
+        };
+        el.blockData = block;
+        section.blocks.push(block);
+        container.appendChild(el);
+        blockObserver.observe(el);
+    }
+}
+
+/**
+ * (Re)builds every virtualized list from deckLists at the current column count. Used for the initial
+ * render and again whenever a resize changes the column count — the observers are recreated and the
+ * containers cleared so blocks are re-partitioned row-aligned to the new width
+ */
+function renderDeckLists()
+{
+    // Fresh observers each build so stale block/card observations from the previous layout are dropped
+    if (blockObserver)
+        blockObserver.disconnect();
+    if (cardWriterObserver)
+        cardWriterObserver.disconnect();
+    cardWriterObserver = createCardWriterObserver();
+    blockObserver = createBlockObserver();
+
+    // Column count is the same for both sections (same width), so measure once and reuse it
+    deckColumnCount = deckLists.length > 0 ? getDeckColumnCount(deckLists[0].container) : 0;
+    for (const list of deckLists)
+    {
+        list.container.replaceChildren();
+        buildBlocks(list.items, list.container, list.domOffset, deckColumnCount);
+    }
+}
+
+/**
+ * Rebuilds the deck whenever a resize changes how many columns fit, so blocks stay row-aligned (and
+ * the boundary packing stays clean) across orientation changes and window drags. Debounced, and a
+ * no-op when the column count is unchanged so ordinary resizes don't churn the DOM
+ */
+function setupDeckResizeHandler()
+{
+    let resizeTimer = null;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (deckLists.length > 0 && getDeckColumnCount(deckLists[0].container) !== deckColumnCount)
+                renderDeckLists();
+        }, window.DECK_RESIZE_DEBOUNCE_MS);
+    });
 }
 
 function setupGameModifiers()
@@ -367,31 +561,33 @@ function deckmain()
     let cardsContainer = $("deck-characters-section");
     let phrasesContainer = $("deck-phrases-section");
 
-    // Prebuild the per-card lookup maps and the lazy-writer observer once, before rendering, so
-    // constructCard stays cheap for every card in a multi-thousand-card deck
+    // Prebuild the per-card lookup maps once so constructCard stays cheap for every card in a
+    // multi-thousand-card deck
     deckPhraseMembership = buildPhraseMembership(data.phrases);
     deckCharacterVariants = buildCharacterVariants(data.cards);
-    cardWriterObserver = createCardWriterObserver();
 
-    // Remove phrases elements if none are available, otherwise stream the phrase cards in
+    // Collect the non-empty lists to virtualize. Character ids are offset past the phrases so the two
+    // lists' DOM ids never collide. Empty lists have their header and section removed instead
+    deckLists = [];
     if (data.phrases.length === 0)
     {
         $("deck-phrases-header").remove();
         phrasesContainer.remove();
     }
     else
-        renderCardsProgressively(data.phrases, phrasesContainer, 0);
+        deckLists.push({ items: data.phrases, container: phrasesContainer, domOffset: 0 });
 
-    // Remove cards elements if none are available
     if (data.cards.length === 0)
     {
         $("deck-characters-header").remove();
         cardsContainer.remove();
-        return;
     }
+    else
+        deckLists.push({ items: data.cards, container: cardsContainer, domOffset: data.phrases.length });
 
-    // Stream the character cards in, their ids offset past the phrases so the two lists never collide
-    renderCardsProgressively(data.cards, cardsContainer, data.phrases.length);
+    // Build the blocks row-aligned to the current column count, and keep them aligned across resizes
+    renderDeckLists();
+    setupDeckResizeHandler();
 }
 
 // Wait until index.js has loaded the profile data from IndexedDB before rendering the deck

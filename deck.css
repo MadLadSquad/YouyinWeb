@@ -7,6 +7,29 @@
     box-sizing: border-box;
 }
 
+/* The character/phrase sections are virtualized (see deck.js): instead of one big grid they stack
+   fixed-size grid blocks, so off-screen blocks can collapse to a spacer. The section itself is just
+   a vertical stack; the grid lives on each .deck-block, and the inline padding moves there too */
+#deck-phrases-section, #deck-characters-section {
+    display: block;
+    padding-inline: 0;
+}
+
+.deck-block {
+    display: grid;
+    gap: 0.5rem;
+    /* auto-fill (not auto-fit) so a block's partial last row stays normal-width and left-aligned
+       instead of stretching to fill the row at every block boundary */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    padding-inline: 0.5rem;
+    box-sizing: border-box;
+}
+
+/* Match the in-grid row gap between stacked blocks */
+.deck-block + .deck-block {
+    margin-top: 0.5rem;
+}
+
 /* Add border to the cards for better UI/UX */
 .card {
     border: 1px solid var(--main-border-colour);
