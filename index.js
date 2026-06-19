@@ -708,6 +708,19 @@ async function backgroundUpdate(localManifest)
 // The character-database loading UI (showCharLoadOverlay / showCharUpdatePill and their
 // update/hide helpers, used above) lives in char-loading-ui.js, loaded before this file
 
+// Startup is split across two readiness signals so a page can render everything that only needs the
+// profile before the (potentially large) character database has finished loading:
+//   - youyinProfileReady resolves once window.profileData / window.gameModifiers are populated and the
+//     page chrome is set up. The deck shells and the daily-streak logic wait on this and run at once.
+//   - youyinCharDataReady resolves once window.characterData holds the stroke database. Anything that
+//     draws characters (hanzi-writer instances) waits on this.
+// youyinStorageReady stays the "everything is ready" signal (it is main() itself) for the page scripts
+// that need character data up front
+let resolveProfileReady;
+let resolveCharDataReady;
+window.youyinProfileReady = new Promise((resolve) => { resolveProfileReady = resolve; });
+window.youyinCharDataReady = new Promise((resolve) => { resolveCharDataReady = resolve; });
+
 async function main()
 {
     // Load the profile data once into memory. Missing or partial data (a first visit, or decks
@@ -784,6 +797,11 @@ async function main()
     setThemeBox();
     initEmojiReplacement();
 
+    // Profile and chrome are ready: pages that only need the profile (deck shells, daily streak) can
+    // start now, without waiting for the character database below. setLanguage may have already
+    // redirected, in which case this never runs and the fresh page load takes over
+    resolveProfileReady();
+
     // Register service worker for PWA support. It transparently caches the character chunks it sees
     // fetched (see sw.js) — the download itself is driven here on the page thread
     if ('serviceWorker' in navigator) {
@@ -799,13 +817,22 @@ async function main()
     }
 
     // Bring the character stroke database into memory. A first visit downloads every chunk behind a
-    // blocking modal (awaited, so page scripts only run once the data is ready); later visits load
-    // the cached copy instantly and reconcile changed chunks in the background without blocking
-    const localCharManifest = await loadCharacterDataFromIDB();
-    if (localCharManifest === null)
-        await firstTimeDownload();
-    else
-        backgroundUpdate(localCharManifest);
+    // blocking modal (awaited, so character data is ready before youyinCharDataReady resolves); later
+    // visits load the cached copy instantly and reconcile changed chunks in the background
+    try
+    {
+        const localCharManifest = await loadCharacterDataFromIDB();
+        if (localCharManifest === null)
+            await firstTimeDownload();
+        else
+            backgroundUpdate(localCharManifest);
+    }
+    finally
+    {
+        // Always signal readiness, even if loading failed — writers then simply render nothing (as
+        // they did when a per-character fetch 404'd) instead of consumers waiting on this forever
+        resolveCharDataReady();
+    }
 }
 
 // Loading profile data from IndexedDB is asynchronous, so page scripts must wait for this promise

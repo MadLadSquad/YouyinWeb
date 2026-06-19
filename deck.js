@@ -205,8 +205,8 @@ function findCharacterVariant(character)
 /**
  * Creates the IntersectionObserver that lazily hydrates card writers. Each observed card stores a
  * hydrateWriter() closure; the first time the card crosses into the pre-load margin we run it once
- * (creating the SVG writer) and stop observing. This caps the initial render at roughly a screenful
- * of writers instead of one per card in the whole deck
+ * (drawing the resting outline) and stop observing. This caps the initial render at roughly a
+ * screenful of cards instead of drawing one per card in the whole deck
  * @returns { IntersectionObserver } - The configured observer
  */
 function createCardWriterObserver()
@@ -217,13 +217,71 @@ function createCardWriterObserver()
             if (!entry.isIntersecting)
                 continue;
             observer.unobserve(entry.target);
-            if (entry.target.hydrateWriter)
-            {
-                entry.target.hydrateWriter();
-                entry.target.hydrateWriter = null;
-            }
+
+            const card = entry.target;
+            const hydrate = card.hydrateWriter;
+            card.hydrateWriter = null;
+            if (!hydrate)
+                continue;
+
+            // Card shells render before the character database has finished loading (it is gated on
+            // youyinProfileReady, the writers on youyinCharDataReady), so hold drawing until the
+            // stroke data is in memory. Re-check the card is still in the DOM — its block may have
+            // been collapsed again while we waited on the data
+            window.youyinCharDataReady.then(() => {
+                if (card.isConnected)
+                    hydrate();
+            });
         }
     }, { rootMargin: window.DECK_WRITER_HYDRATE_MARGIN });
+}
+
+// SVG namespace for the hand-built static outlines (createElement won't do for SVG elements)
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+/**
+ * Draws a cheap, static outline of a character into a target element from the stroke data already in
+ * memory: a plain group of filled <path>s, with none of hanzi-writer's animation controller, clip
+ * paths or per-stroke machinery — a fraction of the cost of a writer instance. This is what a resting
+ * card shows; the full writer is only built when the card is hovered (see the hydrate closures).
+ *
+ * The transform replicates hanzi-writer's Positioner exactly so the static glyph lines up with the
+ * animated one: the stroke data lives in a 1024-wide box whose y runs from -124 to 900 with the
+ * y-axis pointing up, hence the vertical flip and the -124*scale vertical offset
+ * @param { HTMLElement } targetEl - The element to draw the outline into
+ * @param { string } character - Character (plus optional variant postfix) to draw
+ * @param { number } size - Width/height in pixels, matching the writer that replaces it on hover
+ * @returns { boolean } - True if an outline was drawn, false when no stroke data exists for the char
+ */
+function createStaticOutline(targetEl, character, size)
+{
+    const data = window.characterData[character];
+    if (!data || !data.strokes)
+        return false;
+
+    const GLYPH_SIZE = 1024;        // hanzi-writer glyph box width/height
+    const GLYPH_Y_MIN = -124;       // the glyph box's lowest y (data y-axis points up)
+    const p = window.WRITER_PADDING;
+    const scale = (size - 2 * p) / GLYPH_SIZE;
+    const tx = p;
+    const ty = size - p - (-GLYPH_Y_MIN) * scale;
+
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("width", size);
+    svg.setAttribute("height", size);
+
+    const group = document.createElementNS(SVG_NS, "g");
+    group.setAttribute("transform", `translate(${tx}, ${ty}) scale(${scale}, ${-scale})`);
+    for (const stroke of data.strokes)
+    {
+        const path = document.createElementNS(SVG_NS, "path");
+        path.setAttribute("d", stroke);
+        path.setAttribute("fill", window.WRITER_STROKE_COLOUR);
+        group.appendChild(path);
+    }
+    svg.appendChild(group);
+    targetEl.appendChild(svg);
+    return true;
 }
 
 /**
@@ -283,11 +341,21 @@ function constructCard(it, index, container, localIndex)
     {
         div.hydrateWriter = () =>
         {
-            // Create an instance of the writer. Stash it on the card so the block teardown can stop it
-            let writer = createCardWriter(`card-character-target-div-${index}`, it.character + it.variant);
-            div.writers = [writer];
+            // Draw the cheap static outline at rest; the full animated writer is built lazily the
+            // first time the card is hovered, and stashed on the card so teardown can stop it
+            const fullCharacter = it.character + it.variant;
+            createStaticOutline(target, fullCharacter, window.CARD_WRITER_SIZE);
+
+            let writer = null;
             target.addEventListener('mouseover', function()
             {
+                if (writer === null)
+                {
+                    // Swap the static outline for a real hanzi-writer on first hover
+                    target.replaceChildren();
+                    writer = createCardWriter(`card-character-target-div-${index}`, fullCharacter);
+                    div.writers = [writer];
+                }
                 writer.animateCharacter();
             });
         };
@@ -296,23 +364,38 @@ function constructCard(it, index, container, localIndex)
     {
         div.hydrateWriter = () =>
         {
-            // Render each character of the phrase as its own normal-sized writer, then chain their
-            // animations so the phrase is drawn one character after another on hover
+            // Draw each phrase character as a cheap static outline at rest. Each one's own-sized writer
+            // is built on first hover, then their animations are chained so the phrase draws one
+            // character after another
             const phraseChars = toCharacters(it.phrase);
-            let writers = [];
+            const charTargets = [];
             for (let c = 0; c < phraseChars.length; c++)
             {
                 const charTargetId = `card-phrase-character-target-div-${index}-${c}`;
-                addElement("div", "", charTargetId, "phrase-card-character", "", target);
-                writers.push(createCardWriter(charTargetId, phraseChars[c] + findCharacterVariant(phraseChars[c]), window.PHRASE_CARD_WRITER_SIZE));
+                const charEl = addElement("div", "", charTargetId, "phrase-card-character", "", target);
+                const fullCharacter = phraseChars[c] + findCharacterVariant(phraseChars[c]);
+                createStaticOutline(charEl, fullCharacter, window.PHRASE_CARD_WRITER_SIZE);
+                charTargets.push({ id: charTargetId, character: fullCharacter, el: charEl });
             }
-            // Stash the writers on the card so the block teardown can stop them
-            div.writers = writers;
 
-            // Guard against a fresh hover restarting the sequence while it's still running
+            let writers = null;
             let bAnimating = false;
             target.addEventListener('mouseover', async function()
             {
+                if (writers === null)
+                {
+                    // Swap each static outline for a real writer on first hover, and stash them on the
+                    // card so the block teardown can stop them
+                    writers = [];
+                    for (const ct of charTargets)
+                    {
+                        ct.el.replaceChildren();
+                        writers.push(createCardWriter(ct.id, ct.character, window.PHRASE_CARD_WRITER_SIZE));
+                    }
+                    div.writers = writers;
+                }
+
+                // Guard against a fresh hover restarting the sequence while it's still running
                 if (bAnimating)
                     return;
                 bAnimating = true;
@@ -642,5 +725,6 @@ function deckmain()
     setupDeckResizeHandler();
 }
 
-// Wait until index.js has loaded the profile data from IndexedDB before rendering the deck
-window.youyinStorageReady.then(() => deckmain());
+// Render the deck as soon as the profile is loaded — the card shells don't need the character
+// database, which loads separately (writers wait on youyinCharDataReady, see createCardWriterObserver)
+window.youyinProfileReady.then(() => deckmain());

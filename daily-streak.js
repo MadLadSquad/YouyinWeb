@@ -160,10 +160,10 @@ function scheduleDailyMidnightCheck()
 }
 
 // index.js's main() loads window.profileData and window.gameModifiers from IndexedDB asynchronously,
-// so wait on window.youyinStorageReady before reducing levels and checking the streak. This still
-// runs before the page scripts' own youyinStorageReady callbacks chain, so the deck page renders
-// already-reduced levels
-window.youyinStorageReady.then(() => {
+// so wait on window.youyinProfileReady before reducing levels and checking the streak. This needs
+// only the profile (not the character database), and daily-streak.js loads before every page script,
+// so this still runs before the deck page renders — the deck shows already-reduced levels
+window.youyinProfileReady.then(() => {
     applyDailyLevelReduction();
     checkStreakExpiry();
     scheduleDailyMidnightCheck();
