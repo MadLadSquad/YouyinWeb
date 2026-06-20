@@ -1,5 +1,5 @@
 /* Display the deck or marketplace as a grid of cards */
-.deck, #deck-community {
+.deck {
     display: grid;
     gap: 0.5rem;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -147,11 +147,6 @@ ol li {
     list-style-type: decimal;
 }
 
-/* override the style of main.css specifically for the deck page, since it doesn't look good with a border */
-.header-deck {
-    border: 0;
-}
-
 .card h1 {
     font-size: 1.5rem;
 }
@@ -230,14 +225,198 @@ input[type=text] {
     border-radius: 4px;
 }
 
-/* Level-reduce slider sits on its own line, separated from the checkbox above */
-.slider-label {
-    display: block;
-    margin-top: 0.5rem;
+/* Modifiers section inside the profile statistics card */
+.modifiers-container {
+    display: flex;
+    flex-direction: column;
 }
 
-#level-reduce-slider {
+.modifier-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+/* Custom styled checkbox */
+.checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.checkbox-label:hover {
+    color: var(--main-accent-colour);
+}
+
+.checkbox-label input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    box-sizing: border-box;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--main-accent-colour);
+    border-radius: 4px;
+    background-color: var(--main-background-colour);
+    cursor: pointer;
+    position: relative;
+    outline: none;
+    margin: 0 8px 0 0;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+
+.checkbox-label input[type="checkbox"]::after {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 2px;
+    width: 4px;
+    height: 7px;
+    border: solid var(--main-background-colour);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) scale(0);
+    opacity: 0;
+    transition: transform 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46), opacity 0.1s ease;
+}
+
+.checkbox-label input[type="checkbox"]:checked {
+    background-color: var(--main-accent-colour);
+    border-color: var(--main-accent-colour);
+}
+
+.checkbox-label input[type="checkbox"]:checked::after {
+    transform: rotate(45deg) scale(1);
+    opacity: 1;
+}
+
+.checkbox-label input[type="checkbox"]:hover {
+    border-color: var(--deck-button-active-colour);
+    transform: scale(1.05);
+}
+
+.checkbox-label input[type="checkbox"]:active {
+    transform: scale(0.95);
+}
+
+.checkbox-label input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--main-accent-colour);
+    outline-offset: 2px;
+}
+
+/* Custom styled slider label & element */
+.slider-label {
+    font-size: 1rem;
+    font-weight: 500;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Range input styling resetting default browser values */
+input[type="range"]#level-reduce-slider {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 120px;
+    max-width: 100%;
+    background: transparent;
+    cursor: pointer;
+    height: 24px;
     margin: 0;
+    outline: none;
+}
+
+/* WebKit Track styling */
+input[type="range"]#level-reduce-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    background: var(--main-border-colour);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+input[type="range"]#level-reduce-slider:hover::-webkit-slider-runnable-track {
+    background: var(--main-accent-colour);
+}
+
+/* WebKit Thumb styling */
+input[type="range"]#level-reduce-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    position: relative;
+    z-index: 1;
+    margin-top: -6px; /* center thumb on track: (18px thumb - 6px track)/2 = 6px offset */
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: var(--main-accent-colour);
+    border: 2px solid var(--main-background-colour);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+input[type="range"]#level-reduce-slider:hover::-webkit-slider-thumb {
+    background: var(--deck-button-active-colour);
+    transform: scale(1.2);
+}
+
+input[type="range"]#level-reduce-slider:active::-webkit-slider-thumb {
+    background: var(--deck-button-active-colour);
+    transform: scale(1.3);
+}
+
+/* Firefox Track styling */
+input[type="range"]#level-reduce-slider::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    background: var(--main-border-colour);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+input[type="range"]#level-reduce-slider:hover::-moz-range-track {
+    background: var(--main-accent-colour);
+}
+
+/* Firefox Thumb styling */
+input[type="range"]#level-reduce-slider::-moz-range-thumb {
+    position: relative;
+    z-index: 1;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    background: var(--main-accent-colour);
+    border: 2px solid var(--main-background-colour);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease, background-color 0.2s ease;
+    box-sizing: content-box;
+}
+
+input[type="range"]#level-reduce-slider:hover::-moz-range-thumb {
+    background: var(--deck-button-active-colour);
+    transform: scale(1.2);
+}
+
+input[type="range"]#level-reduce-slider:active::-moz-range-thumb {
+    background: var(--deck-button-active-colour);
+    transform: scale(1.3);
+}
+
+/* Focus visibility outline for accessibility */
+input[type="range"]#level-reduce-slider:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid var(--main-accent-colour);
+    outline-offset: 2px;
+}
+
+input[type="range"]#level-reduce-slider:focus-visible::-moz-range-thumb {
+    outline: 2px solid var(--main-accent-colour);
+    outline-offset: 2px;
 }
 
 /* Shared search bar, centred above the listings. Used by both the deck and marketplace pages

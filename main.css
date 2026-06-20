@@ -88,15 +88,6 @@ main {
     --main-padding-width: 1rem;
 }
 
-.article {
-    padding-inline: 0.5rem;
-}
-
-main.article {
-    max-width: 70ch;
-    margin-inline: auto;
-}
-
 #start-button-writer-section {
     padding-inline: 0.5rem;
 }
@@ -327,15 +318,11 @@ header {
     border-bottom: 1px solid var(--main-border-colour);
 }
 
-#site-title {
-    color: var(--main-text-colour);
-}
-
 #coming-soon-header {
     font-size: clamp(1.5rem, 3vw, 3rem);
 }
 
-#coming-soon-text {
+#coming-soon-text-1, #coming-soon-text-2 {
     font-size: clamp(0.95rem, 1.5vw, 1.25rem);
 }
 
