@@ -28,31 +28,45 @@ HTML files are not plain HTML — they're processed by UVKBuildTool using direct
 - `{{ trademark }}` — variable substitution from `uvproj.yaml`'s `variables:` section.
 - `.tmpl.html` files (see `intermediate-extensions` in `uvproj.yaml`) are partials only — they don't produce standalone output.
 
-**`i18n.js` is special:** it contains `lc.foo = "{{ _ foo }}"` lines so that runtime JS code can read translated strings via the global `lc` object. When code needs a translated string from JS (not just from HTML), add the key here as well as to the YAML translation files.
+**`scripts/data/i18n.js` is special:** it contains `lc.foo = "{{ _ foo }}"` lines so that runtime JS code can read translated strings via the global `lc` object. When code needs a translated string from JS (not just from HTML), add the key here as well as to the YAML translation files.
 
 The CI deploy step strips `.html` extensions from URLs, and `.htaccess` rewrites extensionless requests back to `.html`. Internal links should be written as `./page.html` in source; the build/CI handles production URL rewriting.
 
 ## Runtime architecture
 
-The app is a set of independent pages (`index.html`, `deck.html`, `marketplace.html`, `account.html`, `404.html`, plus `deck-edit-card.html` opened from the deck page), each loading its own JS file. There is **no module system** — every page also loads `index.js` (often implicitly via shared chrome) which defines globals on `window` that the page scripts rely on:
+The app is a set of independent pages (`index.html`, `deck.html`, `marketplace.html`, `account.html`, `404.html`, plus `deck-edit-card.html` opened from the deck page), each loading its own JS file. There is **no module system** — every page also loads `scripts/index.js` (implicitly via `Components/footer.tmpl.html` shared chrome) which defines globals on `window` that the page scripts rely on:
 
 - **Storage:** All deck/session *profile* state lives in **IndexedDB** (database `youyin`, object store `profile`) under two keys. UI-only settings (`youyinTheme`, `language`) deliberately stay in `localStorage` — they're tiny and read synchronously before render.
-  - `youyinCardData` — `{ sessions, streak, lastDate, totalTimeInSessions, cards: [...], phrases: [...] }`. See `example-schema.json`. `cards` are single characters; `phrases` are multi-character sequences. Card objects have a `variant` field that distinguishes Chinese/Kanji/Hanja rendering of the same codepoint (legacy decks without it are migrated by `fixLegacyCharacterVariants` in `index.js`).
-  - `youyinGameModifiers` — `{ extensive, levelReduce }`. `index.js#main()` defensively initializes both keys in memory (and saves them back) if either is missing. `saveProfileData(obj)` / `saveGameModifiers()` write the in-memory global to IndexedDB and **return a promise** — `await` it (or `.then`) before navigating/reloading, otherwise the page teardown can abort the write.
-  - **Async load + gating:** IndexedDB is asynchronous, so `main()` is `async` and exposes `window.youyinStorageReady`. Every page-script entry point must run inside `window.youyinStorageReady.then(...)` — by the time it fires, `window.profileData` / `window.gameModifiers` are populated. All synchronous reads still go through those in-memory globals; only load and save touch IndexedDB.
+  - `youyinCardData` — `{ sessions, streak, lastDate, totalTimeInSessions, cards: [...], phrases: [...] }`. See `example-schema.json`. `cards` are single characters; `phrases` are multi-character sequences. Card objects have a `variant` field that distinguishes Chinese/Kanji/Hanja rendering of the same codepoint (legacy decks without it are migrated by `fixLegacyCharacterVariants` in `scripts/index.js`).
+  - `youyinGameModifiers` — `{ extensive, levelReduce }`. `scripts/index.js#main()` defensively initializes both keys in memory (and saves them back) if either is missing. `saveProfileData(obj)` / `saveGameModifiers()` write the in-memory global to IndexedDB and **return a promise** — `await` it (or `.then`) before navigating/reloading, otherwise the page teardown can abort the write.
+  - **Async load + gating:** IndexedDB is asynchronous, so `main()` is `async` and exposes `window.youyinStorageReady`. To optimize load sequence, startup is split across readiness signals:
+    - `window.youyinProfileReady` resolves once the profile and modifiers are loaded and the footer select boxes are initialized (enables deck shells/streaks to render immediately).
+    - `window.youyinCharDataReady` resolves once the character stroke database is ready in memory.
+    - `window.youyinStorageReady` remains the final "everything is loaded" promise that resolves when `main()` completes.
+    Every page-script entry point that needs character data must run inside `window.youyinStorageReady.then(...)` or wait for `youyinCharDataReady`.
   - **Legacy migration:** `loadProfileData()` reads IndexedDB first; if a key is empty but the old `localStorage` entry exists, it copies it into IndexedDB and removes the `localStorage` key (one-time move). If IndexedDB is entirely unavailable, it falls back to reading `localStorage` in memory for the session.
-- **Globals defined in `index.js`:** tuning constants (`MAX_KNOWLEDGE_LEVEL`, `CARD_WRITER_SIZE`, etc.), `window.profileData` (in-memory profile cache, persisted to IndexedDB), `window.gameModifiers`, `window.youyinStorageReady`, the IndexedDB helpers (`openYouyinDB`, `idbGet`, `idbPut`), helpers (`$`, `addElement`, `addTextNode`, `runEventAfterAnimation`, `fisherYates`, `getLocalisedTimePostfix`), the character data loader (`charDataLoader` — fetches stroke data from `https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/data/<char>.json`), and the language switcher.
-- **Per-page scripts:**
-  - `main-page.js` — the practice session: drives `hanzi-writer` (loaded from jsDelivr CDN) to grade strokes, advances the user through cards/phrases, computes errors and time-spent.
-  - `deck.js` / `deck-new.js` — renders the deck page (stats card + lists of cards and phrases) and the new/edit-card flow.
-  - `marketplace.js` — loads deck lists from `https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest/...` and imports them into the user's deck (IndexedDB).
-  - `IME.js` — Romaji↔Kana and pinyin tone-mark conversion using `soundTables` (loaded from data files).
+- **Globals & API Structure:**
+  - **`scripts/index.js` (Core Globals & Storage):** `MAX_KNOWLEDGE_LEVEL`, time unit constants (`HOUR_UNIX`, `MINUTE_UNIX`, `SECOND_UNIX`), `window.profileData`, `window.gameModifiers`, storage promises (`youyinStorageReady`, `youyinProfileReady`, `youyinCharDataReady`), IndexedDB wrappers (`openYouyinDB`, `idbGet`, `idbPut`, `idbDelete`), DOM/animation helpers (`$`, `addElement`, `addTextNode`, `toCharacters`, `runEventAfterAnimation`), and profile persistence (`saveProfileData`, `saveGameModifiers`).
+  - **`scripts/components/writer.js` (HanziWriter Wrappers):** `CARD_WRITER_SIZE`, `PHRASE_CARD_WRITER_SIZE`, `createWriter`, `createCardWriter`, and the database loader `charDataLoader`. Note that `charDataLoader` reads synchronously from the in-memory `window.characterData` map populated by `scripts/data/character-database.js` instead of triggering network requests.
+  - **`scripts/data/character-database.js` (Database Sync):** `window.characterData`, `loadCharacterDataFromIDB`, `fetchUpstreamManifest`, `downloadChunks`, `firstTimeDownload`, and `backgroundUpdate` which keep the stroke data updated from CDN chunks and cached locally.
+  - **`scripts/components/language-selector.js` (Language Selection):** `setLanguage`, `setLanguageBox`, `redirectWithLanguage`, and `SUPPORTED_LOCALES`.
+  - **`scripts/data/theme.js` (Theme Injection):** `applyPalette`, `applyTheme`, `cacheThemePalette`, `loadThemeCatalogue`, and `youyinDefaultTheme` (loaded synchronously in `<head>`).
+  - **`scripts/components/theme-selector.js` (Theme UI):** theme select-picker popup.
+  - **`scripts/components/daily-streak.js` (Streak):** daily streak calculation (`localDayIndex`, `checkStreak`).
+  - **`scripts/utils/format.js` (Formatting):** localized string formatters like `getLocalisedTimePostfix`.
+  - **`scripts/pages/main-page.js` (Practice Logic):** `fisherYates` helper for card/phrase shuffling.
+- **Per-page scripts (under `scripts/pages/` and `scripts/utils/`):**
+  - `scripts/pages/main-page.js` — the practice session: drives `hanzi-writer` (loaded from jsDelivr CDN) to grade strokes, advances the user through cards/phrases, computes errors and time-spent.
+  - `scripts/pages/deck.js` / `scripts/pages/deck-new.js` — renders the deck page (stats card + lists of cards and phrases) and the new/edit-card flow.
+  - `scripts/pages/marketplace.js` — loads deck lists from `https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest/...` and imports them into the user's deck (IndexedDB).
+  - `scripts/utils/IME.js` — Romaji↔Kana and pinyin tone-mark conversion using `soundTables` (loaded from data files).
 
-When adding strings that get rendered from JS into the DOM, you must (a) add the translation entry to every `Translations/<locale>.yaml`, and (b) expose it through `i18n.js` as `lc.<key> = "{{ _ key }}"`. Strings used only inside HTML templates only need step (a).
+When adding strings that get rendered from JS into the DOM, you must (a) add the translation entry to every `Translations/<locale>.yaml`, and (b) expose it through `scripts/data/i18n.js` as `lc.<key> = "{{ _ key }}"`. Strings used only inside HTML templates only need step (a).
 
 ## Other notable things
 
-- The character SVG/stroke database is the external `hanzi-writer-data-youyin` repo on jsDelivr — not bundled here.
+- The character stroke database is downloaded once in chunks, cached in IndexedDB, and held in memory; there is no per-character network fetch during sessions.
 - Marketplace decks live in `YouyinPublicDeckRepository` (also fetched at runtime via jsDelivr).
 - `UBTCustomFunctions/` is copied into the UBT source tree at build time — it's a C++ extension hook for the build tool, currently a no-op stub.
+- Service worker (`sw.js`) caches static assets, script files, and key CDN dependencies (`hanzi-writer.min.js`, etc.) to enable offline capability as a PWA.
 - `.gitignore` is C++-flavored (for the submodule build); standard web-dev artifacts are not listed.

@@ -11,14 +11,28 @@ const SEARCH_RESULT_ANIM_MS = 180;
 const SEARCH_INPUT_DEBOUNCE_MS = 120;
 
 /**
- * Normalises a raw search-box value for matching: trimmed and lower-cased. fuzzyMatch expects its
- * inputs already lower-cased, so every page runs its query through this first.
+ * Folds away combining diacritics so modified latin characters match their plain base letter — e.g. the
+ * tone-marked pinyin "guānfāng" reduces to "guanfang", letting a user type plain ASCII and still find
+ * accented names. NFD splits a precomposed character into its base letter plus combining marks, then the
+ * range ̀-ͯ strips those marks. CJK glyphs and base Greek letters are left untouched.
+ * @param { string } str - The text to fold
+ * @returns { string } - The text with diacritics removed
+ */
+function stripDiacritics(str)
+{
+    return str.normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
+/**
+ * Normalises a raw search-box value for matching: trimmed, lower-cased, and diacritic-folded. fuzzyMatch
+ * expects its inputs already lower-cased (and searchMatchesFields folds the fields the same way), so
+ * every page runs its query through this first.
  * @param { string } raw - The raw value of the search box
  * @returns { string } - The normalised query
  */
 function normaliseSearchQuery(raw)
 {
-    return raw.trim().toLowerCase();
+    return stripDiacritics(raw.trim().toLowerCase());
 }
 
 /**
@@ -26,7 +40,8 @@ function normaliseSearchQuery(raw)
  * one of the provided field strings. Fields are tested individually rather than concatenated, so a
  * subsequence can't span a field boundary and cause a surprising match. Nullish/empty fields are
  * skipped, and an empty query matches everything. This is what lets a page "search based on different
- * parameters": the caller decides which fields each item contributes.
+ * parameters": the caller decides which fields each item contributes. Fields are diacritic-folded the
+ * same way as the query (see normaliseSearchQuery), so plain ASCII matches accented values.
  * @param { string } query - Normalised search text (see normaliseSearchQuery)
  * @param { Array<string|undefined|null> } fields - The item's searchable strings
  * @returns { boolean }
@@ -37,7 +52,7 @@ function searchMatchesFields(query, fields)
         return true;
 
     for (const field of fields)
-        if (field && fuzzyMatch(query, field.toLowerCase()))
+        if (field && fuzzyMatch(query, stripDiacritics(field.toLowerCase())))
             return true;
     return false;
 }

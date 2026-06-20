@@ -66,13 +66,16 @@ async function loadCharacterDataFromIDB()
     if (manifest === null)
         return null;
 
+    // Read every chunk concurrently rather than awaiting them one at a time: the reads are independent
+    // IndexedDB gets, so serializing them paid one round-trip per chunk and dominated startup on large
+    // databases. Each chunk holds a disjoint set of characters, so merge order doesn't matter
+    const chunks = await Promise.all(
+        Array.from({ length: manifest.num }, (_, i) => idbGet(window.YOUYIN_CHAR_CHUNK_PREFIX + i)));
+
     const data = {};
-    for (let i = 0; i < manifest.num; i++)
-    {
-        const chunk = await idbGet(window.YOUYIN_CHAR_CHUNK_PREFIX + i);
+    for (const chunk of chunks)
         if (chunk !== null)
             Object.assign(data, chunk);
-    }
     window.characterData = data;
     return manifest;
 }
