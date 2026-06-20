@@ -201,6 +201,8 @@ translations:
     text: "Part of"
   - id: deck_card_edit
     text: "Edit"
+  - id: deck_search_placeholder
+    text: "Search your deck…"
 
   # marketplace.html
   - id: official_decks_header

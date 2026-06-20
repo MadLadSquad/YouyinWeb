@@ -146,11 +146,21 @@ let deckCharacterVariants = null;
 let cardWriterObserver = null;
 // Shared IntersectionObserver that renders/collapses whole blocks as they enter/leave the viewport
 let blockObserver = null;
-// The non-empty lists to virtualize: [{ items, container, domOffset }]. Kept so a resize that changes
-// the column count can rebuild every block at the new row-aligned size
+// The non-empty lists to virtualize: [{ items, indices, container, domOffset }]. Kept so a resize that
+// changes the column count can rebuild every block at the new row-aligned size. `indices` maps each
+// (possibly filtered) item back to its original position in profileData (see buildBlocks)
 let deckLists = [];
 // Column count the blocks were last built for, so a resize only rebuilds when it actually changes
 let deckColumnCount = 0;
+// The originally-non-empty lists the search filters over: [{ items, container, header, domOffset }].
+// Distinct from deckLists, which holds only the currently-matching subset to render
+let deckSearchSources = [];
+// Pending debounce timer for the search input, so fast typing rebuilds the lists only once it settles
+let deckSearchDebounce = null;
+// How long the search results fade-in runs (ms), kept short so filtering feels responsive
+const DECK_SEARCH_ANIM_MS = 180;
+// How long to wait after the last keystroke before rebuilding the virtualized lists (ms)
+const DECK_SEARCH_DEBOUNCE_MS = 120;
 
 /**
  * Builds the character -> [phrase names] membership map from the deck's phrases
@@ -461,14 +471,15 @@ function renderBlock(block)
     block.rendered = true;
 
     // Build the cards into a fragment and attach it in one shot, so a block's worth of inserts is a
-    // single DOM mutation rather than one per card. localIndex is the card's global position in its
-    // list (the edit page navigates by it); the DOM id is offset past the phrases so ids are unique
+    // single DOM mutation rather than one per card. localIndex is the card's original index in the
+    // unfiltered profileData list (the edit page navigates by it, so it must survive filtering); the
+    // DOM id uses the dense position (offset past the phrases) purely so ids stay unique
     block.el.style.minHeight = "";
     const fragment = document.createDocumentFragment();
     for (let j = 0; j < block.items.length; j++)
     {
         const pos = block.start + j;
-        constructCard(block.items[j], block.domOffset + pos, fragment, pos);
+        constructCard(block.items[j], block.domOffset + pos, fragment, block.indices[j]);
     }
     block.el.appendChild(fragment);
 
@@ -571,12 +582,15 @@ function createBlockObserver()
  * never leaves a ragged partial row. Each block starts life as an empty spacer div of estimated
  * height and is observed; the block observer fills it in and empties it again as it scrolls in and out
  * @param { Array } items - The card or phrase objects to virtualize
+ * @param { number[] } indices - Original index in profileData for each item (parallel to items). The
+ *                               edit button navigates by this, so it must survive filtering even when
+ *                               the dense list position no longer matches the original index
  * @param { HTMLElement } container - The section to append the blocks to
  * @param { number } domOffset - Added to each card's global position to form its unique DOM id (cards
  *                               are offset past the phrases so the two lists' ids never collide)
  * @param { number } columns - The deck grid's current column count, so blocks stay row-aligned
  */
-function buildBlocks(items, container, domOffset, columns)
+function buildBlocks(items, indices, container, domOffset, columns)
 {
     const blockSize = columns * window.DECK_ROWS_PER_BLOCK;
     const section = { blocks: [], estimate: null };
@@ -590,6 +604,7 @@ function buildBlocks(items, container, domOffset, columns)
 
         const block = {
             items: blockItems,
+            indices: indices.slice(start, start + blockSize),
             start,
             domOffset,
             el,
@@ -625,7 +640,7 @@ function renderDeckLists()
     for (const list of deckLists)
     {
         list.container.replaceChildren();
-        buildBlocks(list.items, list.container, list.domOffset, deckColumnCount);
+        buildBlocks(list.items, list.indices, list.container, list.domOffset, deckColumnCount);
     }
 }
 
@@ -668,6 +683,86 @@ function setupGameModifiers()
 }
 
 /**
+ * Tests a card/phrase against the search query. Matches against the card's name, the underlying
+ * character or phrase glyphs, and each of its definitions. Fields are tested individually (rather than
+ * concatenated) so a subsequence can't span a field boundary and cause a surprising match. An empty
+ * query matches everything.
+ * @param { string } query - The search text, already trimmed and lower-cased
+ * @param { Object } item - A card (has `character`) or phrase (has `phrase`) object
+ * @returns { boolean }
+ */
+function deckItemMatches(query, item)
+{
+    if (query === "")
+        return true;
+
+    if (item.name && fuzzyMatch(query, item.name.toLowerCase()))
+        return true;
+
+    const glyphs = item.character || item.phrase;
+    if (glyphs && fuzzyMatch(query, glyphs.toLowerCase()))
+        return true;
+
+    if (item.definitions)
+        for (const def of item.definitions)
+            if (def && fuzzyMatch(query, def.toLowerCase()))
+                return true;
+
+    return false;
+}
+
+/**
+ * Filters the deck to the cards/phrases matching the query and rebuilds the virtualized lists. Unlike
+ * the marketplace (whose cards all live in the DOM), the deck is virtualized, so search works on the
+ * data: each source is reduced to its matching items plus their original indices, deckLists is rebuilt
+ * from that subset, and renderDeckLists re-partitions the blocks. A source with no matches has its
+ * header hidden and its container emptied so no lone header floats over an empty grid.
+ * @param { string } rawQuery - The raw value of the search box
+ * @param { boolean } animate - Whether to fade the results in (skipped on the initial render)
+ */
+function applyDeckSearch(rawQuery, animate)
+{
+    const query = rawQuery.trim().toLowerCase();
+
+    deckLists = [];
+    for (const source of deckSearchSources)
+    {
+        const items = [];
+        const indices = [];
+        for (let i = 0; i < source.items.length; i++)
+            if (deckItemMatches(query, source.items[i]))
+            {
+                items.push(source.items[i]);
+                indices.push(i);
+            }
+
+        if (items.length > 0)
+        {
+            source.header.style.display = "";
+            deckLists.push({ items, indices, container: source.container, domOffset: source.domOffset });
+        }
+        else
+        {
+            source.header.style.display = "none";
+            source.container.replaceChildren();
+        }
+    }
+
+    renderDeckLists();
+
+    // Light fade-in on the freshly filtered results. The whole container is animated rather than each
+    // card: cards are rendered lazily by the block observer as they scroll into view, so a per-card
+    // animation would also fire during normal scrolling. Honour prefers-reduced-motion
+    if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+        return;
+
+    for (const list of deckLists)
+        list.container.animate(
+            [{ opacity: 0.4, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }],
+            { duration: DECK_SEARCH_ANIM_MS, easing: "ease" });
+}
+
+/**
  * Main function for the deck page
  */
 function deckmain()
@@ -696,16 +791,17 @@ function deckmain()
     deckPhraseMembership = buildPhraseMembership(data.phrases);
     deckCharacterVariants = buildCharacterVariants(data.cards);
 
-    // Collect the non-empty lists to virtualize. Character ids are offset past the phrases so the two
-    // lists' DOM ids never collide. Empty lists have their header and section removed instead
-    deckLists = [];
+    // Register the non-empty lists as search sources. Character ids are offset past the full phrase
+    // count (a constant, independent of the active filter) so the two lists' DOM ids never collide.
+    // Empty lists can never match a search, so their header and section are removed once here instead
+    deckSearchSources = [];
     if (data.phrases.length === 0)
     {
         $("deck-phrases-header").remove();
         phrasesContainer.remove();
     }
     else
-        deckLists.push({ items: data.phrases, container: phrasesContainer, domOffset: 0 });
+        deckSearchSources.push({ items: data.phrases, container: phrasesContainer, header: $("deck-phrases-header"), domOffset: 0 });
 
     if (data.cards.length === 0)
     {
@@ -713,11 +809,22 @@ function deckmain()
         cardsContainer.remove();
     }
     else
-        deckLists.push({ items: data.cards, container: cardsContainer, domOffset: data.phrases.length });
+        deckSearchSources.push({ items: data.cards, container: cardsContainer, header: $("deck-characters-header"), domOffset: data.phrases.length });
 
-    // Build the blocks row-aligned to the current column count, and keep them aligned across resizes
-    renderDeckLists();
+    // The initial render is an empty-query filter (matches everything), which fills deckLists and
+    // builds the blocks row-aligned to the current column count. Keep them aligned across resizes
+    applyDeckSearch("", false);
     setupDeckResizeHandler();
+
+    // Filter the deck live as the user types. The rebuild re-partitions the virtualized blocks (heavier
+    // than the marketplace's display toggle), so debounce it so fast typing doesn't thrash construction
+    const search = $("deck-search");
+    if (search !== null)
+        search.addEventListener("input", (e) => {
+            const value = e.target.value;
+            clearTimeout(deckSearchDebounce);
+            deckSearchDebounce = setTimeout(() => applyDeckSearch(value, true), DECK_SEARCH_DEBOUNCE_MS);
+        });
 }
 
 // Render the deck as soon as the profile is loaded — the card shells don't need the character

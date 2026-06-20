@@ -199,25 +199,7 @@ const searchableDecks = [];
 // of its decks match the current query instead of leaving a lone header above an empty grid.
 const languageGroups = [];
 
-/**
- * Case-insensitive subsequence fuzzy match: returns true when every character of `query` appears in
- * order somewhere within `target`. Both are expected to be lower-cased already. An empty query matches
- * everything.
- * @param { string } query - The search text
- * @param { string } target - The deck name to test against
- * @returns { boolean }
- */
-function fuzzyMatch(query, target)
-{
-    if (query === "")
-        return true;
-
-    let i = 0;
-    for (let j = 0; j < target.length && i < query.length; j++)
-        if (target[j] === query[i])
-            i++;
-    return i === query.length;
-}
+// fuzzyMatch is a shared global defined in index.js (used by both the marketplace and deck search).
 
 // How long the filter layout animation runs. Kept short so typing feels responsive rather than laggy.
 const DECK_FILTER_ANIM_MS = 220;

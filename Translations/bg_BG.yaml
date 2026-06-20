@@ -201,6 +201,8 @@ translations:
     text: "Част от"
   - id: deck_card_edit
     text: "Редактирай"
+  - id: deck_search_placeholder
+    text: "Търсене в тестето…"
 
   # marketplace.html
   - id: official_decks_header

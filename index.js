@@ -382,6 +382,26 @@ function fisherYates(array)
     }
 }
 
+/**
+ * Case-insensitive subsequence fuzzy match: returns true when every character of `query` appears in
+ * order somewhere within `target`. Both are expected to be lower-cased already. An empty query matches
+ * everything. Shared by the marketplace and deck search bars.
+ * @param { string } query - The search text
+ * @param { string } target - The text to test against
+ * @returns { boolean }
+ */
+function fuzzyMatch(query, target)
+{
+    if (query === "")
+        return true;
+
+    let i = 0;
+    for (let j = 0; j < target.length && i < query.length; j++)
+        if (target[j] === query[i])
+            i++;
+    return i === query.length;
+}
+
 // Some legacy users may be lacking variants as part of their character card objects, so this function fixes this
 function fixLegacyCharacterVariants()
 {

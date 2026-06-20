@@ -240,6 +240,31 @@ input[type=text] {
     margin: 0;
 }
 
+/* Shared search bar, centred above the listings. Used by both the deck and marketplace pages
+   (deck.css is loaded on both) */
+.page-search-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.page-search {
+    box-sizing: border-box;
+    width: min(30rem, 90%);
+    padding: 8px 14px;
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--main-text-colour);
+    background-color: var(--main-background-colour);
+    border: 1px solid var(--main-accent-colour);
+    border-radius: 8px;
+}
+
+.page-search:focus {
+    outline: 2px solid var(--main-accent-colour);
+    outline-offset: 1px;
+}
+
 /* Hidden by default; JS toggles display when editing/showing phrases */
 #phrase-preview-section,
 #delete-edit-button {
