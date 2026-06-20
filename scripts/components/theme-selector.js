@@ -32,13 +32,21 @@ function setThemeBox()
     list.className = "list-select-list";
     popup.appendChild(list);
 
-    // One button per theme. Object key order can't be relied on (integer-like ids such as
-    // "8008" get hoisted to the front), so sort explicitly: Default first, then by name.
-    const themeIds = Object.keys(window.youyinThemes).sort(function (a, b) {
-        if (a === "default") return -1;
-        if (b === "default") return 1;
-        return window.youyinThemes[a].name.localeCompare(window.youyinThemes[b].name);
-    });
+    // window.youyinThemes is loaded lazily (see theme.js / loadThemeCatalogue), so the catalogue isn't
+    // available when setThemeBox runs on every page — defer anything that reads it to the first open.
+    // Object key order can't be relied on (integer-like ids such as "8008" get hoisted to the front),
+    // so sort explicitly: Default first, then by name.
+    let themeIds = null;
+    function ensureThemeIds()
+    {
+        if (themeIds !== null)
+            return;
+        themeIds = Object.keys(window.youyinThemes).sort(function (a, b) {
+            if (a === "default") return -1;
+            if (b === "default") return 1;
+            return window.youyinThemes[a].name.localeCompare(window.youyinThemes[b].name);
+        });
+    }
 
     const options = {};
 
@@ -130,18 +138,23 @@ function setThemeBox()
     // Opening re-reads the persisted theme (it may have changed since the page loaded) and resets
     // the search; closing reverts any un-committed live preview back to the committed theme.
     const controller = createPopupController(button, popup, function() {
-        // Build the (large) option list lazily the first time the picker opens
-        buildOptions();
-        committedId = window.localStorage.getItem("youyinTheme") || "default";
-        previewId = committedId;
-        setActiveHighlight(committedId);
-        search.value = "";
-        filter("");
-        search.focus();
+        // Load the catalogue (lazily, once) then build the option list the first time the picker opens.
+        // On later opens it's already loaded, so this resolves in a microtask and the popup fills
+        // immediately; on the very first open the list briefly appears empty while the file loads.
+        window.loadThemeCatalogue().then(function () {
+            ensureThemeIds();
+            buildOptions();
+            committedId = window.localStorage.getItem("youyinTheme") || "default";
+            previewId = committedId;
+            setActiveHighlight(committedId);
+            search.value = "";
+            filter("");
+            search.focus();
 
-        // Scroll the current theme into view once the list has been laid out.
-        if (options[committedId])
-            requestAnimationFrame(function(){ scrollToOption(options[committedId]); });
+            // Scroll the current theme into view once the list has been laid out.
+            if (options[committedId])
+                requestAnimationFrame(function(){ scrollToOption(options[committedId]); });
+        }).catch(function (e) { console.error(e); });
     }, function() {
         if (previewId !== committedId)
             window.applyTheme(committedId);
@@ -155,6 +168,12 @@ function setThemeBox()
     {
         window.applyTheme(id);
         window.localStorage.setItem("youyinTheme", id);
+        // Cache the chosen palette so the next boot can paint it without loading the catalogue. The
+        // default theme is painted from theme.js's inline copy, so clear its cache entry instead.
+        if (id === "default")
+            window.localStorage.removeItem(window.YOUYIN_THEME_PALETTE_KEY);
+        else if (window.youyinThemes && window.youyinThemes[id])
+            window.cacheThemePalette(window.youyinThemes[id]);
         committedId = id;
         previewId = id;
         setActiveHighlight(id);

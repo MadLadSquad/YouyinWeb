@@ -1,4 +1,4 @@
-const CACHE_NAME = 'youyin-static-v6';
+const CACHE_NAME = 'youyin-static-v7';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination
@@ -15,6 +15,7 @@ const PAGES = [
 ];
 const SCRIPTS = [
     'scripts/data/theme.js',
+    'scripts/data/themes-data.js',
     'scripts/data/character-database.js',
     'scripts/index.js',
     'scripts/components/char-loading-ui.js',
