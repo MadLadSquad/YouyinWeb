@@ -238,13 +238,13 @@ function changeSidebarText(phrase, phraseNum, card, cardNum)
     let definitionParagraph = $("character-info-widget-def-p");
 
     if (phrase !== null && phraseNum > 0)
-        updateIndividualSidebarElementText("phrase", phrase.name, `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${phraseNum}; ${lc.phrases_count_errors}: ${window.totalSessionErrors}`, phrase);
+        updateIndividualSidebarElementText("phrase", `${lc.phrases_count_spelling}: ${phrase.name}`, `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${phraseNum}; ${lc.phrases_count_errors}: ${window.totalSessionErrors}`, phrase);
 
     if (card !== null && cardNum > 0)
         updateIndividualSidebarElementText("character", `${lc.phrases_count_spelling}: ${card.name}`, cardSidebarText(cardNum), card);
     else
     {
-        updateIndividualSidebarElementText("character", lc.unknown_character, "", null);
+        updateIndividualSidebarElementText("character", lc.unknown_character, cardSidebarText(cardNum), null);
         definitionParagraph.style.display = "none";
         return;
     }
