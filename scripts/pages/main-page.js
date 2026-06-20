@@ -67,6 +67,11 @@ window.extensiveModeLevel = 4;
 window.cardsReviewedCounter = 1;
 window.phrasesReviewedCounter = 0;
 
+// How long after the last resize event to wait before recomputing the writer/button geometry, so a
+// window drag doesn't run the (layout-thrashing) recompute on every intermediate event. Matches the
+// deck page's DECK_RESIZE_DEBOUNCE_MS
+const MAIN_PAGE_RESIZE_DEBOUNCE_MS = 200;
+
 /**
  * The number of cards (or phrases) that may be revised in the current session. The cards and
  * phrases arrays are shuffled before each session and never resized mid-session, so capping the
@@ -86,36 +91,62 @@ function sessionRevisionCount(arr)
 // Probably check out main.css and the main-page media query
 function getDrawElementHeight()
 {
-    // Some magic code to calculate the height
     const html = document.querySelector("html");
     const mainEl = document.querySelector("main");
-    const startButtonWriterSection = $("start-button-writer-section");//document.querySelector("main");
-    const lastChild = html.lastElementChild;
-    const lastChildRect = lastChild.getBoundingClientRect();
-    const parentRect = html.getBoundingClientRect();
-    const unusedSpace = parentRect.bottom - lastChildRect.bottom;
-
-    // Here we have to adjust the height, because the list widget causes problems
+    const startButtonWriterSection = $("start-button-writer-section");
     const listWidget = $("main-page-info-container");
-
     const footer = document.querySelector("footer");
 
+    // Reset styles that might have been set in previous calls, to get correct layout reads
+    listWidget.style.removeProperty("height");
+    mainEl.style.removeProperty("height");
+
+    // Batch every layout read up front, before any style write below, so the function forces at most
+    // one reflow instead of interleaving reads and writes (layout thrash). Values needed more than once
+    // (the list widget height, the main width) are read a single time into locals.
+    const parentBottom = html.getBoundingClientRect().bottom;
+    const lastChildBottom = html.lastElementChild.getBoundingClientRect().bottom;
     // The header (incl. its margin-top) and the hr between main and footer also eat vertical space
     // outside main, so subtract them too — otherwise the page overflows the viewport.
     const headerBottom = document.querySelector("header").getBoundingClientRect().bottom;
     const hrHeight = $("main-page-hr").getBoundingClientRect().height;
+    const listWidgetHeight = listWidget.getBoundingClientRect().height;
+    const footerHeight = footer.getBoundingClientRect().height;
+    const mainWidth = mainEl.getBoundingClientRect().width;
+    const sectionPaddingLeft = getComputedStyle(startButtonWriterSection).paddingLeft.replace("px", "") * 2;
+    const viewportHeight = window.innerHeight;
 
-    let finalHeight = window.innerHeight - unusedSpace + listWidget.getBoundingClientRect().height;
+    // The list widget causes problems, so we account for the space it (and the chrome) occupies
+    const unusedSpace = parentBottom - lastChildBottom;
     window.bMobile = navigator.userAgent.toLowerCase().includes("mobile");
-    if (window.bMobile)
-        finalHeight -= (footer.getBoundingClientRect().height + headerBottom + hrHeight);
-    else
-        finalHeight -= (listWidget.getBoundingClientRect().height + footer.getBoundingClientRect().height + headerBottom + hrHeight);
 
-    if (mainEl.getBoundingClientRect().width < finalHeight)
-        finalHeight = mainEl.getBoundingClientRect().width - (getComputedStyle(startButtonWriterSection).paddingLeft.replace("px", "") * 2);
+    const isPortrait = window.matchMedia("(orientation: portrait)").matches;
+    if (isPortrait)
+    {
+        // Calculate a static maximum height for the card info box
+        const targetInfoHeight = 120;
+        listWidget.style.setProperty("height", targetInfoHeight + "px");
+
+        // Calculate the writer height to fit the remaining space
+        const availableWriterHeight = viewportHeight - headerBottom - footerHeight - hrHeight - unusedSpace - targetInfoHeight - 16;
+        let finalHeight = Math.min(mainWidth - sectionPaddingLeft, availableWriterHeight);
+        if (finalHeight < 100)
+            finalHeight = 100;
+
+        return finalHeight;
+    }
+
+    let finalHeight = viewportHeight - unusedSpace + listWidgetHeight;
+    if (window.bMobile)
+        finalHeight -= (footerHeight + headerBottom + hrHeight);
+    else
+        finalHeight -= (listWidgetHeight + footerHeight + headerBottom + hrHeight);
+
+    if (mainWidth < finalHeight)
+        finalHeight = mainWidth - sectionPaddingLeft;
     else
     {
+        // Every read happened above, so these writes can't dirty layout mid-measurement
         listWidget.style.setProperty("height", finalHeight.toString() + "px");
         mainEl.style.setProperty("height", finalHeight.toString() + "px");
     }
@@ -957,7 +988,16 @@ function mainPageMain()
         }
         //window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
     };
-    window.addEventListener("resize", notify);
+
+    // notify recomputes geometry through getDrawElementHeight (layout reads + writes) and can call
+    // writer.updateDimensions, so running it on every resize event the browser fires during a window
+    // drag thrashes layout. Debounce it so it runs once the resize settles, mirroring the deck page's
+    // DECK_RESIZE_DEBOUNCE_MS
+    let resizeTimer = null;
+    window.addEventListener("resize", function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(notify, MAIN_PAGE_RESIZE_DEBOUNCE_MS);
+    });
 
     // Add this event to make sure to save any data if we close the tab
     window.addEventListener("beforeunload", function(_)

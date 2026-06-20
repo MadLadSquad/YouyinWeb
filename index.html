@@ -9,22 +9,24 @@
         {{ include Components/header.tmpl.html }}
         <main id="main-content" class="writer-page" data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" spellcheck="false">
             <section id="main-page-info-container">
-                <div id="phrase-info-widget">
-                    <p id="phrase-info-widget-spelling">{{ _ phrase-info-widget-spelling }}</p>
-                    <p id="phrase-info-widget-errors">{{ _ phrase-info-widget-errors {{ list 0/0 0 }} }}</p>
-                    <p>{{ _ character-info-widget-def-p }}</p>
-                    <ol id="phrase-info-widget-info">
-                        <li>{{ _ character-info-widget-info-default }}</li>
-                    </ol>
-                </div>
-                <div id="character-info-widget">
-                    <p id="character-info-widget-spelling">{{ _ character-info-widget-spelling }}</p>
-                    <p id="character-info-widget-errors">{{ _ character-info-widget-errors {{ list 0/0 0 }} }}</p>
-                    <p id="character-info-widget-def-p">{{ _ character-info-widget-def-p }}</p>
-                    <ol id="character-info-widget-info">
-                        <li>{{ _ character-info-widget-info-default }}</li>
-                    </ol>
-                </div>
+                <section class="info-widgets-wrapper">
+                    <div id="phrase-info-widget">
+                        <p id="phrase-info-widget-spelling">{{ _ phrase-info-widget-spelling }}</p>
+                        <p id="phrase-info-widget-errors">{{ _ phrase-info-widget-errors {{ list 0/0 0 }} }}</p>
+                        <p>{{ _ character-info-widget-def-p }}</p>
+                        <ol id="phrase-info-widget-info">
+                            <li>{{ _ character-info-widget-info-default }}</li>
+                        </ol>
+                    </div>
+                    <div id="character-info-widget">
+                        <p id="character-info-widget-spelling">{{ _ character-info-widget-spelling }}</p>
+                        <p id="character-info-widget-errors">{{ _ character-info-widget-errors {{ list 0/0 0 }} }}</p>
+                        <p id="character-info-widget-def-p">{{ _ character-info-widget-def-p }}</p>
+                        <ol id="character-info-widget-info">
+                            <li>{{ _ character-info-widget-info-default }}</li>
+                        </ol>
+                    </div>
+                </section>
             </section>
             <script src="https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js"></script>
             <section id="start-button-writer-section">
