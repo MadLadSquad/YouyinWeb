@@ -1,4 +1,4 @@
-const CACHE_NAME = 'youyin-static-v5';
+const CACHE_NAME = 'youyin-static-v6';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination
@@ -15,15 +15,21 @@ const PAGES = [
 ];
 const SCRIPTS = [
     'scripts/data/theme.js',
+    'scripts/data/character-database.js',
     'scripts/index.js',
     'scripts/components/char-loading-ui.js',
     'scripts/components/daily-streak.js',
+    'scripts/components/writer.js',
+    'scripts/components/language-selector.js',
+    'scripts/components/card-search.js',
     'scripts/data/i18n.js',
     'scripts/pages/main-page.js',
     'scripts/pages/deck.js',
     'scripts/pages/deck-new.js',
     'scripts/pages/marketplace.js',
-    'scripts/utils/IME.js'
+    'scripts/utils/IME.js',
+    'scripts/utils/format.js',
+    'scripts/utils/fuzzy-match.js'
 ];
 const ROOT_ONLY_ASSETS = [
     'main.css',

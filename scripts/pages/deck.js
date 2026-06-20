@@ -155,12 +155,6 @@ let deckColumnCount = 0;
 // The originally-non-empty lists the search filters over: [{ items, container, header, domOffset }].
 // Distinct from deckLists, which holds only the currently-matching subset to render
 let deckSearchSources = [];
-// Pending debounce timer for the search input, so fast typing rebuilds the lists only once it settles
-let deckSearchDebounce = null;
-// How long the search results fade-in runs (ms), kept short so filtering feels responsive
-const DECK_SEARCH_ANIM_MS = 180;
-// How long to wait after the last keystroke before rebuilding the virtualized lists (ms)
-const DECK_SEARCH_DEBOUNCE_MS = 120;
 
 /**
  * Builds the character -> [phrase names] membership map from the deck's phrases
@@ -683,32 +677,16 @@ function setupGameModifiers()
 }
 
 /**
- * Tests a card/phrase against the search query. Matches against the card's name, the underlying
- * character or phrase glyphs, and each of its definitions. Fields are tested individually (rather than
- * concatenated) so a subsequence can't span a field boundary and cause a surprising match. An empty
- * query matches everything.
- * @param { string } query - The search text, already trimmed and lower-cased
+ * Tests a card/phrase against the search query: matches against the card's name, the underlying
+ * character or phrase glyphs, and each of its definitions. Picking which fields an item contributes is
+ * the deck-specific part; the matching itself is the shared searchMatchesFields (card-search.js).
+ * @param { string } query - The search text, already normalised (see normaliseSearchQuery)
  * @param { Object } item - A card (has `character`) or phrase (has `phrase`) object
  * @returns { boolean }
  */
 function deckItemMatches(query, item)
 {
-    if (query === "")
-        return true;
-
-    if (item.name && fuzzyMatch(query, item.name.toLowerCase()))
-        return true;
-
-    const glyphs = item.character || item.phrase;
-    if (glyphs && fuzzyMatch(query, glyphs.toLowerCase()))
-        return true;
-
-    if (item.definitions)
-        for (const def of item.definitions)
-            if (def && fuzzyMatch(query, def.toLowerCase()))
-                return true;
-
-    return false;
+    return searchMatchesFields(query, [item.name, item.character || item.phrase, ...(item.definitions || [])]);
 }
 
 /**
@@ -722,7 +700,7 @@ function deckItemMatches(query, item)
  */
 function applyDeckSearch(rawQuery, animate)
 {
-    const query = rawQuery.trim().toLowerCase();
+    const query = normaliseSearchQuery(rawQuery);
 
     deckLists = [];
     for (const source of deckSearchSources)
@@ -750,16 +728,10 @@ function applyDeckSearch(rawQuery, animate)
 
     renderDeckLists();
 
-    // Light fade-in on the freshly filtered results. The whole container is animated rather than each
-    // card: cards are rendered lazily by the block observer as they scroll into view, so a per-card
-    // animation would also fire during normal scrolling. Honour prefers-reduced-motion
-    if (!animate || window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-        return;
-
-    for (const list of deckLists)
-        list.container.animate(
-            [{ opacity: 0.4, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }],
-            { duration: DECK_SEARCH_ANIM_MS, easing: "ease" });
+    // Light fade-in on the freshly filtered results (skipped on the initial render). deckLists holds
+    // only the visible lists, so this animates exactly the grids that now have content
+    if (animate)
+        animateSearchResults(deckLists.map((list) => list.container));
 }
 
 /**
@@ -816,15 +788,9 @@ function deckmain()
     applyDeckSearch("", false);
     setupDeckResizeHandler();
 
-    // Filter the deck live as the user types. The rebuild re-partitions the virtualized blocks (heavier
-    // than the marketplace's display toggle), so debounce it so fast typing doesn't thrash construction
-    const search = $("deck-search");
-    if (search !== null)
-        search.addEventListener("input", (e) => {
-            const value = e.target.value;
-            clearTimeout(deckSearchDebounce);
-            deckSearchDebounce = setTimeout(() => applyDeckSearch(value, true), DECK_SEARCH_DEBOUNCE_MS);
-        });
+    // Filter the deck live as the user types. wireSearchInput debounces so fast typing doesn't thrash
+    // the virtualized rebuild
+    wireSearchInput("deck-search", (value) => applyDeckSearch(value, true));
 }
 
 // Render the deck as soon as the profile is loaded — the card shells don't need the character

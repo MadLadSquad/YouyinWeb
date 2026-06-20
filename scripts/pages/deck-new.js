@@ -1,5 +1,9 @@
 'use strict';
 
+// Defaults for the live card preview rendered while editing a card
+window.CARD_DEFAULT_CHARACTER = "是"
+window.CARD_DEFAULT_PREVIEW_NAME = "Preview Name"
+
 // Global variables, why not
 window.previewCards = [];
 window.previewPhrase = null;

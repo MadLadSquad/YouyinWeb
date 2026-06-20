@@ -199,80 +199,33 @@ const searchableDecks = [];
 // of its decks match the current query instead of leaving a lone header above an empty grid.
 const languageGroups = [];
 
-// fuzzyMatch is a shared global defined in index.js (used by both the marketplace and deck search).
-
-// How long the filter layout animation runs. Kept short so typing feels responsive rather than laggy.
-const DECK_FILTER_ANIM_MS = 220;
-
 /**
  * Shows the decks whose names fuzzily match the query and hides the rest, then collapses any language
- * group left with no visible decks.
- *
- * The grid reflows whenever cards appear or disappear, so the surviving cards are animated into their
- * new positions with the FLIP technique: record each visible card's box (First), apply the visibility
- * changes (Last), then play the old→new delta as a transform that settles to nothing. Cards that
- * become newly visible fade/scale in instead. Hidden cards are removed instantly (display:none) — the
- * survivors sliding to fill the gap is what conveys the change. Honours prefers-reduced-motion.
+ * group left with no visible decks. Unlike the deck page, every marketplace card already lives in the
+ * DOM, so filtering toggles display directly. The grids that still have visible decks then get the
+ * shared results fade-in (animateSearchResults, card-search.js) — the same animation the deck uses.
  * @param { string } rawQuery - The raw value of the search box
  */
 function applyDeckFilter(rawQuery)
 {
-    const query = rawQuery.trim().toLowerCase();
-    const animate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    // First: capture the current position of every visible card. getBoundingClientRect reflects any
-    // transform from an in-flight animation, so rapid typing animates from where cards visually are.
-    const first = new Map();
-    if (animate)
-        for (const deck of searchableDecks)
-            if (deck.card.style.display !== "none")
-                first.set(deck.card, deck.card.getBoundingClientRect());
+    const query = normaliseSearchQuery(rawQuery);
 
     for (const deck of searchableDecks)
-        deck.card.style.display = fuzzyMatch(query, deck.name) ? "" : "none";
+        deck.card.style.display = searchMatchesFields(query, [deck.name]) ? "" : "none";
 
+    const visibleGrids = [];
     for (const group of languageGroups)
     {
-        const display = group.cards.some((d) => d.card.style.display !== "none") ? "" : "none";
+        const visible = group.cards.some((d) => d.card.style.display !== "none");
+        const display = visible ? "" : "none";
         group.header.style.display = display;
         group.spacer.style.display = display;
         group.grid.style.display = display;
+        if (visible)
+            visibleGrids.push(group.grid);
     }
 
-    if (!animate)
-        return;
-
-    // Last + Invert + Play: for each card still visible, slide it from its old box to the new one.
-    for (const deck of searchableDecks)
-    {
-        const card = deck.card;
-        if (card.style.display === "none")
-            continue;
-
-        // Cancel any running FLIP first so its lingering transform doesn't skew the resting box we
-        // measure; transforms never affect layout, so this can't disturb the other cards' boxes.
-        if (card.flipAnimation !== undefined)
-            card.flipAnimation.cancel();
-
-        const last = card.getBoundingClientRect();
-        const prev = first.get(card);
-        if (prev !== undefined)
-        {
-            const dx = prev.left - last.left;
-            const dy = prev.top - last.top;
-            if (dx !== 0 || dy !== 0)
-                card.flipAnimation = card.animate(
-                    [{ transform: `translate(${dx}px, ${dy}px)` }, { transform: "none" }],
-                    { duration: DECK_FILTER_ANIM_MS, easing: "ease" });
-        }
-        else
-        {
-            // Newly shown card: fade and scale it in rather than popping into place.
-            card.flipAnimation = card.animate(
-                [{ opacity: 0, transform: "scale(0.92)" }, { opacity: 1, transform: "none" }],
-                { duration: DECK_FILTER_ANIM_MS, easing: "ease" });
-        }
-    }
+    animateSearchResults(visibleGrids);
 }
 
 /**
@@ -339,9 +292,7 @@ async function marketplaceMain()
     runEventAfterAnimation($("upload-deck-public"), "click", (_) => { window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository') });
 
     // Filter the rendered decks live as the user types in the search box
-    const search = $("marketplace-search");
-    if (search !== null)
-        search.addEventListener("input", (e) => applyDeckFilter(e.target.value));
+    wireSearchInput("marketplace-search", applyDeckFilter);
 }
 
 // Wait until index.js has loaded the profile data from IndexedDB before running the marketplace

@@ -1,5 +1,41 @@
 'use strict';
 
+// ------------------- CONSTANT BLOCK EDIT IF RUNNING ON A CUSTOM SYSTEM ------------------
+window.MAX_POINTS_ON_CHARACTER = 0.05;
+window.ADD_POINTS_ON_ERROR_3_4 = 0.0375;            // 3/4 of 0.05
+window.ADD_POINTS_ON_ERROR_1_2 = 0.025;             // 1/2 or 2/4 of 0.05
+window.ADD_POINTS_ON_ERROR_1_4 = 0.0125;            // 1/4 of 0.05
+
+// Hard cap on how many cards and how many phrases may be revised in a single play session. Decks
+// larger than this are shuffled and only the first entries are revised, so each session draws a
+// random subset of at most this many cards and (separately) this many phrases
+window.MAX_SESSION_REVISION_ITEMS = 16;
+
+window.WRITER_SLEEP_AFTER_COMPLETE = 1200;          // In ms
+// How long the completed-character "fly into the progress counter" animation lasts. It is timed to
+// land right as the next character loads (after WRITER_SLEEP_AFTER_COMPLETE), so the snapshot sits
+// invisibly on top during the admire beat, then flies for the last stretch of the pause
+window.WRITER_FLY_TO_COUNTER_DURATION = 650;        // In ms
+
+window.WRITER_SHOW_HINT_ON_ERRORS = 3;
+window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
+// ---------------------------------- CONSTANT BLOCK END ----------------------------------
+
+// The standard shuffle algorithm
+function fisherYates(array)
+{
+    let count = array.length,
+        randomnumber,
+        temp;
+    while(count)
+    {
+        randomnumber = Math.random() * count-- | 0;
+        temp = array[count];
+        array[count] = array[randomnumber];
+        array[randomnumber] = temp
+    }
+}
+
 // Global writer variable, because yes
 window.writer = null;
 
