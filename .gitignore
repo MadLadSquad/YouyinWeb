@@ -34,3 +34,6 @@
 build/
 .idea/
 .vs/
+.agents/
+.claude/
+graphify-out/

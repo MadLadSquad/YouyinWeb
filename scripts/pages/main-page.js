@@ -9,7 +9,7 @@ window.ADD_POINTS_ON_ERROR_1_4 = 0.0125;            // 1/4 of 0.05
 // Hard cap on how many cards and how many phrases may be revised in a single play session. Decks
 // larger than this are shuffled and only the first entries are revised, so each session draws a
 // random subset of at most this many cards and (separately) this many phrases
-window.MAX_SESSION_REVISION_ITEMS = 16;
+window.MAX_SESSION_REVISION_ITEMS = 8;
 
 window.WRITER_SLEEP_AFTER_COMPLETE = 1200;          // In ms
 // How long the completed-character "fly into the progress counter" animation lasts. It is timed to
