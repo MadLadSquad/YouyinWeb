@@ -6,29 +6,33 @@
  */
 function setThemeBox()
 {
-    const button = $("theme-button");
-    if (button === null)
-        return;
+    // The theme switcher is shown in the footer on every page and duplicated in the account settings
+    // card, so wire up every instance. Each builds its own popup; only one popup can be open at a
+    // time (createPopupController enforces mutual exclusion) and every popup re-reads the persisted
+    // theme on open, so the instances stay consistent without any live cross-syncing
+    for (const button of document.querySelectorAll(".theme-button"))
+        wireThemeButton(button);
+}
 
+function wireThemeButton(button)
+{
     const current = window.localStorage.getItem("youyinTheme") || "default";
 
-    // Build the popup container, search box and list
+    // Build the popup container, search box and list. Identifiers are classes, not ids, so the
+    // footer and account-card popups can coexist on the same page without colliding
     const popup = document.createElement("div");
-    popup.id = "theme-popup";
-    popup.className = "list-select-popup";
+    popup.className = "list-select-popup theme-popup";
     popup.setAttribute("role", "dialog");
     popup.setAttribute("aria-label", lc.theme_button);
 
     const search = document.createElement("input");
-    search.id = "theme-popup-search";
-    search.className = "list-select-search";
+    search.className = "list-select-search theme-popup-search";
     search.type = "text";
     search.placeholder = lc.theme_search_placeholder;
     search.setAttribute("aria-label", lc.theme_search_placeholder);
     popup.appendChild(search);
 
     const list = document.createElement("div");
-    list.id = "theme-popup-list";
     list.className = "list-select-list";
     popup.appendChild(list);
 
@@ -138,6 +142,43 @@ function setThemeBox()
     // Opening re-reads the persisted theme (it may have changed since the page loaded) and resets
     // the search; closing reverts any un-committed live preview back to the committed theme.
     const controller = createPopupController(button, popup, function() {
+        // The popup is position:fixed and lives on document.body, so anchor it to whichever button
+        // opened it — otherwise every instance would open at the same fixed viewport spot and the
+        // account-card switcher would appear to open the footer's popup. Centre it horizontally on
+        // the button (CSS keeps the translate(-50%)).
+        const GAP = 8;
+        const rect = button.getBoundingClientRect();
+        popup.style.left = `${rect.left + rect.width / 2}px`;
+
+        // Prefer opening above the button (the original footer design), but flip below when there
+        // isn't enough room above — otherwise the search box (pinned to the popup's top) and the
+        // first themes would clip off the top of the viewport. The popup's natural max height is
+        // CSS min(22rem, 60vh); compare that against the space on each side to pick a direction.
+        const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+        const maxHeight = Math.min(22 * remPx, 0.6 * window.innerHeight);
+        const spaceAbove = rect.top - GAP;
+        const spaceBelow = window.innerHeight - rect.bottom - GAP;
+        const openAbove = spaceAbove >= maxHeight || spaceAbove >= spaceBelow;
+
+        if (openAbove)
+        {
+            popup.style.bottom = `${window.innerHeight - rect.top + GAP}px`;
+            popup.style.top = "auto";
+        }
+        else
+        {
+            popup.style.top = `${rect.bottom + GAP}px`;
+            popup.style.bottom = "auto";
+        }
+
+        // Never let the popup exceed the room on the chosen side: cap its height to that space so the
+        // search box stays visible and the theme list scrolls (it already has overflow-y: auto)
+        popup.style.maxHeight = `${Math.min(maxHeight, openAbove ? spaceAbove : spaceBelow)}px`;
+
+        // And keep it within the viewport horizontally on narrow screens (shared with the language
+        // and variant selectors), so a button near a screen edge can't clip the popup off-side
+        clampPopupHorizontally(popup, rect);
+
         // Load the catalogue (lazily, once) then build the option list the first time the picker opens.
         // On later opens it's already loaded, so this resolves in a microtask and the popup fills
         // immediately; on the very first open the list briefly appears empty while the file loads.

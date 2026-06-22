@@ -47,22 +47,23 @@ function setLanguage()
         redirectWithLanguage(localStorageLang, null);
         return;
     }
-    let selectWidget = $("lang-select");
-    if (selectWidget)
+    // The switcher is shown in the footer on every page and duplicated in the account settings card,
+    // so reflect the active locale on every instance
+    for (const selectWidget of document.querySelectorAll(".lang-select-widget"))
         selectWidget.value = localStorageLang;
 }
 
 function setLanguageBox()
 {
-    let selectWidget = $("lang-select");
-    if (selectWidget === null)
-        return;
+    const localStorageLang = window.localStorage.getItem("language") || "en_US";
 
-    let localStorageLang = window.localStorage.getItem("language") || "en_US";
-
-    createCustomSelect(selectWidget, "Language select box", SUPPORTED_LOCALES, localStorageLang, function(newValue) {
-        let old = window.localStorage.getItem("language");
-        window.localStorage.setItem("language", newValue);
-        redirectWithLanguage(newValue, old);
-    });
+    // Wire up every language switcher instance (footer on all pages, plus the account settings card).
+    // createCustomSelect builds an independent popup per button; changing the language redirects to
+    // the new locale's subdirectory, so the instances never need to stay in sync live
+    for (const selectWidget of document.querySelectorAll(".lang-select-widget"))
+        createCustomSelect(selectWidget, "Language select box", SUPPORTED_LOCALES, localStorageLang, function(newValue) {
+            let old = window.localStorage.getItem("language");
+            window.localStorage.setItem("language", newValue);
+            redirectWithLanguage(newValue, old);
+        });
 }

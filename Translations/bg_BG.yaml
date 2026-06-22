@@ -38,6 +38,8 @@ translations:
     text: "Търсене на цветови теми…"
   - id: account
     text: "Профил"
+  - id: guest
+    text: "Гост"
   - id: locale
     text: "bg_BG/"
   - id: extensive-mode-title
@@ -150,7 +152,7 @@ translations:
   - id: last-session-date-field
     text: "Дата на последната серия"
   - id: average-knowledge-level-field
-    text: "Средно ниво на познанията"
+    text: "Средно ниво на познанието"
   - id: average-session-length-field
     text: "Средна дължина на серия"
   - id: time-spent-in-sessions-field
@@ -222,7 +224,7 @@ translations:
   - id: leveled_up_yes
     text: "Да"
   - id: pre_leveled_up
-    text: "Преварително поставено ниво"
+    text: "Предварително поставено ниво"
   - id: deck_source
     text: "Източник"
   - id: deck_download

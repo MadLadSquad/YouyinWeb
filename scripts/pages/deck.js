@@ -56,59 +56,6 @@ function clearDeck() {
     }
 }
 
-/**
- * Sets data about the current user. Deals with calculating most of the statistics and showcasing them
- */
-function setProfileCardData()
-{
-    $("total-sessions-field").textContent += window.profileData.sessions;
-    renderStreakField();
-    $("deck-card-num-field").textContent += window.profileData.cards.length;
-    $("deck-phrase-num-field").textContent += window.profileData.phrases.length;
-
-    let totalTime = (window.profileData.totalTimeInSessions * 1);
-    if (isNaN(totalTime))
-        totalTime = 0;
-
-    // Average in milliseconds first, then localise each value separately — the average and the
-    // total usually land in different units (e.g. seconds vs hours)
-    let averageTime = totalTime / window.profileData.sessions;
-    if (isNaN(averageTime))
-        averageTime = 0;
-
-    const average = getLocalisedTimePostfix(averageTime);
-    const total = getLocalisedTimePostfix(totalTime);
-    $("average-session-length-field").textContent += (formatDecimal(average.time) + average.postfix);
-    $("time-spent-in-sessions-field").textContent += (formatDecimal(total.time) + total.postfix);
-
-    const lastDate = window.profileData.lastDate;
-    if (lastDate !== 0)
-    {
-        const date = new Date(lastDate);
-        $("last-session-date-field").textContent += date.toLocaleDateString(lc.locale,
-        {
-            weekday: "short",
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric"
-        });
-    }
-    else
-        $("last-session-date-field").textContent += lc.no_sessions_recorded;
-
-    const averageKnowledge = $("average-knowledge-level-field");
-    let knowledge = 0;
-    for (const card of window.profileData.cards)
-        knowledge += card.knowledge;
-
-    knowledge /= window.profileData.cards.length;
-    if (isNaN(knowledge))
-        knowledge = 0;
-    averageKnowledge.textContent = `${lc.average_knowledge_level}: ${formatDecimal(knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`;
-}
-
 // A deck can hold a couple thousand cards, so the lists are virtualized: items are partitioned into
 // blocks and only blocks near the viewport keep their card shells in the DOM, the rest collapse to a
 // spacer of the block's last-measured height (see blockObserver / buildBlocks). This keeps the live
@@ -655,27 +602,6 @@ function setupDeckResizeHandler()
     });
 }
 
-function setupGameModifiers()
-{
-    const extensiveModeCheckbox = $("extensive-mode-checkbox");
-    extensiveModeCheckbox.checked = window.gameModifiers.extensive;
-
-    extensiveModeCheckbox.addEventListener("change", function(){
-        window.gameModifiers.extensive = this.checked;
-        saveGameModifiers();
-    });
-
-    const levelReduce = $("level-reduce-slider");
-    levelReduce.value = window.gameModifiers.levelReduce;
-    levelReduce.labels[0].childNodes[0].textContent = `${lc.level_reduce_label} ${formatDecimal(levelReduce.value)} `;
-
-    levelReduce.addEventListener("input", (e) => {
-        window.gameModifiers.levelReduce = e.target.value;
-        e.target.labels[0].childNodes[0].textContent = `${lc.level_reduce_label} ${formatDecimal(e.target.value)} `;
-        saveGameModifiers();
-    });
-}
-
 /**
  * Tests a card/phrase against the search query: matches against the card's name, the underlying
  * character or phrase glyphs, and each of its definitions. Picking which fields an item contributes is
@@ -739,9 +665,6 @@ function applyDeckSearch(rawQuery, animate)
  */
 function deckmain()
 {
-    setProfileCardData();
-    setupGameModifiers();
-
     // Get the elements and load their onclick events, holy shit that's massive! That's what she said!
     runEventAfterAnimation($("export-deck-button"), "click", updateExportButton);
     runEventAfterAnimation($("clear-deck-button"), "click", clearDeck);

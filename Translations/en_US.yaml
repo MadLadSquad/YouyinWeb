@@ -38,6 +38,8 @@ translations:
     text: "Search themes…"
   - id: account
     text: "Account"
+  - id: guest
+    text: "Guest"
   - id: locale
     text: "en_US/"
   - id: extensive-mode-title

@@ -524,14 +524,17 @@ header {
 }
 
 /* Specific positioning & width override for the theme selection popup */
-#theme-popup {
+.theme-popup {
     position: fixed;
     bottom: 3.5rem;
     width: min(20rem, 90vw);
 }
 
-#theme-popup-search {
+/* Descendant selector (specificity 0,2,0) so this beats deck.css's input[type=text] (0,1,1),
+   which the old #theme-popup-search id rule used to win against on its own */
+.theme-popup .theme-popup-search {
     box-sizing: border-box;
+    max-width: none;
     width: 100%;
     padding: 8px 12px;
     background-color: transparent;
@@ -545,7 +548,7 @@ header {
     font-size: 16px;
 }
 
-#theme-popup-search:focus {
+.theme-popup .theme-popup-search:focus {
     outline: none;
 }
 
