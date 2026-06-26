@@ -1,4 +1,4 @@
-const CACHE_NAME = 'youyin-static-v8';
+const CACHE_NAME = 'youyin-static-v9';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination
@@ -20,6 +20,7 @@ const SCRIPTS = [
     'scripts/index.js',
     'scripts/components/char-loading-ui.js',
     'scripts/components/daily-streak.js',
+    'scripts/components/tutorial.js',
     'scripts/components/writer.js',
     'scripts/components/language-selector.js',
     'scripts/components/card-search.js',
@@ -36,6 +37,7 @@ const SCRIPTS = [
 const ROOT_ONLY_ASSETS = [
     'main.css',
     'char-loading.css',
+    'tutorial.css',
     'deck.css',
     'marketplace.css',
     'favicon.png',
@@ -68,6 +70,8 @@ const STATIC_ASSETS = [
 const CDN_ASSETS = [
     'https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js',
     'https://cdn.jsdelivr.net/npm/hanzi-writer/dist/hanzi-writer.min.js',
+    'https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css',
+    'https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js',
     'https://fonts.googleapis.com/css2?family=Ubuntu&display=swap'
 ];
 

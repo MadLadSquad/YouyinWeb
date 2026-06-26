@@ -25,7 +25,19 @@ function redirectWithLanguage(localStorageLang, previous)
         if (url[i] !== "")
             redirect += url[i] + "/";
 
-    location.href = redirect.slice(0, -1);
+    const destination = redirect.slice(0, -1);
+
+    if (!('pageswap' in window) && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    {
+        document.body.classList.add('page-exiting');
+        setTimeout(() => {
+            location.href = destination;
+        }, 200);
+    }
+    else
+    {
+        location.href = destination;
+    }
 }
 
 // Locales that actually ship with the site — each needs a Translations/<locale>.yaml and gets

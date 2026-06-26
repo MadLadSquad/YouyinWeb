@@ -5,6 +5,42 @@ html {
     accent-color: var(--main-accent-colour);
 }
 
+/* Enable view transitions across page navigations */
+@view-transition {
+    navigation: auto;
+}
+
+/* Customize transition duration for page fades */
+::view-transition-group(root) {
+    animation-duration: 0.2s;
+}
+
+@keyframes pageFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+body {
+    opacity: 0;
+    animation: pageFadeIn 0.2s ease-in-out forwards;
+}
+
+body.page-exiting {
+    opacity: 0 !important;
+    transition: opacity 0.2s ease-in-out !important;
+}
+
+/* Respect users who ask for reduced motion: disable page transitions */
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(root) {
+        animation-duration: 0s !important;
+    }
+    body {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+}
+
 /* Colour cross-fade applied only while switching/previewing a theme. theme.js toggles the
    "theme-transition" class on <html> for the length of the swap, so nothing transitions
    during normal use — only the colour-bearing properties, and only for that brief window. */
@@ -153,6 +189,8 @@ ul li a {
  **/
 .writer-page {
     display: block;
+    /* Landing page only: drop the 0.5rem bottom margin so main sits flush against the footer chrome. */
+    margin-bottom: 0;
 }
 
 .writer-page.in-session {
@@ -338,6 +376,16 @@ header {
 
 .vcentered {
     margin: auto;
+}
+
+/* The empty-deck message shown on the main page in place of the start button. The writer section is a
+   plain block, so margin-auto can't centre it vertically — grid-centre it in most of the viewport so it
+   sits in the middle of the page rather than at the top. */
+.no-cards-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
 }
 
 /* This is the button you use to start a session */

@@ -103,3 +103,101 @@ lc.char_updating_label = "{{ _ char_updating_label }}";
 // deck import loading UI (marketplace.js)
 lc.deck_import_title = "{{ _ deck_import_title }}";
 lc.deck_import_subtitle = "{{ _ deck_import_subtitle }}";
+
+// onboarding tutorial (tutorial.js) — keep these free of double quotes (they are injected into a
+// double-quoted JS string literal); use single quotes inside the copy instead
+lc.tutorial_next = "{{ _ tutorial_next }}";
+lc.tutorial_done = "{{ _ tutorial_done }}";
+lc.tutorial_skip = "{{ _ tutorial_skip }}";
+lc.tutorial_continue = "{{ _ tutorial_continue }}";
+lc.tutorial_preparing = "{{ _ tutorial_preparing }}";
+lc.tutorial_finish = "{{ _ tutorial_finish }}";
+
+lc.tutorial_intro_title = "{{ _ tutorial_intro_title }}";
+lc.tutorial_intro_body = "{{ _ tutorial_intro_body }}";
+lc.tutorial_outro_title = "{{ _ tutorial_outro_title }}";
+lc.tutorial_outro_body = "{{ _ tutorial_outro_body }}";
+
+lc.tutorial_marketplace_title = "{{ _ tutorial_marketplace_title }}";
+lc.tutorial_marketplace_intro = "{{ _ tutorial_marketplace_intro }}";
+lc.tutorial_marketplace_search_title = "{{ _ tutorial_marketplace_search_title }}";
+lc.tutorial_marketplace_search = "{{ _ tutorial_marketplace_search }}";
+lc.tutorial_marketplace_import_title = "{{ _ tutorial_marketplace_import_title }}";
+lc.tutorial_marketplace_import = "{{ _ tutorial_marketplace_import }}";
+lc.tutorial_marketplace_import_replay = "{{ _ tutorial_marketplace_import_replay }}";
+lc.tutorial_marketplace_unavailable = "{{ _ tutorial_marketplace_unavailable }}";
+
+lc.tutorial_deck_title = "{{ _ tutorial_deck_title }}";
+lc.tutorial_deck_intro = "{{ _ tutorial_deck_intro }}";
+lc.tutorial_deck_newcard_title = "{{ _ tutorial_deck_newcard_title }}";
+lc.tutorial_deck_newcard = "{{ _ tutorial_deck_newcard }}";
+lc.tutorial_deck_phrases_title = "{{ _ tutorial_deck_phrases_title }}";
+lc.tutorial_deck_phrases = "{{ _ tutorial_deck_phrases }}";
+lc.tutorial_deck_characters_title = "{{ _ tutorial_deck_characters_title }}";
+lc.tutorial_deck_characters = "{{ _ tutorial_deck_characters }}";
+lc.tutorial_deck_search_title = "{{ _ tutorial_deck_search_title }}";
+lc.tutorial_deck_search = "{{ _ tutorial_deck_search }}";
+
+lc.tutorial_review_edit_title = "{{ _ tutorial_review_edit_title }}";
+lc.tutorial_review_edit = "{{ _ tutorial_review_edit }}";
+lc.tutorial_review_partof_title = "{{ _ tutorial_review_partof_title }}";
+lc.tutorial_review_partof = "{{ _ tutorial_review_partof }}";
+
+lc.tutorial_card_ime_title = "{{ _ tutorial_card_ime_title }}";
+lc.tutorial_card_ime = "{{ _ tutorial_card_ime }}";
+lc.tutorial_card_input_title = "{{ _ tutorial_card_input_title }}";
+lc.tutorial_card_input = "{{ _ tutorial_card_input }}";
+lc.tutorial_card_preview_title = "{{ _ tutorial_card_preview_title }}";
+lc.tutorial_card_preview = "{{ _ tutorial_card_preview }}";
+lc.tutorial_card_save_title = "{{ _ tutorial_card_save_title }}";
+lc.tutorial_card_save = "{{ _ tutorial_card_save }}";
+
+lc.tutorial_phrase_input_title = "{{ _ tutorial_phrase_input_title }}";
+lc.tutorial_phrase_input = "{{ _ tutorial_phrase_input }}";
+lc.tutorial_phrase_autocards_title = "{{ _ tutorial_phrase_autocards_title }}";
+lc.tutorial_phrase_autocards = "{{ _ tutorial_phrase_autocards }}";
+lc.tutorial_phrase_save_title = "{{ _ tutorial_phrase_save_title }}";
+lc.tutorial_phrase_save = "{{ _ tutorial_phrase_save }}";
+
+lc.tutorial_session_title = "{{ _ tutorial_session_title }}";
+lc.tutorial_session_start = "{{ _ tutorial_session_start }}";
+lc.tutorial_session_replay = "{{ _ tutorial_session_replay }}";
+lc.tutorial_session_done_title = "{{ _ tutorial_session_done_title }}";
+lc.tutorial_session_done = "{{ _ tutorial_session_done }}";
+
+lc.tutorial_account_stats_title = "{{ _ tutorial_account_stats_title }}";
+lc.tutorial_account_stats = "{{ _ tutorial_account_stats }}";
+lc.tutorial_account_settings_title = "{{ _ tutorial_account_settings_title }}";
+lc.tutorial_account_settings = "{{ _ tutorial_account_settings }}";
+
+lc.tutorial_card_pron_title = "{{ _ tutorial_card_pron_title }}";
+lc.tutorial_card_pron = "{{ _ tutorial_card_pron }}";
+lc.tutorial_card_defs_title = "{{ _ tutorial_card_defs_title }}";
+lc.tutorial_card_defs = "{{ _ tutorial_card_defs }}";
+lc.tutorial_cardreview_title = "{{ _ tutorial_cardreview_title }}";
+lc.tutorial_cardreview = "{{ _ tutorial_cardreview }}";
+lc.tutorial_cardreview_phrase_title = "{{ _ tutorial_cardreview_phrase_title }}";
+lc.tutorial_cardreview_phrase = "{{ _ tutorial_cardreview_phrase }}";
+lc.tutorial_phrase_pron_title = "{{ _ tutorial_phrase_pron_title }}";
+lc.tutorial_phrase_pron = "{{ _ tutorial_phrase_pron }}";
+lc.tutorial_phrase_defs_title = "{{ _ tutorial_phrase_defs_title }}";
+lc.tutorial_phrase_defs = "{{ _ tutorial_phrase_defs }}";
+lc.tutorial_phrase_subcard_title = "{{ _ tutorial_phrase_subcard_title }}";
+lc.tutorial_phrase_subcard = "{{ _ tutorial_phrase_subcard }}";
+lc.tutorial_review_phrase_title = "{{ _ tutorial_review_phrase_title }}";
+lc.tutorial_review_phrase = "{{ _ tutorial_review_phrase }}";
+lc.tutorial_review_navigate_title = "{{ _ tutorial_review_navigate_title }}";
+lc.tutorial_review_navigate = "{{ _ tutorial_review_navigate }}";
+
+lc.tutorial_card_variant_title = "{{ _ tutorial_card_variant_title }}";
+lc.tutorial_card_variant = "{{ _ tutorial_card_variant }}";
+lc.tutorial_account_extensive_title = "{{ _ tutorial_account_extensive_title }}";
+lc.tutorial_account_extensive = "{{ _ tutorial_account_extensive }}";
+lc.tutorial_account_levelreduce_title = "{{ _ tutorial_account_levelreduce_title }}";
+lc.tutorial_account_levelreduce = "{{ _ tutorial_account_levelreduce }}";
+lc.tutorial_account_language_title = "{{ _ tutorial_account_language_title }}";
+lc.tutorial_account_language = "{{ _ tutorial_account_language }}";
+lc.tutorial_account_theme_title = "{{ _ tutorial_account_theme_title }}";
+lc.tutorial_account_theme = "{{ _ tutorial_account_theme }}";
+lc.tutorial_account_replay_title = "{{ _ tutorial_account_replay_title }}";
+lc.tutorial_account_replay = "{{ _ tutorial_account_replay }}";

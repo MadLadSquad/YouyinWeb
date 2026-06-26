@@ -309,6 +309,45 @@ function pageNeedsCharacterData()
     return last === "index" || last === "deck" || last === "deck-edit-card";
 }
 
+/**
+ * First-visit gate for the onboarding tutorial (see scripts/components/tutorial.js). Runs before the
+ * character-database download so a brand-new visitor who landed on a non-home page is sent to the landing
+ * page before any chunks are fetched. Returns true when it has triggered a redirect (the caller should stop
+ * further initialization), false otherwise.
+ */
+function maybeStartTutorial()
+{
+    // Already finished/skipped, or a run is in progress (tutorial.js handles in-progress steps and replay).
+    if (window.localStorage.getItem("youyinTutorialDone") === "true")
+        return false;
+    if (window.localStorage.getItem("youyinTutorialStep") !== null)
+        return false;
+
+    // Users who predate the tutorial already have content — don't drag them into onboarding; mark it done.
+    const p = window.profileData;
+    const hasContent = (p.cards && p.cards.length) || (p.phrases && p.phrases.length) || p.sessions > 0;
+    if (hasContent)
+    {
+        window.localStorage.setItem("youyinTutorialDone", "true");
+        return false;
+    }
+
+    // Brand-new, empty profile with no tutorial yet. The tutorial begins on the landing page (so the intro
+    // modal can draw over the character-database download bar); route first-timers there first.
+    const path = location.pathname;
+    const onLanding = path.endsWith("/") ||
+        path.substring(path.lastIndexOf("/") + 1).replace(/\.html$/, "") === "index";
+    if (!onLanding)
+    {
+        location.href = "./index.html";
+        return true;
+    }
+
+    window.localStorage.setItem("youyinTutorialMode", "first");
+    window.localStorage.setItem("youyinTutorialStep", "intro");
+    return false;
+}
+
 async function main()
 {
     // Load the profile data once into memory. Missing or partial data (a first visit, or decks
@@ -384,6 +423,36 @@ async function main()
     setLanguageBox();
     setThemeBox();
     initEmojiReplacement();
+
+    // Fallback page exit transition for browsers without native Cross-Document View Transitions (like Firefox)
+    if (!('pageswap' in window) && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+    {
+        document.addEventListener('click', (event) => {
+            const anchor = event.target.closest('a');
+            if (anchor && anchor.href && anchor.host === location.host && anchor.target !== '_blank')
+            {
+                const targetUrl = anchor.href;
+                const currentUrlNoHash = location.href.split('#')[0];
+                const targetUrlNoHash = targetUrl.split('#')[0];
+                if (currentUrlNoHash === targetUrlNoHash || targetUrl.startsWith('javascript:'))
+                {
+                    return;
+                }
+
+                event.preventDefault();
+                document.body.classList.add('page-exiting');
+                setTimeout(() => {
+                    location.href = targetUrl;
+                }, 200);
+            }
+        });
+    }
+
+    // First-visit onboarding gate. On a brand-new visit to a non-landing page this redirects to the landing
+    // page, so stop initializing here and let the fresh page load take over (no point downloading the
+    // character database for a page we're leaving)
+    if (maybeStartTutorial())
+        return;
 
     // Profile and chrome are ready: pages that only need the profile (deck shells, daily streak) can
     // start now, without waiting for the character database below. setLanguage may have already

@@ -248,3 +248,178 @@ translations:
     text: "Внасяне на тесте"
   - id: deck_import_subtitle
     text: "Изтегляне на тестето и сливането му с Вашата колекция."
+
+  # onboarding tutorial (tutorial.js / account.html). Без двойни кавички в низовете, които се подават
+  # през i18n.js — те се вмъкват в JS низ в двойни кавички; ползвайте единични кавички.
+  - id: tutorial_next
+    text: "Напред"
+  - id: tutorial_done
+    text: "Готово"
+  - id: tutorial_skip
+    text: "Пропусни обучението"
+  - id: tutorial_continue
+    text: "Започни"
+  - id: tutorial_preparing
+    text: "Подготовка…"
+  - id: tutorial_finish
+    text: "Край"
+  - id: tutorial_replay_button
+    text: "🗘 Повтори обучението"
+  - id: tutorial_intro_title
+    text: "Добре дошли в {brand}"
+  - id: tutorial_intro_body
+    text: "{brand} Ви учи да пишете символи от китайски, японски и други писмености — щрих по щрих. Направете кратка обиколка, за да видите как работи."
+  - id: tutorial_outro_title
+    text: "Готови сте!"
+  - id: tutorial_outro_body
+    text: "Това е цялото приложение. Началното Ви тесте и първите карти са готови — успех и приятно писане!"
+  - id: tutorial_marketplace_title
+    text: "Магазинът"
+  - id: tutorial_marketplace_intro
+    text: "Магазинът съдържа готови тестета, които можете да внесете с едно щракване. Нека вземем начално тесте."
+  - id: tutorial_marketplace_search_title
+    text: "Намери тесте"
+  - id: tutorial_marketplace_search
+    text: "Търсете тук, за да филтрирате тестета по име."
+  - id: tutorial_marketplace_import_title
+    text: "Внеси тесте"
+  - id: tutorial_marketplace_import
+    text: "Ще внесем тестето с китайски числа вместо Вас. Натиснете Напред, за да го добавите към колекцията си."
+  - id: tutorial_marketplace_import_replay
+    text: "Натиснете бутона Внеси на дадено тесте, за да го добавите към колекцията си. Натиснете Напред, за да продължите."
+  - id: tutorial_marketplace_unavailable
+    text: "Списъкът с тестета не можа да се зареди в момента. Натиснете Напред, за да продължите към тестето си."
+  - id: tutorial_deck_title
+    text: "Вашето тесте"
+  - id: tutorial_deck_intro
+    text: "Това е Вашето тесте - всеки символ и фраза, които учите ще се появи тук."
+  - id: tutorial_deck_newcard_title
+    text: "Добавяне на карти"
+  - id: tutorial_deck_newcard
+    text: "Нека създадем първият Ви символ. Натиснете Нова карта, за да започнете."
+  - id: tutorial_deck_phrases_title
+    text: "Фрази"
+  - id: tutorial_deck_phrases
+    text: "Фразите от няколко символа, които учите, се показват в този раздел."
+  - id: tutorial_deck_characters_title
+    text: "Символи"
+  - id: tutorial_deck_characters
+    text: "Отделните символи се показват тук — включително тези, които току-що внесохте."
+  - id: tutorial_deck_search_title
+    text: "Търсене в тестето"
+  - id: tutorial_deck_search
+    text: "Филтрирайте картите и фразите си, докато тестето Ви расте."
+  - id: tutorial_review_edit_title
+    text: "Редактиране на карта"
+  - id: tutorial_review_edit
+    text: "Използвайте бутона Редактирай на дадена карта, за да я редактирате."
+  - id: tutorial_review_partof_title
+    text: "Използване във фрази"
+  - id: tutorial_review_partof
+    text: "Когато символ участва във фраза, картата му показва от кои фрази той е част."
+  - id: tutorial_card_ime_title
+    text: "Методи за въвеждане"
+  - id: tutorial_card_ime
+    text: "Имате избор от няколко метода за фонетично изписване на символи, или на тяхното произношение. Засега няма да използваме метод за въвеждане."
+  - id: tutorial_card_input_title
+    text: "Въведи символа"
+  - id: tutorial_card_input
+    text: "Сега самият символ - ще напишем 好 (hǎo, означава добро)."
+  - id: tutorial_card_preview_title
+    text: "Преглед на живо"
+  - id: tutorial_card_preview
+    text: "Прегледът показва как ще изглежда картата, с анимираните си щрихи."
+  - id: tutorial_card_save_title
+    text: "Запази картата"
+  - id: tutorial_card_save
+    text: "Натиснете Готово, за да добавите картата към тестето си."
+  - id: tutorial_phrase_input_title
+    text: "Въведи фраза"
+  - id: tutorial_phrase_input
+    text: "Сега самата фраза - ще напишем 你好. За всеки символ в нея се създава карта."
+  - id: tutorial_phrase_autocards_title
+    text: "Вашите карти"
+  - id: tutorial_phrase_autocards
+    text: "За всеки символ във фразата автоматично се създава карта - картата за 好 се добавя, а тази за 你 се използва повторно, тъй като вече съществува."
+  - id: tutorial_phrase_save_title
+    text: "Запази фразата"
+  - id: tutorial_phrase_save
+    text: "Натиснете Готово, за да добавите фразата и нейните символи."
+  - id: tutorial_session_title
+    text: "Време за упражнение"
+  - id: tutorial_session_start
+    text: "Натиснете Старт за да започнете да преговаряте картите от тестето Ви. Изписвайте всеки символ щрих по щрих!"
+  - id: tutorial_session_replay
+    text: "Натиснете Старт за да започнете да преговаряте картите от тестето Ви."
+  - id: tutorial_session_done_title
+    text: "Браво!"
+  - id: tutorial_session_done
+    text: "Преговорихте символите и фразите от тестето си за първи път!"
+  - id: tutorial_account_stats_title
+    text: "Вашият профил"
+  - id: tutorial_account_stats
+    text: "Статистиките за профилът Ви са тук - брой сесии, серия, размер на тестето и средно ниво на познание."
+  - id: tutorial_account_settings_title
+    text: "Настройки"
+  - id: tutorial_account_settings
+    text: "Настройте сложността и честотата на упражненията си, сменете езика или цветовата тема"
+  - id: tutorial_card_pron_title
+    text: "Задаване на прозношение"
+  - id: tutorial_card_pron
+    text: "Да започнем с произношението на символа - ще напишем hǎo."
+  - id: tutorial_card_defs_title
+    text: "Добави значения"
+  - id: tutorial_card_defs
+    text: "Нека да зададем значението на символа - ще добавим 'good', 'fine' и 'ok'."
+  - id: tutorial_cardreview_title
+    text: "Вашата нова карта"
+  - id: tutorial_cardreview
+    text: "Това е картата за символа 好, която току-що беше създадена. Тя вече част от тестето Ви."
+  - id: tutorial_cardreview_phrase_title
+    text: "Нека да създадем нова фраза"
+  - id: tutorial_cardreview_phrase
+    text: "Фразите свързват символи заедно. Нека да създадем нова фраза през бутона 'Нова фраза'."
+  - id: tutorial_phrase_pron_title
+    text: "Произношение на фразата"
+  - id: tutorial_phrase_pron
+    text: "Както при картата, започнете със произношението - ще напишем nǐ hǎo."
+  - id: tutorial_phrase_defs_title
+    text: "Значение на фразата"
+  - id: tutorial_phrase_defs
+    text: "Тук може да добавите различните значения на фразата - ще добавим 'hello'."
+  - id: tutorial_phrase_subcard_title
+    text: "Съвсем нов символ"
+  - id: tutorial_phrase_subcard
+    text: "你 не присъстваше в тестето, затова получава своя карта - ще попълним произношението и значението му също."
+  - id: tutorial_review_phrase_title
+    text: "Вашата фраза"
+  - id: tutorial_review_phrase
+    text: "Фразата 你好, вече в тестето Ви."
+  - id: tutorial_review_navigate_title
+    text: "Време за упражнение"
+  - id: tutorial_review_navigate
+    text: "Така се изграждат тестета. Нека да преговорим картите в тестето си."
+  - id: tutorial_card_variant_title
+    text: "Регионални изписвания"
+  - id: tutorial_card_variant
+    text: "Някои символи имат регионални изписвания. Използвайте тази кутия за да изберете регионалната форма на символа си."
+  - id: tutorial_account_extensive_title
+    text: "Разширен режим"
+  - id: tutorial_account_extensive
+    text: "Включете този режим, за да преговаряте всяка карта при всяка сесия, вместо подбрана част."
+  - id: tutorial_account_levelreduce_title
+    text: "Дневно намаляване на нивото"
+  - id: tutorial_account_levelreduce
+    text: "Всеки ден символите и фразите Ви губят малко от оценката за владеене за да може да преговаряте тестето си по-често. Този плъзгач определя коефициентът на намаляване."
+  - id: tutorial_account_language_title
+    text: "Език"
+  - id: tutorial_account_language
+    text: "Това са езиците, на които е достъпен {brand}."
+  - id: tutorial_account_theme_title
+    text: "Цветови теми"
+  - id: tutorial_account_theme
+    text: "А това са цветовите теми, които можете да изберете."
+  - id: tutorial_account_replay_title
+    text: "Повтори това обучение"
+  - id: tutorial_account_replay
+    text: "Имате нужда от опресняване? Този бутон рестартира цялото обучение, когато пожелаете."

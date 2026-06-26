@@ -1,0 +1,90 @@
+/* Styles for the first-visit onboarding tutorial (see scripts/components/tutorial.js). The intro and
+   outro reuse the blocking-modal classes from char-loading.css (.char-load-overlay / .char-load-box);
+   the rules here add the animated 你好 layout, the modal buttons, and theme-aware overrides for the
+   Driver.js popovers so the tour matches the active palette. All colours come from the theme custom
+   properties injected by theme.js. */
+
+/* The tutorial modal sits above the character-database loading overlay (z-index 2000 in
+   char-loading.css). By default it keeps the same dimmed/blurred backdrop as the rest of the site's
+   modals (inherited from .char-load-overlay). */
+.tutorial-overlay {
+    z-index: 3000;
+}
+
+/* The intro is the one exception: it draws over the character-database download bar, so its surround
+   is fully transparent (no dim, no blur) to keep that progress bar visible behind it. */
+.tutorial-overlay-clear {
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+/* The animated 你好 row inside the intro modal */
+.tutorial-hello {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.tutorial-hello-char {
+    width: 90px;
+    height: 90px;
+    border: 1px solid var(--main-border-colour);
+    border-radius: 8px;
+}
+
+.tutorial-modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+/* Theme-aware Driver.js popover overrides. Driver ships light-mode defaults; map them onto the
+   palette variables so the tour reads correctly under every theme */
+.driver-popover.tutorial-popover {
+    background-color: var(--main-background-colour);
+    color: var(--main-text-colour);
+    border: 2px solid var(--main-accent-colour);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px var(--main-border-colour);
+    max-width: 320px;
+}
+
+.driver-popover.tutorial-popover .driver-popover-title {
+    color: var(--main-accent-colour);
+}
+
+.driver-popover.tutorial-popover .driver-popover-description {
+    color: var(--main-text-colour);
+}
+
+/* Colour the popover arrow to match the themed background on every side */
+.driver-popover.tutorial-popover .driver-popover-arrow-side-left.driver-popover-arrow {
+    border-left-color: var(--main-background-colour);
+}
+.driver-popover.tutorial-popover .driver-popover-arrow-side-right.driver-popover-arrow {
+    border-right-color: var(--main-background-colour);
+}
+.driver-popover.tutorial-popover .driver-popover-arrow-side-top.driver-popover-arrow {
+    border-top-color: var(--main-background-colour);
+}
+.driver-popover.tutorial-popover .driver-popover-arrow-side-bottom.driver-popover-arrow {
+    border-bottom-color: var(--main-background-colour);
+}
+
+/* The tour buttons reuse the site's accent styling rather than Driver's grey defaults */
+.driver-popover.tutorial-popover .driver-popover-navigation-btns button,
+.driver-popover.tutorial-popover .driver-popover-close-btn {
+    background-color: var(--main-accent-colour);
+    color: var(--main-background-colour);
+    text-shadow: none;
+    border-radius: 6px;
+    border: none;
+}
+
+.driver-popover.tutorial-popover .driver-popover-close-btn {
+    color: var(--main-text-colour);
+    background-color: transparent;
+}

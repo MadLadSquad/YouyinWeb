@@ -960,11 +960,16 @@ function mainPageMain()
         link.href = "./deck.html"
         link.appendChild(document.createTextNode(lc.no_cards_link_deck));
 
+        // Keep the whole sentence in one inline span so it flows/wraps naturally; the h1 then just
+        // centres that single span both horizontally and vertically (see .no-cards-message)
+        let message = document.createElement("span");
+        message.textContent = lc.no_cards_text
+        message.appendChild(link);
+        message.appendChild(document.createTextNode(lc.no_cards_text_postfix))
+
         let el = document.createElement("h1");
-        el.className = "centered vcentered"
-        el.textContent = lc.no_cards_text
-        el.appendChild(link);
-        el.appendChild(document.createTextNode(lc.no_cards_text_postfix))
+        el.className = "centered no-cards-message"
+        el.appendChild(message);
 
         $("start-button-writer-section").appendChild(el);
         return;

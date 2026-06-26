@@ -249,3 +249,178 @@ translations:
     text: "Importing deck"
   - id: deck_import_subtitle
     text: "Downloading the deck and merging it into your collection."
+
+  # onboarding tutorial (tutorial.js / account.html). Avoid double quotes in any string surfaced
+  # through i18n.js — they are injected into a double-quoted JS string literal; use single quotes.
+  - id: tutorial_next
+    text: "Next"
+  - id: tutorial_done
+    text: "Done"
+  - id: tutorial_skip
+    text: "Skip tutorial"
+  - id: tutorial_continue
+    text: "Start tour"
+  - id: tutorial_preparing
+    text: "Preparing…"
+  - id: tutorial_finish
+    text: "Finish"
+  - id: tutorial_replay_button
+    text: "🗘 Replay tutorial"
+  - id: tutorial_intro_title
+    text: "Welcome to {brand}"
+  - id: tutorial_intro_body
+    text: "{brand} teaches you to write characters from Chinese, Japanese and more - one stroke at a time. Take a quick tour to see how it works."
+  - id: tutorial_outro_title
+    text: "You are all set!"
+  - id: tutorial_outro_body
+    text: "That is the whole app. Your starter deck and first cards are ready - good luck, and have fun writing!"
+  - id: tutorial_marketplace_title
+    text: "The marketplace"
+  - id: tutorial_marketplace_intro
+    text: "The marketplace has ready-made decks you can import in one click. Let us grab a starter deck."
+  - id: tutorial_marketplace_search_title
+    text: "Find a deck"
+  - id: tutorial_marketplace_search
+    text: "Search here to filter decks by name."
+  - id: tutorial_marketplace_import_title
+    text: "Import a deck"
+  - id: tutorial_marketplace_import
+    text: "We will import the Chinese Numbers deck for you. Click Next to add it to your collection."
+  - id: tutorial_marketplace_import_replay
+    text: "Press the Import button to add it to your collection. Click Next to continue."
+  - id: tutorial_marketplace_unavailable
+    text: "The deck list could not load right now. Click Next to continue to your deck."
+  - id: tutorial_deck_title
+    text: "Your deck"
+  - id: tutorial_deck_intro
+    text: "This is your deck - every character and phrase you are learning lives here."
+  - id: tutorial_deck_newcard_title
+    text: "Add cards"
+  - id: tutorial_deck_newcard
+    text: "Let's create your first character. Click New Card to begin."
+  - id: tutorial_deck_phrases_title
+    text: "Phrases"
+  - id: tutorial_deck_phrases
+    text: "Multi-character phrases appear in this section."
+  - id: tutorial_deck_characters_title
+    text: "Characters"
+  - id: tutorial_deck_characters
+    text: "Individual characters appear here - including the ones you just imported."
+  - id: tutorial_deck_search_title
+    text: "Search your deck"
+  - id: tutorial_deck_search
+    text: "Filter your cards and phrases as your deck grows."
+  - id: tutorial_review_edit_title
+    text: "Edit any card"
+  - id: tutorial_review_edit
+    text: "Use a card's Edit button to change it later."
+  - id: tutorial_review_partof_title
+    text: "Used in phrases"
+  - id: tutorial_review_partof
+    text: "When a character appears in a phrase, its card lists which phrases use it."
+  - id: tutorial_card_ime_title
+    text: "Input methods"
+  - id: tutorial_card_ime
+    text: "You can select an input method to type characters or special pronunciation symbols phonetically. We will leave it off for now."
+  - id: tutorial_card_input_title
+    text: "Enter the character"
+  - id: tutorial_card_input
+    text: "Now the character itself — we will write 好 (hǎo, meaning good)."
+  - id: tutorial_card_preview_title
+    text: "Live preview"
+  - id: tutorial_card_preview
+    text: "The preview shows how the card will look, with its animated strokes."
+  - id: tutorial_card_save_title
+    text: "Save the card"
+  - id: tutorial_card_save
+    text: "Click Done to add the card to your deck."
+  - id: tutorial_phrase_input_title
+    text: "Enter a phrase"
+  - id: tutorial_phrase_input
+    text: "Now the phrase itself - we'll write 你好. A card is created for each unknown character it contains."
+  - id: tutorial_phrase_autocards_title
+    text: "Automatic card creation"
+  - id: tutorial_phrase_autocards
+    text: "A card is created automatically for each character in the phrase - a card for 好 is added automatically, and the card for 你 is reused since it's already part of your deck."
+  - id: tutorial_phrase_save_title
+    text: "Save the phrase"
+  - id: tutorial_phrase_save
+    text: "Click Done to add the phrase and its characters."
+  - id: tutorial_session_title
+    text: "Practice time"
+  - id: tutorial_session_start
+    text: "Click Start to begin your first writing session. Trace each character stroke by stroke!"
+  - id: tutorial_session_replay
+    text: "Click Start whenever you want to practise writing the characters in your deck."
+  - id: tutorial_session_done_title
+    text: "Nicely done!"
+  - id: tutorial_session_done
+    text: "You just revised your deck's cards and phrases for the first time!"
+  - id: tutorial_account_stats_title
+    text: "Your profile"
+  - id: tutorial_account_stats
+    text: "Your profile stats live here - sessions count, streak, deck size and average knowledge level."
+  - id: tutorial_account_settings_title
+    text: "Settings"
+  - id: tutorial_account_settings
+    text: "Tune your practice, switch language or theme."
+  - id: tutorial_card_pron_title
+    text: "Add the pronunciation"
+  - id: tutorial_card_pron
+    text: "Start with the character's pronunciation - we'll type hǎo."
+  - id: tutorial_card_defs_title
+    text: "Add meanings"
+  - id: tutorial_card_defs
+    text: "List what the card means, one entry at a time - we will add 'good', 'fine' and 'ok'."
+  - id: tutorial_cardreview_title
+    text: "Your new card"
+  - id: tutorial_cardreview
+    text: "Here is the card for the character 好 you just made."
+  - id: tutorial_cardreview_phrase_title
+    text: "Now let's make a phrase"
+  - id: tutorial_cardreview_phrase
+    text: "Phrases join characters together. Click New Phrase to build one."
+  - id: tutorial_phrase_pron_title
+    text: "Phrase pronunciation"
+  - id: tutorial_phrase_pron
+    text: "Enter the phrase's pronunciation — we will type nǐ hǎo."
+  - id: tutorial_phrase_defs_title
+    text: "Phrase meaning"
+  - id: tutorial_phrase_defs
+    text: "Add what the phrase means - we will add 'hello'."
+  - id: tutorial_phrase_subcard_title
+    text: "A brand-new character"
+  - id: tutorial_phrase_subcard
+    text: "The character 你 was not part of the deck previosly, so we create a card for it. The card for the character 好 was reused from before."
+  - id: tutorial_review_phrase_title
+    text: "Your phrase"
+  - id: tutorial_review_phrase
+    text: "Here is the phrase we created."
+  - id: tutorial_review_navigate_title
+    text: "Time to practise"
+  - id: tutorial_review_navigate
+    text: "That is how decks are built. Let's start revising the characters in our deck."
+  - id: tutorial_card_variant_title
+    text: "Regional variants"
+  - id: tutorial_card_variant
+    text: "Some characters are written differently across regions. Use this box to select a regional form of your character."
+  - id: tutorial_account_extensive_title
+    text: "Extensive mode"
+  - id: tutorial_account_extensive
+    text: "Turn this on to review every card each session, rather than reviewing only a focused subset."
+  - id: tutorial_account_levelreduce_title
+    text: "Daily level reduction"
+  - id: tutorial_account_levelreduce
+    text: "Each day your characters lose a little bit of their knowledge score so frequent revision keeps them fresh. This slider sets how much of their knowledge score they lose."
+  - id: tutorial_account_language_title
+    text: "Language"
+  - id: tutorial_account_language
+    text: "These are the languages {brand} is available in - switch whenever you like."
+  - id: tutorial_account_theme_title
+    text: "Themes"
+  - id: tutorial_account_theme
+    text: "These are the colour themes you can choose from."
+  - id: tutorial_account_replay_title
+    text: "Replay this tutorial"
+  - id: tutorial_account_replay
+    text: "Ever need a refresher? This button restarts the whole tutorial whenever you like."

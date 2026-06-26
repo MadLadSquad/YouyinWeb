@@ -81,6 +81,12 @@ function accountmain()
 {
     setProfileCardData();
     setupGameModifiers();
+
+    // Replay the onboarding tutorial (highlight-only walkthrough). youyinStartTutorialReplay is defined by
+    // scripts/components/tutorial.js, which loads from the shared footer before this page script
+    const replayButton = $("replay-tutorial-button");
+    if (replayButton && window.youyinStartTutorialReplay)
+        replayButton.addEventListener("click", () => window.youyinStartTutorialReplay());
 }
 
 // The profile card and modifiers only need the profile data (sessions, cards, modifiers), not the
