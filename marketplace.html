@@ -29,9 +29,15 @@
             <section id="deck-community-master">
             </section>
         </main>
+        <!-- Loaded BEFORE the footer (which runs index.js then tutorial.js): tutorial.js's dispatch calls
+             this file's stage functions from a youyinProfileReady microtask that drains before any script
+             placed after the footer would run, so the definitions must exist beforehand -->
+        <script src="./scripts/components/tutorial/marketplace.js"></script>
         {{ include Components/footer.tmpl.html }}
+        <!-- Loaded AFTER the footer: marketplace.js consumes the readiness promises (youyinStorageReady, …)
+             that index.js creates, so index.js must run first -->
+        <script src="./scripts/utils/fuzzy-match.js"></script>
+        <script src="./scripts/components/card-search.js"></script>
+        <script src="./scripts/pages/marketplace.js"></script>
     </body>
-    <script src="./scripts/utils/fuzzy-match.js"></script>
-    <script src="./scripts/components/card-search.js"></script>
-    <script src="./scripts/pages/marketplace.js"></script>
 </html>
