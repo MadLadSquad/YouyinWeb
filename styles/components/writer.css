@@ -1,0 +1,28 @@
+/* Character-writer visuals (mirrors scripts/components/writer.js): the bordered writer SVG used on
+   the main page and the card-writer targets used on the deck, marketplace and deck-edit pages.
+   Colours come from the theme custom properties injected by theme.js (see base.css). */
+
+/**
+ * Settings for the SVG that will be used by the writer
+ */
+.character-prop {
+    border: 2px solid var(--main-border-colour);
+    margin: auto;
+    position: relative;
+}
+
+/* Single-character writer target. Writers are hydrated lazily as cards scroll into view, so reserve
+   the writer's footprint up front (matches CARD_WRITER_SIZE in index.js) to avoid layout shift */
+.card .card-writer-target {
+    min-height: 100px;
+}
+
+/* Row of per-character writers that replaces the plain phrase text on phrase cards. min-height
+   matches PHRASE_CARD_WRITER_SIZE so lazily-hydrated phrase writers don't shift the card either */
+.card .phrase-card-writers {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+    min-height: 50px;
+}

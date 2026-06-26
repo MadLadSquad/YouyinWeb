@@ -1,0 +1,46 @@
+/* Card/phrase editor page only (deck-edit-card.html): the input-mode (IME) selector grid, the
+   navigation footer buttons, text inputs, the variant select wrapper and the hidden phrase-preview
+   section. Colours come from the theme custom properties injected by theme.js (see base.css). */
+
+/* Keeps the rebuildable variant select on the same line as the character input */
+.character-variant-wrapper {
+    display: inline-block;
+}
+
+#navigation-footer {
+    width: fit-content;
+    padding: 0;
+    margin: auto;
+    overflow: hidden;
+}
+
+#input-mode {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(85px, max-content));
+    justify-content: center;
+    margin: auto auto 1rem auto;
+}
+
+#input-mode * {
+    margin: 0;
+}
+
+/* Configure input text fields to follow our style */
+input[type=text] {
+    box-sizing: border-box;
+    max-width: 85%;
+    font-size: 16px;
+    font-family: inherit;
+    padding: 2px;
+    color: var(--main-text-colour);
+    background-color: var(--main-background-colour);
+    border: 1px solid var(--main-accent-colour);
+    border-radius: 4px;
+}
+
+/* Hidden by default; JS toggles display when editing/showing phrases */
+#phrase-preview-section,
+#delete-edit-button {
+    display: none;
+}

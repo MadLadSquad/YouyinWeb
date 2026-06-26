@@ -1,0 +1,24 @@
+/* Shared search bar, centred above the listings. Used by both the deck and marketplace pages.
+   Colours come from the theme custom properties injected by theme.js (see base.css). */
+.page-search-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.page-search {
+    box-sizing: border-box;
+    width: min(30rem, 90%);
+    padding: 8px 14px;
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--main-text-colour);
+    background-color: var(--main-background-colour);
+    border: 1px solid var(--main-accent-colour);
+    border-radius: 8px;
+}
+
+.page-search:focus {
+    outline: 2px solid var(--main-accent-colour);
+    outline-offset: 1px;
+}

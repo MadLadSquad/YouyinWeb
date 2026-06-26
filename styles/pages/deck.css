@@ -1,0 +1,22 @@
+/* Deck page only (deck.html): the standalone "add a new card" prompt tile and the hidden file
+   upload input. Colours come from the theme custom properties injected by theme.js (see base.css). */
+
+/* The new-card prompt sits on its own outside the deck grid (like the marketplace upload card),
+   so it drops the card border/shadow to read as a standalone prompt rather than a grid tile */
+#new-card {
+    border: none;
+    box-shadow: none;
+}
+
+#new-card-header {
+    font-size: 7.5rem;
+    color: var(--deck-card-text-colour);
+}
+
+/* Hide the default file upload widget */
+#fileupload {
+    display: block;
+    visibility: hidden;
+    width: 0;
+    height: 0;
+}

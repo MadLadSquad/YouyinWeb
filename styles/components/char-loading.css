@@ -1,5 +1,5 @@
 /* Styles for the character-database download UI rendered by char-loading-ui.js. The colour palette
-   variables come from theme.js (see main.css). The blocking-modal classes here (.char-load-*) are
+   variables come from theme.js (see base.css). The blocking-modal classes here (.char-load-*) are
    also reused as the shared loading-modal component by the marketplace deck import (marketplace.js). */
 
 /* Blocking modal shown while the character database downloads for the first time. Covers and blurs

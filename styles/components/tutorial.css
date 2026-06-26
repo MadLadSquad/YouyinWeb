@@ -2,7 +2,7 @@
    outro reuse the blocking-modal classes from char-loading.css (.char-load-overlay / .char-load-box);
    the rules here add the animated 你好 layout, the modal buttons, and theme-aware overrides for the
    Driver.js popovers so the tour matches the active palette. All colours come from the theme custom
-   properties injected by theme.js. */
+   properties injected by theme.js (see base.css). */
 
 /* The tutorial modal sits above the character-database loading overlay (z-index 2000 in
    char-loading.css). By default it keeps the same dimmed/blurred backdrop as the rest of the site's

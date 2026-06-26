@@ -1,0 +1,82 @@
+/* The shared button component (.card-button-edit and friends) used across the deck, marketplace,
+   account, deck-edit and main pages. Colours come from the theme custom properties injected by
+   theme.js (see base.css). */
+
+/* I totally didn't cop this from somewhere I don't even remember */
+.card-button-edit {
+    position: relative;
+    overflow: hidden;
+
+    color: var(--main-background-colour);
+    background-color: var(--main-accent-colour);
+    margin-top: 12px;
+    margin-bottom: 12px;
+
+    display: inline-block;
+    padding: 6px 12px;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    -webkit-user-select: none;
+    background-image: none;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    touch-action: manipulation;
+
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+
+/* Click ripple: scales out from center and fades after release */
+.card-button-edit::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    background: var(--main-border-colour);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(40);
+    opacity: 0;
+    transition: transform 0.8s, opacity 0.8s;
+    pointer-events: none;
+}
+
+.card-button-edit:active::after {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+    transition: 0s;
+}
+
+.card-button-edit:hover {
+    color: var(--main-background-colour);
+    background-color: var(--deck-button-active-colour);
+    border-color: var(--deck-button-active-colour);
+    border-radius: 4px;
+}
+
+.card-button-edit:active {
+    border-color: var(--main-accent-colour);
+    background-color: var(--deck-button-active-colour);
+}
+
+/* Some buttons, like the start button may require large text*/
+.large-button-text {
+    font-size: 32px;
+    border: 6px solid transparent;
+    border-radius: 12px;
+}
+
+button {
+    overflow: visible;
+    -webkit-appearance: button;
+}
+
+/* Make small buttons smaller */
+.small-button {
+    padding: 0 5px;
+    margin-top: 0;
+    margin-bottom: 0;
+}

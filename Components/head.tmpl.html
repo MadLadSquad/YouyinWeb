@@ -22,15 +22,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet" type="text/css">
-<!-- Loaded before main.css so the saved theme's colours are injected before first paint -->
+<!-- Loaded before the stylesheets so the saved theme's colours are injected before first paint -->
 <script src="./scripts/data/theme.js"></script>
 <!-- Deferred so it doesn't block HTML parsing/first paint; nothing needs it before initEmojiReplacement,
      which waits for it (see emoji.js) in case this hasn't executed yet by the time index.js runs -->
 <script defer src="https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js" crossorigin="anonymous"></script>
-<link rel="stylesheet" href="./main.css" type="text/css">
-<link rel="stylesheet" href="./char-loading.css" type="text/css">
+<!-- Global stylesheets used on every page. Page-specific and multi-page component stylesheets are
+     linked per-page (see each *.html). -->
+<link rel="stylesheet" href="./styles/components/base.css" type="text/css">
+<link rel="stylesheet" href="./styles/components/header.css" type="text/css">
+<link rel="stylesheet" href="./styles/components/select-box.css" type="text/css">
+<link rel="stylesheet" href="./styles/components/char-loading.css" type="text/css">
 <!-- Driver.js (product-tour library) + our onboarding tutorial styles. driver.css must precede
      tutorial.css so the theme-aware .tutorial-popover overrides win the cascade -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css" type="text/css">
-<link rel="stylesheet" href="./tutorial.css" type="text/css">
+<link rel="stylesheet" href="./styles/components/tutorial.css" type="text/css">
 

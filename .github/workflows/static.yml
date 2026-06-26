@@ -50,7 +50,7 @@ jobs:
       - run: npm install -g csso-cli
       - run: npm install -g html-minifier
       - run: find ./ -name '*.js' -exec terser {} --compress -o {} \;
-      - run: for i in ./*.css; do csso $i -o $i; done
+      - run: find ./ -name '*.css' -exec csso {} -o {} \;
       #- run: for i in ./*.html; do html-minifier [--your-options-here] $i -o $i; done
       - name: Change URLs to production mode
         run: |

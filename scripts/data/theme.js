@@ -1,6 +1,6 @@
 'use strict';
 // Owns applying a colour theme before first paint. This file is loaded synchronously in the <head>
-// (before main.css) so the saved theme's colours are set before the first paint and there is no flash
+// (before the stylesheets) so the saved theme's colours are set before the first paint and there is no flash
 // of unstyled colours. Only the *active* theme's palette is needed to paint, so the full ~190-theme
 // catalogue lives in a separate file (themes-data.js) loaded lazily by loadThemeCatalogue() — that
 // keeps ~60 KB of unused palette data off every page's critical render path.
@@ -82,8 +82,8 @@ window.applyPalette = function (t, id)
     document.documentElement.setAttribute("data-theme", id);
 
     // Briefly cross-fade the colours on every change *after* the initial page paint (the first
-    // call happens before main.css renders, so there's nothing to fade from). The transition
-    // itself lives in main.css, gated behind the "theme-transition" class; we add it for the
+    // call happens before the stylesheets render, so there's nothing to fade from). The transition
+    // itself lives in styles/components/base.css, gated behind the "theme-transition" class; we add it for the
     // duration of the fade and pull it back off so normal interaction never pays for it.
     if (window.__youyinThemeReady)
     {
@@ -149,7 +149,7 @@ window.loadThemeCatalogue = function ()
     return window.__youyinCataloguePromise;
 };
 
-// Apply the saved theme immediately, before main.css paints, to avoid a colour flash. The catalogue
+// Apply the saved theme immediately, before the stylesheets paint, to avoid a colour flash. The catalogue
 // isn't loaded at boot, so paint from the saved theme's cached palette (written by the picker on its
 // last commit); fall back to the inline default on a first visit or a cache miss.
 (function () {

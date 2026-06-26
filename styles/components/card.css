@@ -1,0 +1,72 @@
+/* The card-grid component shared by the deck, marketplace, account and deck-edit pages: the grid
+   container, the virtualized blocks, the card tile and its headers. Colours come from the theme
+   custom properties injected by theme.js (see base.css). */
+
+/* Display the deck or marketplace as a grid of cards */
+.deck {
+    display: grid;
+    gap: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    padding-inline: 0.5rem;
+    box-sizing: border-box;
+}
+
+/* The character/phrase sections are virtualized (see deck.js): instead of one big grid they stack
+   fixed-size grid blocks, so off-screen blocks can collapse to a spacer. The section itself is just
+   a vertical stack; the grid lives on each .deck-block, and the inline padding moves there too */
+#deck-phrases-section, #deck-characters-section {
+    display: block;
+    padding-inline: 0;
+}
+
+.deck-block {
+    display: grid;
+    gap: 0.5rem;
+    /* auto-fill (not auto-fit) so a block's partial last row stays normal-width and left-aligned
+       instead of stretching to fill the row at every block boundary */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    padding-inline: 0.5rem;
+    box-sizing: border-box;
+
+    /* Isolate each block's layout and paint from the rest of the page, so rendering/collapsing one
+       block (or a writer animating inside it) can't trigger reflow or repaint of the others */
+    contain: layout paint;
+}
+
+/* Match the in-grid row gap between stacked blocks */
+.deck-block + .deck-block {
+    margin-top: 0.5rem;
+}
+
+/* Add border to the cards for better UI/UX */
+.card {
+    border: 1px solid var(--main-border-colour);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: box-shadow 0.2s ease;
+
+    /* A little breathing room so full-width widgets (e.g. the level-reduce slider) don't run into
+       the card border */
+    padding-inline: 0.5rem;
+
+    /* Let the browser skip rendering and layout for off-screen cards entirely. The auto intrinsic
+       size keeps the scrollbar honest before a card has ever been rendered (and is remembered once
+       it has), so a multi-thousand-card deck stays cheap to scroll on low-powered devices */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
+}
+
+.card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.card h1 {
+    font-size: 1.5rem;
+}
+
+.card h2 {
+    font-size: 1.3rem;
+}
+
+.card h3 {
+    font-size: 1.15rem;
+}

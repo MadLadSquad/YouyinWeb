@@ -1,3 +1,6 @@
+/* Marketplace page only (marketplace.html): the "add a new deck" upload card and error text.
+   Colours come from the theme custom properties injected by theme.js (see base.css). */
+
 /* The "add a new deck" card is informational, not a real deck, so it carries no border or shadow */
 #new-deck-upload-card {
     border: none;
@@ -17,4 +20,4 @@
     color: var(--main-error-colour);
 }
 
-/* The deck search bar styling lives in deck.css (.page-search), shared with the deck page */
+/* The shared search bar styling lives in styles/components/page-search.css (.page-search) */

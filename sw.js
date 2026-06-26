@@ -1,4 +1,4 @@
-const CACHE_NAME = 'youyin-static-v9';
+const CACHE_NAME = 'youyin-static-v10';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination
@@ -35,11 +35,20 @@ const SCRIPTS = [
     'scripts/utils/fuzzy-match.js'
 ];
 const ROOT_ONLY_ASSETS = [
-    'main.css',
-    'char-loading.css',
-    'tutorial.css',
-    'deck.css',
-    'marketplace.css',
+    'styles/components/base.css',
+    'styles/components/header.css',
+    'styles/components/select-box.css',
+    'styles/components/card.css',
+    'styles/components/button.css',
+    'styles/components/writer.css',
+    'styles/components/page-search.css',
+    'styles/components/char-loading.css',
+    'styles/components/tutorial.css',
+    'styles/pages/index.css',
+    'styles/pages/deck.css',
+    'styles/pages/deck-edit.css',
+    'styles/pages/account.css',
+    'styles/pages/marketplace.css',
     'favicon.png',
     'favicon-new.png',
     'icon-192.png',

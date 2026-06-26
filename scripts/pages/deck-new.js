@@ -120,6 +120,21 @@ function constructInputElement(container, id, classT, type, ariaLabel, name, pre
     return input;
 }
 
+/**
+ * Resolves the variant postfix for a phrase character by borrowing it from a matching character card.
+ * Phrases don't store per-character variants, so a phrase containing a character the user already has
+ * a card for (e.g. a Kanji variant) renders it the same way it appears on its own card.
+ * @param { string } character - The single character to resolve
+ * @returns { string } - The variant postfix (e.g. "-jp"), or "" if no matching card exists
+ */
+function findPhraseCharacterVariant(character)
+{
+    for (const card of window.profileData.cards)
+        if (card.character === character)
+            return card.variant || "";
+    return "";
+}
+
 function constructPhraseEditCardPreview(it) {
     let lit = it;
     if (it === null)
@@ -135,7 +150,33 @@ function constructPhraseEditCardPreview(it) {
 
     let phrasePreviewRoot = addElement("div", "", "character-preview-phrase", "card centered", "", $("phrase-preview-section-container"));
     addElement("h3", lit.name, "card-preview-name-phrase", "", "", phrasePreviewRoot);
-    addElement("h1", lit.phrase, "card-character-target-div-phrase", "phrase-card-header", "", phrasePreviewRoot);
+
+    // Draw the phrase as one writer per character (like the deck page's phrase cards) rather than as a
+    // plain text header, so hovering animates each character's strokes one after another
+    let writerRow = addElement("div", "", "card-character-target-div-phrase", "phrase-card-writers", "", phrasePreviewRoot);
+    // Iterate by code point so characters outside the BMP stay whole
+    const phraseChars = toCharacters(lit.phrase);
+    let writers = [];
+    for (let c = 0; c < phraseChars.length; c++)
+    {
+        const charTargetId = `card-character-target-div-phrase-${c}`;
+        addElement("div", "", charTargetId, "phrase-card-character", "", writerRow);
+        const fullCharacter = phraseChars[c] + findPhraseCharacterVariant(phraseChars[c]);
+        writers.push(createCardWriter(charTargetId, fullCharacter, window.PHRASE_CARD_WRITER_SIZE));
+    }
+
+    // Chain the per-character animations on hover. The guard stops a fresh hover from restarting the
+    // sequence while it's still drawing
+    let bAnimating = false;
+    writerRow.addEventListener("mouseover", async function() {
+        if (bAnimating)
+            return;
+        bAnimating = true;
+        for (const writer of writers)
+            await writer.animateCharacter();
+        bAnimating = false;
+    });
+
     addElement("p", `${lc.deck_definitions}`, "", "", "", phrasePreviewRoot);
     let list = addElement("ol", "", "card-preview-list-phrase", "", "", phrasePreviewRoot)
     for (const definition of lit.definitions)

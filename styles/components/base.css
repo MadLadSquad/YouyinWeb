@@ -1,0 +1,228 @@
+/* Global base: resets, page/theme transitions, scrollbars, links, lists and one-off global
+   chrome shared by every page. The colour palette lives in theme.js, which injects these CSS
+   variables into :root at runtime (see the #youyin-theme-style element). base.css only consumes
+   them. */
+
+html {
+    accent-color: var(--main-accent-colour);
+}
+
+/* Enable view transitions across page navigations */
+@view-transition {
+    navigation: auto;
+}
+
+/* Customize transition duration for page fades */
+::view-transition-group(root) {
+    animation-duration: 0.2s;
+}
+
+@keyframes pageFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+body {
+    opacity: 0;
+    animation: pageFadeIn 0.2s ease-in-out forwards;
+}
+
+body.page-exiting {
+    opacity: 0 !important;
+    transition: opacity 0.2s ease-in-out !important;
+}
+
+/* Respect users who ask for reduced motion: disable page transitions */
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(root) {
+        animation-duration: 0s !important;
+    }
+    body {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+}
+
+/* Colour cross-fade applied only while switching/previewing a theme. theme.js toggles the
+   "theme-transition" class on <html> for the length of the swap, so nothing transitions
+   during normal use — only the colour-bearing properties, and only for that brief window. */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
+                fill 0.3s ease, box-shadow 0.3s ease, outline-color 0.3s ease !important;
+}
+
+/* Respect users who ask for reduced motion: swap instantly, no fade. */
+@media (prefers-reduced-motion: reduce) {
+    .theme-transition,
+    .theme-transition *,
+    .theme-transition *::before,
+    .theme-transition *::after {
+        transition: none !important;
+    }
+}
+
+/* Remove body padding, otherwise bound calculations will be really hard */
+body {
+    padding: 0;
+    margin: 0;
+    background-color: var(--main-background-colour);
+    /* Default text colour for all copy (paragraphs, headers, …). Without this, text falls
+       back to browser-default black and becomes unreadable on dark themes. Elements that
+       need the accent colour (links, etc.) set it explicitly and override this. */
+    color: var(--main-text-colour);
+    font-family: 'Ubuntu', sans-serif;
+}
+
+/* ---------------------------------- Custom themed scrollbars ---------------------------------- */
+
+/* Apply to every scrollable element so the whole site shares one themed scrollbar instead of the
+   browser default. Standard properties (Firefox, and any modern engine) come first; the WebKit
+   pseudo-elements below give Chromium/Safari the same look with a hover state. The track is left
+   transparent so the scrollbar blends into whatever widget it sits in. */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--main-border-colour) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* The transparent border + background-clip leaves a little breathing room around the thumb so it
+   reads as a rounded pill rather than filling the whole gutter. */
+*::-webkit-scrollbar-thumb {
+    background-color: var(--main-border-colour);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: var(--main-accent-colour);
+}
+
+/* The little square where the vertical and horizontal bars meet */
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/**
+ * Add padding to the side of the main block, because we still
+ * need some spacing from the border of the screen for good user
+ * experience
+ **/
+main {
+    /*padding-left: 0.5rem;*/
+    /*padding-right: 0.5rem;*/
+    box-sizing: border-box;
+    --main-padding-width: 1rem;
+    width: 100%;
+    /* Separate the card grid from the footer (or its divider) so the bottom row doesn't sit flush
+       against it. Pages with their own layout (e.g. the main page's .writer-page) override this. */
+    margin-bottom: 0.5rem;
+}
+
+a {
+    text-decoration: none;
+    color: var(--main-accent-colour);
+}
+
+/* Make the ul and footer containers for a horizontal list */
+ul, footer {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+footer.centered {
+    justify-content: center;
+}
+
+/* Configure ordered lists to be left-aligned with some padding and decimal numbers */
+ol {
+    list-style: none;
+    text-align: left;
+    padding-right: 40px;
+}
+
+ol li {
+    padding-top: 0.25rem;
+    text-decoration: none;
+    list-style-type: decimal;
+}
+
+/* Visible focus indicator for keyboard users */
+:focus-visible {
+    outline: 2px solid var(--main-accent-colour);
+    outline-offset: 2px;
+}
+
+/* Skip-to-content link: hidden until focused via keyboard */
+.skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+}
+
+.skip-link:focus {
+    left: 0.5rem;
+    top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--main-background-colour);
+    border: 2px solid var(--main-accent-colour);
+    border-radius: 4px;
+}
+
+/* Footer divider hr used on the main and account pages. Why have an hr instead of a border on the
+   footer? Because a border on the footer breaks. (The main page additionally hides it until a
+   revision round begins — see styles/pages/index.css.) */
+#main-page-hr {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--main-border-colour);
+    background-color: var(--main-border-colour);
+}
+
+#coming-soon-header {
+    font-size: clamp(1.5rem, 3vw, 3rem);
+}
+
+#coming-soon-text-1, #coming-soon-text-2 {
+    font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+}
+
+/* Make the 404 emoji take up more or less the whole page */
+#err-404-emoji {
+    font-size: clamp(4rem, 18vw, 16rem);
+}
+
+/* The generic centered class */
+.centered {
+    text-align: center;
+}
+
+.vcentered {
+    margin: auto;
+}
+
+/* Twemoji styling to match surrounding text size */
+img.emoji {
+    height: 1em;
+    width: 1em;
+    margin: 0 .05em 0 .1em;
+    vertical-align: -0.1em;
+    display: inline-block;
+}

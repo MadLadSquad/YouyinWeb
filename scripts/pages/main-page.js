@@ -88,7 +88,7 @@ function sessionRevisionCount(arr)
 // This function uses some dark magic that works half the time in order to calculate the size of the main page viewport
 // and main elements. Here are some issues:
 // TODO: On portrait screens if the resolution changes this sometimes breaks and a refresh is needed, would be good if it was fixed. 
-// Probably check out main.css and the main-page media query
+// Probably check out styles/pages/index.css and the main-page media query
 function getDrawElementHeight()
 {
     const html = document.querySelector("html");
@@ -903,7 +903,7 @@ function createStartButton()
         $("start-button").remove();
         window.bInTest = true;
 
-        // Reveal the sidebar for the duration of the revision round (see main.css). It is removed
+        // Reveal the sidebar for the duration of the revision round (see styles/pages/index.css). It is removed
         // again in writerOnComplete when we switch to the finished-round slide deck
         $("main-content").classList.add("in-session");
 

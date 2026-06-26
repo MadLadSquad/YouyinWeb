@@ -1,0 +1,268 @@
+/* Main practice page only (index.html): the writer/sidebar split layout, the character & phrase
+   info widgets, the finished-round slide deck, and the streak-fire / fly-into-counter reward
+   animations. Colours come from the theme custom properties injected by theme.js (see base.css). */
+
+#start-button-writer-section {
+    padding-inline: 0.5rem;
+}
+
+/**
+ * Idle (not revising): the sidebar is hidden and the start button takes the whole page. Only once
+ * a revision round begins (the .in-session class is added to #main-content) do we split the page
+ * into 2 parts, 25% for the sidebar and 75% for the writer widget. This split only applies in
+ * landscape mode.
+ **/
+.writer-page {
+    display: block;
+    /* Landing page only: drop the 0.5rem bottom margin so main sits flush against the footer chrome. */
+    margin-bottom: 0;
+}
+
+.writer-page.in-session {
+    display: grid;
+    gap: 0;
+    grid-template-columns: 25% 75%;
+    grid-auto-rows: 100%;
+}
+
+/* This may cause problems, check out main-page.js on top of the definition of the "getDrawElementHeight" function */
+@media (orientation: portrait) {
+    .writer-page.in-session {
+        display: block;
+    }
+}
+
+/* The sidebar is only relevant while a revision round is in progress. #main-content gets the
+   .in-session class for the duration of the round (see main-page.js). These live before the
+   portrait rule below so source order lets the portrait flex layout win when in session. */
+#main-page-info-container {
+    display: none;
+}
+
+.in-session #main-page-info-container {
+    display: block;
+}
+
+/* Only display the right border on landscape since on portrait elements are not inline */
+@media (orientation: landscape) {
+    #main-page-info-container {
+        border-right: 1px solid var(--main-border-colour);
+    }
+
+    #main-page-info-container div {
+        border-bottom: 1px solid var(--main-border-colour);
+    }
+
+    /* Keep the idle start screen clean: hide the nav divider and the hr until a round begins.
+       :has(.writer-page) scopes this to the main page so the shared header keeps its border on
+       every other page; both are restored once the writer page gains .in-session. */
+    body:has(.writer-page:not(.in-session)) header {
+        border-bottom: none;
+    }
+
+    .writer-page:not(.in-session) + #main-page-hr {
+        display: none;
+    }
+}
+
+@media (orientation: portrait) {
+    .in-session #main-page-info-container {
+        float: left;
+        position: relative;
+        display: block;
+
+        width: 100%;
+        padding: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--main-border-colour);
+        box-sizing: border-box;
+    }
+
+    .info-widgets-wrapper {
+        display: flex;
+        min-height: 100%;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .info-widgets-wrapper div {
+        flex: 1 1 0%;
+        min-width: 0;
+        box-sizing: border-box;
+    }
+
+    #phrase-info-widget {
+        border-right: 1px solid var(--main-border-colour);
+    }
+}
+
+#phrase-info-widget {
+    display: none;
+}
+
+/* Reduce margins for the text on the character info */
+#main-page-info-container p, #main-page-info-container ol {
+    margin: 3px 0.5rem;
+}
+
+/* The empty-deck message shown on the main page in place of the start button. The writer section is a
+   plain block, so margin-auto can't centre it vertically — grid-centre it in most of the viewport so it
+   sits in the middle of the page rather than at the top. */
+.no-cards-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+}
+
+/* This is the button you use to start a session */
+#start-button, #start-button-writer-section {
+    margin: auto;
+}
+
+/* In the idle (block) layout this section spans the full page width, so centre its inline-block
+   start button - and the finished-round deck - horizontally within it */
+#start-button-writer-section {
+    text-align: center;
+}
+
+/* The finished-round screen is a slide deck: a writer-sized stage (height set inline by JS to
+   match the play field it replaces) over which each stat slides in from the right, stacking on
+   top of the previous one. The last slide carries the Continue button. */
+#finished-session-section {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Each slide fills the stage and centres its single header/button. Stacking is what lets a new
+   slide cover the one before it. */
+.finish-slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-align: center;
+    margin: 0;
+    font-size: 32px;
+    /* Opaque so the incoming slide hides the one it slides over (which is then removed in JS) */
+    background-color: var(--main-background-colour);
+}
+
+/* Each stat slide, and the Continue button on the final slide, slide in from the right with the
+   same timing. The button is a normal column child, so it lands below the text without covering it. */
+.finish-slide.slide-able,
+.finish-continue {
+    -webkit-animation: 1.5s slide-from-right 0.25s forwards;
+    animation: 1.5s slide-from-right 0.25s forwards;
+    transform: translateX(100%);
+}
+
+@-webkit-keyframes slide-from-right {
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slide-from-right {
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* -------------------------- New-streak encouragement fire emoji burst -------------------------- */
+
+/* Covers the area the writer widget occupied without intercepting clicks on the finished-session
+   page below it. Lives on <body>; main-page.js sets left/top/width/height inline to the writer's
+   rectangle captured just before it was removed */
+.streak-fire-container {
+    position: absolute;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Per-emoji flight path and timing come from CSS variables set inline by main-page.js */
+.streak-fire-emoji {
+    position: absolute;
+    bottom: 0;
+    left: var(--fire-left);
+    opacity: 0;
+    -webkit-animation: var(--fire-duration) streak-fire-fly var(--fire-delay) ease-out forwards;
+    animation: var(--fire-duration) streak-fire-fly var(--fire-delay) ease-out forwards;
+}
+
+@-webkit-keyframes streak-fire-fly {
+    0% {
+        -webkit-transform: translate(0, 100%) scale(0.5) rotate(0deg);
+        transform: translate(0, 100%) scale(0.5) rotate(0deg);
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    100% {
+        -webkit-transform: translate(var(--fire-drift), var(--fire-rise)) scale(1.1) rotate(var(--fire-spin));
+        transform: translate(var(--fire-drift), var(--fire-rise)) scale(1.1) rotate(var(--fire-spin));
+        opacity: 0;
+    }
+}
+
+@keyframes streak-fire-fly {
+    0% {
+        -webkit-transform: translate(0, 100%) scale(0.5) rotate(0deg);
+        transform: translate(0, 100%) scale(0.5) rotate(0deg);
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    100% {
+        -webkit-transform: translate(var(--fire-drift), var(--fire-rise)) scale(1.1) rotate(var(--fire-spin));
+        transform: translate(var(--fire-drift), var(--fire-rise)) scale(1.1) rotate(var(--fire-spin));
+        opacity: 0;
+    }
+}
+
+/* Belt and braces alongside the matchMedia guard in main-page.js */
+@media (prefers-reduced-motion: reduce) {
+    .streak-fire-container {
+        display: none;
+    }
+}
+
+/* ---------------------- Completed-character "fly into the progress counter" reward ---------------------- */
+
+/* Holds a static snapshot of the just-completed character. main-page.js positions it exactly over
+   the writer (so the copy is invisible to begin with) and animates it into the progress counter via
+   the Web Animations API. Never intercepts pointer events. */
+.fly-overlay {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+    transform-origin: center center;
+    will-change: transform, opacity;
+}
+
+.fly-overlay svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* Quick, subtle colour flash on the progress counter as it ticks up when a character lands. Only
+   the colour changes - no size/geometry change, which is disorienting. Kept even under reduced
+   motion: it is the minimal acknowledgement that replaces the flight there. The 0%/100% colour is
+   left unspecified so it animates from the counter's own resting colour to the accent and back. */
+.counter-blink {
+    animation: counter-blink 0.75s ease-out;
+}
+
+@keyframes counter-blink {
+    40% { color: var(--main-accent-colour); }
+}
