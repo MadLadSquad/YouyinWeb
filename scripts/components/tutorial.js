@@ -91,6 +91,49 @@ function tutTriggerButton(btn)
     btn.dispatchEvent(new Event("animationend"));
 }
 
+// After Driver has highlighted a step, keep BOTH the highlighted widget and its popover on screen.
+// Driver's own bringInView only frames the element (it centres it, or skips scrolling when the element
+// is already fully visible) and ignores the popover's footprint, so on a short viewport a top/bottom
+// popover can push the widget off the edge. We read the union of the element rect and the rendered
+// .driver-popover rect and, if it spills past a small margin, do one corrective smooth scrollBy. When
+// the two together are taller than the viewport we prioritise the widget (align its top to the margin)
+// so the user always sees what's being pointed at. Runs on the next frame so Driver has placed the popover.
+function tutEnsureBothInView(element)
+{
+    const node = typeof element === "string" ? document.querySelector(element) : element;
+    if (!node)
+        return;
+    requestAnimationFrame(() => {
+        const popover = document.querySelector(".driver-popover");
+        const elRect = node.getBoundingClientRect();
+        const margin = 12;
+        const viewport = window.innerHeight || document.documentElement.clientHeight;
+
+        let top = elRect.top;
+        let bottom = elRect.bottom;
+        if (popover)
+        {
+            const pRect = popover.getBoundingClientRect();
+            top = Math.min(top, pRect.top);
+            bottom = Math.max(bottom, pRect.bottom);
+        }
+
+        let delta = 0;
+        if (bottom - top > viewport - 2 * margin)
+            delta = elRect.top - margin;          // Can't fit both: keep the widget itself in view.
+        else if (top < margin)
+            delta = top - margin;                 // Spills past the top — scroll up.
+        else if (bottom > viewport - margin)
+            delta = bottom - (viewport - margin); // Spills past the bottom — scroll down.
+
+        if (delta === 0)
+            return;
+
+        const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        window.scrollBy({ top: delta, behavior: reduce ? "auto" : "smooth" });
+    });
+}
+
 // Resolves once getter() returns a truthy value (an element that has rendered/an async fetch that has
 // landed), polling on animation frames. Resolves with null after the timeout so a missing target degrades
 // gracefully (the replay walkthrough in particular may run against a deck that doesn't have every element).
@@ -132,15 +175,31 @@ function tutRunTour(steps, extraConfig)
     let driverObj;
     const driverSteps = steps.map((s, i) => {
         const isLast = i === steps.length - 1;
-        return {
+        let boxPopup = null;
+        const step = {
             element: s.element,
-            // onBeforeHighlight runs the instant the step starts rendering (before the 0.2s move/fade),
-            // so a box we open here is already visible while the popover points at it — not after Next.
             onHighlightStarted: s.onBeforeHighlight ? () => s.onBeforeHighlight(driverObj) : undefined,
-            onHighlighted: s.onHighlighted ? () => s.onHighlighted(driverObj) : undefined,
+            onHighlighted: () => {
+                if (s.onHighlighted)
+                    s.onHighlighted(driverObj);
+                // A step may open a select box purely for display (openBox). We do it here — after Driver
+                // has actually rendered and positioned the popover — then float the list on the side of the
+                // button OPPOSITE to where the popover landed, so the two never overlap on any viewport.
+                if (s.openBox)
+                    boxPopup = tutOpenBoxForDisplay(s.openBox);
+                // A floated box popup is position:fixed; a corrective scroll would slide the button out from
+                // under it, so only keep widget+popover framed for ordinary (non-box) steps.
+                else
+                    tutEnsureBothInView(s.element);
+            },
             // onDeselected fires on every way out of a step (Next, Prev, ×, Esc, destroy), so it's the
             // reliable place to tear down per-step side effects like an opened select box.
-            onDeselected: s.onDeselected ? () => s.onDeselected(driverObj) : undefined,
+            onDeselected: () => {
+                if (s.openBox)
+                    tutCloseBox(boxPopup);
+                if (s.onDeselected)
+                    s.onDeselected(driverObj);
+            },
             popover: {
                 title: s.title || "",
                 description: s.description || "",
@@ -148,7 +207,9 @@ function tutRunTour(steps, extraConfig)
                 align: s.align || "center",
                 popoverClass: "tutorial-popover",
                 showButtons: s.showButtons || ["next", "close"],
-                nextBtnText: isLast ? (lc.tutorial_done || "Done") : (lc.tutorial_next || "Next"),
+                // A step can force its own label (e.g. a single-step tour that hands off to another tour
+                // still wants "Next", not the "Done" that isLast would otherwise pick).
+                nextBtnText: s.nextBtnText || (isLast ? (lc.tutorial_done || "Done") : (lc.tutorial_next || "Next")),
                 onNextClick: () => {
                     const advance = s.onNext ? s.onNext(driverObj) : true;
                     if (advance === false)
@@ -160,12 +221,14 @@ function tutRunTour(steps, extraConfig)
                 },
             },
         };
+        return step;
     });
 
     driverObj = factory(Object.assign({
         allowClose: true,
         overlayOpacity: 0.6,
         stagePadding: 6,
+        smoothScroll: true,
         onCloseClick: () => {
             driverObj.destroy();
             tutFinish();
@@ -194,12 +257,20 @@ function tutHighlightUserClick(element, title, description, side, nextStep)
 
 // Opens a button-triggered popup (language / theme / character-variant select) purely for display, by
 // calling its registered popup controller's open() directly — more reliable than synthesizing a click,
-// which doesn't open every select. Two things make the open box actually visible during a Driver tour:
-//   - z-index: the popups live at z-index 50, but Driver's dim overlay sits at 10000, so without this the
-//     opened box renders *underneath* the overlay (looks like it never opened). We lift it between the
-//     overlay (10000) and the Driver popover (1e9) so the box shows over the dimming but under the popover.
-//   - pointer-events: disabled so its contents can't be clicked/changed during the tour.
-// Returns the popup element so it can be restored/closed later.
+// which doesn't open every select.
+//
+// The theme popup opens fine during a tour but the language/variant ones didn't, and the reason is where
+// each popup lives. The theme popup is mounted on document.body as position:fixed, so it sits in the root
+// stacking context and a high z-index lifts it cleanly above Driver's dim overlay (z-index 10000). The
+// language/variant popups (createCustomSelect) are position:absolute *inside* a .card; .card uses
+// content-visibility:auto, which establishes a stacking context and paint-clips its descendants — so the
+// opened popup is trapped beneath the overlay and clipped no matter how high its z-index, and it also only
+// ever opens upward (no flip), which can push it off-screen at the tour's scroll position.
+//
+// Rather than fight the card's containment, we make every box behave like the theme one: float the opened
+// popup onto document.body as position:fixed anchored to its button (above it, or below when there isn't
+// room), lift it between the overlay (10000) and the Driver popover (1e9), and disable pointer-events so
+// its contents can't be changed mid-tour. tutCloseBox puts it all back. Returns the popup element.
 const TUT_BOX_Z_INDEX = "100000000";
 function tutOpenBoxForDisplay(buttonId)
 {
@@ -210,28 +281,125 @@ function tutOpenBoxForDisplay(buttonId)
         if (controller.button === button)
         {
             controller.open();
-            controller.popup.style.pointerEvents = "none";
-            controller.popup.style.zIndex = TUT_BOX_Z_INDEX;
+            tutFloatPopup(controller.popup, button);
             return controller.popup;
         }
     return null;
 }
 
-// Restores a popup opened by tutOpenBoxForDisplay and closes it through its controller so its button's
-// aria state stays correct — and, crucially, so pointer events work normally again after the tutorial.
+// Floats an opened popup onto document.body as position:fixed so it clears Driver's overlay, and anchors
+// it to the side of its button OPPOSITE the Driver popover so the two never overlap. We decide the side
+// reactively — by measuring where Driver actually rendered .driver-popover for this step — instead of
+// guessing from free space, because Driver may auto-flip and its choice varies with viewport; reading the
+// real popover position is the only thing that stays correct on both phone and desktop. Both popup kinds
+// (the body-mounted theme popup and the card-nested language/variant popups) centre horizontally via the
+// shared `.list-select-popup` CSS transform: translate(-50%), so we keep left = button-centre and never
+// touch transform. The pristine inline style and DOM position are stashed so tutCloseBox can restore, and
+// a scroll/resize listener re-anchors the fixed popup if the page moves under it during the step.
+function tutFloatPopup(popup, button)
+{
+    if (popup.parentElement === document.body)
+        popup.tutRestore = { onBody: true, cssText: popup.style.cssText };
+    else
+    {
+        popup.tutRestore = { parent: popup.parentElement, next: popup.nextSibling, cssText: popup.style.cssText };
+        document.body.appendChild(popup);
+    }
+
+    // Place the list on whichever side of the button the popover is NOT on (popover below -> list above).
+    // Fall back to the side with more room if no popover is present (shouldn't happen for openBox steps).
+    const bRect = button.getBoundingClientRect();
+    const popover = document.querySelector(".driver-popover");
+    if (popover)
+    {
+        const pRect = popover.getBoundingClientRect();
+        popup.tutPlaceAbove = (pRect.top + pRect.bottom) / 2 >= (bRect.top + bRect.bottom) / 2;
+    }
+    else
+        popup.tutPlaceAbove = bRect.top > (window.innerHeight - bRect.bottom);
+
+    popup.style.position = "fixed";
+    popup.style.zIndex = TUT_BOX_Z_INDEX;
+    popup.style.pointerEvents = "none";
+    popup.tutAnchorButton = button;
+    tutAnchorFloatedPopup(popup);
+
+    popup.tutReflow = () => tutAnchorFloatedPopup(popup);
+    window.addEventListener("scroll", popup.tutReflow, true);
+    window.addEventListener("resize", popup.tutReflow);
+}
+
+// Positions an already-floated popup against its button on the chosen side, capping its height to the room
+// available there (the inner .list-select-list scrolls) so the list always fits within the viewport and
+// stays clear of both the button and the popover on the far side. Re-run on scroll/resize.
+function tutAnchorFloatedPopup(popup)
+{
+    const button = popup.tutAnchorButton;
+    if (!button)
+        return;
+    const GAP = 8;
+    const b = button.getBoundingClientRect();
+    const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const room = popup.tutPlaceAbove ? b.top - 2 * GAP : window.innerHeight - b.bottom - 2 * GAP;
+    popup.style.maxHeight = `${Math.min(22 * remPx, Math.max(0, room))}px`;
+
+    // The popup centres on this x via the shared `.list-select-popup` transform: translate(-50%); clamp the
+    // centre so a button near a screen edge can't push the list off-screen.
+    const half = popup.offsetWidth / 2;
+    const centre = Math.max(GAP + half, Math.min(b.left + b.width / 2, window.innerWidth - GAP - half));
+    popup.style.left = `${centre}px`;
+    if (popup.tutPlaceAbove)
+    {
+        popup.style.bottom = `${window.innerHeight - b.top + GAP}px`;
+        popup.style.top = "auto";
+    }
+    else
+    {
+        popup.style.top = `${b.bottom + GAP}px`;
+        popup.style.bottom = "auto";
+    }
+}
+
+// Restores a popup opened by tutOpenBoxForDisplay: closes it through its controller so the button's aria
+// state stays correct, then undoes the float (back to its original parent and pristine inline style) so
+// it behaves normally again after the tutorial.
 function tutCloseBox(popup)
 {
     if (!popup)
         return;
-    popup.style.pointerEvents = "";
-    popup.style.zIndex = "";
     for (const controller of window.youyinPopupControllers)
         if (controller.popup === popup)
         {
             controller.close();
+            tutUnfloatPopup(popup);
             return;
         }
     popup.classList.remove("open");
+    tutUnfloatPopup(popup);
+}
+
+function tutUnfloatPopup(popup)
+{
+    if (popup.tutReflow)
+    {
+        window.removeEventListener("scroll", popup.tutReflow, true);
+        window.removeEventListener("resize", popup.tutReflow);
+    }
+    delete popup.tutReflow;
+    delete popup.tutAnchorButton;
+    delete popup.tutPlaceAbove;
+
+    const restore = popup.tutRestore;
+    if (!restore)
+    {
+        popup.style.pointerEvents = "";
+        popup.style.zIndex = "";
+        return;
+    }
+    if (!restore.onBody && restore.parent)
+        restore.parent.insertBefore(popup, restore.next);
+    popup.style.cssText = restore.cssText;
+    delete popup.tutRestore;
 }
 
 // ---------------------------------------------------------------------------------------------------------

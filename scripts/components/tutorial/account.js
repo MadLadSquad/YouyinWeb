@@ -9,11 +9,9 @@ async function tutRunAccount()
 {
     await tutWaitFor(() => $("profile-card"));
 
-    // Opened language/theme popups are restored when leaving their step. disableActiveInteraction keeps the
-    // highlighted controls (and the opened lists) unclickable, and a lighter overlay keeps the lists legible.
-    let languagePopup = null;
-    let themePopup = null;
-
+    // disableActiveInteraction keeps the highlighted controls (and the opened lists) unclickable, and a
+    // lighter overlay keeps the lists legible. The openBox steps float the list and place the popover on the
+    // opposite side of the button so it never covers the list.
     tutRunTour([
         {
             element: "#profile-card",
@@ -37,19 +35,13 @@ async function tutRunAccount()
             element: "#lang-select-account",
             title: lc.tutorial_account_language_title,
             description: lc.tutorial_account_language,
-            // Anchor to the side: the opened list expands vertically, so a top/bottom popover would overlap
-            // it (the Driver popover sits at a very high z-index and would cover the list).
-            side: "left",
-            onBeforeHighlight: () => { languagePopup = tutOpenBoxForDisplay("lang-select-account"); },
-            onDeselected: () => tutCloseBox(languagePopup),
+            openBox: "lang-select-account",
         },
         {
             element: "#theme-button-account",
             title: lc.tutorial_account_theme_title,
             description: lc.tutorial_account_theme,
-            side: "right",
-            onBeforeHighlight: () => { themePopup = tutOpenBoxForDisplay("theme-button-account"); },
-            onDeselected: () => tutCloseBox(themePopup),
+            openBox: "theme-button-account",
         },
         {
             element: "#replay-tutorial-button",

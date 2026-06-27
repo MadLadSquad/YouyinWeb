@@ -50,7 +50,6 @@ async function tutRunCreateCard()
 {
     await tutWaitFor(() => $("character-text-field-0"));
 
-    let variantPopup = null;
     tutRunTour([
         {
             element: "#input-mode",
@@ -79,9 +78,7 @@ async function tutRunCreateCard()
             element: "#character-variant-box-0",
             title: lc.tutorial_card_variant_title,
             description: lc.tutorial_card_variant,
-            side: "bottom",
-            onBeforeHighlight: () => { variantPopup = tutOpenBoxForDisplay("character-variant-box-0"); },
-            onDeselected: () => tutCloseBox(variantPopup),
+            openBox: "character-variant-box-0",
         },
         {
             element: "#character-preview-0",

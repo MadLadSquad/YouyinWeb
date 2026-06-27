@@ -12,6 +12,28 @@
 
 function tutFirstEditButton() { return document.querySelector('[id^="card-edit-button-"]'); }
 
+// The deck is virtualized: block heights start as estimates and only become real as blocks hydrate on
+// scroll, so the document grows as we descend. A one-shot scroll to scrollHeight aims at the stale
+// (smaller) estimate and stops short of the true bottom, so the last block — where a just-added card
+// lands — never enters the hydrate margin and never renders. Re-issue the scroll until the height stops
+// changing AND we've actually reached the bottom, so the trailing block reliably hydrates.
+async function tutScrollToBottomStable(timeout = 8000)
+{
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const start = Date.now();
+    let last = -1, stable = 0;
+    while (Date.now() - start < timeout)
+    {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: reduce ? "auto" : "smooth" });
+        await tutDelay(200);
+        const h = document.body.scrollHeight;
+        stable = (h === last) ? stable + 1 : 0;
+        last = h;
+        if (stable >= 2 && window.scrollY + window.innerHeight >= h - 4)
+            break;
+    }
+}
+
 // Finds a rendered card by its original index in profileData.cards (the deck virtualizer stamps that onto
 // each card's edit button as arbitrary-data), then returns the enclosing card container.
 function tutFindCardByDeckIndex(deckIndex)
@@ -110,7 +132,7 @@ async function tutRunCardReview()
 {
     // The new card lands at the bottom of the (virtualized) deck; nudge it into view so it hydrates.
     const deckIndex = window.profileData.cards.length - 1;
-    window.scrollTo(0, document.body.scrollHeight);
+    await tutScrollToBottomStable();
     const card = (await tutWaitFor(() => tutFindCardByDeckIndex(deckIndex))) || tutLastCharacterCard();
 
     const steps = [];
@@ -138,16 +160,39 @@ async function tutRunCardReview()
 }
 
 // Back on the deck after creating the phrase: show the phrase, then a character that belongs to it.
+// The phrase sits at the top (the phrases section precedes the characters section) and is in view on
+// entry, while the membership cards (你/好) sit at the bottom of the virtualized deck. We must NOT scroll
+// to the bottom up front: that would tear down the phrase card's virtualized block, leaving the first
+// step's popover pointing at a now-empty top of screen. So show the phrase where it already is, and only
+// after the user advances do we scroll down to reveal — and hydrate — the membership card.
 async function tutRunDeckReview()
 {
     const phraseCard = await tutWaitFor(tutFirstPhraseCard);
-    // The membership cards (你/好) sit at the bottom of the virtualized deck; nudge them into view.
-    window.scrollTo(0, document.body.scrollHeight);
+    if (!phraseCard)
+    {
+        // Degenerate (no phrase rendered); skip straight to the membership stage.
+        tutShowDeckReviewMembership();
+        return;
+    }
+
+    tutRunTour([{
+        element: phraseCard,
+        title: lc.tutorial_review_phrase_title,
+        description: lc.tutorial_review_phrase,
+        side: "top",
+        nextBtnText: lc.tutorial_next || "Next",
+        onNext: (d) => { d.destroy(); tutShowDeckReviewMembership(); return false; },
+    }]);
+}
+
+// Second half of the deck review: only now scroll to the bottom (hydrating the membership cards), then
+// point at a character that belongs to the phrase before sending the user into their first session.
+async function tutShowDeckReviewMembership()
+{
+    await tutScrollToBottomStable();
     const partOf = await tutWaitFor(tutPartOfCard);
 
     const steps = [];
-    if (phraseCard)
-        steps.push({ element: phraseCard, title: lc.tutorial_review_phrase_title, description: lc.tutorial_review_phrase, side: "top" });
     if (partOf)
         steps.push({ element: partOf, title: lc.tutorial_review_partof_title, description: lc.tutorial_review_partof, side: "left" });
     steps.push({
