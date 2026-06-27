@@ -5,6 +5,12 @@
 
 html {
     accent-color: var(--main-accent-colour);
+    /* Backstop against stray horizontal overflow on mobile. The main offender - the footer
+       language/theme popups overhanging the viewport while closed - is fixed at source by taking them
+       out of flow with display:none (see createPopupController in select-box.js); this clip just keeps
+       any other accidental sideways overflow from turning into a scroll/zoom-out. clip (not hidden)
+       avoids making <html> a scroll container and leaves vertical scrolling untouched. */
+    overflow-x: clip;
 }
 
 /* Enable view transitions across page navigations */

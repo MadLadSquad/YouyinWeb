@@ -1004,6 +1004,17 @@ function mainPageMain()
         resizeTimer = setTimeout(notify, MAIN_PAGE_RESIZE_DEBOUNCE_MS);
     });
 
+    // getDrawElementHeight sizes the start button from getBoundingClientRect reads of the header/footer
+    // chrome, but those are taken now - before the Ubuntu webfont loads and before twemoji swaps the
+    // footer's 🎨 for an <img>. Both change the chrome's measured height afterwards, leaving the button
+    // sized for stale (shorter) chrome so the landing page overflows the viewport on portrait (the
+    // "works half the time / needs a refresh" symptom noted on getDrawElementHeight). Recompute once
+    // each settles. window load also covers the deferred twemoji script having executed and its emoji
+    // images having loaded.
+    if (document.fonts && document.fonts.ready)
+        document.fonts.ready.then(notify);
+    window.addEventListener("load", notify);
+
     // Add this event to make sure to save any data if we close the tab
     window.addEventListener("beforeunload", function(_)
     {

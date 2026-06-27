@@ -15,6 +15,17 @@ window.youyinPopupControllers = [];
  */
 function createPopupController(button, popup, onOpen, onClose)
 {
+    // A closed popup keeps its box in the layout (the closed state only sets opacity/visibility, not
+    // display), and these popups are up to 80-90vw wide and centred on a footer button that drifts
+    // toward the screen edge as the footer stops wrapping on wider phones. That overhang expands the
+    // layout viewport and gives every page a spurious horizontal scroll/zoom-out on mobile. Taking the
+    // popup out of flow with display:none while closed removes that overhang entirely. We toggle
+    // display around the existing opacity/transform transition (reflow between display and .open on
+    // open; restore display:none only after the exit transition on close) so the animation still plays.
+    const TRANSITION_MS = 200;
+    let hideTimer = null;
+    popup.style.display = "none";
+
     const controller = {
         button: button,
         popup: popup,
@@ -26,6 +37,15 @@ function createPopupController(button, popup, onOpen, onClose)
                 if (other !== controller)
                     other.close();
 
+            if (hideTimer !== null)
+            {
+                clearTimeout(hideTimer);
+                hideTimer = null;
+            }
+            popup.style.display = "";
+            // Force a reflow so the closed state is the transition's start frame, then animate open.
+            // onOpen below measures the popup (clampPopupHorizontally), which needs it laid out first.
+            void popup.offsetWidth;
             popup.classList.add("open");
             button.setAttribute("aria-expanded", "true");
             if (onOpen)
@@ -37,6 +57,13 @@ function createPopupController(button, popup, onOpen, onClose)
                 return;
             popup.classList.remove("open");
             button.setAttribute("aria-expanded", "false");
+            // Pull the popup back out of flow once it has finished animating shut, so it stops
+            // widening the page again. Guard against a re-open during the wait.
+            hideTimer = setTimeout(() => {
+                hideTimer = null;
+                if (!controller.isOpen())
+                    popup.style.display = "none";
+            }, TRANSITION_MS + 50);
             if (onClose)
                 onClose();
         },
