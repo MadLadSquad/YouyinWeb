@@ -1,5 +1,5 @@
 localhost-commands:
-  - "find ./ -type f \\( -iname \\*.html -o -iname \\*.js \\) -exec sed -i 's/\\.\\//http:\\/\\/0.0.0.0:8080\\//g' {} \\;"
+  - 'SED=$(command -v gsed || command -v sed); FIND=$(command -v gfind || command -v find); "$FIND" ./ -type f \( -iname "*.html" -o -iname "*.js" \) -exec "$SED" -i "s|\./|http://127.0.0.1:8080/|g" {} +'
   - "python3 -m http.server 8080"
 allowed-extensions:
   - html
