@@ -3,8 +3,6 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![Discord](https://img.shields.io/discord/717037253292982315.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/4wgH8ZE)
 
-![image](https://github.com/MadLadSquad/YouyinWeb/assets/40400590/6128676b-53e8-4e17-a5ed-f5fa44d4dc06)
-
 The source code for the youyin(卣囙/yǒuyīn) website.
 
 ## About Youyin
@@ -38,4 +36,3 @@ This project uses the following third party libraries:
 
 Additionally, we want to thank the following contributors for helping with translating the project into multiple languages:
 1. [Hristian Rusev](https://github.com/ProHunter67BG) for providing German translations
-1. [Neyko Naydenov](https://github.com/Neyko641) for providing Japanese translations
