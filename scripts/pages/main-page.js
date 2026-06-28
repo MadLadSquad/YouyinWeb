@@ -76,13 +76,25 @@ const MAIN_PAGE_RESIZE_DEBOUNCE_MS = 200;
  * The number of cards (or phrases) that may be revised in the current session. The cards and
  * phrases arrays are shuffled before each session and never resized mid-session, so capping the
  * length to window.MAX_SESSION_REVISION_ITEMS limits revision to a stable, random subset of the
- * deck. Pass the cards array to cap cards and the phrases array to cap phrases independently
+ * deck. Pass the cards array to cap cards and the phrases array to cap phrases independently.
+ *
+ * When the deck has fewer phrases than window.MAX_SESSION_REVISION_ITEMS, the unused phrase slots
+ * are donated to the card cap so a session still revises a full batch of items. The phrase cap
+ * itself always stays at window.MAX_SESSION_REVISION_ITEMS.
  * @param { Object[] } arr - The cards or phrases array
  * @returns { number } - The capped count
  */
 function sessionRevisionCount(arr)
 {
-    return Math.min(arr.length, window.MAX_SESSION_REVISION_ITEMS);
+    let max = window.MAX_SESSION_REVISION_ITEMS;
+    if (arr === window.profileData.cards)
+    {
+        const phraseNum = window.profileData.phrases.length;
+        const remainder = window.MAX_SESSION_REVISION_ITEMS - phraseNum;
+        if (remainder > 0)
+            max += remainder;
+    }
+    return Math.min(arr.length, max);
 }
 
 // This function uses some dark magic that works half the time in order to calculate the size of the main page viewport
