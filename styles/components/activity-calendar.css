@@ -150,6 +150,29 @@
     height: var(--ac-cell-size);
 }
 
+/* Tap/click popup (see toggleActivityTooltip). One element reused by every cell, positioned in
+   viewport coordinates by JS. Themed like the rest of the site; pointer-events:none so it never
+   swallows the outside-tap that dismisses it */
+.activity-tooltip {
+    position: fixed;
+    z-index: 1000;
+    pointer-events: none;
+    max-width: 14rem;
+    padding: 0.35rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    text-align: center;
+    background: var(--main-background-colour);
+    color: var(--main-text-colour);
+    border: 1px solid var(--main-border-colour);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.activity-tooltip[hidden] {
+    display: none;
+}
+
 /* Year picker sidebar (desktop) */
 .activity-years {
     display: flex;

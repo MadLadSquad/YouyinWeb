@@ -63,6 +63,101 @@ function activityTooltip(date, count)
     return template.replace("{count}", count).replace("{date}", day);
 }
 
+// A single reusable popup tooltip shared by every cell. The native `title` attribute already covers
+// desktop hover, but touch devices can't hover — tapping a cell toggles this popup so mobile users
+// can read the same date/count. Created lazily, positioned in viewport (position:fixed) coordinates,
+// and dismissed on an outside tap, a scroll, or a resize.
+let acTooltipEl = null;
+let acTooltipCell = null;
+let acTooltipDismissersBound = false;
+
+/**
+ * Lazily creates the shared popup element and, the first time, binds the global dismiss listeners
+ * @returns { HTMLElement } - The popup element
+ */
+function acEnsureTooltip()
+{
+    if (acTooltipEl !== null)
+        return acTooltipEl;
+
+    acTooltipEl = document.createElement("div");
+    acTooltipEl.className = "activity-tooltip";
+    acTooltipEl.setAttribute("role", "tooltip");
+    acTooltipEl.hidden = true;
+    document.body.appendChild(acTooltipEl);
+
+    // Bound once: any tap outside the open cell, or a scroll/resize that moves the cell, closes the
+    // popup so it never lingers detached from the dot it describes
+    if (!acTooltipDismissersBound)
+    {
+        acTooltipDismissersBound = true;
+        document.addEventListener("pointerdown", (e) => {
+            if (acTooltipCell !== null && !acTooltipCell.contains(e.target))
+                hideActivityTooltip();
+        });
+        window.addEventListener("scroll", hideActivityTooltip, true);
+        window.addEventListener("resize", hideActivityTooltip);
+    }
+
+    return acTooltipEl;
+}
+
+/**
+ * Hides the shared popup and forgets which cell owned it
+ */
+function hideActivityTooltip()
+{
+    if (acTooltipEl !== null)
+        acTooltipEl.hidden = true;
+    acTooltipCell = null;
+}
+
+/**
+ * Shows the shared popup for a cell. Centred above the cell, flipped below and clamped horizontally
+ * when there's no room — all in viewport coordinates since the popup is position:fixed
+ * @param { HTMLElement } cell - The day cell to describe
+ * @param { string } text - The tooltip text
+ */
+function showActivityTooltip(cell, text)
+{
+    const tip = acEnsureTooltip();
+
+    tip.textContent = text;
+    tip.hidden = false;
+    acTooltipCell = cell;
+
+    // Measure after it's visible and filled, so width/height reflect the actual text
+    const cellRect = cell.getBoundingClientRect();
+    const tipRect = tip.getBoundingClientRect();
+
+    let left = cellRect.left + cellRect.width / 2 - tipRect.width / 2;
+    left = Math.max(4, Math.min(left, window.innerWidth - tipRect.width - 4));
+
+    let top = cellRect.top - tipRect.height - 6;
+    if (top < 4)
+        top = cellRect.bottom + 6; // no room above — flip below the cell
+
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+}
+
+/**
+ * Shows the popup for a cell, or hides it when that same cell's popup is already open (tap to
+ * toggle). Used for touch taps; mouse hover uses showActivityTooltip / hideActivityTooltip directly
+ * @param { HTMLElement } cell - The day cell that was tapped/clicked
+ * @param { string } text - The tooltip text
+ */
+function toggleActivityTooltip(cell, text)
+{
+    if (acTooltipCell === cell && acTooltipEl !== null && !acTooltipEl.hidden)
+    {
+        hideActivityTooltip();
+        return;
+    }
+
+    showActivityTooltip(cell, text);
+}
+
 /**
  * Splits a calendar year into week columns (the layout unit of the grid). Each week is a 7-slot
  * array indexed by getDay() (0 = Sunday .. 6 = Saturday); slots outside the rendered range are null
@@ -118,6 +213,7 @@ function activityWeeksForYear(year, activity)
 function buildActivityGraph(graph, year, activity)
 {
     graph.replaceChildren();
+    hideActivityTooltip(); // close any open popup whose cell we're about to detach
     const weeks = activityWeeksForYear(year, activity);
 
     // Top-left spacer keeps the month row aligned with the cells and the weekday column aligned with
@@ -168,8 +264,24 @@ function buildActivityGraph(graph, year, activity)
             }
             else
             {
+                const text = activityTooltip(day.date, day.count);
                 cell.setAttribute("data-level", activityLevel(day.count));
-                cell.title = activityTooltip(day.date, day.count);
+
+                // The themed popup serves both inputs: mouse hover shows/hides it, while a tap
+                // toggles it for touch users (who can't hover). pointerenter/leave are filtered to
+                // mouse so a touch tap doesn't both hover-show and click-toggle, cancelling out.
+                // aria-label keeps the date/count available to assistive tech without the OS title
+                // tooltip duplicating our popup
+                cell.setAttribute("aria-label", text);
+                cell.addEventListener("pointerenter", (e) => {
+                    if (e.pointerType === "mouse")
+                        showActivityTooltip(cell, text);
+                });
+                cell.addEventListener("pointerleave", (e) => {
+                    if (e.pointerType === "mouse")
+                        hideActivityTooltip();
+                });
+                cell.addEventListener("click", () => toggleActivityTooltip(cell, text));
             }
         }
     }
