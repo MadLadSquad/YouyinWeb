@@ -2,6 +2,15 @@
    level-reduce range slider. Colours come from the theme custom properties injected by theme.js
    (see base.css). */
 
+/* The activity heatmap is its own full-width block below the profile/settings card grid, rather than
+   a third cell squeezed into .deck's auto-fit columns. Match .deck's inline padding and row gap so it
+   lines up with the cards above it */
+#activity-section {
+    margin-top: 0.5rem;
+    padding-inline: 0.5rem;
+    box-sizing: border-box;
+}
+
 /* Modifiers section inside the profile statistics card */
 .modifiers-container {
     display: flex;

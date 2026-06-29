@@ -177,6 +177,8 @@ translations:
     text: "Character cards"
   - id: clear_deck_confirm_text
     text: "Are you sure you want to DELETE the current deck, THIS CANNOT BE UNDONE! Export your data to save it just in case!"
+  - id: clear_account_confirm_text
+    text: "Are you sure you want to DELETE ALL of your account data - your decks, sessions, streak and game modifiers? THIS CANNOT BE UNDONE! Export your data first if you want to keep it!"
   - id: streak_days_count
     text: "{streak}{streak_days}"
     switch:
@@ -265,7 +267,9 @@ translations:
   - id: tutorial_finish
     text: "Finish"
   - id: tutorial_replay_button
-    text: "🗘 Replay tutorial"
+    text: "Replay tutorial"
+  - id: clear_account_button
+    text: "Clear account data"
   - id: tutorial_intro_title
     text: "Welcome to {brand}"
   - id: tutorial_intro_body
@@ -424,3 +428,23 @@ translations:
     text: "Replay this tutorial"
   - id: tutorial_account_replay
     text: "Ever need a refresher? This button restarts the whole tutorial whenever you like."
+  - id: tutorial_account_clear_title
+    text: "Clear account data"
+  - id: tutorial_account_clear
+    text: "Need to start from a clean slate? This wipes everything - your decks, sessions, streak and game modifiers - and cannot be undone, so export anything you want to keep first."
+  - id: tutorial_account_activity_title
+    text: "Your activity"
+  - id: tutorial_account_activity
+    text: "Every revision session you finish fills in a day on this calendar - the more you practise, the brighter it gets. Pick a year on the side to look back."
+  - id: activity_calendar_header
+    text: "Activity"
+  - id: activity_legend_less
+    text: "Less"
+  - id: activity_legend_more
+    text: "More"
+  - id: activity_tooltip
+    text: "{count} revision rounds on {date}"
+  - id: activity_tooltip_one
+    text: "1 revision round on {date}"
+  - id: activity_tooltip_none
+    text: "No revision round on {date}"

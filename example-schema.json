@@ -5,6 +5,11 @@
    "lastStreakDay":19651,
    "lastLevelReduceDay":19651,
    "totalTimeInSessions":3283889,
+   "activityByDay":{
+      "19649":1,
+      "19650":3,
+      "19651":2
+   },
    "cards":[
       {
          "name":"qiān",

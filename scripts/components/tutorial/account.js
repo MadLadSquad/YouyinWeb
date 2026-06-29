@@ -44,6 +44,18 @@ async function tutRunAccount()
             openBox: "theme-button-account",
         },
         {
+            element: "#activity-calendar-card",
+            title: lc.tutorial_account_activity_title,
+            description: lc.tutorial_account_activity,
+            side: "top",
+        },
+        {
+            element: "#clear-account-button",
+            title: lc.tutorial_account_clear_title,
+            description: lc.tutorial_account_clear,
+            side: "top",
+        },
+        {
             element: "#replay-tutorial-button",
             title: lc.tutorial_account_replay_title,
             description: lc.tutorial_account_replay,

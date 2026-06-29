@@ -662,6 +662,23 @@ function blinkCounter(counterEl)
     counterEl.addEventListener("animationend", () => counterEl.classList.remove("counter-blink"), { once: true });
 }
 
+/**
+ * Records one completed revision session against today's local calendar day for the activity
+ * calendar on the account page. Keyed by the same timezone-independent localDayIndex the streak
+ * uses, so a flat day -> count map covers any number of years and slices per-year trivially. Like
+ * updateDailyStreak this does NOT save — the completion path in main-page.js calls saveProfileData
+ * right after
+ */
+function recordSessionActivity()
+{
+    let data = window.profileData;
+    if (!data.activityByDay)
+        data.activityByDay = {};
+
+    const day = localDayIndex(new Date());
+    data.activityByDay[day] = (data.activityByDay[day] || 0) + 1;
+}
+
 // Madman10K: This function is fucking depressing I want to kill myself by just thinking that I have to modify anything here
 async function writerOnComplete(_)
 {
@@ -854,6 +871,10 @@ async function writerOnComplete(_)
     // saveProfileData call below. Starting or extending a streak gets a little celebration,
     // played on the streak slide itself from inside showFinishedSessionPage
     const bStreakAdvanced = updateDailyStreak();
+
+    // Tally this completed session against today for the account-page activity calendar. Also
+    // persisted by the saveProfileData call below
+    recordSessionActivity();
 
     showFinishedSessionPage(st, bStreakAdvanced);
 

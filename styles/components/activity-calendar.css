@@ -1,0 +1,204 @@
+/* Account page activity heatmap (see scripts/components/activity-calendar.js). All colours come from
+   the theme custom properties injected by theme.js, so the grid retints automatically — with the
+   400ms theme-transition fade — when the user switches theme. The intensity scale is built with
+   color-mix (already used elsewhere, e.g. char-loading.css) so no JS colour maths is needed. */
+
+.activity-calendar {
+    /* Single source of truth for cell geometry — the month row, weekday column and cells all key
+       off these so everything stays aligned */
+    --ac-cell-size: 12px;
+    --ac-cell-gap: 3px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 1rem;
+    width: 100%;
+}
+
+/* Grid + legend stack — grows to take all the width left by the year sidebar */
+.activity-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1 1 auto;
+    min-width: 0; /* allow the strip to shrink inside the flex row instead of overflowing */
+}
+
+/* Scroll strip: the grid fills this by default; only when the min cell width can't fit (narrow
+   phones) does the grid grow past it and this scrolls horizontally instead of shrinking further */
+.activity-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 2x2: [corner][months] / [weekdays][cells]. The 1fr cells column stretches the week columns to use
+   the available width, but each column is capped at --ac-cell-size (see .activity-week), so the grid
+   only grows to its natural size. width:fit-content makes the grid take exactly that — filling the
+   container up to the natural size and then centring (margin-inline:auto) instead of ballooning the
+   squares — and shrink to fit below it. Only when it can't fit even at the min cell width does it
+   exceed the strip, which then scrolls */
+.activity-graph {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 6px;
+    row-gap: 4px;
+    width: fit-content;
+    margin-inline: auto;
+}
+
+.activity-corner { grid-column: 1; grid-row: 1; }
+.activity-months { grid-column: 2; grid-row: 1; }
+.activity-weekdays { grid-column: 1; grid-row: 2; }
+.activity-cells { grid-column: 2; grid-row: 2; }
+
+/* Month labels: one slot per week column, stretching in lockstep with the cells below (same flex
+   sizing + gap + count) so a label stays above the week its month starts in at any width. Labels
+   overflow their slot to the right without nudging neighbours */
+.activity-months {
+    display: flex;
+    gap: var(--ac-cell-gap);
+}
+
+.activity-month-slot {
+    flex: 1 1 0;
+    min-width: 6px;
+    max-width: var(--ac-cell-size);
+    font-size: 0.7rem;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: visible;
+    color: var(--deck-card-text-colour);
+}
+
+/* Weekday labels down the left, aligned to the cell rows (matching height + gap) */
+.activity-weekdays {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ac-cell-gap);
+}
+
+/* Each label shares the row height equally (flex: 1) so it tracks the now-flexible cell rows,
+   instead of a fixed height that would drift once the cells grow with the container */
+.activity-weekday {
+    flex: 1 1 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    color: var(--deck-card-text-colour);
+}
+
+/* Cells, laid out as a row of week columns that stretch to fill the width */
+.activity-cells {
+    display: flex;
+    gap: var(--ac-cell-gap);
+}
+
+/* Week columns fill the available width, but only up to the original cell size (--ac-cell-size): the
+   grid expands to use free space without the squares ballooning on wide desktops, and shrinks toward
+   the min before the strip ever needs to scroll */
+.activity-week {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ac-cell-gap);
+    flex: 1 1 0;
+    min-width: 6px;
+    max-width: var(--ac-cell-size);
+}
+
+/* Square cells that fill their week column: width follows the flexible column, aspect-ratio keeps
+   them square so they grow/shrink with the available width */
+.activity-cell {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 3px;
+    box-sizing: border-box;
+    transition: background-color 0.4s ease;
+}
+
+/* Days outside the rendered year hold their space but stay invisible */
+.activity-cell-empty {
+    visibility: hidden;
+}
+
+/* Intensity scale: empty days are a faint border tint; active days ramp the accent colour over the
+   background. Because these reference the theme variables, switching theme recolours every cell */
+.activity-cell[data-level="0"] { background: color-mix(in srgb, var(--main-border-colour) 35%, var(--main-background-colour)); }
+.activity-cell[data-level="1"] { background: color-mix(in srgb, var(--main-accent-colour) 25%, var(--main-background-colour)); }
+.activity-cell[data-level="2"] { background: color-mix(in srgb, var(--main-accent-colour) 50%, var(--main-background-colour)); }
+.activity-cell[data-level="3"] { background: color-mix(in srgb, var(--main-accent-colour) 75%, var(--main-background-colour)); }
+.activity-cell[data-level="4"] { background: var(--main-accent-colour); }
+
+/* Less [][][][][] More */
+.activity-legend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--deck-card-text-colour);
+}
+
+.activity-legend-label {
+    margin: 0 2px;
+}
+
+.activity-legend-swatch {
+    width: var(--ac-cell-size);
+    height: var(--ac-cell-size);
+}
+
+/* Year picker sidebar (desktop) */
+.activity-years {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 0 0 auto;
+}
+
+.activity-year-button {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid var(--main-border-colour);
+    background: var(--main-background-colour);
+    color: var(--main-text-colour);
+    border-radius: 6px;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.activity-year-button:hover {
+    border-color: var(--main-accent-colour);
+    color: var(--main-accent-colour);
+}
+
+.activity-year-button.active {
+    background: var(--main-accent-colour);
+    border-color: var(--main-accent-colour);
+    color: var(--main-background-colour);
+}
+
+/* On phones: stack the year picker above the grid as a wrapping/scrollable row, and let the grid
+   itself scroll horizontally inside .activity-scroll */
+@media (max-width: 700px) {
+    .activity-calendar {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .activity-years {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        overflow-x: auto;
+    }
+}

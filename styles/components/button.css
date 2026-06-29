@@ -12,10 +12,20 @@
     margin-top: 12px;
     margin-bottom: 12px;
 
-    display: inline-block;
-    padding: 6px 12px;
+    /* inline-flex + a shared min-height keeps every button the same height regardless of its label, so
+       a tall emoji glyph (e.g. 🗘) or a different font size can no longer make one button taller than
+       its neighbour; align-items/justify-content keep the text centred. The min-height is deliberately
+       on the small side. Stylized buttons opt out: .large-button-text outgrows the min-height via its
+       bigger font, and .small-button (the +/- controls) resets it below. */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 32px;
+    padding: 4px 12px;
     text-align: center;
     vertical-align: middle;
+    line-height: 1.2;
     user-select: none;
     -webkit-user-select: none;
     background-image: none;
@@ -62,6 +72,26 @@
     background-color: var(--deck-button-active-colour);
 }
 
+/* Destructive actions (clearing the deck, deleting a card/phrase, wiping all account data). Layered
+   on top of .card-button-edit, it just swaps in a warning-red palette so the button reads as dangerous
+   regardless of the active theme. These rules come after .card-button-edit's, so at equal specificity
+   they win on source order. */
+.card-button-danger {
+    color: #ffffff;
+    background-color: #c0392b;
+}
+
+.card-button-danger:hover {
+    color: #ffffff;
+    background-color: #a93226;
+    border-color: #a93226;
+}
+
+.card-button-danger:active {
+    border-color: #c0392b;
+    background-color: #a93226;
+}
+
 /* Some buttons, like the start button may require large text*/
 .large-button-text {
     font-size: 32px;
@@ -74,9 +104,11 @@ button {
     -webkit-appearance: button;
 }
 
-/* Make small buttons smaller */
+/* Make small buttons smaller. These (the +/- meaning-list controls) are intentionally exempt from the
+   shared button height, so drop the min-height back to content size. */
 .small-button {
     padding: 0 5px;
     margin-top: 0;
     margin-bottom: 0;
+    min-height: 0;
 }

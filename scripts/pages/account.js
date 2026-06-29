@@ -75,18 +75,45 @@ function setupGameModifiers()
 }
 
 /**
+ * Wipes every trace of the user's account from storage — the profile (decks, sessions, streak,
+ * time spent) and the game modifiers — then reloads so main() reinitializes a clean set of defaults.
+ * Guarded behind a confirm() because it is irreversible. The legacy localStorage copies are dropped
+ * too so a stale one isn't re-migrated back into IndexedDB on the next load.
+ */
+function clearAccountData()
+{
+    if (!confirm(lc.clear_account_confirm_text))
+        return;
+
+    window.localStorage.removeItem(window.YOUYIN_CARD_DATA_KEY);
+    window.localStorage.removeItem(window.YOUYIN_GAME_MODIFIERS_KEY);
+
+    // Await both deletes (idbDelete returns a promise) before reloading, otherwise the page teardown
+    // can abort the transactions mid-flight and leave data behind
+    Promise.all([
+        idbDelete(window.YOUYIN_CARD_DATA_KEY),
+        idbDelete(window.YOUYIN_GAME_MODIFIERS_KEY),
+    ]).then(() => document.location.reload());
+}
+
+/**
  * Main function for the account page
  */
 function accountmain()
 {
     setProfileCardData();
     setupGameModifiers();
+    renderActivityCalendar("activity-calendar-container");
 
     // Replay the onboarding tutorial (highlight-only walkthrough). youyinStartTutorialReplay is defined by
     // scripts/components/tutorial.js, which loads from the shared footer before this page script
     const replayButton = $("replay-tutorial-button");
     if (replayButton && window.youyinStartTutorialReplay)
         replayButton.addEventListener("click", () => window.youyinStartTutorialReplay());
+
+    const clearButton = $("clear-account-button");
+    if (clearButton)
+        clearButton.addEventListener("click", clearAccountData);
 }
 
 // The profile card and modifiers only need the profile data (sessions, cards, modifiers), not the

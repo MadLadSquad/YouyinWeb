@@ -380,6 +380,7 @@ async function main()
             totalTimeInSessions: 0,
             cards: [],
             phrases: [],
+            activityByDay: {},
         }
         saveProfileData(window.profileData);
     }
@@ -399,6 +400,14 @@ async function main()
         window.profileData["lastStreakDay"] = last !== 0
             ? Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000)
             : 0;
+        saveProfileData(window.profileData);
+    }
+
+    // Users from before the activity-calendar feature: start the per-day history empty (no
+    // historical play-day data exists to backfill — only aggregate totals were ever stored)
+    if (window.profileData["activityByDay"] === undefined)
+    {
+        window.profileData["activityByDay"] = {};
         saveProfileData(window.profileData);
     }
 

@@ -17,9 +17,16 @@
     color: var(--main-text-colour);
     font-family: inherit;
     font-size: 18px;
-    line-height: inherit;
+    line-height: 1.2;
+    /* Match the shared button height (see .card-button-edit's min-height) so the language/theme pickers
+       line up with the card buttons. inline-flex centring keeps the height independent of the label,
+       including the 🎨 emoji on the theme button. */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
-    padding: 2px 8px;
+    min-height: 32px;
+    padding: 0 10px;
     margin-inline: 0.33rem;
     cursor: pointer;
 }

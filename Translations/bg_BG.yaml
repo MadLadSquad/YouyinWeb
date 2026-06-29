@@ -177,6 +177,8 @@ translations:
     text: "Карти за символи"
   - id: clear_deck_confirm_text
     text: "Сигурни ли сте, че искате да ИЗТРИЕТЕ сегашното си тесте? ТОВА НЕ МОЖЕ ДА БЪДЕ ОТМЕНЕНО! Препоръчително е да запазите данните си за всеки случай!"
+  - id: clear_account_confirm_text
+    text: "Сигурни ли сте, че искате да ИЗТРИЕТЕ ВСИЧКИ данни на акаунта си - тестета, сесии, серия и модификатори на играта? ТОВА НЕ МОЖЕ ДА БЪДЕ ОТМЕНЕНО! Първо запазете данните си, ако искате да ги задържите!"
   - id: streak_days_count
     text: "{streak}{streak_days}"
     switch:
@@ -264,7 +266,9 @@ translations:
   - id: tutorial_finish
     text: "Край"
   - id: tutorial_replay_button
-    text: "🗘 Повтори обучението"
+    text: "Повтори обучението"
+  - id: clear_account_button
+    text: "Изтрий данните на акаунта"
   - id: tutorial_intro_title
     text: "Добре дошли в {brand}"
   - id: tutorial_intro_body
@@ -423,3 +427,23 @@ translations:
     text: "Повтори това обучение"
   - id: tutorial_account_replay
     text: "Имате нужда от опресняване? Този бутон рестартира цялото обучение, когато пожелаете."
+  - id: tutorial_account_clear_title
+    text: "Изтрий данните на профила си"
+  - id: tutorial_account_clear
+    text: "Искате да започнете на чисто? Този бутон изтрива всичият Ви прогрес - тестета, сесии, серия и настройки. Действието не може да бъде отменено, така че първо запазете това, което искате да задържите."
+  - id: tutorial_account_activity_title
+    text: "Вашата активност"
+  - id: tutorial_account_activity
+    text: "Всяка завършена серия за упражнение запълва ден в този календар - колкото повече се упражнявате, толкова по-ярък става. Изберете година отстрани, за да погледнете назад."
+  - id: activity_calendar_header
+    text: "Активност"
+  - id: activity_legend_less
+    text: "По-малко"
+  - id: activity_legend_more
+    text: "Повече"
+  - id: activity_tooltip
+    text: "{count} серии на {date}"
+  - id: activity_tooltip_one
+    text: "1 серия на {date}"
+  - id: activity_tooltip_none
+    text: "Няма серия на {date}"

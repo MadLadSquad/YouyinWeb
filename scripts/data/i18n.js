@@ -8,6 +8,8 @@ var lc = {};
 // deck.js
 lc.import_deck_confirm_text = "{{ _ import_deck_confirm_text }}";
 lc.clear_deck_confirm_text = "{{ _ clear_deck_confirm_text }}";
+// account.js
+lc.clear_account_confirm_text = "{{ _ clear_account_confirm_text }}";
 // Singular/plural pair baked from one ui18n switch pattern; daily-streak.js picks a variant at
 // runtime and substitutes the literal {streak} placeholder with the live count
 lc.streak_days_count = "{{ _ streak_days_count {{ dict streak_days 2 }} }}"
@@ -201,3 +203,15 @@ lc.tutorial_account_theme_title = "{{ _ tutorial_account_theme_title }}";
 lc.tutorial_account_theme = "{{ _ tutorial_account_theme }}";
 lc.tutorial_account_replay_title = "{{ _ tutorial_account_replay_title }}";
 lc.tutorial_account_replay = "{{ _ tutorial_account_replay }}";
+lc.tutorial_account_clear_title = "{{ _ tutorial_account_clear_title }}";
+lc.tutorial_account_clear = "{{ _ tutorial_account_clear }}";
+lc.tutorial_account_activity_title = "{{ _ tutorial_account_activity_title }}";
+lc.tutorial_account_activity = "{{ _ tutorial_account_activity }}";
+
+// activity calendar (activity-calendar.js). The {count}/{date} placeholders survive the build and
+// are filled in at runtime
+lc.activity_legend_less = "{{ _ activity_legend_less }}";
+lc.activity_legend_more = "{{ _ activity_legend_more }}";
+lc.activity_tooltip = "{{ _ activity_tooltip }}";
+lc.activity_tooltip_one = "{{ _ activity_tooltip_one }}";
+lc.activity_tooltip_none = "{{ _ activity_tooltip_none }}";
