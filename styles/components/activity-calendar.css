@@ -5,25 +5,31 @@
 
 .activity-calendar {
     /* Single source of truth for cell geometry — the month row, weekday column and cells all key
-       off these so everything stays aligned */
-    --ac-cell-size: 12px;
-    --ac-cell-gap: 3px;
+       off these so everything stays aligned. Sized in rem so the whole grid scales with the page
+       font instead of being pinned to a pixel size. rem (not em) is deliberate: the month/weekday
+       labels carry their own smaller font-size, and an em here would resolve against that smaller
+       font, making the labels narrower/shorter than the cells and drifting out of alignment */
+    --ac-cell-size: 0.8rem;
+    --ac-cell-gap: 0.2rem;
 
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 1rem;
     width: 100%;
+    margin-bottom: 1rem; 
 }
 
-/* Grid + legend stack — grows to take all the width left by the year sidebar */
+/* Grid + legend stack. Sizes to the (natural-width) grid so the year sidebar sits directly beside
+   it rather than being pushed to the card edge; may shrink below that so the strip scrolls on
+   narrow screens instead of overflowing */
 .activity-body {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    flex: 1 1 auto;
-    min-width: 0; /* allow the strip to shrink inside the flex row instead of overflowing */
+    flex: 0 1 auto;
+    min-width: 0;
 }
 
 /* Scroll strip: the grid fills this by default; only when the min cell width can't fit (narrow
@@ -36,20 +42,16 @@
     -webkit-overflow-scrolling: touch;
 }
 
-/* 2x2: [corner][months] / [weekdays][cells]. The 1fr cells column stretches the week columns to use
-   the available width, but each column is capped at --ac-cell-size (see .activity-week), so the grid
-   only grows to its natural size. width:fit-content makes the grid take exactly that — filling the
-   container up to the natural size and then centring (margin-inline:auto) instead of ballooning the
-   squares — and shrink to fit below it. Only when it can't fit even at the min cell width does it
-   exceed the strip, which then scrolls */
+/* 2x2: [corner][months] / [weekdays][cells]. The cells are a fixed em size, so the grid takes its
+   natural width (max-content); when that exceeds the strip on narrow screens the strip scrolls
+   horizontally instead of the squares shrinking */
 .activity-graph {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto auto;
     grid-template-rows: auto auto;
-    column-gap: 6px;
-    row-gap: 4px;
-    width: fit-content;
-    margin-inline: auto;
+    column-gap: 0.4em;
+    row-gap: 0.3em;
+    width: max-content;
 }
 
 .activity-corner { grid-column: 1; grid-row: 1; }
@@ -57,18 +59,17 @@
 .activity-weekdays { grid-column: 1; grid-row: 2; }
 .activity-cells { grid-column: 2; grid-row: 2; }
 
-/* Month labels: one slot per week column, stretching in lockstep with the cells below (same flex
-   sizing + gap + count) so a label stays above the week its month starts in at any width. Labels
-   overflow their slot to the right without nudging neighbours */
+/* Month labels: one fixed-width slot per week column (same width + gap as the cells below) so a
+   label stays above the week its month starts in. Labels overflow their slot to the right without
+   nudging neighbours */
 .activity-months {
     display: flex;
     gap: var(--ac-cell-gap);
 }
 
 .activity-month-slot {
-    flex: 1 1 0;
-    min-width: 6px;
-    max-width: var(--ac-cell-size);
+    flex: 0 0 var(--ac-cell-size);
+    width: var(--ac-cell-size);
     font-size: 0.7rem;
     line-height: 1;
     white-space: nowrap;
@@ -83,10 +84,9 @@
     gap: var(--ac-cell-gap);
 }
 
-/* Each label shares the row height equally (flex: 1) so it tracks the now-flexible cell rows,
-   instead of a fixed height that would drift once the cells grow with the container */
+/* Each label matches one cell row's height so it lines up with the fixed-size cells beside it */
 .activity-weekday {
-    flex: 1 1 0;
+    height: var(--ac-cell-size);
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -101,24 +101,19 @@
     gap: var(--ac-cell-gap);
 }
 
-/* Week columns fill the available width, but only up to the original cell size (--ac-cell-size): the
-   grid expands to use free space without the squares ballooning on wide desktops, and shrinks toward
-   the min before the strip ever needs to scroll */
+/* Week columns are a fixed cell wide */
 .activity-week {
     display: flex;
     flex-direction: column;
     gap: var(--ac-cell-gap);
-    flex: 1 1 0;
-    min-width: 6px;
-    max-width: var(--ac-cell-size);
+    width: var(--ac-cell-size);
 }
 
-/* Square cells that fill their week column: width follows the flexible column, aspect-ratio keeps
-   them square so they grow/shrink with the available width */
+/* Fixed square cells sized in em, so the whole grid scales with the page font */
 .activity-cell {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 3px;
+    width: var(--ac-cell-size);
+    height: var(--ac-cell-size);
+    border-radius: 0.2em;
     box-sizing: border-box;
     transition: background-color 0.4s ease;
 }
