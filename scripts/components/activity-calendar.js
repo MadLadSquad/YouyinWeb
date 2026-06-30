@@ -311,7 +311,7 @@ function buildActivityLegend()
 /**
  * Renders the full activity calendar (grid + year sidebar) into the given container. Safe to call
  * more than once — it clears the container first. Needs only window.profileData, so the account page
- * calls it from a youyinProfileReady microtask
+ * calls it from a profileReady microtask
  * @param { string } containerId - ID of the element to render into
  */
 function renderActivityCalendar(containerId)

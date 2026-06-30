@@ -10,7 +10,7 @@
 
 // The default palette, inlined so a first visit (or a cache miss) paints correct colours without the
 // catalogue. Mirrors the "default" entry in themes-data.js — keep the two in sync.
-window.youyinDefaultTheme = {
+window.defaultTheme = {
     name: "Default",
     background: "#ffffff",
     accent: "#c87e74",
@@ -25,8 +25,8 @@ window.youyinDefaultTheme = {
 
 // localStorage keys: the chosen theme id, and a cache of its resolved palette so a return visit can
 // paint the active theme without loading the full catalogue
-window.YOUYIN_THEME_KEY = "youyinTheme";
-window.YOUYIN_THEME_PALETTE_KEY = "youyinThemePalette";
+window.THEME_KEY = "theme";
+window.THEME_PALETTE_KEY = "themePalette";
 
 // URL of this very script, captured at load time (document.currentScript is only valid during initial
 // evaluation). Used to resolve themes-data.js as a sibling, so the lazy load works regardless of the
@@ -38,16 +38,16 @@ const THEME_SCRIPT_SRC = (document.currentScript && document.currentScript.src) 
  * syncing the hanzi-writer colours (recolouring any live writer). This is the lower half of theming:
  * it needs only the palette, not the catalogue, so it works at boot from a cached palette as well as
  * from the picker. Does not persist anything.
- * @param { Object } t - A palette object (the colour fields; see youyinDefaultTheme)
+ * @param { Object } t - A palette object (the colour fields; see defaultTheme)
  * @param { string } id - The theme id, recorded on <html data-theme> as a styling hook
  */
 window.applyPalette = function (t, id)
 {
-    let style = document.getElementById("youyin-theme-style");
+    let style = document.getElementById("site-theme-style");
     if (style === null)
     {
         style = document.createElement("style");
-        style.id = "youyin-theme-style";
+        style.id = "site-theme-style";
         document.head.appendChild(style);
     }
 
@@ -85,28 +85,28 @@ window.applyPalette = function (t, id)
     // call happens before the stylesheets render, so there's nothing to fade from). The transition
     // itself lives in styles/components/base.css, gated behind the "theme-transition" class; we add it for the
     // duration of the fade and pull it back off so normal interaction never pays for it.
-    if (window.__youyinThemeReady)
+    if (window.__themeReady)
     {
         const root = document.documentElement;
         root.classList.add("theme-transition");
-        window.clearTimeout(window.__youyinThemeTransitionTimer);
-        window.__youyinThemeTransitionTimer = window.setTimeout(function () {
+        window.clearTimeout(window.__themeTransitionTimer);
+        window.__themeTransitionTimer = window.setTimeout(function () {
             root.classList.remove("theme-transition");
         }, 400);
     }
-    window.__youyinThemeReady = true;
+    window.__themeReady = true;
 };
 
 /**
- * Applies a theme by id from the loaded catalogue (window.youyinThemes), falling back to the default
+ * Applies a theme by id from the loaded catalogue (window.themes), falling back to the default
  * palette for unknown ids. Used by the theme picker, where the catalogue is already loaded. The boot
  * path below paints from a cached palette instead, so it never needs the catalogue. Persists nothing.
- * @param { string } id - Key into window.youyinThemes
+ * @param { string } id - Key into window.themes
  */
 window.applyTheme = function (id)
 {
-    const catalogue = window.youyinThemes || {};
-    window.applyPalette(catalogue[id] || window.youyinDefaultTheme, id);
+    const catalogue = window.themes || {};
+    window.applyPalette(catalogue[id] || window.defaultTheme, id);
 };
 
 /**
@@ -118,7 +118,7 @@ window.cacheThemePalette = function (t)
 {
     try
     {
-        window.localStorage.setItem(window.YOUYIN_THEME_PALETTE_KEY, JSON.stringify(t));
+        window.localStorage.setItem(window.THEME_PALETTE_KEY, JSON.stringify(t));
     }
     catch (e)
     {
@@ -128,43 +128,54 @@ window.cacheThemePalette = function (t)
 
 /**
  * Lazily loads the full theme catalogue (themes-data.js) the first time it's needed — when the theme
- * picker opens, or for the one-time cache heal below. Resolves once window.youyinThemes is populated,
+ * picker opens, or for the one-time cache heal below. Resolves once window.themes is populated,
  * and dedupes concurrent/repeat calls. Resolved relative to this script so it works under any locale.
  * @returns { Promise<void> }
  */
 window.loadThemeCatalogue = function ()
 {
-    if (window.youyinThemes)
+    if (window.themes)
         return Promise.resolve();
-    if (window.__youyinCataloguePromise)
-        return window.__youyinCataloguePromise;
+    if (window.__cataloguePromise)
+        return window.__cataloguePromise;
 
-    window.__youyinCataloguePromise = new Promise(function (resolve, reject) {
+    window.__cataloguePromise = new Promise(function (resolve, reject) {
         const script = document.createElement("script");
         script.src = new URL("themes-data.js", THEME_SCRIPT_SRC).href;
         script.onload = function () { resolve(); };
-        script.onerror = function () { reject(new Error("Youyin: failed to load theme catalogue")); };
+        script.onerror = function () { reject(new Error("Error: failed to load theme catalogue")); };
         document.head.appendChild(script);
     });
-    return window.__youyinCataloguePromise;
+    return window.__cataloguePromise;
 };
 
 // Apply the saved theme immediately, before the stylesheets paint, to avoid a colour flash. The catalogue
 // isn't loaded at boot, so paint from the saved theme's cached palette (written by the picker on its
 // last commit); fall back to the inline default on a first visit or a cache miss.
 (function () {
-    const id = window.localStorage.getItem(window.YOUYIN_THEME_KEY) || "default";
+    // localStorage access throws in some privacy/lockdown profiles. Degrade to the default palette
+    // rather than throwing — browser-support.js surfaces the blocking message; theming must not be
+    // what breaks first. (The palette-cache read below is already guarded.)
+    let id = "default";
+    try
+    {
+        id = window.localStorage.getItem(window.THEME_KEY) || "default";
+    }
+    catch (e)
+    {
+        // Storage blocked: paint the inline default below
+    }
 
     if (id === "default")
     {
-        window.applyPalette(window.youyinDefaultTheme, "default");
+        window.applyPalette(window.defaultTheme, "default");
         return;
     }
 
     let palette = null;
     try
     {
-        const cached = JSON.parse(window.localStorage.getItem(window.YOUYIN_THEME_PALETTE_KEY) || "null");
+        const cached = JSON.parse(window.localStorage.getItem(window.THEME_PALETTE_KEY) || "null");
         if (cached && typeof cached === "object")
             palette = cached;
     }
@@ -183,9 +194,9 @@ window.loadThemeCatalogue = function ()
     // cached). Paint the default now so first paint isn't blocked, then heal the cache once by loading
     // the catalogue in the background and cross-fading to the real theme. Future visits hit the cache
     // and never load the catalogue.
-    window.applyPalette(window.youyinDefaultTheme, id);
+    window.applyPalette(window.defaultTheme, id);
     window.loadThemeCatalogue().then(function () {
-        const t = window.youyinThemes[id];
+        const t = window.themes[id];
         if (t)
         {
             window.cacheThemePalette(t);

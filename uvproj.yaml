@@ -6,6 +6,9 @@ allowed-extensions:
   - js
   - yaml
   - yml
+  - json
+  - txt
+  - xml
 filename-blacklist:
   - .git
   - UBTCustomFunctions
@@ -14,8 +17,21 @@ filename-blacklist:
   - .idea
   - .vs
   - Translations
+  - graphify-out
+  - .claude
+  - .agents
 intermediate-extensions:
   - .tmpl.html
 variables:
   - var: trademark
     val: Youyin
+  - var: cannonical_url
+    val: https://youyin.madladsquad.com
+  - var: marketplace_url
+    val: https://github.com/MadLadSquad/YouyinPublicDeckRepository
+  - var: marketplace_cdn_url
+    val: https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest
+  - var: char_data_url
+    val: https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin@latest
+  - var: additional_cdn_hosts
+    val: "none"

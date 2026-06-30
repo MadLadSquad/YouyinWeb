@@ -551,4 +551,4 @@ function deckEditMain()
 }
 
 // Wait until index.js has loaded the profile data from IndexedDB before running the editor
-window.youyinStorageReady.then(() => deckEditMain());
+window.storageReady.then(() => deckEditMain());

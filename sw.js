@@ -1,4 +1,4 @@
-const CACHE_NAME = 'youyin-static-v13';
+const CACHE_NAME = 'static-v14';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination
@@ -14,6 +14,7 @@ const PAGES = [
     '404.html'
 ];
 const SCRIPTS = [
+    'scripts/data/browser-support.js',
     'scripts/data/theme.js',
     'scripts/data/themes-data.js',
     'scripts/data/character-database.js',
@@ -95,7 +96,7 @@ const CDN_ASSETS = [
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(async (cache) => {
-            console.log('Youyin Service Worker: Pre-caching static assets');
+            console.log('Service Worker: Pre-caching static assets');
             // Required app shell, atomic
             await cache.addAll(STATIC_ASSETS);
             // Optional CDN assets, best-effort so a blocked/unreachable one can't fail the install.
@@ -107,7 +108,7 @@ self.addEventListener('install', (event) => {
             }));
             cdnResults.forEach((result, i) => {
                 if (result.status === 'rejected') {
-                    console.warn('Youyin Service Worker: Skipped uncacheable CDN asset', CDN_ASSETS[i], result.reason);
+                    console.warn('Service Worker: Skipped uncacheable CDN asset', CDN_ASSETS[i], result.reason);
                 }
             });
         }).then(() => self.skipWaiting())
@@ -121,7 +122,7 @@ self.addEventListener('activate', (event) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (cacheName !== CACHE_NAME) {
-                        console.log('Youyin Service Worker: Deleting old cache', cacheName);
+                        console.log('Service Worker: Deleting old cache', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
@@ -131,19 +132,27 @@ self.addEventListener('activate', (event) => {
 });
 
 // Hosts whose responses are safe to cache long-term (versioned, effectively immutable content)
-const CDN_HOSTS = ['fonts.gstatic.com', 'fonts.googleapis.com', 'cdn.jsdelivr.net'];
+const CDN_HOSTS = [
+    'fonts.gstatic.com',
+    'fonts.googleapis.com',
+    'cdn.jsdelivr.net',
 
-// jsDelivr serves the public deck repository from the mutable @latest tag, so its contents (the
-// marketplace map and the decks themselves) can change without the URL changing. These must be
-// fetched network-first, otherwise a stale cached copy would hide newly published decks
-const MUTABLE_CDN_PATH = '/gh/MadLadSquad/YouyinPublicDeckRepository';
+    // Insert additional CDN hosts that we can cache from the uvproj.yaml file
+    {{ if {{ != {{ additional_cdn_hosts }} "none" }}
+        {{ additional_cdn_hosts }}
+        {{ func  }}
+    }}
+];
+
+// The default CDN path from uvproj.yaml
+const CDN_PATH = '{{ marketplace_cdn_url }}';
 
 // The character database (manifest + chunks) is downloaded and persisted by the page (into
 // IndexedDB), but the service worker still caches whatever chunks it sees go by so they remain
 // available offline. It is fetched network-first so a package update is actually picked up — a
 // cache-first copy would pin the database forever. Both the manifest and the chunks come from
-// jsDelivr and carry the repository name in the path
-const CHARACTER_DATA_REPO = 'hanzi-writer-data-youyin';
+// jsDelivr and carry the repository name in the path. Value defined in uvproj.yaml
+const CHARACTER_DATA_REPO = '{{ char_data_url }}';
 
 // Network-first for same-origin requests so new deploys are picked up immediately, with the
 // cache as an offline fallback. Cross-origin CDN assets are cache-first since they don't change
@@ -151,7 +160,8 @@ self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
 
     const url = new URL(event.request.url);
-    if (!url.protocol.startsWith('http')) return;
+    if (!url.protocol.startsWith('http'))
+        return;
 
     if (url.origin === self.location.origin) {
         event.respondWith(handleSameOriginRequest(event.request));
@@ -189,7 +199,7 @@ async function handleSameOriginRequest(request) {
 async function handleCdnRequest(request, url) {
     // Network-first for the mutable deck repository (so marketplace updates are picked up) and the
     // character database (so package updates land), falling back to the cache only when offline
-    if (url.pathname.startsWith(MUTABLE_CDN_PATH) || url.pathname.includes(CHARACTER_DATA_REPO)) {
+    if (url.href.startsWith(CDN_PATH) || url.href.startsWith(CHARACTER_DATA_REPO)) {
         try {
             const networkResponse = await fetch(request);
             if (networkResponse && networkResponse.status === 200) {

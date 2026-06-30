@@ -14,8 +14,8 @@
 // The character stroke database is shipped as numbered chunks. The manifest lists the chunk count
 // and a per-chunk content hash so we can re-download only the chunks that actually changed. Both the
 // manifest and the bulky chunks come from jsDelivr (cacheable, fast)
-window.CHARACTER_MANIFEST_URL = "https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/character-map-chunks.json";
-window.CHARACTER_CHUNK_URL_BASE = "https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin/character-map-chunks/character-map-full-";
+window.CHARACTER_MANIFEST_URL = "{{ char_data_url }}/character-map-chunks.json";
+window.CHARACTER_CHUNK_URL_BASE = "{{ char_data_url }}/character-map-chunks/character-map-full-";
 // Chunks are fetched in batches with a cooldown between batches so we don't hammer the CDN
 window.CHARACTER_CHUNK_BATCH_SIZE = 5;
 window.CHARACTER_CHUNK_COOLDOWN_MS = 300;
@@ -36,8 +36,8 @@ window.characterData = {};
 // one entry per chunk. Per chunk storage lets background updates replace only the chunks that changed
 // and rebuild the in-memory map cleanly (so characters that move between or drop out of chunks are
 // handled)
-window.YOUYIN_CHAR_MANIFEST_KEY = "youyinCharManifest";
-window.YOUYIN_CHAR_CHUNK_PREFIX = "youyinCharChunk:";
+window.CHAR_MANIFEST_KEY = "CharManifest";
+window.CHAR_CHUNK_PREFIX = "CharChunk:";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -62,7 +62,7 @@ function chunkArrayToMap(arr)
  */
 async function loadCharacterDataFromIDB()
 {
-    const manifest = await idbGet(window.YOUYIN_CHAR_MANIFEST_KEY);
+    const manifest = await idbGet(window.CHAR_MANIFEST_KEY);
     if (manifest === null)
         return null;
 
@@ -70,7 +70,7 @@ async function loadCharacterDataFromIDB()
     // IndexedDB gets, so serializing them paid one round-trip per chunk and dominated startup on large
     // databases. Each chunk holds a disjoint set of characters, so merge order doesn't matter
     const chunks = await Promise.all(
-        Array.from({ length: manifest.num }, (_, i) => idbGet(window.YOUYIN_CHAR_CHUNK_PREFIX + i)));
+        Array.from({ length: manifest.num }, (_, i) => idbGet(window.CHAR_CHUNK_PREFIX + i)));
 
     const data = {};
     for (const chunk of chunks)
@@ -122,7 +122,7 @@ async function fetchUpstreamManifest()
     }
     catch (err)
     {
-        console.warn("Youyin: could not fetch character manifest", err);
+        console.warn("Error: could not fetch character manifest", err);
         return null;
     }
 }
@@ -144,7 +144,7 @@ async function downloadChunks(indices, onProgress)
         await Promise.all(batch.map(async (index) => {
             const response = await fetchWithRetry(`${window.CHARACTER_CHUNK_URL_BASE}${index}.json`);
             const map = chunkArrayToMap(await response.json());
-            await idbPut(window.YOUYIN_CHAR_CHUNK_PREFIX + index, map);
+            await idbPut(window.CHAR_CHUNK_PREFIX + index, map);
             Object.assign(window.characterData, map);
             done++;
             if (onProgress)
@@ -168,7 +168,7 @@ async function firstTimeDownload()
     {
         // Offline / unreachable on a first visit: nothing to load. The app still runs, writers just
         // render nothing until a later visit succeeds
-        console.error("Youyin: character database unavailable on first load");
+        console.error("Error: character database unavailable on first load");
         return;
     }
 
@@ -181,11 +181,11 @@ async function firstTimeDownload()
         await downloadChunks(indices, (done, total) => updateCharLoadOverlay(overlay, done, total));
         // Only record the manifest once every chunk is stored, so an interrupted download is retried
         // wholesale on the next visit rather than being mistaken for a complete database
-        await idbPut(window.YOUYIN_CHAR_MANIFEST_KEY, manifest);
+        await idbPut(window.CHAR_MANIFEST_KEY, manifest);
     }
     catch (err)
     {
-        console.error("Youyin: character database download failed", err);
+        console.error("Error: character database download failed", err);
     }
     finally
     {
@@ -226,15 +226,15 @@ async function backgroundUpdate(localManifest)
         if (changed.length > 0)
             await downloadChunks(changed, (done, total) => updateCharUpdatePill(pill, done, total));
         for (const index of removed)
-            await idbDelete(window.YOUYIN_CHAR_CHUNK_PREFIX + index);
-        await idbPut(window.YOUYIN_CHAR_MANIFEST_KEY, upstream);
+            await idbDelete(window.CHAR_CHUNK_PREFIX + index);
+        await idbPut(window.CHAR_MANIFEST_KEY, upstream);
         // Rebuild the in-memory map from the updated chunks so removed characters and characters that
         // moved between chunks are reflected, not just the newly downloaded ones
         await loadCharacterDataFromIDB();
     }
     catch (err)
     {
-        console.error("Youyin: background character update failed", err);
+        console.error("Error: background character update failed", err);
     }
     finally
     {

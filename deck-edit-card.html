@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         {{ include Components/head.tmpl.html }}
+        <meta name="robots" content="noindex, follow">
         <link rel="stylesheet" href="./styles/components/card.css" type="text/css">
         <link rel="stylesheet" href="./styles/components/writer.css" type="text/css">
         <link rel="stylesheet" href="./styles/components/button.css" type="text/css">
@@ -67,7 +68,7 @@
         <script src="./scripts/data/character-database.js"></script>
         <script src="./scripts/components/tutorial/deck-new.js"></script>
         {{ include Components/footer.tmpl.html }}
-        <!-- Loaded AFTER the footer: deck-new.js consumes the readiness promises (youyinStorageReady, …)
+        <!-- Loaded AFTER the footer: deck-new.js consumes the readiness promises (storageReady, …)
              that index.js creates, so index.js must run first -->
         <script src="./scripts/components/writer.js"></script>
         <script src="./scripts/utils/IME.js"></script>

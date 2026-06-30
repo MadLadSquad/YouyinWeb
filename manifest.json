@@ -1,6 +1,6 @@
 {
-    "name": "Youyin",
-    "short_name": "Youyin",
+    "name": "{{ trademark }}",
+    "short_name": "{{ trademark }}",
     "description": "Learn how to write and read Chinese characters and other writing systems in a fun and easy way",
     "start_url": "./",
     "display": "standalone",

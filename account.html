@@ -2,6 +2,8 @@
 <html lang="en">
     <head>
         {{ include Components/head.tmpl.html }}
+        <link rel="canonical" href="./{{ _ locale }}account.html">
+        <meta property="og:url" content="./{{ _ locale }}account.html">
         <link rel="stylesheet" href="./styles/components/card.css" type="text/css">
         <link rel="stylesheet" href="./styles/components/button.css" type="text/css">
         <link rel="stylesheet" href="./styles/components/activity-calendar.css" type="text/css">
@@ -62,11 +64,11 @@
         </main>
         <hr id="main-page-hr">
         <!-- Loaded BEFORE the footer (which runs index.js then tutorial.js): tutorial.js's dispatch calls
-             this file's stage functions from a youyinProfileReady microtask that drains before any script
+             this file's stage functions from a profileReady microtask that drains before any script
              placed after the footer would run, so the definitions must exist beforehand -->
         <script src="./scripts/components/tutorial/account.js"></script>
         {{ include Components/footer.tmpl.html }}
-        <!-- Loaded AFTER the footer: account.js consumes the readiness promises (youyinProfileReady, …)
+        <!-- Loaded AFTER the footer: account.js consumes the readiness promises (profileReady, …)
              that index.js creates, so index.js must run first -->
         <script src="./scripts/utils/format.js"></script>
         <script src="./scripts/components/activity-calendar.js"></script>

@@ -3,7 +3,7 @@
 // data straight from the in-memory window.characterData map (populated by character-database.js).
 // Loaded only on the pages that draw characters (index/deck/deck-edit-card). HanziWriter (CDN) and the
 // theme-owned WRITER_*_COLOUR globals are available by the time these factories are actually called
-// (writers are instantiated behind window.youyinCharDataReady)
+// (writers are instantiated behind window.charDataReady)
 
 // ------------------- CONSTANT BLOCK EDIT IF RUNNING ON A CUSTOM SYSTEM ------------------
 window.CARD_WRITER_SIZE = 100;

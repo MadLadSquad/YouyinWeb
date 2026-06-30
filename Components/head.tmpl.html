@@ -1,14 +1,57 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Learn how to write and read Chinese characters and other writing systems in a fun and easy way">
-<meta name="keywords" content="Youyin, MadLad Squad, writing systems, Chinese Characters, Japanese Kana, Latin, Cyrillic, Georgian, Armenian, Greek, Arabic, Hindi, 
-    alphabets, language learning, handwriting training, language education, writing practice, character recognition, handwriting recognition, calligraphy, language instruction, 
-    multilingual, writing skills, characters, alphabets, scripts, writing systems, language learning, handwriting analysis, handwriting assessment, handwriting evaluation, 
-    handwriting improvement, handwriting recognition, handwriting analysis, handwriting assessment, handwriting evaluation, handwriting improvement, handwriting recognition, 
-    handwriting analysis, handwriting assessment, handwriting evaluation, handwriting improvement, handwriting recognition, handwriting analysis, handwriting assessment, 
-    handwriting evaluation, handwriting improvement, 诱因, 卣囙, 油印, Yǒuyīn, amongus, amogus, Chinese, Cantonese, Mandarin, Shanghainese, Flashcards, Hanzi, Kanji, Hanja, 
-    Hangul, Katakana, Hiragana, hanzi, kanji, hanja, hangul, katakana, hiragana">
+<meta name="description" content="{{ _ site-description }}">
+<meta name="keywords" content="{{ trademark }}, learn to write Chinese characters, Hanzi stroke order, Japanese Kana, Hiragana, Katakana, Kanji, Korean Hangul, Hanja, Greek alphabet, Cyrillic, handwriting practice, stroke order practice, language learning app, writing systems, flashcards, spaced repetition, 卣囙, Yǒuyīn">
 <meta name="author" content="MadLadSquad">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+<!-- Open Graph / social + LLM rich-link metadata -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ trademark }}">
+<meta property="og:title" content="{{ trademark }} — learn to handwrite Chinese, Japanese, Korean, Greek & more">
+<meta property="og:description" content="{{ _ site-description }}">
+<meta property="og:image" content="./icon-512.png">
+<meta property="og:locale" content="{{ _ og_locale }}">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ trademark }} — learn to handwrite Chinese, Japanese, Korean, Greek & more">
+<meta name="twitter:description" content="{{ _ site-description }}">
+<meta name="twitter:image" content="./icon-512.png">
+
+<!-- Structured data: helps search engines and LLMs understand the site -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "WebApplication",
+            "name": "{{ trademark }}",
+            "url": "{{ cannonical_url }}",
+            "applicationCategory": "EducationalApplication",
+            "operatingSystem": "Any (web browser)",
+            "browserRequirements": "Requires JavaScript and a modern browser.",
+            "description": "{{ _ site-description }}",
+            "inLanguage": ["en", "bg"],
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "featureList": [
+                "Stroke-order handwriting practice graded in real time",
+                "Chinese Hanzi, Japanese Kana and Kanji, Korean Hangul and Hanja, Greek and Cyrillic",
+                "Spaced revision of cards and phrases",
+                "Importable public deck marketplace",
+                "Offline-capable installable PWA, data stored locally"
+            ],
+            "author": { "@type": "Organization", "name": "Heapforge", "url": "https://heapforge.com" }
+        },
+        {
+            "@type": "WebSite",
+            "name": "{{ trademark }}",
+            "url": "{{ cannonical_url }}",
+            "inLanguage": ["en", "bg"],
+            "publisher": { "@type": "Organization", "name": "MadLadSquad", "url": "https://heapforge.com" }
+        }
+    ]
+}
+</script>
 
 <link rel="icon" type="image/png" href="./favicon-new.png">
 
@@ -17,12 +60,16 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Youyin">
+<meta name="apple-mobile-web-app-title" content="{{ trademark }}">
 <link rel="apple-touch-icon" href="./icon-192.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet" type="text/css">
+<!-- Browser-support gate: runs first, before any storage access, request or app code, so it can
+     freeze the app and show a blocking message when a privacy/lockdown profile blocks the storage
+     the site needs (the JS-disabled case is handled by the <noscript> in header.tmpl.html) -->
+<script src="./scripts/data/browser-support.js"></script>
 <!-- Loaded before the stylesheets so the saved theme's colours are injected before first paint -->
 <script src="./scripts/data/theme.js"></script>
 <!-- Deferred so it doesn't block HTML parsing/first paint; nothing needs it before initEmojiReplacement,

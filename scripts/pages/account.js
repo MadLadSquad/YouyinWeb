@@ -85,14 +85,14 @@ function clearAccountData()
     if (!confirm(lc.clear_account_confirm_text))
         return;
 
-    window.localStorage.removeItem(window.YOUYIN_CARD_DATA_KEY);
-    window.localStorage.removeItem(window.YOUYIN_GAME_MODIFIERS_KEY);
+    window.localStorage.removeItem(window.CARD_DATA_KEY);
+    window.localStorage.removeItem(window.GAME_MODIFIERS_KEY);
 
     // Await both deletes (idbDelete returns a promise) before reloading, otherwise the page teardown
     // can abort the transactions mid-flight and leave data behind
     Promise.all([
-        idbDelete(window.YOUYIN_CARD_DATA_KEY),
-        idbDelete(window.YOUYIN_GAME_MODIFIERS_KEY),
+        idbDelete(window.CARD_DATA_KEY),
+        idbDelete(window.GAME_MODIFIERS_KEY),
     ]).then(() => document.location.reload());
 }
 
@@ -105,11 +105,11 @@ function accountmain()
     setupGameModifiers();
     renderActivityCalendar("activity-calendar-container");
 
-    // Replay the onboarding tutorial (highlight-only walkthrough). youyinStartTutorialReplay is defined by
+    // Replay the onboarding tutorial (highlight-only walkthrough). startTutorialReplay is defined by
     // scripts/components/tutorial.js, which loads from the shared footer before this page script
     const replayButton = $("replay-tutorial-button");
-    if (replayButton && window.youyinStartTutorialReplay)
-        replayButton.addEventListener("click", () => window.youyinStartTutorialReplay());
+    if (replayButton && window.startTutorialReplay)
+        replayButton.addEventListener("click", () => window.startTutorialReplay());
 
     const clearButton = $("clear-account-button");
     if (clearButton)
@@ -117,5 +117,5 @@ function accountmain()
 }
 
 // The profile card and modifiers only need the profile data (sessions, cards, modifiers), not the
-// character database — gate on youyinProfileReady just like the deck page does
-window.youyinProfileReady.then(() => accountmain());
+// character database — gate on profileReady just like the deck page does
+window.profileReady.then(() => accountmain());

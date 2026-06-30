@@ -3,8 +3,8 @@
 // only when the theme picker opens or a one-time palette-cache heal needs it, so this bulky table
 // stays off every page's <head> critical render path. theme.js paints the active theme at boot from a
 // small cached palette without this file. The "default" entry here is mirrored inline in theme.js
-// (window.youyinDefaultTheme) — keep the two in sync.
-window.youyinThemes = {
+// (window.defaultTheme) — keep the two in sync.
+window.themes = {
     default: {
         name: "Default",
         background: "#ffffff",

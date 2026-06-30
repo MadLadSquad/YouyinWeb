@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Home -->
+  <url>
+    <loc>{{ cannonical_url }}/en_US</loc>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ cannonical_url }}/en_US"/>
+    <xhtml:link rel="alternate" hreflang="bg" href="{{ cannonical_url }}/bg_BG"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/"/>
+  </url>
+
+  <!-- Marketplace (public deck catalogue) -->
+  <url>
+    <loc>{{ cannonical_url }}/en_US/marketplace</loc>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ cannonical_url }}/en_US/marketplace"/>
+    <xhtml:link rel="alternate" hreflang="bg" href="{{ cannonical_url }}/bg_BG/marketplace"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/marketplace"/>
+  </url>
+
+  <!-- Deck -->
+  <url>
+    <loc>{{ cannonical_url }}/en_US/deck</loc>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ cannonical_url }}/en_US/deck"/>
+    <xhtml:link rel="alternate" hreflang="bg" href="{{ cannonical_url }}/bg_BG/deck"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/deck"/>
+  </url>
+
+  <!-- Account -->
+  <url>
+    <loc>{{ cannonical_url }}/en_US/account</loc>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ cannonical_url }}/en_US/account"/>
+    <xhtml:link rel="alternate" hreflang="bg" href="{{ cannonical_url }}/bg_BG/account"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/account"/>
+  </url>
+
+</urlset>

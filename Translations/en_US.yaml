@@ -238,6 +238,20 @@ translations:
   - id: skip-to-content
     text: "Skip to content"
 
+  # browser-support gate (noscript in header.tmpl.html + scripts/data/browser-support.js)
+  - id: nojs_title
+    text: "JavaScript is required"
+  - id: nojs_body
+    text: "{brand} needs JavaScript to run. Please enable JavaScript for this site (or disable the script blocker / lockdown profile that is blocking it), then reload the page."
+  - id: unsupported_title
+    text: "{brand} can't run in this browser"
+  - id: unsupported_privacy_body
+    text: "Your browser is blocking the storage {brand} needs to save your decks and settings. This usually means a privacy or lockdown profile is active. Disable Lockdown Mode, turn off strict privacy protections, or allow site data for this site, then reload."
+  - id: unsupported_outdated_body
+    text: "Your browser is missing features {brand} needs to run. Please update to a current version of a modern browser, then reload."
+  - id: unsupported_reload
+    text: "Reload page"
+
   # character database loading UI (index.js)
   - id: char_loading_title
     text: "Downloading characters"
@@ -448,3 +462,9 @@ translations:
     text: "1 revision round on {date}"
   - id: activity_tooltip_none
     text: "No revision round on {date}"
+
+  # SEO / social metadata
+  - id: site-description
+    text: "{brand} is a free web app that teaches you to handwrite characters from Chinese (Hanzi), Japanese (Kana & Kanji), Korean (Hangul), Greek, Cyrillic and more. Practice real stroke order, build decks, and learn through spaced revision."
+  - id: og_locale
+    text: "en_US"

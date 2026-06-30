@@ -176,10 +176,10 @@ function createCardWriterObserver()
                 continue;
 
             // Card shells render before the character database has finished loading (it is gated on
-            // youyinProfileReady, the writers on youyinCharDataReady), so hold drawing until the
+            // profileReady, the writers on charDataReady), so hold drawing until the
             // stroke data is in memory. Re-check the card is still in the DOM — its block may have
             // been collapsed again while we waited on the data
-            window.youyinCharDataReady.then(() => {
+            window.charDataReady.then(() => {
                 if (card.isConnected)
                     hydrate();
             });
@@ -717,5 +717,5 @@ function deckmain()
 }
 
 // Render the deck as soon as the profile is loaded — the card shells don't need the character
-// database, which loads separately (writers wait on youyinCharDataReady, see createCardWriterObserver)
-window.youyinProfileReady.then(() => deckmain());
+// database, which loads separately (writers wait on charDataReady, see createCardWriterObserver)
+window.profileReady.then(() => deckmain());

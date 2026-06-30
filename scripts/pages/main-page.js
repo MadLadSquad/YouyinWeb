@@ -1062,4 +1062,4 @@ function mainPageMain()
 }
 
 // Wait until index.js has loaded the profile data from IndexedDB before starting the practice page
-window.youyinStorageReady.then(() => mainPageMain());
+window.storageReady.then(() => mainPageMain());

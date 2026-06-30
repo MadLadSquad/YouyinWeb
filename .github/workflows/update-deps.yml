@@ -42,7 +42,10 @@ jobs:
           git checkout auto || git checkout -b auto
           git submodule foreach --recursive "git reset --hard origin/\`git symbolic-ref refs/remotes/origin/HEAD | cut -f4 -d/\`"
           git submodule update --remote --merge --init
-          
+
+          # Refresh sitemap.xml <lastmod> dates from git history (only changes when a page changed)
+          python3 .github/update-sitemap-lastmod.py
+
           (git add . && git commit -m "auto" && git push origin HEAD:auto && echo "out=s" >> $GITHUB_OUTPUT) || echo "out=?" >> $GITHUB_OUTPUT
       - name: Create PR
         if: "steps.mod.outputs.out != '?'"

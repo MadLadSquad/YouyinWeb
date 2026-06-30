@@ -3,10 +3,10 @@
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
 [![Discord](https://img.shields.io/discord/717037253292982315.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/4wgH8ZE)
 
-The source code for the youyin(卣囙/yǒuyīn) website.
+The source code for the Youyin website.
 
 ## About Youyin
-Youyin(卣囙/yǒuyīn) is a language learning platform focused on helping you learn how to write the characters in your language's writing system. For the 1.0
+Youyin is a language learning platform focused on helping you learn how to write the characters in your language's writing system. For the 1.0
 release we plan on supporting the following scripts:
 - [x] Unified Chinese Characters
 - [x] Japanese-only Kanji
@@ -33,6 +33,3 @@ on the [wiki](https://github.com/MadLadSquad/YouyinWeb/wiki/) or on the
 This project uses the following third party libraries:
 1. [Makemeahanzi](https://github.com/skishore/makemeahanzi)
 1. [Hanziwriter](https://github.com/chanind/hanzi-writer)
-
-Additionally, we want to thank the following contributors for helping with translating the project into multiple languages:
-1. [Hristian Rusev](https://github.com/ProHunter67BG) for providing German translations

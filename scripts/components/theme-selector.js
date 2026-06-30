@@ -1,8 +1,8 @@
 'use strict';
 /**
  * Builds the footer theme switcher: a button that toggles a searchable popup listing every
- * theme in window.youyinThemes. Selecting a theme applies it live (no reload) and persists
- * the choice under the "youyinTheme" localStorage key. Themes are applied by theme.js.
+ * theme in window.themes. Selecting a theme applies it live (no reload) and persists
+ * the choice under the "theme" localStorage key. Themes are applied by theme.js.
  */
 function setThemeBox()
 {
@@ -16,7 +16,7 @@ function setThemeBox()
 
 function wireThemeButton(button)
 {
-    const current = window.localStorage.getItem("youyinTheme") || "default";
+    const current = window.localStorage.getItem("theme") || "default";
 
     // Build the popup container, search box and list. Identifiers are classes, not ids, so the
     // footer and account-card popups can coexist on the same page without colliding
@@ -36,7 +36,7 @@ function wireThemeButton(button)
     list.className = "list-select-list";
     popup.appendChild(list);
 
-    // window.youyinThemes is loaded lazily (see theme.js / loadThemeCatalogue), so the catalogue isn't
+    // window.themes is loaded lazily (see theme.js / loadThemeCatalogue), so the catalogue isn't
     // available when setThemeBox runs on every page — defer anything that reads it to the first open.
     // Object key order can't be relied on (integer-like ids such as "8008" get hoisted to the front),
     // so sort explicitly: Default first, then by name.
@@ -45,10 +45,10 @@ function wireThemeButton(button)
     {
         if (themeIds !== null)
             return;
-        themeIds = Object.keys(window.youyinThemes).sort(function (a, b) {
+        themeIds = Object.keys(window.themes).sort(function (a, b) {
             if (a === "default") return -1;
             if (b === "default") return 1;
-            return window.youyinThemes[a].name.localeCompare(window.youyinThemes[b].name);
+            return window.themes[a].name.localeCompare(window.themes[b].name);
         });
     }
 
@@ -69,7 +69,7 @@ function wireThemeButton(button)
             const opt = document.createElement("button");
             opt.type = "button";
             opt.className = "list-select-option" + (id === current ? " active" : "");
-            opt.textContent = window.youyinThemes[id].name;
+            opt.textContent = window.themes[id].name;
             // Hovering previews a theme live, exactly like arrow-key navigation does.
             opt.addEventListener("mouseenter", function(){ setPreview(id, false); });
             opt.addEventListener("click", function(){ commitAndClose(id); });
@@ -136,7 +136,7 @@ function wireThemeButton(button)
         query = query.toLowerCase();
         for (const id in options)
             options[id].style.display =
-                window.youyinThemes[id].name.toLowerCase().includes(query) ? "block" : "none";
+                window.themes[id].name.toLowerCase().includes(query) ? "block" : "none";
     }
 
     // Opening re-reads the persisted theme (it may have changed since the page loaded) and resets
@@ -185,7 +185,7 @@ function wireThemeButton(button)
         window.loadThemeCatalogue().then(function () {
             ensureThemeIds();
             buildOptions();
-            committedId = window.localStorage.getItem("youyinTheme") || "default";
+            committedId = window.localStorage.getItem("theme") || "default";
             previewId = committedId;
             setActiveHighlight(committedId);
             search.value = "";
@@ -208,13 +208,13 @@ function wireThemeButton(button)
     function commitAndClose(id)
     {
         window.applyTheme(id);
-        window.localStorage.setItem("youyinTheme", id);
+        window.localStorage.setItem("theme", id);
         // Cache the chosen palette so the next boot can paint it without loading the catalogue. The
         // default theme is painted from theme.js's inline copy, so clear its cache entry instead.
         if (id === "default")
-            window.localStorage.removeItem(window.YOUYIN_THEME_PALETTE_KEY);
-        else if (window.youyinThemes && window.youyinThemes[id])
-            window.cacheThemePalette(window.youyinThemes[id]);
+            window.localStorage.removeItem(window.THEME_PALETTE_KEY);
+        else if (window.themes && window.themes[id])
+            window.cacheThemePalette(window.themes[id]);
         committedId = id;
         previewId = id;
         setActiveHighlight(id);

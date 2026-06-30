@@ -237,6 +237,20 @@ translations:
   - id: skip-to-content
     text: "Към съдържанието"
 
+  # browser-support gate (noscript in header.tmpl.html + scripts/data/browser-support.js)
+  - id: nojs_title
+    text: "Необходим е JavaScript"
+  - id: nojs_body
+    text: "{brand} се нуждае от JavaScript, за да работи. Моля, разрешете JavaScript за този сайт (или изключете разширенията или профили като Lockdown mode, които могат да го блокират) и презаредете страницата."
+  - id: unsupported_title
+    text: "{brand} не може да работи в този браузър"
+  - id: unsupported_privacy_body
+    text: "Браузърът Ви блокира хранилището, от което {brand} се нуждае, за да запазва тестетата и настройките Ви. Това обикновено означава, че е активен защитен профил като Lockdown mode. Изключете Lockdown mode, спрете строгите защити на поверителността или разрешете запазването на данни за този сайт и презаредете станицата."
+  - id: unsupported_outdated_body
+    text: "Браузърът Ви няма функциите, които са нужни на {brand}, за да работи. Моля, обновете до съвременна версия на модерен браузър и презаредете."
+  - id: unsupported_reload
+    text: "Презареждане"
+
   # character database loading UI (index.js)
   - id: char_loading_title
     text: "Изтегляне на нужните символи"
@@ -447,3 +461,9 @@ translations:
     text: "1 серия на {date}"
   - id: activity_tooltip_none
     text: "Няма серия на {date}"
+
+  # SEO / social metadata
+  - id: site-description
+    text: "{brand} е безплатно уеб приложение, което ви учи да пишете на ръка знаци от китайски (хандзъ), японски (кана и канджи), корейски (хангъл), гръцки, кирилица и други писмености. Упражнявайте реалния ред на щрихите и учете използвайки системата ни за разпределено повторение."
+  - id: og_locale
+    text: "bg_BG"

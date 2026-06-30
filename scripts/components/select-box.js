@@ -2,7 +2,7 @@
 // ---------------- Shared plumbing for button-triggered popups (language/variant/theme) ----------------
 // Every popup registers a controller here; the single document-level click/keydown pair below
 // serves all of them, instead of each dropdown installing its own global listeners
-window.youyinPopupControllers = [];
+window.popupControllers = [];
 
 /**
  * Creates the open/close plumbing for a button-triggered popup: aria-expanded upkeep, mutual
@@ -33,7 +33,7 @@ function createPopupController(button, popup, onOpen, onClose)
         open: () =>
         {
             // Only one popup may be open at a time
-            for (const other of window.youyinPopupControllers)
+            for (const other of window.popupControllers)
                 if (other !== controller)
                     other.close();
 
@@ -75,13 +75,13 @@ function createPopupController(button, popup, onOpen, onClose)
         controller.isOpen() ? controller.close() : controller.open();
     });
 
-    window.youyinPopupControllers.push(controller);
+    window.popupControllers.push(controller);
     return controller;
 }
 
 // Close on click outside and on Escape, for every registered popup
 document.addEventListener("click", (e) => {
-    for (const controller of window.youyinPopupControllers)
+    for (const controller of window.popupControllers)
         if (controller.isOpen() && !controller.contains(e.target))
             controller.close();
 });
@@ -89,7 +89,7 @@ document.addEventListener("click", (e) => {
 document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape")
         return;
-    for (const controller of window.youyinPopupControllers)
+    for (const controller of window.popupControllers)
     {
         if (controller.isOpen())
         {

@@ -18,35 +18,35 @@ window.gameModifiers = null;
 // (theme, language) deliberately stay in localStorage — they are tiny and read synchronously
 // before the page renders. Values are stored as structured-clonable objects under string keys,
 // so no JSON.stringify is needed
-window.YOUYIN_DB_NAME = "youyin";
-window.YOUYIN_DB_VERSION = 1;
-window.YOUYIN_DB_STORE = "profile";
-window.YOUYIN_CARD_DATA_KEY = "youyinCardData";
-window.YOUYIN_GAME_MODIFIERS_KEY = "youyinGameModifiers";
+window.DB_NAME = "site";
+window.DB_VERSION = 1;
+window.DB_STORE = "profile";
+window.CARD_DATA_KEY = "cardData";
+window.GAME_MODIFIERS_KEY = "gameModifiers";
 
 // Cached open-connection promise so we only open the database once per page
-let youyinDBPromise = null;
+let dbPromise = null;
 
 /**
- * Opens (and lazily creates) the Youyin IndexedDB database, caching the connection promise
+ * Opens (and lazily creates) the IndexedDB database, caching the connection promise
  * @returns { Promise<IDBDatabase> } - The open database connection
  */
-function openYouyinDB()
+function openDB()
 {
-    if (youyinDBPromise === null)
+    if (dbPromise === null)
     {
-        youyinDBPromise = new Promise((resolve, reject) => {
-            const request = indexedDB.open(window.YOUYIN_DB_NAME, window.YOUYIN_DB_VERSION);
+        dbPromise = new Promise((resolve, reject) => {
+            const request = indexedDB.open(window.DB_NAME, window.DB_VERSION);
             request.onupgradeneeded = () => {
                 const db = request.result;
-                if (!db.objectStoreNames.contains(window.YOUYIN_DB_STORE))
-                    db.createObjectStore(window.YOUYIN_DB_STORE);
+                if (!db.objectStoreNames.contains(window.DB_STORE))
+                    db.createObjectStore(window.DB_STORE);
             };
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
         });
     }
-    return youyinDBPromise;
+    return dbPromise;
 }
 
 /**
@@ -56,9 +56,9 @@ function openYouyinDB()
  */
 function idbGet(key)
 {
-    return openYouyinDB().then((db) => new Promise((resolve, reject) => {
-        const transaction = db.transaction(window.YOUYIN_DB_STORE, "readonly");
-        const request = transaction.objectStore(window.YOUYIN_DB_STORE).get(key);
+    return openDB().then((db) => new Promise((resolve, reject) => {
+        const transaction = db.transaction(window.DB_STORE, "readonly");
+        const request = transaction.objectStore(window.DB_STORE).get(key);
         request.onsuccess = () => resolve(request.result === undefined ? null : request.result);
         request.onerror = () => reject(request.error);
     }));
@@ -72,9 +72,9 @@ function idbGet(key)
  */
 function idbPut(key, value)
 {
-    return openYouyinDB().then((db) => new Promise((resolve, reject) => {
-        const transaction = db.transaction(window.YOUYIN_DB_STORE, "readwrite");
-        transaction.objectStore(window.YOUYIN_DB_STORE).put(value, key);
+    return openDB().then((db) => new Promise((resolve, reject) => {
+        const transaction = db.transaction(window.DB_STORE, "readwrite");
+        transaction.objectStore(window.DB_STORE).put(value, key);
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error);
     }));
@@ -87,9 +87,9 @@ function idbPut(key, value)
  */
 function idbDelete(key)
 {
-    return openYouyinDB().then((db) => new Promise((resolve, reject) => {
-        const transaction = db.transaction(window.YOUYIN_DB_STORE, "readwrite");
-        transaction.objectStore(window.YOUYIN_DB_STORE).delete(key);
+    return openDB().then((db) => new Promise((resolve, reject) => {
+        const transaction = db.transaction(window.DB_STORE, "readwrite");
+        transaction.objectStore(window.DB_STORE).delete(key);
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error);
     }));
@@ -165,8 +165,8 @@ function toCharacters(str)
 function saveProfileData(obj)
 {
     window.profileData = obj;
-    return idbPut(window.YOUYIN_CARD_DATA_KEY, obj).catch((err) => {
-        console.error("Youyin: failed to save profile data", err);
+    return idbPut(window.CARD_DATA_KEY, obj).catch((err) => {
+        console.error("Error: failed to save profile data", err);
     });
 }
 
@@ -176,8 +176,8 @@ function saveProfileData(obj)
  */
 function saveGameModifiers()
 {
-    return idbPut(window.YOUYIN_GAME_MODIFIERS_KEY, window.gameModifiers).catch((err) => {
-        console.error("Youyin: failed to save game modifiers", err);
+    return idbPut(window.GAME_MODIFIERS_KEY, window.gameModifiers).catch((err) => {
+        console.error("Error: failed to save game modifiers", err);
     });
 }
 
@@ -207,20 +207,7 @@ function addElement(elType, content, id, classType, data, parentEl)
     return el;
 }
 
-// Returns void, sets the name of the title
-function setTitleName()
-{
-    const el = document.getElementsByClassName("site-title");
 
-    // Cool array of quirky names for the website title because who needs to be serious
-    const names = [ "Youyin 卣囙", "Youyin 诱因", "Youyin 油印", "Yǒuyīn 　　", "Youyin  ඞඞ",
-    ];
-
-    const selectedText = names[Math.floor(Math.random() * names.length)];
-
-    for (let i = 0; i < el.length; i++)
-        el[i].textContent = selectedText;
-}
 
 // Some legacy users may be lacking variants as part of their character card objects, so this function fixes this
 function fixLegacyCharacterVariants()
@@ -248,28 +235,28 @@ function fixLegacyCharacterVariants()
  */
 async function loadProfileData()
 {
-    let cardData = await idbGet(window.YOUYIN_CARD_DATA_KEY);
-    let modifiers = await idbGet(window.YOUYIN_GAME_MODIFIERS_KEY);
+    let cardData = await idbGet(window.CARD_DATA_KEY);
+    let modifiers = await idbGet(window.GAME_MODIFIERS_KEY);
 
     // One-time migration of legacy localStorage users to IndexedDB
     if (cardData === null)
     {
-        const legacy = window.localStorage.getItem("youyinCardData");
+        const legacy = window.localStorage.getItem("cardData");
         if (legacy !== null)
         {
             cardData = JSON.parse(legacy);
-            await idbPut(window.YOUYIN_CARD_DATA_KEY, cardData);
-            window.localStorage.removeItem("youyinCardData");
+            await idbPut(window.CARD_DATA_KEY, cardData);
+            window.localStorage.removeItem("cardData");
         }
     }
     if (modifiers === null)
     {
-        const legacy = window.localStorage.getItem("youyinGameModifiers");
+        const legacy = window.localStorage.getItem("gameModifiers");
         if (legacy !== null)
         {
             modifiers = JSON.parse(legacy);
-            await idbPut(window.YOUYIN_GAME_MODIFIERS_KEY, modifiers);
-            window.localStorage.removeItem("youyinGameModifiers");
+            await idbPut(window.GAME_MODIFIERS_KEY, modifiers);
+            window.localStorage.removeItem("gameModifiers");
         }
     }
 
@@ -279,16 +266,16 @@ async function loadProfileData()
 
 // Startup is split across two readiness signals so a page can render everything that only needs the
 // profile before the (potentially large) character database has finished loading:
-//   - youyinProfileReady resolves once window.profileData / window.gameModifiers are populated and the
+//   - profileReady resolves once window.profileData / window.gameModifiers are populated and the
 //     page chrome is set up. The deck shells and the daily-streak logic wait on this and run at once.
-//   - youyinCharDataReady resolves once window.characterData holds the stroke database. Anything that
+//   - charDataReady resolves once window.characterData holds the stroke database. Anything that
 //     draws characters (hanzi-writer instances) waits on this.
-// youyinStorageReady stays the "everything is ready" signal (it is main() itself) for the page scripts
+// storageReady stays the "everything is ready" signal (it is main() itself) for the page scripts
 // that need character data up front
 let resolveProfileReady;
 let resolveCharDataReady;
-window.youyinProfileReady = new Promise((resolve) => { resolveProfileReady = resolve; });
-window.youyinCharDataReady = new Promise((resolve) => { resolveCharDataReady = resolve; });
+window.profileReady = new Promise((resolve) => { resolveProfileReady = resolve; });
+window.charDataReady = new Promise((resolve) => { resolveCharDataReady = resolve; });
 
 /**
  * Whether the current page actually draws characters and therefore needs the (large) stroke database
@@ -318,9 +305,9 @@ function pageNeedsCharacterData()
 function maybeStartTutorial()
 {
     // Already finished/skipped, or a run is in progress (tutorial.js handles in-progress steps and replay).
-    if (window.localStorage.getItem("youyinTutorialDone") === "true")
+    if (window.localStorage.getItem("tutorialDone") === "true")
         return false;
-    if (window.localStorage.getItem("youyinTutorialStep") !== null)
+    if (window.localStorage.getItem("tutorialStep") !== null)
         return false;
 
     // Users who predate the tutorial already have content — don't drag them into onboarding; mark it done.
@@ -328,7 +315,7 @@ function maybeStartTutorial()
     const hasContent = (p.cards && p.cards.length) || (p.phrases && p.phrases.length) || p.sessions > 0;
     if (hasContent)
     {
-        window.localStorage.setItem("youyinTutorialDone", "true");
+        window.localStorage.setItem("tutorialDone", "true");
         return false;
     }
 
@@ -343,16 +330,22 @@ function maybeStartTutorial()
         return true;
     }
 
-    window.localStorage.setItem("youyinTutorialMode", "first");
-    window.localStorage.setItem("youyinTutorialStep", "intro");
+    window.localStorage.setItem("tutorialMode", "first");
+    window.localStorage.setItem("tutorialStep", "intro");
     return false;
 }
 
 async function main()
 {
+    // Critical browser features are blocked (privacy/lockdown profile). browser-support.js has
+    // already shown the blocking overlay; never resolve any readiness promise so every page script
+    // stays dormant — no IndexedDB writes, no CDN downloads, no service-worker registration.
+    if (window.UNSUPPORTED)
+        return new Promise(function () {});
+
     // Load the profile data once into memory. Missing or partial data (a first visit, or decks
     // from before phrases/levelReduce existed) is initialized in place and saved back — page
-    // scripts wait on window.youyinStorageReady, so the data is ready before they run
+    // scripts wait on window.storageReady, so the data is ready before they run
     try
     {
         await loadProfileData();
@@ -362,9 +355,9 @@ async function main()
         // IndexedDB can be unavailable (e.g. some private-browsing modes). Fall back to whatever is
         // still in localStorage (legacy users keep their decks; the migration just never completes)
         // so the app still works this session, even if writes won't persist
-        console.error("Youyin: failed to load profile data from IndexedDB", err);
-        const legacyCardData = window.localStorage.getItem("youyinCardData");
-        const legacyModifiers = window.localStorage.getItem("youyinGameModifiers");
+        console.error("Error: failed to load profile data from IndexedDB", err);
+        const legacyCardData = window.localStorage.getItem("cardData");
+        const legacyModifiers = window.localStorage.getItem("gameModifiers");
         window.profileData = legacyCardData !== null ? JSON.parse(legacyCardData) : null;
         window.gameModifiers = legacyModifiers !== null ? JSON.parse(legacyModifiers) : null;
     }
@@ -427,7 +420,6 @@ async function main()
 
     fixLegacyCharacterVariants();
 
-    setTitleName();
     setLanguage();
     setLanguageBox();
     setThemeBox();
@@ -474,17 +466,17 @@ async function main()
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./sw.js')
                 .then(reg => {
-                    console.log('Youyin Service Worker registered successfully with scope:', reg.scope);
+                    console.log('Service Worker registered successfully with scope:', reg.scope);
                 })
                 .catch(err => {
-                    console.error('Youyin Service Worker registration failed:', err);
+                    console.error('Service Worker registration failed:', err);
                 });
         });
     }
 
     // Bring the character stroke database into memory, but only on the pages that actually draw
     // characters (see pageNeedsCharacterData). A first visit downloads every chunk behind a blocking
-    // modal (awaited, so character data is ready before youyinCharDataReady resolves); later visits
+    // modal (awaited, so character data is ready before charDataReady resolves); later visits
     // load the cached copy instantly and reconcile changed chunks in the background
     if (pageNeedsCharacterData())
     {
@@ -506,12 +498,12 @@ async function main()
     else
     {
         // This page never instantiates a writer, so the database was never loaded. Resolve anyway so
-        // any incidental consumer of youyinCharDataReady (and youyinStorageReady, which is main()
+        // any incidental consumer of charDataReady (and storageReady, which is main()
         // itself) doesn't hang waiting on data that isn't coming
         resolveCharDataReady();
     }
 }
 
 // Loading profile data from IndexedDB is asynchronous, so page scripts must wait for this promise
-// before touching window.profileData / window.gameModifiers. They do so via window.youyinStorageReady
-window.youyinStorageReady = main();
+// before touching window.profileData / window.gameModifiers. They do so via window.storageReady
+window.storageReady = main();

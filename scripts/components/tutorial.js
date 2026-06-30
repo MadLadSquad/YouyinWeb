@@ -1,7 +1,7 @@
 'use strict';
 // First-visit onboarding tutorial — cross-page core.
 //
-// Loaded on every page via the shared footer chrome, after scripts/index.js (so window.youyinProfileReady
+// Loaded on every page via the shared footer chrome, after scripts/index.js (so window.profileReady
 // exists). The tutorial is inherently multi-page and event-driven — it waits on the character-database
 // download, on a marketplace import committing, and on a practice session finishing — so it can't be a
 // single in-page tour. Instead it's a small state machine persisted in localStorage: each page renders the
@@ -11,7 +11,7 @@
 // This file holds only the cross-page core: the state machine, the shared helpers, the Driver.js wrapper and
 // the per-page dispatch. The per-page *stage* functions it dispatches to live in scripts/components/tutorial/
 // (main-page.js, marketplace.js, deck.js, deck-new.js, account.js) and are loaded only on their page, after
-// this file. Because tutDispatch runs from a youyinProfileReady.then() (well after every script has parsed)
+// this file. Because tutDispatch runs from a profileReady.then() (well after every script has parsed)
 // and every case is guarded by an exact tutPage() check, each stage function is only ever called on the page
 // whose file defines it.
 //
@@ -22,9 +22,9 @@
 // ---------------------------------------------------------------------------------------------------------
 // State (localStorage)
 // ---------------------------------------------------------------------------------------------------------
-const TUT_DONE = "youyinTutorialDone";   // "true" once completed or skipped
-const TUT_STEP = "youyinTutorialStep";   // current stage; absent when no tutorial is running
-const TUT_MODE = "youyinTutorialMode";   // "first" | "replay"
+const TUT_DONE = "tutorialDone";   // "true" once completed or skipped
+const TUT_STEP = "tutorialStep";   // current stage; absent when no tutorial is running
+const TUT_MODE = "tutorialMode";   // "first" | "replay"
 
 const TUT = {
     intro: "intro",
@@ -54,7 +54,7 @@ function tutFinish()
 
 // Sets up a replay run: the user already completed the tutorial once (TUT_DONE is set), so clear it and
 // seed the highlight-only walkthrough from the start. Called from the account page button.
-window.youyinStartTutorialReplay = function ()
+window.startTutorialReplay = function ()
 {
     window.localStorage.removeItem(TUT_DONE);
     window.localStorage.setItem(TUT_MODE, "replay");
@@ -159,7 +159,10 @@ function tutWaitFor(getter, timeout = 15000)
 // Driver.js wrapper
 // ---------------------------------------------------------------------------------------------------------
 
-function tutDriverFactory() { return window.driver && window.driver.js && window.driver.js.driver; }
+function tutDriverFactory()
+{
+    return window.driver && window.driver.js && window.driver.js.driver;
+}
 
 // Builds and runs a Driver.js tour from a list of steps. Each step is { element?, title, description,
 // side?, align?, showButtons?, onHighlighted?, onNext? }. onHighlighted(driver) runs when the step renders
@@ -176,7 +179,7 @@ function tutRunTour(steps, extraConfig)
     const driverSteps = steps.map((s, i) => {
         const isLast = i === steps.length - 1;
         let boxPopup = null;
-        const step = {
+        return {
             element: s.element,
             onHighlightStarted: s.onBeforeHighlight ? () => s.onBeforeHighlight(driverObj) : undefined,
             onHighlighted: () => {
@@ -221,7 +224,6 @@ function tutRunTour(steps, extraConfig)
                 },
             },
         };
-        return step;
     });
 
     driverObj = factory(Object.assign({
@@ -277,7 +279,7 @@ function tutOpenBoxForDisplay(buttonId)
     const button = $(buttonId);
     if (!button)
         return null;
-    for (const controller of window.youyinPopupControllers)
+    for (const controller of window.popupControllers)
         if (controller.button === button)
         {
             controller.open();
@@ -367,7 +369,7 @@ function tutCloseBox(popup)
 {
     if (!popup)
         return;
-    for (const controller of window.youyinPopupControllers)
+    for (const controller of window.popupControllers)
         if (controller.popup === popup)
         {
             controller.close();
@@ -442,4 +444,4 @@ function tutDispatch()
 
 // The chrome (and the deck/account page shells) are ready once the profile loads; gate on it so highlighted
 // elements exist. Individual stages additionally tutWaitFor their specific async-rendered targets.
-window.youyinProfileReady.then(() => tutDispatch());
+window.profileReady.then(() => tutDispatch());

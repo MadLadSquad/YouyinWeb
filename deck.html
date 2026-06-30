@@ -2,6 +2,8 @@
 <html lang="en">
     <head>
         {{ include Components/head.tmpl.html }}
+        <link rel="canonical" href="./{{ _ locale }}deck.html">
+        <meta property="og:url" content="./{{ _ locale }}deck.html">
         <link rel="stylesheet" href="./styles/components/card.css" type="text/css">
         <link rel="stylesheet" href="./styles/components/writer.css" type="text/css">
         <link rel="stylesheet" href="./styles/components/button.css" type="text/css">
@@ -51,8 +53,8 @@
         <script src="./scripts/data/character-database.js"></script>
         <script src="./scripts/components/tutorial/deck.js"></script>
         {{ include Components/footer.tmpl.html }}
-        <!-- Loaded AFTER the footer: these CONSUME the readiness promises (youyinStorageReady,
-             youyinProfileReady, youyinCharDataReady) that index.js creates, so index.js must run first -->
+        <!-- Loaded AFTER the footer: these CONSUME the readiness promises (storageReady,
+             profileReady, charDataReady) that index.js creates, so index.js must run first -->
         <script src="./scripts/components/writer.js"></script>
         <script src="./scripts/utils/format.js"></script>
         <script src="./scripts/utils/fuzzy-match.js"></script>

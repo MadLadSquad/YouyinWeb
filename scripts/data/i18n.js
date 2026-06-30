@@ -97,6 +97,13 @@ lc.community_decks_header = "{{ _ community_decks_header }}";
 lc.theme_button = "{{ _ theme_button }}";
 lc.theme_search_placeholder = "{{ _ theme_search_placeholder }}";
 
+// browser-support gate (browser-support.js). The nojs_* keys are HTML-only (noscript) and are not
+// needed here.
+lc.unsupported_title = "{{ _ unsupported_title }}";
+lc.unsupported_privacy_body = "{{ _ unsupported_privacy_body }}";
+lc.unsupported_outdated_body = "{{ _ unsupported_outdated_body }}";
+lc.unsupported_reload = "{{ _ unsupported_reload }}";
+
 // character database loading UI (index.js)
 lc.char_loading_title = "{{ _ char_loading_title }}";
 lc.char_loading_subtitle = "{{ _ char_loading_subtitle }}";

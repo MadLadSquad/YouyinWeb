@@ -1,6 +1,7 @@
 'use strict';
 
-const MARKETPLACE_CDN = "https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest";
+const MARKETPLACE_CDN = "{{ marketplace_cdn_url }}";
+const MARKETPLACE_URL = "{{ marketplace_url }}";
 
 /**
  * Fetches and parses a deck/metadata file from the public deck repository.
@@ -144,7 +145,7 @@ function constructElement(val, deckContainer, deck, type, language)
             }
             catch (err)
             {
-                console.error("Youyin: deck import failed", err);
+                console.error("Error: deck import failed", err);
                 hideImportOverlay(overlay);
             }
         }
@@ -156,7 +157,7 @@ function constructElement(val, deckContainer, deck, type, language)
     runEventAfterAnimation(addElement("button", lc.deck_source, `source-button-${type}-${val}`, "card-button-edit", path, div), "click", async function(e)
     {
         // If an element uses addElement, arbitrary data is also assigned
-        window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository/blob/master/' + e.target.getAttribute("arbitrary-data"));
+        window.open(`${MARKETPLACE_URL}/blob/master/` + e.target.getAttribute("arbitrary-data"));
     });
 
     addElement("br", "", "", "", "", div);
@@ -289,11 +290,11 @@ async function marketplaceMain()
         }
     }
 
-    runEventAfterAnimation($("upload-deck-public"), "click", (_) => { window.open('https://github.com/MadLadSquad/YouyinPublicDeckRepository') });
+    runEventAfterAnimation($("upload-deck-public"), "click", (_) => { window.open(MARKETPLACE_URL) });
 
     // Filter the rendered decks live as the user types in the search box
     wireSearchInput("marketplace-search", applyDeckFilter);
 }
 
 // Wait until index.js has loaded the profile data from IndexedDB before running the marketplace
-window.youyinStorageReady.then(() => marketplaceMain());
+window.storageReady.then(() => marketplaceMain());

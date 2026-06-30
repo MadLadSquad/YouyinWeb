@@ -115,7 +115,7 @@ function tutShowIntro()
         // Remove the modal immediately so the character-database download bar behind it is visible while we
         // wait for the download to finish (on a replay this resolves instantly — the data is already cached)
         close();
-        await window.youyinCharDataReady;
+        await window.charDataReady;
         tutNavigate("./marketplace.html");
     });
 }

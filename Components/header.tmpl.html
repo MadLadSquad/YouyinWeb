@@ -1,8 +1,20 @@
+<!-- Shown only when JavaScript is disabled entirely (extensions, lockdown profiles). The privacy
+     case where JS runs but storage is blocked is handled by scripts/data/browser-support.js. This
+     uses literal default-theme colours because theme.js (which injects the --main-* variables)
+     never runs without JS. -->
+<noscript>
+    <div class="site-noscript">
+        <div class="site-noscript-box">
+            <h2>{{ _ nojs_title }}</h2>
+            <p>{{ _ nojs_body }}</p>
+        </div>
+    </div>
+</noscript>
 <a class="skip-link" href="#main-content">{{ _ skip-to-content }}</a>
 <header>
     <nav>
         <ul id="main-page-header">
-            <li><a href="./{{ _ locale }}index.html" id="main-page-header-home" class="site-title">Youyin </a></li>
+            <li><a href="./{{ _ locale }}index.html" id="main-page-header-home" class="site-title">{{ trademark }} </a></li>
             <li><a href="./{{ _ locale }}deck.html">{{ _ no_cards_link_deck }}</a></li>
             <li><a href="./{{ _ locale }}marketplace.html">{{ _ marketplace-deck-button }}</a></li>
             <li><a href="./{{ _ locale }}account.html">{{ _ account }}</a></li>

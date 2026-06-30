@@ -1,6 +1,6 @@
 /* Global base: resets, page/theme transitions, scrollbars, links, lists and one-off global
    chrome shared by every page. The colour palette lives in theme.js, which injects these CSS
-   variables into :root at runtime (see the #youyin-theme-style element). base.css only consumes
+   variables into :root at runtime (see the #site-theme-style element). base.css only consumes
    them. */
 
 html {
@@ -222,6 +222,40 @@ ol li {
 
 .vcentered {
     margin: auto;
+}
+
+/* Full-screen message shown by the <noscript> in header.tmpl.html when JavaScript is disabled.
+   theme.js never runs without JS, so the --main-* variables aren't injected — literal default-theme
+   colours are used as the var() fallbacks (kept in sync with defaultTheme in theme.js). */
+.site-noscript {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background-color: var(--main-background-colour, #ffffff);
+}
+
+.site-noscript-box {
+    width: min(420px, 100%);
+    box-sizing: border-box;
+    padding: 2rem;
+    text-align: center;
+    color: var(--main-text-colour, #000000);
+    background-color: var(--main-background-colour, #ffffff);
+    border: 2px solid var(--main-accent-colour, #c87e74);
+    border-radius: 12px;
+}
+
+.site-noscript-box h2 {
+    margin: 0 0 0.5rem;
+    color: var(--main-accent-colour, #c87e74);
+}
+
+.site-noscript-box p {
+    margin: 0;
 }
 
 /* Twemoji styling to match surrounding text size */
