@@ -138,9 +138,8 @@ const CDN_HOSTS = [
     'cdn.jsdelivr.net',
 
     // Insert additional CDN hosts that we can cache from the uvproj.yaml file
-    {{ if {{ != {{ additional_cdn_hosts }} "none" }}
+    {{ if {{ != {{ additional_cdn_hosts }} none }}
         {{ additional_cdn_hosts }}
-        {{ func  }}
     }}
 ];
 
