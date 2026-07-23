@@ -166,7 +166,12 @@ function saveProfileData(obj)
 {
     window.profileData = obj;
     return idbPut(window.CARD_DATA_KEY, obj).catch((err) => {
+        // Log, then re-reject. Resolving on failure made callers that navigate/reload in .then()
+        // proceed as if the write had committed, silently dropping the user's import or edit. By
+        // rejecting, a navigate-after-save chain simply doesn't fire, keeping the user on the page
+        // with their data intact. Fire-and-forget callers should .catch() this (see main() below).
         console.error("Error: failed to save profile data", err);
+        throw err;
     });
 }
 
@@ -177,7 +182,10 @@ function saveProfileData(obj)
 function saveGameModifiers()
 {
     return idbPut(window.GAME_MODIFIERS_KEY, window.gameModifiers).catch((err) => {
+        // Re-reject for the same reason as saveProfileData: a resolved-on-failure promise let
+        // callers act as though the modifier write had persisted when it hadn't.
         console.error("Error: failed to save game modifiers", err);
+        throw err;
     });
 }
 
@@ -212,16 +220,49 @@ function addElement(elType, content, id, classType, data, parentEl)
 // Some legacy users may be lacking variants as part of their character card objects, so this function fixes this
 function fixLegacyCharacterVariants()
 {
+    let changed = false;
     for (let card of window.profileData.cards)
     {
-        if (!card["variant"])
+        // Only `undefined` means "legacy card, never migrated". An empty-string variant is the
+        // legitimate default for a plain character, so `!card.variant` would treat every such card as
+        // unmigrated and re-split it on every page load — wasted O(deck) work that never settles.
+        if (card["variant"] === undefined)
         {
             // Split by code point — charAt(0)/substring(1) count UTF-16 units and would cut a
             // character outside the BMP in half, corrupting both the character and the variant
             const firstChar = toCharacters(card.character)[0] || "";
             card["variant"] = card.character.slice(firstChar.length);
             card["character"] = firstChar;
+            changed = true;
         }
+    }
+    // Persist once so the migration actually sticks; without this it silently recomputes every load
+    // (and on a read-only page that never otherwise saves, it never lands at all). Best-effort.
+    if (changed)
+        saveProfileData(window.profileData).catch(() => {});
+}
+
+/**
+ * Reads and JSON-parses a legacy localStorage entry, returning null when it is absent OR unparseable.
+ * Corrupt legacy data must never throw: a raw JSON.parse in the IndexedDB-failure fallback path would
+ * throw a second time, uncaught, rejecting main()/storageReady and leaving every page script dormant
+ * (a blank, dead page). Treating garbage as "no data" lets the app boot with an empty profile instead.
+ * @param { string } key - The localStorage key to read
+ * @returns { * } - The parsed value, or null when missing/corrupt
+ */
+function parseLegacyJSON(key)
+{
+    const raw = window.localStorage.getItem(key);
+    if (raw === null)
+        return null;
+    try
+    {
+        return JSON.parse(raw);
+    }
+    catch (e)
+    {
+        console.error(`Error: corrupt legacy localStorage "${key}"; ignoring`, e);
+        return null;
     }
 }
 
@@ -356,10 +397,11 @@ async function main()
         // still in localStorage (legacy users keep their decks; the migration just never completes)
         // so the app still works this session, even if writes won't persist
         console.error("Error: failed to load profile data from IndexedDB", err);
-        const legacyCardData = window.localStorage.getItem("cardData");
-        const legacyModifiers = window.localStorage.getItem("gameModifiers");
-        window.profileData = legacyCardData !== null ? JSON.parse(legacyCardData) : null;
-        window.gameModifiers = legacyModifiers !== null ? JSON.parse(legacyModifiers) : null;
+        // Parse defensively: loadProfileData may have thrown *because* this legacy JSON is corrupt, and
+        // re-parsing it raw here would throw again — this time uncaught. parseLegacyJSON degrades a bad
+        // entry to null so main() falls through to initializing a fresh profile below.
+        window.profileData = parseLegacyJSON("cardData");
+        window.gameModifiers = parseLegacyJSON("gameModifiers");
     }
 
     if (window.profileData === null)
@@ -375,12 +417,14 @@ async function main()
             phrases: [],
             activityByDay: {},
         }
-        saveProfileData(window.profileData);
+        // Best-effort init writes: nothing awaits these, and saveProfileData now rejects on failure,
+        // so swallow it here to avoid an unhandled rejection (the failure is already logged inside).
+        saveProfileData(window.profileData).catch(() => {});
     }
     else if (!window.profileData["phrases"])
     {
         window.profileData["phrases"] = [];
-        saveProfileData(window.profileData);
+        saveProfileData(window.profileData).catch(() => {});
     }
 
     // Users from before the daily-streak feature: derive the last play-day once from lastDate in
@@ -393,7 +437,7 @@ async function main()
         window.profileData["lastStreakDay"] = last !== 0
             ? Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000)
             : 0;
-        saveProfileData(window.profileData);
+        saveProfileData(window.profileData).catch(() => {});
     }
 
     // Users from before the activity-calendar feature: start the per-day history empty (no
@@ -401,7 +445,7 @@ async function main()
     if (window.profileData["activityByDay"] === undefined)
     {
         window.profileData["activityByDay"] = {};
-        saveProfileData(window.profileData);
+        saveProfileData(window.profileData).catch(() => {});
     }
 
     if (window.gameModifiers === null)
@@ -410,12 +454,12 @@ async function main()
             extensive: false,
             levelReduce: 0
         }
-        saveGameModifiers();
+        saveGameModifiers().catch(() => {});
     }
     else if (window.gameModifiers.levelReduce === null || window.gameModifiers.levelReduce === undefined)
     {
         window.gameModifiers.levelReduce = 0;
-        saveGameModifiers();
+        saveGameModifiers().catch(() => {});
     }
 
     fixLegacyCharacterVariants();
@@ -429,8 +473,17 @@ async function main()
     if (!('pageswap' in window) && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
     {
         document.addEventListener('click', (event) => {
+            // Only take over a plain left-click. Modified clicks (Ctrl/Cmd/Shift/Alt) and middle-clicks
+            // open a new tab/window, `download` links save a file, and an already-handled event
+            // shouldn't be re-driven — turning any of those into a 200 ms same-tab navigation would
+            // silently override what the user asked for.
+            if (event.defaultPrevented || event.button !== 0 ||
+                event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
+                return;
+
             const anchor = event.target.closest('a');
-            if (anchor && anchor.href && anchor.host === location.host && anchor.target !== '_blank')
+            if (anchor && anchor.href && anchor.host === location.host &&
+                anchor.target !== '_blank' && !anchor.hasAttribute('download'))
             {
                 const targetUrl = anchor.href;
                 const currentUrlNoHash = location.href.split('#')[0];

@@ -8,6 +8,11 @@ window.CARD_DEFAULT_PREVIEW_NAME = "Preview Name"
 window.previewCards = [];
 window.previewPhrase = null;
 
+// Set when editing an existing card/phrase (?edit / ?phrase-edit). Holds the live array, the index,
+// and a deep-copied "working" object that all the edit handlers mutate instead of the stored one, so
+// live profileData is only touched when Finish commits the copy back. Stays null when creating new.
+window.editContext = null;
+
 window.writer = null;
 
 window.currentIME = "";
@@ -377,7 +382,7 @@ function constructEditCard(index, it, root, bPhrase)
                 lit.phrase = event.target.value === "" ? window.CARD_DEFAULT_CHARACTER : event.target.value;
 
                 window.previewCards = [];
-                constructPhraseEditCardPreview(lit, phrasePreviewContainer);
+                constructPhraseEditCardPreview(lit);
                 constructEditCard("phrase", lit, cardEditSection, true);
                 // Iterate by code point — for…in over a string walks UTF-16 units and would
                 // visit both halves of a character outside the BMP
@@ -482,8 +487,16 @@ function constructListElements()
     let cardEditSection = $("card-edit-section");
     if (dataContainer !== null && index >= 0 && index < dataContainer.length)
     {
-        let it = dataContainer[index];
-        
+        // Edit a deep copy of the stored card/phrase, never the live object. Every edit handler below
+        // mutates "it" in place (name / character / variant / definitions), so editing the live object
+        // would (a) leave a cancelled edit applied in window.profileData and (b) let an unrelated
+        // background save — the daily level reduction or the visibility-change streak check — persist an
+        // abandoned half-edit. The data is plain JSON (strings, numbers, string arrays), so a
+        // stringify/parse round-trip is a safe, dependency-free deep clone. deckEditMain's Finish handler
+        // commits this working copy back at the original index; Cancel just navigates away and discards it.
+        let it = JSON.parse(JSON.stringify(dataContainer[index]));
+        window.editContext = { array: dataContainer, index: index, working: it };
+
         if (it["character"])
         {
             constructPreviewCardGeneric(0, it, cardEditSection);
@@ -528,6 +541,12 @@ function deckEditMain()
 {
     constructListElements();
     runEventAfterAnimation($("finish-edit-button"), "click", function(_) {
+        // Commit an in-progress edit of an existing card/phrase: write the detached working copy back
+        // over the original entry. This is the only place an edit reaches live profileData, so a
+        // Cancel (which never runs this) leaves the stored card/phrase exactly as it was.
+        if (window.editContext !== null)
+            window.editContext.array[window.editContext.index] = window.editContext.working;
+
         if (window.previewPhrase !== null)
             window.profileData.phrases.push(window.previewPhrase);
 

@@ -145,11 +145,15 @@ function createCustomSelect(button, ariaLabel, options, initialValue, onChange)
     const container = document.createElement("div");
     container.className = "list-select-container";
 
-    // Insert the wrapper into the DOM and move the button inside it
-    if (button.parentNode)
+    // Move the button into a positioning wrapper. If the button isn't in the DOM yet there is nowhere
+    // to anchor the wrapper, and appending the button into the never-inserted container would just
+    // yank the whole widget off the page silently. Refuse instead of losing it.
+    if (button.parentNode === null)
     {
-        button.parentNode.insertBefore(container, button);
+        console.error("createCustomSelect: button is not attached to the DOM; skipping select box", button);
+        return button;
     }
+    button.parentNode.insertBefore(container, button);
     container.appendChild(button);
 
     let activeValue = initialValue;

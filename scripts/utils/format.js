@@ -29,17 +29,19 @@ function getLocalisedTimePostfix(time)
         postfix: lc.milliseconds
     }
 
-    if (time > window.HOUR_UNIX)
+    // Use >= so a value sitting exactly on a boundary is shown in the larger unit: 3600000 ms is
+    // "1.00 hours", not "60.00 minutes", and 1000 ms is "1.00 seconds", not "1000.00 milliseconds".
+    if (time >= window.HOUR_UNIX)
     {
         rt.time /= window.HOUR_UNIX;
         rt.postfix = lc.hours;
     }
-    else if (time > window.MINUTE_UNIX)
+    else if (time >= window.MINUTE_UNIX)
     {
         rt.time /= window.MINUTE_UNIX;
         rt.postfix = lc.minutes;
     }
-    else if (time > window.SECOND_UNIX)
+    else if (time >= window.SECOND_UNIX)
     {
         rt.time /= window.SECOND_UNIX;
         rt.postfix = lc.seconds;

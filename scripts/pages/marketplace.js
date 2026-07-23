@@ -165,18 +165,27 @@ function constructElement(val, deckContainer, deck, type, language)
     // Download deck with this interesting code
     runEventAfterAnimation(addElement("button", lc.deck_download, `download-button-${type}-${val}`, "card-button-edit", path, div), "click", async function(e)
     {
-        let content = await loadMarketplaceData(e.target.getAttribute("arbitrary-data"));
-        if (content === undefined)
-            return;
+        try
+        {
+            let content = await loadMarketplaceData(e.target.getAttribute("arbitrary-data"));
+            if (content === undefined)
+                return;
 
-        // loadMarketplaceData returns the parsed object — serialize it back, otherwise the Blob
-        // would contain the string "[object Object]"
-        let file = new Blob([JSON.stringify(content)], { type: "application/json;charset=utf-8" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(file);
-        link.download = e.target.getAttribute("arbitrary-data").split("/").at(-1);
-        link.click();
-        URL.revokeObjectURL(link.href);
+            // loadMarketplaceData returns the parsed object — serialize it back, otherwise the Blob
+            // would contain the string "[object Object]"
+            let file = new Blob([JSON.stringify(content)], { type: "application/json;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(file);
+            link.download = e.target.getAttribute("arbitrary-data").split("/").at(-1);
+            link.click();
+            URL.revokeObjectURL(link.href);
+        }
+        catch (err)
+        {
+            // Network failure fetching the deck: don't leave an unhandled rejection. The import
+            // button reports failures via its overlay; the download button has no UI, so just log
+            console.error("Error: deck download failed", err);
+        }
     });
 
     return div;
@@ -185,11 +194,12 @@ function constructElement(val, deckContainer, deck, type, language)
 /**
  * Creates an error text element
  * @param { HTMLElement } deckContainer - Container HTML element
- * @param { Response } response - JSON response object
+ * @param { number|null } status - HTTP status code, or null when the request never got a response
+ *        (offline / blocked CDN / DNS failure). A dash is shown in place of a status in that case.
  */
-function createErrorElement(deckContainer, response)
+function createErrorElement(deckContainer, status)
 {
-    const text = lc.marketplace_load_error.replace("{}", response.status);
+    const text = lc.marketplace_load_error.replace("{}", status == null ? "—" : status);
     addElement("h1", text, "", "error-text centered vcentered", "", deckContainer);
 }
 
@@ -270,24 +280,36 @@ async function marketplaceMain()
     const unofficialContainer = $("deck-community-master");
 
     // Everything the page needs is described by a single metadata map, so one fetch and one error
-    // message cover the whole marketplace
-    const response = await fetch(`${MARKETPLACE_CDN}/marketplace-map.json`);
-    if (response.status !== 200)
+    // message cover the whole marketplace. A network failure (offline, blocked CDN, DNS) rejects the
+    // fetch outright rather than returning a non-200 response, so guard both: without the try/catch
+    // the rejection would abort the whole page init, leaving no error shown and the search box unwired.
+    try
     {
-        createErrorElement(officialContainer, response);
-    }
-    else
-    {
-        const map = await response.json();
-        if (map.official !== undefined)
-            handleMarketplaceSection(officialContainer, map.official, "official");
-
-        // Only surface the community section when there is at least one community deck to show
-        if (map.unofficial !== undefined && map.unofficial.length > 0)
+        const response = await fetch(`${MARKETPLACE_CDN}/marketplace-map.json`);
+        if (response.status !== 200)
         {
-            addElement("h1", lc.community_decks_header, "", "centered", "", unofficialContainer);
-            handleMarketplaceSection(unofficialContainer, map.unofficial, "unofficial");
+            createErrorElement(officialContainer, response.status);
         }
+        else
+        {
+            const map = await response.json();
+            if (map.official !== undefined)
+                handleMarketplaceSection(officialContainer, map.official, "official");
+
+            // Only surface the community section when there is at least one community deck to show
+            if (map.unofficial !== undefined && map.unofficial.length > 0)
+            {
+                addElement("h1", lc.community_decks_header, "", "centered", "", unofficialContainer);
+                handleMarketplaceSection(unofficialContainer, map.unofficial, "unofficial");
+            }
+        }
+    }
+    catch (err)
+    {
+        // Offline, blocked CDN, or a malformed metadata map: surface the same error card instead of
+        // letting the rejection tear down the rest of the page setup below
+        console.error("Error: could not load the marketplace", err);
+        createErrorElement(officialContainer, null);
     }
 
     runEventAfterAnimation($("upload-deck-public"), "click", (_) => { window.open(MARKETPLACE_URL) });

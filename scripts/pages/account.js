@@ -67,9 +67,16 @@ function setupGameModifiers()
     levelReduce.value = window.gameModifiers.levelReduce;
     levelReduce.labels[0].childNodes[0].textContent = `${lc.level_reduce_label} ${formatDecimal(levelReduce.value)} `;
 
+    // Update the label live as the slider is dragged, but only persist once the drag settles
+    // (the "change" event) — writing to IndexedDB on every "input" event fired a storage write
+    // per pixel of the drag. The value is coerced to a Number so the stored modifier stays
+    // numeric (matching the schema) instead of the raw string the input hands us.
     levelReduce.addEventListener("input", (e) => {
-        window.gameModifiers.levelReduce = e.target.value;
         e.target.labels[0].childNodes[0].textContent = `${lc.level_reduce_label} ${formatDecimal(e.target.value)} `;
+    });
+
+    levelReduce.addEventListener("change", (e) => {
+        window.gameModifiers.levelReduce = Number(e.target.value);
         saveGameModifiers();
     });
 }

@@ -50,8 +50,17 @@ function initEmojiReplacement()
     const observer = new MutationObserver((mutations) => {
         const targets = new Set();
         for (const mutation of mutations)
-            if (mutation.type === 'childList' && mutation.addedNodes.length > 0)
-                targets.add(mutation.target);
+        {
+            if (mutation.type !== 'childList' || mutation.addedNodes.length === 0)
+                continue;
+            // Skip mutations inside SVG. hanzi-writer rewrites its stroke SVG on every single stroke,
+            // and the deck's virtualization adds/removes static-outline SVGs as cards scroll — none of
+            // which can ever contain a text emoji, so re-walking that subtree each time is wasted work
+            // on a hot path.
+            if (mutation.target instanceof SVGElement)
+                continue;
+            targets.add(mutation.target);
+        }
 
         for (const target of targets)
             parseEmojis(target);

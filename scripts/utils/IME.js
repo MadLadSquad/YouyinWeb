@@ -3,7 +3,9 @@
 var soundTables = {};
 
 /**
- * Convert each word in a sentence to pinyin
+ * Convert each word in a sentence to pinyin. The notation is one syllable per whitespace-separated
+ * token, each carrying a single trailing tone digit (1-4, with 0 or 5 meaning the neutral tone) — so
+ * "ni3 hao3" -> "nǐ hǎo". A token without a digit is left in its neutral form.
  * @param {string} string - The input non-pinyin string
  * @param { number } _ - We usually receive an index, but the pin1yin1 notation doesn't need it, since it's part of the
  * string. Feel free to set this to anything
@@ -15,45 +17,118 @@ function pinyinify(string, _) {
     // Pinyin-ify every element
     for (let i = 0; i < arr.length; i++)
     {
+        let syllable = arr[i];
+
+        // The tone is a single trailing digit; a syllable has exactly one, so strip it once up front
+        // rather than re-checking the tail on every key. 0 and 5 both denote the neutral (unmarked)
+        // tone. We don't support Jyutping (tones 6+ have no diacritics anyway).
+        let toneIndex = 5;
+        const lastEl = syllable.at(-1);
+        if (lastEl >= '0' && lastEl <= '5')
+        {
+            toneIndex = (lastEl === '0') ? 5 : parseInt(lastEl, 10);
+            syllable = syllable.slice(0, -1);
+        }
+
+        // Place the tone mark on the correct vowel and stop. The table is ordered so the first key
+        // that occurs in the syllable is the vowel the mark belongs on (vowel clusters precede single
+        // vowels), so the first match is the only replacement — without the break, later keys would
+        // re-match the remaining plain vowels and re-run at the neutral tone.
         for (const [key, val] of Object.entries(soundTables.pinyin.table))
         {
-            if (arr[i].includes(key))
+            if (syllable.includes(key))
             {
-                let lastEl = arr[i].at(arr[i].length - 1);
-                let index = 5;
-                // Check if the number at the back is above 0 and less than 6 since we don't support Jyutping(it doesn't have markings anyway)
-                if (lastEl >= '0' && lastEl <= '5')
-                {
-                    index = parseInt(lastEl);
-                    arr[i] = arr[i].substring(0, arr[i].length - 1);
-                    if (lastEl === '0')
-                        index = 5;
-                }
-                arr[i] = arr[i].replace(key, val[index - 1]);
+                syllable = syllable.replace(key, val[toneIndex - 1]);
+                break;
             }
         }
+
+        arr[i] = syllable;
     }
     return arr.join(" ");
 }
 
+// A romaji consonant is any latin letter that isn't one of the five vowels. Used to detect the
+// geminate (doubled-consonant) sokuon and the syllabic n below.
+function isRomajiConsonant(c)
+{
+    return c >= "a" && c <= "z" && !"aiueo".includes(c);
+}
+
 /**
- * Convert a Romaji string to Hiragana or Katakana
+ * Convert a Romaji string to Hiragana or Katakana.
+ *
+ * Rather than a table sweep of replaceAll (which is order-dependent and can't tell "n" the syllable
+ * ん from "n" the start of "na", nor produce the doubled-consonant っ), this walks the input left to
+ * right and, at each position, greedily takes the longest romaji key that matches. Two constructs are
+ * handled before the table lookup because they don't have their own literal keys:
+ *   - the syllabic n (ん): an "n" not followed by a vowel or "y" — e.g. "zannen" -> "ざんねん";
+ *   - the sokuon (っ): a doubled consonant, e.g. "kitte" -> "きって", plus the "tch" spelling of っち.
  * @param { string } string - The input string
  * @param { number } bKatakana - Whether to convert to Katakana or not. Treat this as a boolean
  * @return { string } The output string
  */
 function fromRomaji(string, bKatakana)
 {
-    string = string.toLowerCase();
-    for (const [key, val] of Object.entries(soundTables.romaji.table))
+    const table = soundTables.romaji.table;
+    // The kana column: 0 = hiragana, 1 = katakana. Resolve it once instead of per character.
+    const kana = bKatakana >= 1 ? 1 : 0;
+    const sokuon = ["っ", "ッ"][kana];
+    const syllabicN = ["ん", "ン"][kana];
+
+    const input = string.toLowerCase();
+    let out = "";
+    let i = 0;
+    while (i < input.length)
     {
-        // Yet another Javascript rant: In most languages, booleans are just numeric values, however Javascript is
-        // retarded and all the values there are strings. We could convert it to an integer or
-        // use the unary + operator(UGLY AS SHIT -> "val[+bKatakana]"), however it's extremely slow. Turns out, the
-        // fastest solution is to use a ternary operation... I cannot even...
-        string = string.replaceAll(key, val[bKatakana >= 1 ? 1 : 0]);
+        const c = input[i];
+        const next = input[i + 1] || "";
+
+        // Sokuon: a consonant doubled before its own kana marks gemination ("kitte" -> きって). The
+        // "tch" spelling is the conventional way to write っ before ち ("matcha" -> まっちゃ). "n" is
+        // excluded — "nn" is the syllabic ん, handled below.
+        if (c !== "n" && isRomajiConsonant(c) &&
+            (c === next || (c === "t" && input.substr(i + 1, 2) === "ch")))
+        {
+            out += sokuon;
+            i++;
+            continue;
+        }
+
+        // Syllabic n (ん): an "n" that doesn't begin a na/ni/nu/ne/no or nya/nyu/nyo syllable — i.e.
+        // one followed by a consonant, another "n", or the end of the input. `next` is "" at the end
+        // of the string, which is not a vowel (guard the empty case: "aiueo".includes("") is true).
+        const nextIsVowel = next !== "" && "aiueo".includes(next);
+        if (c === "n" && next !== "y" && !nextIsVowel)
+        {
+            out += syllabicN;
+            i++;
+            continue;
+        }
+
+        // Longest-match the table: try 4-, 3-, 2- then 1-character keys so a multi-letter kana
+        // ("kya", "sha", "tsu") wins over its shorter prefixes ("ka"/"ki", "sa"/"shi", "tu").
+        let matched = false;
+        for (let len = 4; len >= 1; len--)
+        {
+            const chunk = input.substr(i, len);
+            if (chunk.length === len && Object.prototype.hasOwnProperty.call(table, chunk))
+            {
+                out += table[chunk][kana];
+                i += len;
+                matched = true;
+                break;
+            }
+        }
+
+        // No kana for this position (a space, punctuation, or a stray consonant): pass it through.
+        if (!matched)
+        {
+            out += c;
+            i++;
+        }
     }
-    return string;
+    return out;
 }
 
 

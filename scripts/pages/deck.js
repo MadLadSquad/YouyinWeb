@@ -21,10 +21,22 @@ function updateExportButton()
 }
 
 /**
- * The import deck button callback. Imports a deck from a file.
- * @param {string} f - The element in question
+ * The import deck button callback, wired to the file input's "change" event.
+ * @param { Event } f - The change event from the #fileupload input
  */
 function importDeck(f) {
+    const input = f.target;
+    const file = input.files[0];
+
+    // Clear the input's selection right away. A file input fires "change" only when the chosen value
+    // differs from the current one, so leaving the previous file selected means re-picking that same
+    // file (e.g. after declining the confirm below) emits no event and the import silently no-ops.
+    // `file` already holds the selected File, so clearing the input doesn't affect the read below.
+    input.value = "";
+
+    if (!file)
+        return;
+
     let bExecuted = confirm(lc.import_deck_confirm_text);
     if (bExecuted)
     {
@@ -40,7 +52,7 @@ function importDeck(f) {
             // tear the page down before the transaction flushes
             saveProfileData(dt).then(() => document.location.reload());
         });
-        reader.readAsText(f.target.files[0])
+        reader.readAsText(file)
     }
 }
 

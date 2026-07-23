@@ -143,7 +143,14 @@ window.loadThemeCatalogue = function ()
         const script = document.createElement("script");
         script.src = new URL("themes-data.js", THEME_SCRIPT_SRC).href;
         script.onload = function () { resolve(); };
-        script.onerror = function () { reject(new Error("Error: failed to load theme catalogue")); };
+        script.onerror = function () {
+            // A failed load must not poison every later attempt: clear the cached promise (and drop
+            // the dead <script>) so the next call — e.g. reopening the picker once the network
+            // recovers — retries the load instead of re-returning this same rejected promise forever.
+            window.__cataloguePromise = null;
+            script.remove();
+            reject(new Error("Error: failed to load theme catalogue"));
+        };
         document.head.appendChild(script);
     });
     return window.__cataloguePromise;

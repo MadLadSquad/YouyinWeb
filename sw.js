@@ -1,4 +1,4 @@
-const CACHE_NAME = 'static-v14';
+const CACHE_NAME = 'static-v15';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination
@@ -30,6 +30,9 @@ const SCRIPTS = [
     'scripts/components/tutorial/account.js',
     'scripts/components/writer.js',
     'scripts/components/language-selector.js',
+    'scripts/components/select-box.js',
+    'scripts/components/theme-selector.js',
+    'scripts/components/emoji.js',
     'scripts/components/card-search.js',
     'scripts/data/i18n.js',
     'scripts/pages/main-page.js',
@@ -169,27 +172,45 @@ self.addEventListener('fetch', (event) => {
     }
 });
 
+// Cache key for a same-origin request. Query strings on this site are client-side state only —
+// deck-edit-card.html?new, ?edit=N and ?phrase-new all serve the byte-identical document, and the
+// page reads the parameters itself — so navigations are keyed by path alone. Without this a cached
+// page is never found again (a ?edit=N request misses the plain entry and falls through to the 404
+// page offline), and every distinct parameter value would add its own copy of the same document to
+// the cache. Assets never carry query strings here, so they keep their exact URL as the key
+function cacheKeyFor(request) {
+    if (request.mode !== 'navigate')
+        return request;
+
+    const url = new URL(request.url);
+    url.search = '';
+    return url.href;
+}
+
 async function handleSameOriginRequest(request) {
+    const cacheKey = cacheKeyFor(request);
     try {
         const networkResponse = await fetch(request);
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
             const cache = await caches.open(CACHE_NAME);
-            cache.put(request, networkResponse.clone());
+            cache.put(cacheKey, networkResponse.clone());
         }
         return networkResponse;
     } catch (err) {
         // Offline: serve from the cache, accounting for extensionless vs .html URL mismatches
-        // between the local and production builds
-        const cachedResponse = await caches.match(request);
+        // between the local and production builds. Read through the versioned cache rather than
+        // caches.match, which searches every cache and could answer from a superseded version
+        const cache = await caches.open(CACHE_NAME);
+        const cachedResponse = await cache.match(cacheKey);
         if (cachedResponse) return cachedResponse;
 
-        const fallbackResponse = await matchUrlFallback(request);
+        const fallbackResponse = await matchUrlFallback(request, cache);
         if (fallbackResponse) return fallbackResponse;
 
         // Last resort for page navigations: the 404 page (or its locale-prefixed copy). Asset
         // requests fall through and fail like a normal network error instead of receiving HTML
         if (request.mode === 'navigate') {
-            return (await caches.match('./404.html')) || (await caches.match('./en_US/404.html'));
+            return (await cache.match('./404.html')) || (await cache.match('./en_US/404.html'));
         }
         throw err;
     }
@@ -207,38 +228,41 @@ async function handleCdnRequest(request, url) {
             }
             return networkResponse;
         } catch (err) {
-            const cachedResponse = await caches.match(request);
+            const cache = await caches.open(CACHE_NAME);
+            const cachedResponse = await cache.match(request);
             if (cachedResponse) return cachedResponse;
             throw err;
         }
     }
 
-    const cachedResponse = await caches.match(request);
+    const cache = await caches.open(CACHE_NAME);
+    const cachedResponse = await cache.match(request);
     if (cachedResponse) return cachedResponse;
 
     const networkResponse = await fetch(request);
     // Opaque (no-cors) responses report status 0, so check the type as well before caching
     if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque') && CDN_HOSTS.includes(url.host)) {
-        const cache = await caches.open(CACHE_NAME);
         cache.put(request, networkResponse.clone());
     }
     return networkResponse;
 }
 
-// Helper to handle extensionless / html routes matching
-async function matchUrlFallback(request) {
-    const staticCache = await caches.open(CACHE_NAME);
+// Helper to handle extensionless / html routes matching. The extension is added to or removed from
+// the *pathname*, not the raw URL — slicing the URL string would chop into a query string instead of
+// the extension ("…/deck-edit-card.html?edit=1" -> "…/deck-edit-card.html?e") and never match
+async function matchUrlFallback(request, cache) {
     const url = new URL(request.url);
+    // Pages are cached by path alone (see cacheKeyFor), so drop the query before deriving the
+    // alternative path — otherwise the rewritten URL could never match a cached entry either
+    url.search = '';
 
     // Check if .html can be added/removed to find a match
     if (url.pathname.endsWith('.html')) {
-        const cleanUrl = request.url.slice(0, -5);
-        const match = await staticCache.match(cleanUrl);
-        if (match) return match;
+        url.pathname = url.pathname.slice(0, -'.html'.length);
+        return (await cache.match(url.href)) || null;
     } else if (!url.pathname.includes('.') && !url.pathname.endsWith('/')) {
-        const htmlUrl = request.url + '.html';
-        const match = await staticCache.match(htmlUrl);
-        if (match) return match;
+        url.pathname += '.html';
+        return (await cache.match(url.href)) || null;
     }
     return null;
 }

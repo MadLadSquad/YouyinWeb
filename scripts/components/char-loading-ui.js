@@ -1,6 +1,7 @@
 'use strict';
-// Loading UI for the character stroke database download. index.js drives the download (see
-// firstTimeDownload / backgroundUpdate) and calls into these builders to render progress:
+// Loading UI for the character stroke database download. character-database.js drives the download
+// (firstTimeDownload / backgroundUpdate, invoked from index.js's main()) and calls into these
+// builders to render progress:
 //   - the blocking, blurred modal shown on a first visit while the whole database downloads
 //   - the small, non-blocking bottom-right pill shown while a background update fetches changed chunks
 // These rely on globals defined elsewhere: addElement and the lc translation object (i18n.js)

@@ -170,9 +170,13 @@ window.profileReady.then(() => {
 });
 
 // Timers are throttled or paused in background tabs and across system sleep, and the timezone may
-// have changed while suspended — re-evaluate whenever the tab becomes visible again
+// have changed while suspended — re-evaluate whenever the tab becomes visible again.
+// This listener is registered at script load, before main() has loaded the profile (and in an
+// UNSUPPORTED browser main() never resolves profileReady, so profileData stays null forever). Bail
+// out until the profile is in memory, otherwise applyDailyLevelReduction dereferences a null profile
+// and throws — the profileReady handler above runs these once the data is actually ready.
 document.addEventListener("visibilitychange", function() {
-    if (document.visibilityState === "visible")
+    if (document.visibilityState === "visible" && window.profileData !== null)
     {
         applyDailyLevelReduction();
         checkStreakExpiry();
