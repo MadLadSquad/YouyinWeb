@@ -1,6 +1,7 @@
-/* Account page only (account.html): the game-modifiers section with its custom checkbox and the
-   level-reduce range slider. Colours come from the theme custom properties injected by theme.js
-   (see base.css). */
+/* Account page only (account.html): the game-modifiers section with its custom checkbox, and the
+   streak-freeze shop card. The range sliders themselves are styled by the shared
+   styles/components/slider.css, since the streak-goal prompt reuses them off this page. Colours
+   come from the theme custom properties injected by theme.js (see base.css). */
 
 /* The activity heatmap is its own full-width block below the profile/settings card grid, rather than
    a third cell squeezed into .deck's auto-fit columns. Match .deck's inline padding and row gap so it
@@ -96,111 +97,38 @@
     outline-offset: 2px;
 }
 
-/* Custom styled slider label & element */
-.slider-label {
-    font-size: 1rem;
-    font-weight: 500;
-    user-select: none;
-    pointer-events: none;
+
+/* ---------------------------------- Streak-freeze shop ------------------------------------ */
+
+/* The explanatory line under the shop's stat rows. Toned down and a size smaller so it reads as
+   help text rather than another statistic */
+.shop-description {
+    font-size: 0.9rem;
+    color: var(--deck-card-text-colour);
+    max-width: 32ch;
+    margin-inline: auto;
 }
 
-/* Range input styling resetting default browser values */
-input[type="range"]#level-reduce-slider {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    width: 120px;
-    max-width: 100%;
-    background: transparent;
-    cursor: pointer;
-    height: 24px;
-    margin: 0;
-    outline: none;
+/* The shop's buy button is disabled whenever the user cannot afford a freeze or already holds the
+   maximum, so it spends most of its life in this state - make that unmistakable rather than leaving
+   it looking clickable. pointer-events stays on so the title tooltip explaining why still shows */
+#buy-streak-freeze-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 
-/* WebKit Track styling */
-input[type="range"]#level-reduce-slider::-webkit-slider-runnable-track {
-    width: 100%;
-    height: 6px;
-    background: var(--main-border-colour);
-    border-radius: 3px;
-    transition: background 0.2s ease;
+/* Neutralise .card-button-edit's hover recolour and click ripple while disabled: a button that
+   responds to the cursor reads as clickable no matter how faded it is. Pinned back to the resting
+   palette rather than left to inherit, since :hover would otherwise win on source order */
+#buy-streak-freeze-button:disabled:hover,
+#buy-streak-freeze-button:disabled:active {
+    color: var(--main-background-colour);
+    background-color: var(--main-accent-colour);
+    border-color: transparent;
+    border-radius: 6px;
 }
 
-input[type="range"]#level-reduce-slider:hover::-webkit-slider-runnable-track {
-    background: var(--main-accent-colour);
-}
-
-/* WebKit Thumb styling */
-input[type="range"]#level-reduce-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    position: relative;
-    z-index: 1;
-    margin-top: -6px; /* center thumb on track: (18px thumb - 6px track)/2 = 6px offset */
-    height: 18px;
-    width: 18px;
-    border-radius: 50%;
-    background: var(--main-accent-colour);
-    border: 2px solid var(--main-background-colour);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: transform 0.1s ease, background-color 0.2s ease;
-}
-
-input[type="range"]#level-reduce-slider:hover::-webkit-slider-thumb {
-    background: var(--deck-button-active-colour);
-    transform: scale(1.2);
-}
-
-input[type="range"]#level-reduce-slider:active::-webkit-slider-thumb {
-    background: var(--deck-button-active-colour);
-    transform: scale(1.3);
-}
-
-/* Firefox Track styling */
-input[type="range"]#level-reduce-slider::-moz-range-track {
-    width: 100%;
-    height: 6px;
-    background: var(--main-border-colour);
-    border-radius: 3px;
-    transition: background 0.2s ease;
-}
-
-input[type="range"]#level-reduce-slider:hover::-moz-range-track {
-    background: var(--main-accent-colour);
-}
-
-/* Firefox Thumb styling */
-input[type="range"]#level-reduce-slider::-moz-range-thumb {
-    position: relative;
-    z-index: 1;
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    background: var(--main-accent-colour);
-    border: 2px solid var(--main-background-colour);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: transform 0.1s ease, background-color 0.2s ease;
-    box-sizing: content-box;
-}
-
-input[type="range"]#level-reduce-slider:hover::-moz-range-thumb {
-    background: var(--deck-button-active-colour);
-    transform: scale(1.2);
-}
-
-input[type="range"]#level-reduce-slider:active::-moz-range-thumb {
-    background: var(--deck-button-active-colour);
-    transform: scale(1.3);
-}
-
-/* Focus visibility outline for accessibility */
-input[type="range"]#level-reduce-slider:focus-visible::-webkit-slider-thumb {
-    outline: 2px solid var(--main-accent-colour);
-    outline-offset: 2px;
-}
-
-input[type="range"]#level-reduce-slider:focus-visible::-moz-range-thumb {
-    outline: 2px solid var(--main-accent-colour);
-    outline-offset: 2px;
+#buy-streak-freeze-button:disabled:active::after {
+    opacity: 0;
+    transition: 0s;
 }

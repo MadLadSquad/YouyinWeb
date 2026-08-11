@@ -69,7 +69,14 @@ function updateDailyStreak()
 /**
  * Kills an expired streak: it dies once the local clock passes midnight of the day AFTER the last
  * completed-session day with nothing completed. Day boundaries follow the device's current clock,
- * so the deadline moves with the user's timezone. Saves and refreshes the deck display on reset
+ * so the deadline moves with the user's timezone.
+ *
+ * Streak freezes are spent here first, one per fully missed day. Each one advances lastStreakDay by
+ * a day, standing in for a session that never happened — so the streak survives but deliberately
+ * does NOT grow, and a session completed later still extends it normally (lastStreakDay is left at
+ * yesterday, which is the "extend" branch of updateDailyStreak). They chain: holding the maximum
+ * covers that many consecutive days off, and the streak only dies once a missed day finds the
+ * wallet empty. Saves and refreshes the display whenever anything changed
  */
 function checkStreakExpiry()
 {
@@ -77,11 +84,36 @@ function checkStreakExpiry()
     if (data.streak === 0 || !data.lastStreakDay)
         return;
 
-    if (localDayIndex(new Date()) - data.lastStreakDay > 1)
+    // Days that passed with nothing completed. Today itself is never counted (there is still time
+    // to practise), so the day right after the last session is free — the streak has always
+    // survived a single day boundary. A negative result means the clock or timezone moved
+    // backwards, which must never be punished
+    let missed = localDayIndex(new Date()) - data.lastStreakDay - 1;
+    if (missed <= 0)
+        return;
+
+    let changed = false;
+    while (missed > 0 && data.streakFreezes > 0)
+    {
+        --data.streakFreezes;
+        --missed;
+        ++data.lastStreakDay;
+        changed = true;
+    }
+
+    if (missed > 0)
     {
         data.streak = 0;
+        changed = true;
+    }
+
+    if (changed)
+    {
         saveProfileData(data);
         renderStreakField();
+        // Repaints the freeze count on the account page; a no-op everywhere else
+        if (window.renderShopFields)
+            window.renderShopFields();
     }
 }
 

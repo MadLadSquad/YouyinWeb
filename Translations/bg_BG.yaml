@@ -56,6 +56,51 @@ translations:
     text: "Дневно понижаване на нивовото:"
   - id: game_modifiers_header
     text: "Настройки"
+
+  # Gems, streak freezes and the daily streak goal (account.html shop + settings slider, and the
+  # blocking goal prompt in scripts/components/streak-goal.js)
+  - id: streak-goal-title
+    text: "Колко серии на ден си поставяте за цел. Това определя и цената на замразяването на серията, така че то винаги струва четири дни преговаряне със собственото Ви темпо."
+  - id: streak-goal-aria-label
+    text: "Слайдер за дневна цел"
+  - id: streak-goal-label
+    text: "Дневна цел:"
+  - id: gems-field
+    text: "💎"
+  - id: shop_header
+    text: "Магазин"
+  - id: streak-freeze-field
+    text: "Замразявания на серията"
+  - id: streak-freeze-cost-field
+    text: "Цена"
+  - id: streak-freeze-description
+    text: "Замразяването се изразходва автоматично в ден, в който не преговаряте, и запазва серията Ви жива. То не увеличава броя на дните в серията."
+  - id: buy_streak_freeze_button
+    text: "Купи замразяване"
+  - id: streak_goal_sessions
+    text: "{goal}{goal_rounds}"
+    switch:
+      - var: goal_rounds
+        default: " серии на ден"
+        cases:
+          - case: "1"
+            result: " серия на ден"
+  - id: streak_goal_modal_title
+    text: "Задайте дневната си цел"
+  - id: streak_goal_modal_body
+    text: "Колко серии на ден си поставяте за цел? {brand} използва това, за да определи цената на замразяванията на серията, а можете да я промените по всяко време от страницата на акаунта си."
+  - id: streak_goal_modal_confirm
+    text: "Задай цел"
+  - id: streak_freeze_needs_goal
+    text: "Първо задайте дневната си цел"
+  - id: streak_freeze_full
+    text: "Вече държите максималния брой замразявания"
+  - id: streak_freeze_too_expensive
+    text: "Нужни са Ви още {gems} 💎"
+  - id: gems_amount
+    text: "{gems} 💎"
+  - id: gems_gain
+    text: "+ {gems} 💎"
   - id: finish_page_header
     text: "Тестето е преговорено"
   - id: finish_page_characters_reviewed

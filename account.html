@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="./styles/components/card.css" type="text/css">
         <link rel="stylesheet" href="./styles/components/button.css" type="text/css">
         <link rel="stylesheet" href="./styles/components/activity-calendar.css" type="text/css">
+        <link rel="stylesheet" href="./styles/components/slider.css" type="text/css">
         <link rel="stylesheet" href="./styles/pages/account.css" type="text/css">
 
         <title class="site-title">{{ _ account }} | {{ trademark }} </title>
@@ -20,6 +21,7 @@
                     <h1>{{ _ profile-statistics-header }}</h1>
                     <p id="total-sessions-field">{{ _ total-sessions-field }}: </p>
                     <p id="streak-field">{{ _ streak-field }}: </p>
+                    <p id="gems-field">{{ _ gems-field }}: </p>
                     <p id="deck-card-num-field">{{ _ deck-card-num-field }}: </p>
                     <p id="deck-phrase-num-field">{{ _ deck-phrase-num-field }}: </p>
                     <p id="last-session-date-field">{{ _ last-session-date-field }}: </p>
@@ -40,7 +42,13 @@
                             <label for="level-reduce-slider" class="slider-label">
                                 {{ _ level-reduce-label }}
                             </label>
-                            <input type="range" id="level-reduce-slider" name="{{ _ level-reduce-aria-label }}" aria-label="{{ _ level-reduce-aria-label }}" min="0" max="1" value="0" step="0.01">
+                            <input type="range" id="level-reduce-slider" class="settings-slider" name="{{ _ level-reduce-aria-label }}" aria-label="{{ _ level-reduce-aria-label }}" min="0" max="1" value="0" step="0.01">
+                        </div>
+                        <div class="modifier-row" title="{{ _ streak-goal-title }}">
+                            <label for="streak-goal-slider" class="slider-label">
+                                {{ _ streak-goal-label }}
+                            </label>
+                            <input type="range" id="streak-goal-slider" class="settings-slider" name="{{ _ streak-goal-aria-label }}" aria-label="{{ _ streak-goal-aria-label }}" min="3" max="30" value="3" step="1">
                         </div>
                         <div class="modifier-row">
                             <button type="button" id="lang-select-account" class="centered list-select-button lang-select-widget" aria-haspopup="dialog" aria-expanded="false"></button>
@@ -51,6 +59,15 @@
                             <button type="button" id="clear-account-button" class="centered card-button-edit card-button-danger">{{ _ clear_account_button }}</button>
                         </div>
                     </div>
+                </div>
+                <!-- Third cell of the same auto-fit grid as the profile and settings cards, so it
+                     wraps alongside them instead of needing a layout of its own -->
+                <div id="shop-card" class="card centered">
+                    <h1>{{ _ shop_header }}</h1>
+                    <p id="streak-freeze-field">{{ _ streak-freeze-field }}: </p>
+                    <p id="streak-freeze-cost-field">{{ _ streak-freeze-cost-field }}: </p>
+                    <p class="shop-description">{{ _ streak-freeze-description }}</p>
+                    <button type="button" id="buy-streak-freeze-button" class="centered card-button-edit">{{ _ buy_streak_freeze_button }}</button>
                 </div>
             </section>
             <!-- The activity heatmap sits on its own below the card grid (not as a third .deck cell)
@@ -72,6 +89,7 @@
              that index.js creates, so index.js must run first -->
         <script src="./scripts/utils/format.js"></script>
         <script src="./scripts/components/activity-calendar.js"></script>
+        <script src="./scripts/components/streak-goal.js"></script>
         <script src="./scripts/pages/account.js"></script>
     </body>
 </html>

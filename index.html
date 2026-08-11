@@ -6,6 +6,8 @@
         <meta property="og:url" content="./{{ _ locale }}index.html">
         <link rel="stylesheet" href="./styles/components/writer.css" type="text/css">
         <link rel="stylesheet" href="./styles/components/button.css" type="text/css">
+        <!-- The streak-goal prompt is built around a range slider and can appear on this page -->
+        <link rel="stylesheet" href="./styles/components/slider.css" type="text/css">
         <link rel="stylesheet" href="./styles/pages/index.css" type="text/css">
         <title class="site-title">{{ trademark }}</title>
     </head>
@@ -58,6 +60,7 @@
              profileReady, charDataReady) that index.js creates, so index.js must run first -->
         <script src="./scripts/components/writer.js"></script>
         <script src="./scripts/utils/format.js"></script>
+        <script src="./scripts/components/streak-goal.js"></script>
         <script src="./scripts/pages/main-page.js"></script>
     </body>
 </html>

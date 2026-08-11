@@ -5,6 +5,29 @@ window.MAX_KNOWLEDGE_LEVEL = 4;
 window.HOUR_UNIX = 3600000;
 window.MINUTE_UNIX = 60000;
 window.SECOND_UNIX = 1000;
+
+// Hard cap on how many cards and how many phrases may be revised in a single play session. Decks
+// larger than this are shuffled and only the first entries are revised, so each session draws a
+// random subset of at most this many cards and (separately) this many phrases. Lives here rather
+// than in main-page.js because the streak-freeze price is derived from it and the account page
+// never loads main-page.js
+window.MAX_SESSION_REVISION_ITEMS = 8;
+
+// Gems awarded for one completed card and for one completed phrase. Characters drawn inside a
+// phrase award nothing on their own — the phrase pays out once, as a whole — so a full session is
+// worth GEMS_PER_ITEM * (cards + phrases) = GEMS_PER_ITEM * MAX_SESSION_REVISION_ITEMS * 2
+window.GEMS_PER_ITEM = 10;
+
+// How many streak freezes the user may hold at once. Each one absorbs one missed day, and they
+// chain, so holding the maximum covers that many consecutive days off
+window.MAX_STREAK_FREEZES = 3;
+
+// Bounds of the daily streak goal (sessions per day) the user picks on the account page
+window.STREAK_GOAL_MIN = 3;
+window.STREAK_GOAL_MAX = 30;
+
+// A streak freeze costs this many days of practice at the user's own daily goal
+window.STREAK_FREEZE_COST_DAYS = 4;
 // ---------------------------------- CONSTANT BLOCK END ----------------------------------
 
 // In-memory copy of the user's profile data. It is loaded from IndexedDB once at startup (see
@@ -187,6 +210,20 @@ function saveGameModifiers()
         console.error("Error: failed to save game modifiers", err);
         throw err;
     });
+}
+
+/**
+ * Price of one streak freeze, in gems. A freeze costs window.STREAK_FREEZE_COST_DAYS days of
+ * practice at the user's own daily goal: goal sessions a day, each worth a full batch of cards and
+ * phrases. Scaling with the goal keeps a freeze the same amount of effort for everyone, whether
+ * they aim for three sessions a day or thirty
+ * @param { number } goal - The user's daily streak goal, in sessions per day
+ * @returns { number } - The cost in gems
+ */
+function streakFreezeCost(goal)
+{
+    return window.STREAK_FREEZE_COST_DAYS * window.GEMS_PER_ITEM *
+        (window.MAX_SESSION_REVISION_ITEMS * 2) * goal;
 }
 
 /**
@@ -416,6 +453,9 @@ async function main()
             cards: [],
             phrases: [],
             activityByDay: {},
+            gems: 0,
+            streakFreezes: 0,
+            streakGoal: 0,
         }
         // Best-effort init writes: nothing awaits these, and saveProfileData now rejects on failure,
         // so swallow it here to avoid an unhandled rejection (the failure is already logged inside).
@@ -445,6 +485,26 @@ async function main()
     if (window.profileData["activityByDay"] === undefined)
     {
         window.profileData["activityByDay"] = {};
+        saveProfileData(window.profileData).catch(() => {});
+    }
+
+    // Users from when the currency was still called "points": carry the balance over under its new
+    // name and drop the old field, so nobody loses what they earned to a rename
+    if (window.profileData["gems"] === undefined && window.profileData["points"] !== undefined)
+    {
+        window.profileData["gems"] = window.profileData["points"];
+        delete window.profileData["points"];
+        saveProfileData(window.profileData).catch(() => {});
+    }
+
+    // Users from before the gem economy: start them at zero rather than retroactively paying out
+    // for sessions that predate the feature. A streakGoal of 0 means "never chosen", which is what
+    // makes streak-goal.js prompt them for one on their next visit
+    if (window.profileData["gems"] === undefined)
+    {
+        window.profileData["gems"] = 0;
+        window.profileData["streakFreezes"] = 0;
+        window.profileData["streakGoal"] = 0;
         saveProfileData(window.profileData).catch(() => {});
     }
 

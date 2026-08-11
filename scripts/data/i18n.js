@@ -222,3 +222,19 @@ lc.activity_legend_more = "{{ _ activity_legend_more }}";
 lc.activity_tooltip = "{{ _ activity_tooltip }}";
 lc.activity_tooltip_one = "{{ _ activity_tooltip_one }}";
 lc.activity_tooltip_none = "{{ _ activity_tooltip_none }}";
+
+// gems, streak freezes and the daily streak goal (account.js, streak-goal.js, main-page.js). The
+// {goal}/{gems} placeholders survive the build and are filled in at runtime
+lc.streak_goal_label = "{{ _ streak-goal-label }}";
+lc.streak_goal_aria_label = "{{ _ streak-goal-aria-label }}";
+// Singular/plural pair baked from one ui18n switch pattern, like streak_days_count above
+lc.streak_goal_sessions = "{{ _ streak_goal_sessions {{ dict goal_rounds 2 }} }}"
+lc.streak_goal_sessions_one = "{{ _ streak_goal_sessions {{ dict goal_rounds 1 }} }}"
+lc.streak_goal_modal_title = "{{ _ streak_goal_modal_title }}";
+lc.streak_goal_modal_body = "{{ _ streak_goal_modal_body }}";
+lc.streak_goal_modal_confirm = "{{ _ streak_goal_modal_confirm }}";
+lc.streak_freeze_needs_goal = "{{ _ streak_freeze_needs_goal }}";
+lc.streak_freeze_full = "{{ _ streak_freeze_full }}";
+lc.streak_freeze_too_expensive = "{{ _ streak_freeze_too_expensive }}";
+lc.gems_amount = "{{ _ gems_amount }}";
+lc.gems_gain = "{{ _ gems_gain }}";

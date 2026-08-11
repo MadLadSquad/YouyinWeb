@@ -1,4 +1,4 @@
-const CACHE_NAME = 'static-v15';
+const CACHE_NAME = 'static-v16';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination
@@ -34,6 +34,7 @@ const SCRIPTS = [
     'scripts/components/theme-selector.js',
     'scripts/components/emoji.js',
     'scripts/components/card-search.js',
+    'scripts/components/streak-goal.js',
     'scripts/data/i18n.js',
     'scripts/pages/main-page.js',
     'scripts/pages/account.js',
@@ -55,6 +56,7 @@ const ROOT_ONLY_ASSETS = [
     'styles/components/page-search.css',
     'styles/components/char-loading.css',
     'styles/components/tutorial.css',
+    'styles/components/slider.css',
     'styles/pages/index.css',
     'styles/pages/deck.css',
     'styles/pages/deck-edit.css',

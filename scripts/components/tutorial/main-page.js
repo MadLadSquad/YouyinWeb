@@ -133,6 +133,12 @@ function tutShowOutro()
     $("tutorial-finish").addEventListener("click", () => {
         overlay.remove();
         tutFinish();
+
+        // A brand-new user still owes us a daily streak goal. streak-goal.js's own gate deliberately
+        // skips anyone mid-tutorial so the two never fight over the screen, which makes this the
+        // hand-off point. The guard also covers a tutorial replay by someone who already set one
+        if (window.showStreakGoalModal && window.profileData.streakGoal <= 0)
+            window.showStreakGoalModal();
     });
 }
 

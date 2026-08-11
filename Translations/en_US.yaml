@@ -56,6 +56,51 @@ translations:
     text: "Daily level reduction:"
   - id: game_modifiers_header
     text: "Game modifiers"
+
+  # Gems, streak freezes and the daily streak goal (account.html shop + settings slider, and the
+  # blocking goal prompt in scripts/components/streak-goal.js)
+  - id: streak-goal-title
+    text: "How many revision rounds a day you are aiming for. It also sets the price of a streak freeze, so one always costs four days of practice at your own pace."
+  - id: streak-goal-aria-label
+    text: "Daily goal slider"
+  - id: streak-goal-label
+    text: "Daily goal:"
+  - id: gems-field
+    text: "💎"
+  - id: shop_header
+    text: "Shop"
+  - id: streak-freeze-field
+    text: "Streak freezes"
+  - id: streak-freeze-cost-field
+    text: "Price"
+  - id: streak-freeze-description
+    text: "A streak freeze is spent automatically on a day you do not practise, keeping your streak alive. It does not raise the streak count."
+  - id: buy_streak_freeze_button
+    text: "Buy a streak freeze"
+  - id: streak_goal_sessions
+    text: "{goal}{goal_rounds}"
+    switch:
+      - var: goal_rounds
+        default: " rounds a day"
+        cases:
+          - case: "1"
+            result: " round a day"
+  - id: streak_goal_modal_title
+    text: "Set your daily goal"
+  - id: streak_goal_modal_body
+    text: "How many revision rounds a day are you aiming for? {brand} uses this to price streak freezes, and you can change it any time from your account page."
+  - id: streak_goal_modal_confirm
+    text: "Set goal"
+  - id: streak_freeze_needs_goal
+    text: "Set your daily goal first"
+  - id: streak_freeze_full
+    text: "You are already holding the maximum number of streak freezes"
+  - id: streak_freeze_too_expensive
+    text: "You need {gems} more 💎"
+  - id: gems_amount
+    text: "{gems} 💎"
+  - id: gems_gain
+    text: "+ {gems} 💎"
   - id: finish_page_header
     text: "Round complete"
   - id: finish_page_characters_reviewed

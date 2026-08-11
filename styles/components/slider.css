@@ -1,0 +1,145 @@
+/* Shared range-slider styling (the .settings-slider class), plus the layout of the streak-goal
+   prompt that is built around one. Lives in components/ rather than pages/account.css because the
+   prompt modal is shown on the landing page as well as the account page — both link this file.
+   Colours come from the theme custom properties injected by theme.js (see base.css). */
+
+/* Custom styled slider label & element */
+.slider-label {
+    font-size: 1rem;
+    font-weight: 500;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Range input styling resetting default browser values */
+input[type="range"].settings-slider {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 120px;
+    max-width: 100%;
+    background: transparent;
+    cursor: pointer;
+    height: 24px;
+    margin: 0;
+    outline: none;
+}
+
+/* WebKit Track styling */
+input[type="range"].settings-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 6px;
+    background: var(--main-border-colour);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+input[type="range"].settings-slider:hover::-webkit-slider-runnable-track {
+    background: var(--main-accent-colour);
+}
+
+/* WebKit Thumb styling */
+input[type="range"].settings-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    position: relative;
+    z-index: 1;
+    margin-top: -6px; /* center thumb on track: (18px thumb - 6px track)/2 = 6px offset */
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: var(--main-accent-colour);
+    border: 2px solid var(--main-background-colour);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+input[type="range"].settings-slider:hover::-webkit-slider-thumb {
+    background: var(--deck-button-active-colour);
+    transform: scale(1.2);
+}
+
+input[type="range"].settings-slider:active::-webkit-slider-thumb {
+    background: var(--deck-button-active-colour);
+    transform: scale(1.3);
+}
+
+/* Firefox Track styling */
+input[type="range"].settings-slider::-moz-range-track {
+    width: 100%;
+    height: 6px;
+    background: var(--main-border-colour);
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+input[type="range"].settings-slider:hover::-moz-range-track {
+    background: var(--main-accent-colour);
+}
+
+/* Firefox Thumb styling */
+input[type="range"].settings-slider::-moz-range-thumb {
+    position: relative;
+    z-index: 1;
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    background: var(--main-accent-colour);
+    border: 2px solid var(--main-background-colour);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.1s ease, background-color 0.2s ease;
+    box-sizing: content-box;
+}
+
+input[type="range"].settings-slider:hover::-moz-range-thumb {
+    background: var(--deck-button-active-colour);
+    transform: scale(1.2);
+}
+
+input[type="range"].settings-slider:active::-moz-range-thumb {
+    background: var(--deck-button-active-colour);
+    transform: scale(1.3);
+}
+
+/* Focus visibility outline for accessibility */
+input[type="range"].settings-slider:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid var(--main-accent-colour);
+    outline-offset: 2px;
+}
+
+input[type="range"].settings-slider:focus-visible::-moz-range-thumb {
+    outline: 2px solid var(--main-accent-colour);
+    outline-offset: 2px;
+}
+
+/* ------------------------------- Streak-goal prompt modal --------------------------------- */
+/* The modal itself reuses the .char-load-overlay/.char-load-box chrome (see char-loading.css), the
+   same way the tutorial modals do; only the slider row and its readout are specific to it. It sits
+   just above the character-download overlay so a first-time user who somehow has both open answers
+   this one first, but below the tutorial (3000), which must always be able to draw over it. */
+.streak-goal-overlay {
+    z-index: 2100;
+}
+
+/* A wider slider than the settings rows use — the modal has the room, and 3..30 deserves the
+   resolution. It gets its own line so the readout underneath stays centred under the track */
+.streak-goal-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 0.5rem 0;
+}
+
+.streak-goal-row input[type="range"].settings-slider {
+    width: min(320px, 100%);
+}
+
+/* The live "N sessions a day" readout under the slider. Accent-coloured and a size up, because it
+   is the value the user is actually choosing */
+.streak-goal-value {
+    margin: 0.25rem 0 0.75rem 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--main-accent-colour);
+}

@@ -6,16 +6,17 @@ window.ADD_POINTS_ON_ERROR_3_4 = 0.0375;            // 3/4 of 0.05
 window.ADD_POINTS_ON_ERROR_1_2 = 0.025;             // 1/2 or 2/4 of 0.05
 window.ADD_POINTS_ON_ERROR_1_4 = 0.0125;            // 1/4 of 0.05
 
-// Hard cap on how many cards and how many phrases may be revised in a single play session. Decks
-// larger than this are shuffled and only the first entries are revised, so each session draws a
-// random subset of at most this many cards and (separately) this many phrases
-window.MAX_SESSION_REVISION_ITEMS = 8;
+// window.MAX_SESSION_REVISION_ITEMS (the per-session cap on cards and on phrases) lives in the
+// constant block of scripts/index.js instead: the streak-freeze price is derived from it and the
+// account page never loads this file
 
 window.WRITER_SLEEP_AFTER_COMPLETE = 1200;          // In ms
 // How long the completed-character "fly into the progress counter" animation lasts. It is timed to
 // land right as the next character loads (after WRITER_SLEEP_AFTER_COMPLETE), so the snapshot sits
 // invisibly on top during the admire beat, then flies for the last stretch of the pause
 window.WRITER_FLY_TO_COUNTER_DURATION = 650;        // In ms
+// How long the "+ N gems" label takes to rise off the writer and out of the top of the viewport
+window.GEMS_GAIN_FLOAT_DURATION = 1100;           // In ms
 
 window.WRITER_SHOW_HINT_ON_ERRORS = 3;
 window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 = 1;
@@ -663,6 +664,84 @@ function blinkCounter(counterEl)
 }
 
 /**
+ * Floats a "+ N" off the character writer and up out of the top of the viewport as gems are
+ * earned. Purely cosmetic and fully guarded — like the flying character copy it must never be able
+ * to break a round, so every lookup degrades instead of throwing. Skipped under reduced motion,
+ * where the gems still land, just without the flourish
+ * @param { number } amount - The number of gems awarded, rendered into the label
+ */
+function floatGemsGain(amount)
+{
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+        return;
+
+    // Start centred on the writer. On the very last completion of a round the writer element is
+    // already gone, so fall back to the rectangle captured just before it was removed, and finally
+    // to three quarters down the viewport when neither is available
+    let centreX;
+    let centreY;
+    const writerSvg = $("character-target-div");
+    if (writerSvg !== null)
+    {
+        const rect = writerSvg.getBoundingClientRect();
+        centreX = rect.left + rect.width / 2;
+        centreY = rect.top + rect.height / 2;
+    }
+    else if (window.lastWriterRect !== null && window.lastWriterRect !== undefined)
+    {
+        // lastWriterRect is stored in page coordinates (it has the scroll offset baked in), but the
+        // label is position:fixed — take the scroll back out so it lands where the writer was seen
+        centreX = window.lastWriterRect.left - window.scrollX + window.lastWriterRect.width / 2;
+        centreY = window.lastWriterRect.top - window.scrollY + window.lastWriterRect.height / 2;
+    }
+    else
+    {
+        centreX = window.innerWidth / 2;
+        centreY = window.innerHeight * 0.75;
+    }
+
+    const label = addElement("div", lc.gems_gain.replace("{gems}", amount), "", "gems-gain", "", document.body);
+    label.setAttribute("aria-hidden", "true");
+    label.style.setProperty("left", centreX + "px");
+    label.style.setProperty("top", centreY + "px");
+
+    // Rise clear of the top edge before fading out. The element is centred on its own origin by the
+    // stylesheet's translate(-50%, -50%), so the flight distance is just how far down it started
+    const anim = label.animate([
+        { transform: "translate(-50%, -50%)", opacity: 0 },
+        { transform: "translate(-50%, -50%)", opacity: 1, offset: 0.15 },
+        { transform: `translate(-50%, calc(-50% - ${centreY + label.offsetHeight}px))`, opacity: 0 }
+    ], {
+        duration: window.GEMS_GAIN_FLOAT_DURATION,
+        easing: "ease-out",
+        fill: "forwards"
+    });
+    anim.finished.then(() => label.remove(), () => label.remove());
+}
+
+/**
+ * Awards gems for a completed item and plays the floating "+ N". Mutates window.profileData in
+ * place without saving, exactly like updateDailyStreak and recordSessionActivity — the completion
+ * path in writerOnComplete calls saveProfileData once at the end of the round
+ */
+function awardItemGems()
+{
+    window.profileData.gems += window.GEMS_PER_ITEM;
+
+    // The gems are banked first and the flourish is contained: a cosmetic animation must never be
+    // able to abort the round it is celebrating, and this runs deep inside writerOnComplete where a
+    // throw would strand the session mid-character
+    try
+    {
+        floatGemsGain(window.GEMS_PER_ITEM);
+    }
+    catch (e)
+    {
+        console.error("Error: failed to play the gems animation", e);
+    }
+}
+
+/**
  * Records one completed revision session against today's local calendar day for the activity
  * calendar on the account page. Keyed by the same timezone-independent localDayIndex the streak
  * uses, so a flat day -> count map covers any number of years and slices per-year trivially. Like
@@ -707,7 +786,12 @@ async function writerOnComplete(_)
     window.totalSessionStrokes += strokeNum;
 
     if (!window.bInPhrase)
+    {
         data.cards[(window.currentIndex - 1)].knowledge = computeScore(strokeNum, window.errors, data.cards[(window.currentIndex - 1)].knowledge);
+        // A card pays out per character. Characters drawn as part of a phrase deliberately do not —
+        // the phrase pays out once, as a whole, when its last character lands (see below)
+        awardItemGems();
+    }
     else
     {
         const phraseChars = toCharacters(data.phrases[window.currentPhraseIndex].phrase);
@@ -774,6 +858,10 @@ async function writerOnComplete(_)
         if (window.currentIndex >= toCharacters(data.phrases[window.currentPhraseIndex].phrase).length)
         {
             data.phrases[window.currentPhraseIndex].knowledge = computeScore(window.totalPhraseStrokes, window.totalPhraseErrors, data.phrases[window.currentPhraseIndex].knowledge);
+
+            // The phrase is finished: pay out for it as a whole, the counterpart to the per-card
+            // award above. Together they make a full session worth GEMS_PER_ITEM * (8 + 8)
+            awardItemGems();
 
             window.currentIndex = 0;
             ++window.currentPhraseIndex;

@@ -266,3 +266,20 @@
 @keyframes counter-blink {
     40% { color: var(--main-accent-colour); }
 }
+
+/* The "+ N gems" label that rises off the writer when an item is completed. main-page.js pins its
+   left/top to the writer's centre and drives the flight with the Web Animations API; the translate
+   here re-centres the label on that point, and every keyframe repeats it so the animation composes
+   on top instead of snapping the label to its top-left corner on the first frame. Never intercepts
+   pointer events, and never rendered at all under reduced motion (main-page.js bails out early). */
+.gems-gain {
+    position: fixed;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 1000;
+    white-space: nowrap;
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: var(--main-accent-colour);
+    will-change: transform, opacity;
+}

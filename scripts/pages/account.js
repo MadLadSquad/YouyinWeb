@@ -7,6 +7,7 @@ function setProfileCardData()
 {
     $("total-sessions-field").textContent += window.profileData.sessions;
     renderStreakField();
+    renderGemsField();
     $("deck-card-num-field").textContent += window.profileData.cards.length;
     $("deck-phrase-num-field").textContent += window.profileData.phrases.length;
 
@@ -51,6 +52,148 @@ function setProfileCardData()
     if (isNaN(knowledge))
         knowledge = 0;
     averageKnowledge.textContent = `${lc.average_knowledge_level}: ${formatDecimal(knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`;
+}
+
+/**
+ * Rewrites one of the profile/shop stat rows. The elements start out holding only the translated
+ * label baked in by the template, so the first call stashes that label in a data attribute and every
+ * call rebuilds the row from it — the same trick renderStreakField uses, and what lets these rows be
+ * re-rendered after a purchase instead of endlessly appending to themselves
+ *
+ * Snapshots innerHTML rather than textContent because a label may contain an emoji (the gem total's
+ * 💎): emoji.js runs inside main() before profileReady resolves, so by the time this first runs the
+ * emoji has usually already become an <img class="emoji"> that textContent cannot see and a
+ * textContent write would delete. Nothing here is user-supplied — the labels are baked in by the
+ * template and the values are numbers this file formats into build-time translation strings — so
+ * the round-trip carries no markup risk
+ * @param { string } id - ID of the row element
+ * @param { string } value - The value to render after the label
+ */
+function renderLabelledField(id, value)
+{
+    const el = $(id);
+    if (el === null)
+        return;
+
+    if (el.getAttribute("data-field-label") === null)
+        el.setAttribute("data-field-label", el.innerHTML);
+
+    el.innerHTML = el.getAttribute("data-field-label") + value;
+}
+
+/**
+ * Rewrites the gem total on the profile card
+ */
+function renderGemsField()
+{
+    renderLabelledField("gems-field", window.profileData.gems);
+}
+
+/**
+ * Rewrites the streak-freeze shop: how many are held, what the next one costs, and whether the buy
+ * button is currently usable. Exported on window because daily-streak.js calls it after spending
+ * freezes on missed days — it is a no-op on every page but this one, since the elements are absent
+ */
+function renderShopFields()
+{
+    const goal = window.profileData.streakGoal;
+    const cost = streakFreezeCost(goal > 0 ? goal : window.STREAK_GOAL_MIN);
+    const held = window.profileData.streakFreezes;
+
+    renderLabelledField("streak-freeze-field", `${held}/${window.MAX_STREAK_FREEZES}`);
+    renderLabelledField("streak-freeze-cost-field", lc.gems_amount.replace("{gems}", cost));
+
+    const button = $("buy-streak-freeze-button");
+    if (button === null)
+        return;
+
+    // A goal of 0 means the user has not picked one yet (streak-goal.js is showing them the prompt
+    // over this page right now), so the price above is only a placeholder — don't let them buy at it
+    if (goal <= 0)
+    {
+        button.disabled = true;
+        button.title = lc.streak_freeze_needs_goal;
+    }
+    else if (held >= window.MAX_STREAK_FREEZES)
+    {
+        button.disabled = true;
+        button.title = lc.streak_freeze_full;
+    }
+    else if (window.profileData.gems < cost)
+    {
+        button.disabled = true;
+        button.title = lc.streak_freeze_too_expensive.replace("{gems}", cost - window.profileData.gems);
+    }
+    else
+    {
+        button.disabled = false;
+        button.title = "";
+    }
+}
+window.renderShopFields = renderShopFields;
+
+/**
+ * Wires the streak-freeze purchase. The affordability checks are repeated inside the handler rather
+ * than trusted from the disabled state alone: the price moves with the streak-goal slider sitting
+ * right next to it, and freezes can be spent underneath by daily-streak.js at midnight
+ */
+function setupShop()
+{
+    renderShopFields();
+
+    const button = $("buy-streak-freeze-button");
+    if (button === null)
+        return;
+
+    // runEventAfterAnimation, not a bare click listener, so the purchase lands with the button's
+    // ripple like every other .card-button-edit on the site
+    runEventAfterAnimation(button, "click", function() {
+        let data = window.profileData;
+        const cost = streakFreezeCost(data.streakGoal);
+
+        if (data.streakGoal <= 0 || data.streakFreezes >= window.MAX_STREAK_FREEZES || data.gems < cost)
+            return;
+
+        data.gems -= cost;
+        ++data.streakFreezes;
+
+        // Repaint from the in-memory copy immediately; the write is fire-and-forget because nothing
+        // here navigates away, and saveProfileData rejects on failure so it needs a catch
+        saveProfileData(data).catch(() => {});
+        renderGemsField();
+        renderShopFields();
+    });
+}
+
+/**
+ * Wires the daily streak-goal slider. Follows the level-reduce slider's split below: the label
+ * tracks the drag live, but the value is only persisted once the drag settles. Re-renders the shop
+ * on every change, because the freeze price is derived from the goal
+ */
+function setupStreakGoal()
+{
+    const slider = $("streak-goal-slider");
+    if (slider === null)
+        return;
+
+    const goal = window.profileData.streakGoal;
+    slider.value = goal > 0 ? goal : window.STREAK_GOAL_MIN;
+    renderLabel(slider);
+
+    slider.addEventListener("input", (e) => renderLabel(e.target));
+
+    slider.addEventListener("change", (e) => {
+        window.profileData.streakGoal = Number(e.target.value);
+        saveProfileData(window.profileData).catch(() => {});
+        renderShopFields();
+    });
+
+    // streakGoalText is defined by streak-goal.js, which the page loads before this file so that the
+    // slider here and the one in the prompt modal word the value identically
+    function renderLabel(el)
+    {
+        el.labels[0].childNodes[0].textContent = `${lc.streak_goal_label} ${streakGoalText(el.value)} `;
+    }
 }
 
 function setupGameModifiers()
@@ -110,6 +253,8 @@ function accountmain()
 {
     setProfileCardData();
     setupGameModifiers();
+    setupStreakGoal();
+    setupShop();
     renderActivityCalendar("activity-calendar-container");
 
     // Replay the onboarding tutorial (highlight-only walkthrough). startTutorialReplay is defined by
