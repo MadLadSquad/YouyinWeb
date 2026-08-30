@@ -1,112 +1,399 @@
-/* Account page only (account.html): the game-modifiers section with its custom checkbox, and the
-   streak-freeze shop card. The range sliders themselves are styled by the shared
-   styles/components/slider.css, since the streak-goal prompt reuses them off this page. Colours
-   come from the theme custom properties injected by theme.js (see base.css). */
+/* Account page only (account.html): the profile hero, the statistic tiles, the game-modifiers
+   settings list with its switch, and the streak-freeze shop. The range sliders themselves are styled
+   by the shared styles/components/slider.css, since the streak-goal prompt reuses them off this
+   page. Colours come from the theme custom properties injected by theme.js (see base.css). */
 
-/* The activity heatmap is its own full-width block below the profile/settings card grid, rather than
-   a third cell squeezed into .deck's auto-fit columns. Match .deck's inline padding and row gap so it
-   lines up with the cards above it */
-#activity-section {
-    margin-top: 0.5rem;
-    padding-inline: 0.5rem;
-    box-sizing: border-box;
-}
-
-/* Modifiers section inside the profile statistics card */
-.modifiers-container {
+.account-page {
     display: flex;
     flex-direction: column;
+    gap: 1.25rem;
+    padding-top: 1.75rem;
+    padding-bottom: 2rem;
 }
 
-.modifier-row {
+/* ------------------------------------------ Hero ------------------------------------------ */
+
+.profile-hero {
     display: flex;
-    justify-content: center;
     align-items: center;
-    width: 100%;
-    gap: 0.5rem;
-    margin: 0.5rem 0;
+    gap: 1.75rem;
+    padding: 1.375rem 1.5rem;
 }
 
-/* Custom styled checkbox */
-.checkbox-label {
+.profile-hero:hover {
+    /* The hero is not a link or a tile, so it should not react to the cursor the way deck cards do */
+    border-color: var(--hairline);
+    box-shadow: var(--shadow-resting);
+}
+
+.profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 16.75rem;
+}
+
+.profile-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 60px;
+    height: 60px;
+    border-radius: 20px;
+    background-color: var(--accent-soft);
+    color: var(--main-text-colour);
+    font-size: 1.5625rem;
+    font-weight: 700;
+}
+
+.profile-name {
+    font-size: 1.5625rem;
+    margin-bottom: 0.3125rem;
+}
+
+.profile-hero-divider {
+    width: 1px;
+    align-self: stretch;
+    background-color: var(--hairline);
+}
+
+.profile-today {
+    flex: 1;
+    min-width: 0;
+}
+
+.profile-today-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5625rem;
+}
+
+.profile-today-head b {
+    color: var(--main-text-colour);
+    font-weight: 700;
+}
+
+.profile-today-bar {
+    height: 9px;
+}
+
+.profile-today-note {
+    margin-top: 0.5rem;
+    color: var(--faint-text);
+}
+
+.profile-featured {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 8.25rem));
+}
+
+.profile-featured-stat {
+    padding: 0 0.75rem;
+}
+
+.profile-featured-stat + .profile-featured-stat {
+    border-left: 1px solid var(--hairline);
+}
+
+.profile-featured-stat .stat-label {
+    display: block;
+    margin-top: 0.4375rem;
+}
+
+/* --------------------------------------- Stat strip --------------------------------------- */
+
+.stat-strip {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.stat-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
+}
+
+/* The gem tile is the one number the shop spends, so it carries a quiet accent wash */
+.stat-tile-accent {
+    background-color: var(--accent-quiet);
+    border-color: var(--accent-tint);
+}
+
+.stat-tile-accent .stat-label {
+    color: var(--muted-text);
+}
+
+/* "Last round" holds a date rather than a numeral, so it drops a size to stay on one line */
+.stat-tile-text {
+    font-size: 1rem;
+    line-height: 1.3;
+}
+
+.stat-tile-bar {
+    height: 4px;
+}
+
+/* ---------------------------------------- Columns ----------------------------------------- */
+
+.account-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 25rem;
+    gap: 1.25rem;
+    align-items: start;
+}
+
+.account-side {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* --------------------------------------- Settings ----------------------------------------- */
+
+.settings-card {
+    padding: 0;
+}
+
+.settings-card:hover {
+    border-color: var(--hairline);
+    box-shadow: var(--shadow-resting);
+}
+
+.settings-head {
+    padding: 1.125rem 1.25rem 0.9375rem;
+}
+
+/* Label and explanation on the left, control on the right. The old layout centred every row in a
+   column, which made a checkbox, two sliders and four buttons all look like the same kind of thing */
+.setting-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.9375rem 1.25rem;
+}
+
+.setting-row + .setting-row {
+    border-top: 1px solid var(--hairline);
+}
+
+.setting-text {
+    min-width: 0;
+}
+
+.setting-text .t-meta {
+    margin-top: 0.1875rem;
+    max-width: 62ch;
+}
+
+.setting-control {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+    flex: none;
+}
+
+/* The live value beside a slider */
+.setting-readout {
+    min-width: 3.5rem;
+    justify-content: center;
+    font-variant-numeric: tabular-nums;
+}
+
+/* .slider-label in slider.css disables pointer events so a drag never selects the text; these are
+   real <label for> elements that should still focus their slider on click */
+.setting-text .slider-label {
+    display: block;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* ----------------------------------------- Switch ----------------------------------------- */
+
+/* Replaces the old custom checkbox. The real <input type="checkbox"> is still there and still
+   carries #extensive-mode-checkbox — account.js and the onboarding tutorial both target it — it is
+   just visually hidden behind the track below. */
+.switch {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     cursor: pointer;
-    font-size: 1rem;
-    user-select: none;
-    transition: color 0.2s ease;
 }
 
-.checkbox-label:hover {
-    color: var(--main-accent-colour);
-}
-
-.checkbox-label input[type="checkbox"] {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    box-sizing: border-box;
-    width: 18px;
-    height: 18px;
-    border: 2px solid var(--main-accent-colour);
-    border-radius: 4px;
-    background-color: var(--main-background-colour);
-    cursor: pointer;
-    position: relative;
-    outline: none;
-    margin: 0 8px 0 0;
-    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
-}
-
-.checkbox-label input[type="checkbox"]::after {
-    content: "";
+.switch input[type="checkbox"] {
     position: absolute;
-    left: 4px;
-    top: 2px;
-    width: 4px;
-    height: 7px;
-    border: solid var(--main-background-colour);
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg) scale(0);
-    opacity: 0;
-    transition: transform 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46), opacity 0.1s ease;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
-.checkbox-label input[type="checkbox"]:checked {
+.switch-track {
+    position: relative;
+    display: block;
+    /* border-box, so the declared height is the whole control: as content-box the 1px borders made
+       the padding box 26px tall against a 20px knob inset 2px from the top, leaving 4px underneath
+       and the knob visibly riding high. */
+    box-sizing: border-box;
+    width: 44px;
+    height: 26px;
+    flex: none;
+    border-radius: var(--radius-pill);
+    background-color: var(--sunken);
+    border: 1px solid var(--hairline);
+    transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.switch-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    /* Flat: no drop shadow. Nothing else on the page casts one at this scale, and the shadow was
+       what made the off-centre knob read as deliberate rather than as a bug. */
+    background-color: var(--main-background-colour);
+    /* The same overshoot easing the old checkbox tick used, so the motion carries over */
+    transition: transform 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+}
+
+.switch input[type="checkbox"]:checked + .switch-track {
     background-color: var(--main-accent-colour);
     border-color: var(--main-accent-colour);
 }
 
-.checkbox-label input[type="checkbox"]:checked::after {
-    transform: rotate(45deg) scale(1);
-    opacity: 1;
+.switch input[type="checkbox"]:checked + .switch-track .switch-knob {
+    transform: translateX(18px);
 }
 
-.checkbox-label input[type="checkbox"]:hover {
-    border-color: var(--deck-button-active-colour);
-    transform: scale(1.05);
+.switch:hover .switch-track {
+    border-color: var(--main-accent-colour);
 }
 
-.checkbox-label input[type="checkbox"]:active {
-    transform: scale(0.95);
-}
-
-.checkbox-label input[type="checkbox"]:focus-visible {
+.switch input[type="checkbox"]:focus-visible + .switch-track {
     outline: 2px solid var(--main-accent-colour);
     outline-offset: 2px;
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .switch-track,
+    .switch-knob {
+        transition: none;
+    }
+}
 
-/* ---------------------------------- Streak-freeze shop ------------------------------------ */
+/* ------------------------------------------ Shop ------------------------------------------ */
+
+.shop-card:hover,
+.data-card:hover,
+#activity-calendar-card:hover {
+    border-color: var(--hairline);
+    box-shadow: var(--shadow-resting);
+}
+
+.shop-card {
+    padding: 1.25rem;
+}
+
+.shop-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.shop-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background-color: var(--accent-soft);
+    color: var(--main-text-colour);
+    /* The icon is an emoji glyph (twemoji rewrites it to an <img class="emoji"> sized in em), so the
+       tile's font size is what sets it */
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.shop-title {
+    font-size: 1.125rem;
+}
+
+.shop-eyebrow {
+    font-size: 0.78125rem;
+    color: var(--faint-text);
+}
+
+.shop-count {
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+}
+
+/* One pip per freeze the wallet can hold, filled up to the number owned */
+.shop-slots {
+    display: flex;
+    gap: 0.3125rem;
+    margin-bottom: 0.875rem;
+}
+
+.shop-slot {
+    flex: 1;
+    height: 7px;
+    border-radius: var(--radius-pill);
+    background-color: var(--surface);
+    /* An outlined track rather than a filled one. The fill that runs over it is the raw accent, which
+       clears 3:1 against the page on all 188 palettes but against a --sunken track on only 121 - so
+       the track steps back toward the page (152) and the hairline draws its edge instead. */
+    box-shadow: inset 0 0 0 1px var(--hairline);
+    transition: background-color 0.3s ease;
+}
+
+.shop-slot-filled {
+    background-color: var(--main-accent-colour);
+}
 
 /* The explanatory line under the shop's stat rows. Toned down and a size smaller so it reads as
    help text rather than another statistic */
 .shop-description {
-    font-size: 0.9rem;
-    color: var(--deck-card-text-colour);
-    max-width: 32ch;
-    margin-inline: auto;
+    margin-bottom: 1rem;
+}
+
+.shop-price {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 0.875rem;
+    margin-bottom: 0.875rem;
+    border-radius: var(--radius-input);
+    background-color: var(--sunken);
+}
+
+.shop-price-value {
+    margin-left: auto;
+    color: var(--main-text-colour);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.shop-buy {
+    width: 100%;
+    margin: 0;
 }
 
 /* The shop's buy button is disabled whenever the user cannot afford a freeze or already holds the
@@ -125,10 +412,119 @@
     color: var(--main-background-colour);
     background-color: var(--main-accent-colour);
     border-color: transparent;
-    border-radius: 6px;
 }
 
 #buy-streak-freeze-button:disabled:active::after {
     opacity: 0;
     transition: 0s;
+}
+
+/* ---------------------------------------- Data card ---------------------------------------- */
+
+.data-card {
+    padding: 1.25rem;
+}
+
+.data-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5625rem;
+    margin-top: 0.875rem;
+}
+
+.data-card-button {
+    width: 100%;
+    justify-content: flex-start;
+    margin: 0;
+}
+
+.data-card-note {
+    margin-top: 0.6875rem;
+    color: var(--faint-text);
+}
+
+/* ---------------------------------------- Activity ----------------------------------------- */
+
+#activity-calendar-card {
+    padding: 1.25rem 1.5rem 1.375rem;
+}
+
+.activity-title {
+    margin-bottom: 1.125rem;
+}
+
+/* -------------------------------------- Narrow screens -------------------------------------- */
+
+@media (max-width: 1000px) {
+    .account-columns {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .stat-strip {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .profile-hero {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .profile-identity {
+        min-width: 0;
+    }
+
+    /* The vertical rules only make sense while the hero is a row */
+    .profile-hero-divider {
+        display: none;
+    }
+
+    .profile-featured {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding-top: 1rem;
+        border-top: 1px solid var(--hairline);
+    }
+
+    /* Three columns of a 375px phone leave ~70px of text each. The desktop 29px numeral does not
+       fit a figure with a unit after it ("2.63 min.") in that, and it printed over the card's
+       border instead of wrapping. */
+    .profile-featured-stat {
+        padding: 0 0.5rem;
+    }
+
+    .profile-featured .t-num {
+        font-size: 1.375rem;
+        line-height: 1.15;
+    }
+
+    /* Belt and braces for every other figure on this page: a long unbroken value shrinks the
+       column rather than escaping the tile it sits in */
+    .profile-featured .t-num,
+    .stat-tile .t-num-sm,
+    .stat-tile-text {
+        overflow-wrap: anywhere;
+    }
+
+    .stat-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .setting-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .setting-control {
+        margin-left: 0;
+        justify-content: space-between;
+    }
+
+    /* A full-width slider is far easier to hit with a thumb than the 120px desktop one */
+    .setting-control input[type="range"].settings-slider {
+        flex: 1;
+        width: auto;
+    }
 }

@@ -7,13 +7,6 @@
     display: inline-block;
 }
 
-#navigation-footer {
-    width: fit-content;
-    padding: 0;
-    margin: auto;
-    overflow: hidden;
-}
-
 #input-mode {
     display: grid;
     gap: 1rem;
@@ -30,13 +23,48 @@
 input[type=text] {
     box-sizing: border-box;
     max-width: 85%;
-    font-size: 16px;
+    min-height: 38px;
+    font-size: 0.9375rem;
     font-family: inherit;
-    padding: 2px;
+    padding: 0 0.6875rem;
     color: var(--main-text-colour);
     background-color: var(--main-background-colour);
-    border: 1px solid var(--main-accent-colour);
-    border-radius: 4px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-input);
+    transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+input[type=text]:focus {
+    outline: none;
+    border-color: var(--main-accent-colour);
+    box-shadow: 0 0 0 3px var(--accent-quiet);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    input[type=text] {
+        transition: none;
+    }
+}
+
+/* The editor page shares the deck/marketplace page rhythm */
+.deck-edit-page {
+    padding-top: 1.75rem;
+    padding-bottom: 2rem;
+}
+
+/* The page's own heading, the input-mode block and the card grid are all centred, so the action row
+   is centred with them rather than left-aligned against the gutter. Wraps on a narrow phone so the
+   three buttons never run off the side. */
+#navigation-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5625rem;
+    margin-top: 1.5rem;
+}
+
+#navigation-footer .card-button-edit {
+    margin: 0;
 }
 
 /* Hidden by default; JS toggles display when editing/showing phrases */

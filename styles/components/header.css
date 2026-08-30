@@ -1,29 +1,447 @@
 /* Top-bar / footer chrome and native form-select styling shared by every page. Colours come from
    the theme custom properties injected by theme.js (see base.css). */
 
-/* Add a border to make the user not think or be distracted by the titlebar */
+/* --------------------------------------- The app bar --------------------------------------- */
+
 header {
-    margin-top: 0.25rem;
-    border-bottom: 1px solid var(--main-border-colour);
+    border-bottom: 1px solid var(--hairline);
+    background-color: var(--main-background-colour);
 }
 
-/* Basically the styling for the text on the top bar */
-ul li a {
-    display: block;
-    color: var(--main-accent-colour);
-    text-align: center;
-    padding: 0 24px;
-    text-decoration: none;
-    font-size: 32px;
-    line-height: 1.5;
+.app-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 60px;
+    width: 100%;
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--content-gutter);
+    box-sizing: border-box;
 }
 
-/* Define uniform styling for footer elements */
-footer p, footer select {
-    padding-inline: 0.33rem;
-    font-size: 18px;
+/* Wordmark. Lives outside #main-page-header so it survives main-page.js swapping that list's
+   contents for an "Exit" link during a mobile revision round. */
+.app-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5625rem;
+    flex: none;
+    margin-right: 1.25rem;
+    font-size: 1.1875rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
     color: var(--main-text-colour);
 }
+
+.app-brand:hover {
+    color: var(--main-text-colour);
+}
+
+.app-brand-mark {
+    width: 24px;
+    height: 24px;
+    flex: none;
+    fill: none;
+    stroke: var(--main-accent-colour);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* --------------------------------------- Nav links ---------------------------------------- */
+
+/* Scoped to the header. The rule this replaces was a bare `ul li a` selector, which styled every
+   link inside every list on the site at 32px — including the deck's "part of" lists and the
+   session's definition lists. */
+.app-nav ul {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.app-nav .nav-link {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 0.8125rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.90625rem;
+    font-weight: 500;
+    color: var(--muted-text);
+    white-space: nowrap;
+    transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.app-nav .nav-link:hover {
+    background-color: var(--accent-quiet);
+    color: var(--main-text-colour);
+}
+
+/* Current page. A tint of the accent rather than a solid fill, and --main-text-colour rather than
+   --deck-button-active-colour on top of it: the active colour on a 15% tint measured under AA on
+   111 of the 188 palettes (1.72:1 at worst), because both are derived from the same accent and the
+   tint is only a pale version of the label. The heading colour clears AA on the tint on every
+   palette bar a handful of near-misses, and the tint itself came down from 15% to 12% to buy those
+   back (see --accent-soft in base.css). */
+.app-nav .nav-link.is-current,
+.tab-bar .tab-item.is-current {
+    background-color: var(--accent-soft);
+    color: var(--main-text-colour);
+    font-weight: 700;
+}
+
+/* ------------------------------------- Bar end controls ------------------------------------- */
+
+.app-bar-end {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-left: auto;
+}
+
+/* Streak / gems readouts. Hidden on narrow screens: they are a glanceable extra, and the pickers
+   and nav matter more when space runs out. Both are real buttons - they open the streak panel
+   (see createStreakPanel in daily-streak.js) - so they reset the UA button chrome the .chip
+   styling does not cover. */
+.app-bar-stat {
+    min-height: 32px;
+    font-variant-numeric: tabular-nums;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.app-bar-stat:hover,
+.app-bar-stat[aria-expanded="true"] {
+    background-color: var(--accent-soft);
+    color: var(--main-text-colour);
+}
+
+.app-bar-stat b {
+    font-weight: 700;
+}
+
+/* The container select-box.js wraps a popup trigger in must not disturb the bar's flex row */
+.app-bar-end .list-select-container {
+    display: inline-flex;
+    align-items: center;
+}
+
+.app-bar-divider {
+    width: 1px;
+    height: 22px;
+    margin-inline: 0.375rem;
+    background-color: var(--hairline);
+}
+
+/* The language and theme buttons, restyled as quiet bar controls. select-box.js adds
+   .list-select-button to both, so these rules have to win on specificity, not source order. */
+.app-bar .app-bar-picker.list-select-button {
+    min-height: 36px;
+    padding: 0 0.6875rem;
+    gap: 0.4375rem;
+    /* A visible resting hairline, like every other bordered control on the site. Borderless until
+       hovered read as plain text and made these two the odd ones out in the bar. */
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-button);
+    background-color: transparent;
+    color: var(--muted-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-inline: 0;
+    transition: background-color 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+}
+
+.app-bar .app-bar-picker.list-select-button:hover,
+.app-bar .app-bar-picker.list-select-button[aria-expanded="true"] {
+    background-color: var(--accent-quiet);
+    border-color: var(--main-accent-colour);
+    color: var(--main-text-colour);
+}
+
+/* The group the phone breakpoint drops whole (see the media query at the bottom of this file) */
+.app-bar-pickers {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+/* ------------------------------------- Streak panel -------------------------------------- */
+
+/* The card behind the streak and gem chips (built by createStreakPanel in daily-streak.js). It
+   reuses .list-select-popup for its box, positioning and open/close animation, and only replaces
+   the parts that differ: a fixed-content panel rather than a scrolling option list. */
+/* Compounded with .list-select-popup rather than left as a bare class: select-box.css loads after
+   this file, so its width/max-height/padding:0 would otherwise win the tie on source order and the
+   panel's contents would sit flush against its border. */
+.list-select-popup.streak-panel {
+    width: min(17.5rem, 88vw);
+    max-height: none;
+    gap: 0.625rem;
+    padding: 0.875rem;
+    text-align: left;
+}
+
+.streak-panel .hairline {
+    margin: 0;
+}
+
+.streak-panel-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.streak-panel-count {
+    font-size: 1.75rem;
+    line-height: 1;
+}
+
+.streak-panel-status {
+    margin: -0.25rem 0 0;
+}
+
+/* The gems panel has no streak line above it, so its caption carries the top margin instead */
+.streak-panel-hint {
+    margin: 0;
+}
+
+.streak-panel-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.streak-panel-value {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--main-text-colour);
+}
+
+/* The freeze wallet as pips, mirroring the account page's shop card */
+.streak-panel-slots {
+    display: flex;
+    gap: 0.3125rem;
+}
+
+.streak-panel-slot {
+    flex: 1;
+    height: 6px;
+    border-radius: var(--radius-pill);
+    background-color: var(--surface);
+    /* An outlined track rather than a filled one. The fill that runs over it is the raw accent, which
+       clears 3:1 against the page on all 188 palettes but against a --sunken track on only 121 - so
+       the track steps back toward the page (152) and the hairline draws its edge instead. */
+    box-shadow: inset 0 0 0 1px var(--hairline);
+}
+
+.streak-panel-slot-filled {
+    background-color: var(--main-accent-colour);
+}
+
+/* Styled here rather than borrowing .card-button-edit: button.css is a per-page stylesheet and this
+   panel is part of the app bar, which every page has. */
+.streak-panel-buy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 38px;
+    padding: 0 0.875rem;
+    background-color: var(--main-accent-colour);
+    /* Black or white picked from the accent's lightness - same reason as .card-button-edit */
+    color: var(--on-accent);
+    border: 1px solid transparent;
+    border-radius: var(--radius-button);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.streak-panel-buy:hover:not(:disabled) {
+    background-color: var(--deck-button-active-colour);
+    color: var(--on-accent-active);
+}
+
+.streak-panel-buy:disabled {
+    background-color: var(--sunken);
+    color: var(--muted-text);
+    cursor: not-allowed;
+}
+
+/* ---------------------------------------- Tab bar ----------------------------------------- */
+
+/* Phone navigation. Hidden by default; the media query at the bottom of this file swaps it in for
+   the app bar's nav row. */
+.tab-bar {
+    display: none;
+}
+
+.tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    /* --muted-text, not --faint-text: these are the phone's only navigation, so they are interactive
+       labels rather than captions */
+    color: var(--muted-text);
+    transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.tab-item.is-current .icon {
+    stroke-width: 1.9;
+}
+
+/* ----------------------------------------- Footer ----------------------------------------- */
+
+.site-footer {
+    justify-content: center;
+    gap: 0.875rem;
+    padding: 1.25rem var(--content-gutter);
+    border-top: 1px solid var(--hairline);
+}
+
+.site-footer p {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: var(--faint-text);
+}
+
+/* The accent moved from the text to the underline. These are the only real body-text links on the
+   site, and accent-coloured text is under AA against the page on 82 of the 188 palettes - an
+   underline in the accent marks the link just as clearly while the words themselves keep the
+   heading colour, which is legible on every palette. Hover thickens the rule. */
+.site-footer a {
+    color: var(--main-text-colour);
+    text-decoration: underline;
+    text-decoration-color: var(--main-accent-colour);
+    text-decoration-thickness: 0.09em;
+    text-underline-offset: 0.18em;
+    transition: text-decoration-thickness 0.16s ease;
+}
+
+.site-footer a:hover {
+    color: var(--main-text-colour);
+    text-decoration-thickness: 0.16em;
+}
+
+/* -------------------------------------- Narrow screens -------------------------------------- */
+
+@media (max-width: 760px) {
+    .app-bar {
+        padding-inline: 1rem;
+    }
+
+    .app-brand {
+        margin-right: 0;
+    }
+
+    /* The nav moves to the tab bar below */
+    .app-nav {
+        display: none;
+    }
+
+    .app-bar-picker-label {
+        display: none;
+    }
+
+    /* A phone bar has room for two of the four controls. The streak and gem readouts are the ones
+       worth carrying (they move during a round; language and theme are set once), and both pickers
+       are duplicated in the account page's settings list, so nothing becomes unreachable. */
+    .app-bar-pickers {
+        display: none;
+    }
+
+    /* The chips sit hard against the right edge of the bar, so a panel centred on one of them has to
+       be dragged most of its own width back inside the screen. Anchor it to the viewport instead:
+       fixed, 8px in from both edges, so its box comes from the screen and no measurement can put it
+       outside - html carries overflow-x: clip, so anything that does land outside is cut with no
+       scrollbar to reveal it. createStreakPanel sets top from the chip and skips the horizontal
+       clamp in this mode; it detects the mode by reading the computed position, so the breakpoint
+       stays written once, here.
+
+       .app-bar leads the selector only to outrank .list-select-popup.drop-below in select-box.css,
+       which is the same specificity and loads later. */
+    .app-bar .list-select-popup.streak-panel {
+        position: fixed;
+        left: 0.5rem;
+        right: 0.5rem;
+        bottom: auto;
+        width: auto;
+        /* Landscape on a phone leaves very little height under the bar */
+        max-height: calc(100vh - 5rem);
+        overflow-y: auto;
+        transform: translateY(-10px) scale(0.97);
+    }
+
+    .app-bar .list-select-popup.streak-panel.open {
+        transform: translateY(0) scale(1);
+    }
+
+    .tab-bar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 40;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        height: 64px;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        box-sizing: content-box;
+        background-color: var(--main-background-colour);
+        border-top: 1px solid var(--hairline);
+    }
+
+    /* Keep the fixed tab bar from covering the end of the page. main-page.js additionally subtracts
+       this from the writer's height — see getDrawElementHeight. */
+    body {
+        padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* During a revision round on a phone the tab bar is hidden (main-page.js puts an Exit link in
+       the app bar instead), so the writer gets the full screen */
+    body.session-immersive .tab-bar {
+        display: none;
+    }
+
+    body.session-immersive {
+        padding-bottom: 0;
+    }
+
+    /* On a phone the credit line is pure overhead: it costs a screenful of the practice page (where
+       it crowded the finished-round deck) and every other page already ends in a tab bar. Keep it on
+       the account page, which is where someone actually goes looking for who made the thing. */
+    .site-footer {
+        display: none;
+    }
+
+    body:has(.account-page) .site-footer {
+        display: flex;
+    }
+}
+
+/* On the narrowest phones the chips are all that is left in the bar, so they tighten instead of
+   disappearing - dropping them would take the streak panel and the freeze shop with them. */
+@media (max-width: 420px) {
+    .app-bar-stat {
+        padding: 0 0.5rem;
+        gap: 0.25rem;
+    }
+}
+
+/* ------------------------------------- Native selects -------------------------------------- */
 
 /* Make the select members shrink to fit since they would take too much space */
 select {
@@ -31,12 +449,11 @@ select {
     -moz-appearance: none;
     appearance: none;
     background-color: transparent;
-    /* Themed text colour for every select (e.g. the deck card variant box). Without this,
-       selects outside the footer fall back to browser-default black and are unreadable on
-       dark themes. */
+    /* Themed text colour for every select (e.g. the deck card variant box). Without this, selects
+       outside the header fall back to browser-default black and are unreadable on dark themes. */
     color: var(--main-text-colour);
     border: 1px solid var(--main-accent-colour);
-    border-radius: 4px;
+    border-radius: var(--radius-input);
     font-family: inherit;
     font-size: inherit;
     cursor: inherit;

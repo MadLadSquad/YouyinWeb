@@ -1,18 +1,141 @@
-/* Marketplace page only (marketplace.html): the "add a new deck" upload card and error text.
-   Colours come from the theme custom properties injected by theme.js (see base.css). */
+/* Marketplace page only (marketplace.html): the deck card, the per-language group heads and the
+   "submit a deck" banner. The page header, toolbar and section heads are shared with the deck page
+   and live in styles/components/page-search.css. Colours come from the theme custom properties
+   injected by theme.js (see base.css). */
 
-/* The "add a new deck" card is informational, not a real deck, so it carries no border or shadow */
-#new-deck-upload-card {
-    border: none;
-    box-shadow: none;
+.marketplace-page {
+    padding-top: 1.75rem;
+    padding-bottom: 2rem;
 }
 
-/* Smaller header because the cards are always physically smaller */
-#new-card-header-smaller {
-    font-size: 4.5rem;
-    color: var(--deck-card-text-colour);
+/* --------------------------------------- Deck card ---------------------------------------- */
+
+.marketplace-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding: 1.125rem;
+    text-align: left;
+}
+
+.marketplace-card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.marketplace-card-title {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+}
+
+.marketplace-card-badge {
+    flex: none;
+    height: 24px;
+    padding: 0 0.5625rem;
+    font-size: 0.71875rem;
+}
+
+.marketplace-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+
+.marketplace-card-rule {
+    margin: 0;
+}
+
+/* Import is the action people came for, so it takes the row and the accent; source and download are
+   ghosts beside it. Previously all three were identical filled accent blocks stacked vertically. */
+.marketplace-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.marketplace-import {
+    flex: 1;
+    margin: 0;
+}
+
+/* Icon-only: the label moves to aria-label/title so Import keeps the width it needs */
+.marketplace-secondary {
+    margin: 0;
+    flex: none;
+    width: 36px;
+    min-height: 36px;
+    padding: 0;
+}
+
+/* --------------------------------- Top-level section heads --------------------------------- */
+
+/* "Official decks" / "Community decks". These outrank the per-language heads below, which are
+   eyebrows: without the difference the marketplace read as a flat list of alternating labels. */
+.marketplace-section-head {
+    margin-bottom: 0.5rem;
+}
+
+.marketplace-section-title {
+    margin: 0;
+    flex: none;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--main-text-colour);
+}
+
+/* The community section follows a grid of official decks, so it needs air above it */
+#deck-community-master .marketplace-section-head {
+    margin-top: 2.5rem;
+}
+
+/* ------------------------------------ Language groups ------------------------------------- */
+
+/* Each language used to open with a page-sized <h1> that competed with the page title. It is now a
+   quiet eyebrow with a rule, matching the section heads on the deck page. */
+.marketplace-language {
+    margin: 1.5rem 0 0;
+    padding-left: 0.125rem;
+}
+
+/* The first language head sits directly under its section title, so it does not need the full
+   between-groups gap */
+.marketplace-section-head + .marketplace-language {
+    margin-top: 0.875rem;
+}
+
+.marketplace-language-rule {
+    margin: 0.5rem 0 0.875rem;
+}
+
+/* -------------------------------------- Upload banner -------------------------------------- */
+
+.upload-banner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
     margin-top: 2rem;
-    margin-bottom: 2rem;
+    padding: 1.125rem 1.25rem;
+    border: 1px dashed var(--accent-tint);
+    border-radius: var(--radius-card);
+    background-color: var(--accent-quiet);
+}
+
+.upload-banner p {
+    margin: 0;
+}
+
+.upload-banner .t-meta {
+    margin-top: 0.1875rem;
+    max-width: 72ch;
+}
+
+.upload-banner .card-button-edit {
+    flex: none;
+    margin: 0 0 0 auto;
 }
 
 /* Colour the error text */
@@ -20,4 +143,17 @@
     color: var(--main-error-colour);
 }
 
-/* The shared search bar styling lives in styles/components/page-search.css (.page-search) */
+@media (max-width: 760px) {
+    .marketplace-page {
+        padding-top: 1.25rem;
+    }
+
+    .upload-banner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .upload-banner .card-button-edit {
+        margin-left: 0;
+    }
+}

@@ -32,6 +32,74 @@ translations:
     text: " страницата, за да добавите!"
   - id: footer
     text: "Проект на {}!"
+  - id: nav_primary_label
+    text: "Основна навигация"
+  - id: nav_practise
+    text: "Преговор"
+  - id: session_exit
+    text: "Изход"
+  - id: guest_initial
+    text: "Г"
+  - id: today_header
+    text: "Днес"
+  - id: today_of_goal
+    text: "от {goal} серии"
+  - id: today_no_goal
+    text: "серии днес"
+  - id: today_goal_met
+    text: "Целта е изпълнена — сериите ви са в безопасност за днес."
+  - id: today_goal_left
+    text: "Още {count} до днешната цел."
+  - id: today_goal_left_one
+    text: "Още 1 до днешната цел."
+  - id: streak_freeze_held
+    text: "{count} замразявания в наличност"
+  - id: streak_freeze_held_one
+    text: "1 замразяване в наличност"
+  - id: gems_label
+    text: "Диаманти"
+  - id: gems_panel_hint
+    text: "Печелят се със завършване на карти и фрази. Харчат се за замразявания."
+  - id: streak_panel_none
+    text: "Завършете една серия, за да започнете поредица."
+  - id: streak_panel_safe
+    text: "Днешният ден е отчетен. До утре!"
+  - id: streak_panel_protected
+    text: "Днес не сте преговаряли - едно замразяване ще покрие деня."
+  - id: streak_panel_at_risk
+    text: "Преговорете днес, за да запазите поредицата си."
+  - id: language_label
+    text: "Език"
+  - id: language_description
+    text: "Език на интерфейса. Достъпен е и от лентата горе."
+  - id: theme_description
+    text: "190 палитри. Всеки цвят на страницата се извлича от активната."
+  - id: data_card_header
+    text: "Вашите данни"
+  - id: data_card_note
+    text: "Всичко се съхранява само на това устройство. Изтриването е необратимо."
+  - id: deck_more_actions
+    text: "Още действия"
+  - id: deck_knowledge_label
+    text: "Владеене"
+  - id: deck_summary
+    text: "{cards} карти · {phrases} фрази · средно владеене {knowledge}"
+  - id: marketplace_subtitle
+    text: "Готови тестета, поддържани в публичното хранилище."
+  - id: new_deck_upload_title
+    text: "Имате тесте за споделяне?"
+  - id: session_ready_eyebrow
+    text: "Готови ли сте?"
+  - id: session_next_round
+    text: "Следваща серия"
+  - id: session_queue_note
+    text: "{cards} карти и {phrases} фрази са подредени за тази серия."
+  - id: session_round_in_progress
+    text: "Серия в ход"
+  - id: session_end_round
+    text: "Край на серията"
+  - id: session_errors_count
+    text: "{count} грешки"
   - id: theme_button
     text: "Цветови теми"
   - id: theme_search_placeholder
@@ -474,6 +542,10 @@ translations:
     text: "Дневно намаляване на нивото"
   - id: tutorial_account_levelreduce
     text: "Всеки ден символите и фразите Ви губят малко от оценката за владеене за да може да преговаряте тестето си по-често. Този плъзгач определя коефициентът на намаляване."
+  - id: tutorial_account_goal_title
+    text: "Дневната Ви цел"
+  - id: tutorial_account_goal
+    text: "Толкова серии на ден се броят за преговор. Изпълнението ѝ поддържа поредицата Ви жива и определя цената на едно замразяване."
   - id: tutorial_account_language_title
     text: "Език"
   - id: tutorial_account_language

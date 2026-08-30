@@ -1,9 +1,10 @@
-<footer class="centered">
+<!-- The language and theme pickers used to live here; they moved into the app bar (see
+     header.tmpl.html) so persistent controls sit where people look for them, which leaves the footer
+     as a single quiet credit line. The account page keeps its own duplicate pair of pickers. -->
+<footer class="centered site-footer">
     <p>
     {{ _ footer {{ raw <a href="https://heapforge.com">Heapforge</a> / <a href="https://madladsquad.com/">MadLadSquad</a>}} }}
     </p>
-    <button type="button" id="lang-select" class="centered list-select-button lang-select-widget" aria-haspopup="dialog" aria-expanded="false"></button>
-    <button type="button" id="theme-button" class="centered list-select-button theme-button" aria-haspopup="dialog" aria-expanded="false">🎨 {{ _ theme_button }}</button>
 </footer>
 <script src="./{{ _ locale }}scripts/data/i18n.js"></script>
 <script src="./{{ _ locale }}scripts/components/select-box.js"></script>

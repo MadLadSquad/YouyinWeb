@@ -14,67 +14,198 @@
     </head>
     <body data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" spellcheck="false">
         {{ include Components/header.tmpl.html }}
-        <h1 class="centered">{{ _ guest }}</h1>
-        <main id="main-content">
-            <section class="deck">
-                <div id="profile-card" class="card centered">
-                    <h1>{{ _ profile-statistics-header }}</h1>
-                    <p id="total-sessions-field">{{ _ total-sessions-field }}: </p>
-                    <p id="streak-field">{{ _ streak-field }}: </p>
-                    <p id="gems-field">{{ _ gems-field }}: </p>
-                    <p id="deck-card-num-field">{{ _ deck-card-num-field }}: </p>
-                    <p id="deck-phrase-num-field">{{ _ deck-phrase-num-field }}: </p>
-                    <p id="last-session-date-field">{{ _ last-session-date-field }}: </p>
-                    <p id="average-knowledge-level-field">{{ _ average-knowledge-level-field }}: </p>
-                    <p id="average-session-length-field">{{ _ average-session-length-field }}: </p>
-                    <p id="time-spent-in-sessions-field">{{ _ time-spent-in-sessions-field }}: </p>
+        <main id="main-content" class="wrap account-page">
+
+            <!-- ============================== Hero ============================== -->
+            <!-- #profile-card keeps its id: the onboarding tutorial waits on it and highlights it -->
+            <section id="profile-card" class="card profile-hero">
+                <div class="profile-identity">
+                    <div class="profile-avatar" aria-hidden="true">{{ _ guest_initial }}</div>
+                    <div>
+                        <h1 class="t-h1 profile-name">{{ _ guest }}</h1>
+                        <p class="t-meta" id="profile-subline"></p>
+                    </div>
                 </div>
-                <div id="settings-card" class="card centered">
-                    <h1>{{ _ game_modifiers_header }}</h1>
-                    <div class="modifiers-container">
-                        <div class="modifier-row">
-                            <label title="{{ _ extensive-mode-title }}" class="checkbox-label">
+
+                <div class="profile-hero-divider" aria-hidden="true"></div>
+
+                <!-- Today's progress against the daily goal. Both numbers already exist in storage
+                     (activityByDay and streakGoal); nothing new is persisted for this. -->
+                <div class="profile-today">
+                    <div class="profile-today-head">
+                        <p class="t-h2">{{ _ today_header }}</p>
+                        <p class="t-meta"><b id="today-rounds-value">0</b> <span id="today-rounds-goal"></span></p>
+                    </div>
+                    <div class="bar profile-today-bar"><i id="today-progress-fill"></i></div>
+                    <p class="t-meta profile-today-note" id="today-note"></p>
+                </div>
+
+                <div class="profile-hero-divider" aria-hidden="true"></div>
+
+                <div class="profile-featured">
+                    <div class="profile-featured-stat">
+                        <p class="t-num" id="streak-field">0</p>
+                        <p class="stat-label">{{ _ streak-field }}</p>
+                    </div>
+                    <div class="profile-featured-stat">
+                        <p class="t-num" id="total-sessions-field">0</p>
+                        <p class="stat-label">{{ _ total-sessions-field }}</p>
+                    </div>
+                    <div class="profile-featured-stat">
+                        <p class="t-num" id="time-spent-in-sessions-field">0</p>
+                        <p class="stat-label">{{ _ time-spent-in-sessions-field }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================== Stat strip ============================== -->
+            <section class="stat-strip" aria-label="{{ _ profile-statistics-header }}">
+                <div class="stat-tile">
+                    <span class="stat-label">{{ _ deck-card-num-field }}</span>
+                    <p class="t-num-sm" id="deck-card-num-field">0</p>
+                </div>
+                <div class="stat-tile">
+                    <span class="stat-label">{{ _ deck-phrase-num-field }}</span>
+                    <p class="t-num-sm" id="deck-phrase-num-field">0</p>
+                </div>
+                <div class="stat-tile">
+                    <span class="stat-label">{{ _ average-knowledge-level-field }}</span>
+                    <p class="t-num-sm" id="average-knowledge-level-field">0</p>
+                    <div class="bar stat-tile-bar"><i id="average-knowledge-fill"></i></div>
+                </div>
+                <div class="stat-tile">
+                    <span class="stat-label">{{ _ average-session-length-field }}</span>
+                    <p class="t-num-sm" id="average-session-length-field">0</p>
+                </div>
+                <div class="stat-tile">
+                    <span class="stat-label">{{ _ last-session-date-field }}</span>
+                    <p class="t-num-sm stat-tile-text" id="last-session-date-field"></p>
+                </div>
+                <div class="stat-tile stat-tile-accent">
+                    <span class="stat-label">{{ _ gems_label }}</span>
+                    <p class="t-num-sm" id="gems-field">0</p>
+                </div>
+            </section>
+
+            <!-- ============================== Settings + shop ============================== -->
+            <section class="account-columns">
+
+                <div class="card settings-card">
+                    <div class="settings-head">
+                        <h2 class="t-h1">{{ _ game_modifiers_header }}</h2>
+                    </div>
+                    <hr class="hairline">
+
+                    <div class="setting-row">
+                        <div class="setting-text">
+                            <p class="t-h2">{{ _ extensive-mode-label }}</p>
+                            <p class="t-meta">{{ _ extensive-mode-title }}</p>
+                        </div>
+                        <div class="setting-control">
+                            <!-- The real checkbox is kept (account.js and the tutorial both target it
+                                 by id); it is visually replaced by the switch track beside it -->
+                            <label class="switch" for="extensive-mode-checkbox">
                                 <input type="checkbox" id="extensive-mode-checkbox" name="{{ _ extensive-mode-aria-label }}" aria-label="{{ _ extensive-mode-aria-label }}"/>
-                                <span class="checkbox-text">{{ _ extensive-mode-label }}</span>
+                                <span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
                             </label>
                         </div>
-                        <div class="modifier-row" title="{{ _ level-reduce-title }}">
-                            <label for="level-reduce-slider" class="slider-label">
-                                {{ _ level-reduce-label }}
-                            </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-text">
+                            <label for="level-reduce-slider" class="t-h2 slider-label">{{ _ level-reduce-label }}</label>
+                            <p class="t-meta">{{ _ level-reduce-title }}</p>
+                        </div>
+                        <div class="setting-control">
+                            <span class="chip setting-readout" id="level-reduce-value">0</span>
                             <input type="range" id="level-reduce-slider" class="settings-slider" name="{{ _ level-reduce-aria-label }}" aria-label="{{ _ level-reduce-aria-label }}" min="0" max="1" value="0" step="0.01">
                         </div>
-                        <div class="modifier-row" title="{{ _ streak-goal-title }}">
-                            <label for="streak-goal-slider" class="slider-label">
-                                {{ _ streak-goal-label }}
-                            </label>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-text">
+                            <label for="streak-goal-slider" class="t-h2 slider-label">{{ _ streak-goal-label }}</label>
+                            <p class="t-meta">{{ _ streak-goal-title }}</p>
+                        </div>
+                        <div class="setting-control">
+                            <span class="chip chip-accent setting-readout" id="streak-goal-value"></span>
                             <input type="range" id="streak-goal-slider" class="settings-slider" name="{{ _ streak-goal-aria-label }}" aria-label="{{ _ streak-goal-aria-label }}" min="3" max="30" value="3" step="1">
                         </div>
-                        <div class="modifier-row">
-                            <button type="button" id="lang-select-account" class="centered list-select-button lang-select-widget" aria-haspopup="dialog" aria-expanded="false"></button>
-                            <button type="button" id="theme-button-account" class="centered list-select-button theme-button" aria-haspopup="dialog" aria-expanded="false">🎨 {{ _ theme_button }}</button>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-text">
+                            <p class="t-h2">{{ _ language_label }}</p>
+                            <p class="t-meta">{{ _ language_description }}</p>
                         </div>
-                        <div class="modifier-row">
-                            <button type="button" id="replay-tutorial-button" class="centered card-button-edit">{{ _ tutorial_replay_button }}</button>
-                            <button type="button" id="clear-account-button" class="centered card-button-edit card-button-danger">{{ _ clear_account_button }}</button>
+                        <div class="setting-control">
+                            <button type="button" id="lang-select-account" class="centered list-select-button lang-select-widget" aria-haspopup="dialog" aria-expanded="false"></button>
+                        </div>
+                    </div>
+
+                    <div class="setting-row">
+                        <div class="setting-text">
+                            <p class="t-h2">{{ _ theme_button }}</p>
+                            <p class="t-meta">{{ _ theme_description }}</p>
+                        </div>
+                        <div class="setting-control">
+                            <button type="button" id="theme-button-account" class="centered list-select-button theme-button" aria-haspopup="dialog" aria-expanded="false">🎨 {{ _ theme_button }}</button>
                         </div>
                     </div>
                 </div>
-                <!-- Third cell of the same auto-fit grid as the profile and settings cards, so it
-                     wraps alongside them instead of needing a layout of its own -->
-                <div id="shop-card" class="card centered">
-                    <h1>{{ _ shop_header }}</h1>
-                    <p id="streak-freeze-field">{{ _ streak-freeze-field }}: </p>
-                    <p id="streak-freeze-cost-field">{{ _ streak-freeze-cost-field }}: </p>
-                    <p class="shop-description">{{ _ streak-freeze-description }}</p>
-                    <button type="button" id="buy-streak-freeze-button" class="centered card-button-edit">{{ _ buy_streak_freeze_button }}</button>
+
+                <div class="account-side">
+                    <div id="shop-card" class="card shop-card">
+                        <div class="shop-head">
+                            <!-- An ice cube rather than the drawn snowflake this used to be. The
+                                 twemoji observer swaps the glyph for an SVG here as it does
+                                 everywhere else on the site (see scripts/components/emoji.js). -->
+                            <span class="shop-icon" aria-hidden="true">🧊</span>
+                            <div>
+                                <h2 class="t-h1 shop-title">{{ _ streak-freeze-field }}</h2>
+                                <p class="t-meta shop-eyebrow">{{ _ shop_header }}</p>
+                            </div>
+                            <span class="chip shop-count" id="streak-freeze-field">0</span>
+                        </div>
+
+                        <div class="shop-slots" id="streak-freeze-slots" aria-hidden="true"></div>
+
+                        <p class="t-meta shop-description">{{ _ streak-freeze-description }}</p>
+
+                        <div class="shop-price">
+                            <span class="t-meta">{{ _ streak-freeze-cost-field }}</span>
+                            <span class="shop-price-value" id="streak-freeze-cost-field">0</span>
+                        </div>
+
+                        <button type="button" id="buy-streak-freeze-button" class="centered card-button-edit shop-buy">{{ _ buy_streak_freeze_button }}</button>
+                    </div>
+
+                    <div class="card data-card">
+                        <h2 class="t-h1">{{ _ data_card_header }}</h2>
+                        <div class="data-card-actions">
+                            <button type="button" id="replay-tutorial-button" class="card-button-edit card-button-secondary data-card-button">
+                                <svg class="icon icon-sm" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                                    <path d="M16 10a6 6 0 1 1-1.9-4.4"></path>
+                                    <path d="M16.3 3.8v3h-3"></path>
+                                </svg>
+                                {{ _ tutorial_replay_button }}
+                            </button>
+                            <button type="button" id="clear-account-button" class="card-button-edit card-button-danger data-card-button">
+                                <svg class="icon icon-sm" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                                    <path d="M4.5 6h11M8 6V4.6h4V6M6 6l.7 10h6.6L14 6"></path>
+                                </svg>
+                                {{ _ clear_account_button }}
+                            </button>
+                        </div>
+                        <p class="t-meta data-card-note">{{ _ data_card_note }}</p>
+                    </div>
                 </div>
             </section>
-            <!-- The activity heatmap sits on its own below the card grid (not as a third .deck cell)
-                 so the wide year grid gets the full content width instead of a narrow grid column -->
+
+            <!-- ============================== Activity ============================== -->
             <section id="activity-section">
-                <div id="activity-calendar-card" class="card centered">
-                    <h1>{{ _ activity_calendar_header }}</h1>
+                <div id="activity-calendar-card" class="card">
+                    <h2 class="t-h1 activity-title">{{ _ activity_calendar_header }}</h2>
                     <div id="activity-calendar-container"></div>
                 </div>
             </section>

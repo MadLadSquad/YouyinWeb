@@ -23,14 +23,14 @@
     padding: 2rem;
     text-align: center;
     background-color: var(--main-background-colour);
-    border: 2px solid var(--main-accent-colour);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px var(--main-border-colour);
+    border: 1px solid var(--hairline);
+    border-radius: 20px;
+    box-shadow: var(--shadow-raised);
 }
 
 .char-load-title {
     margin: 0 0 0.5rem;
-    color: var(--main-accent-colour);
+    color: var(--main-text-colour);
 }
 
 .char-load-subtitle {
@@ -44,7 +44,11 @@
     width: 100%;
     overflow: hidden;
     border-radius: 999px;
-    background-color: var(--main-border-colour);
+    background-color: var(--surface);
+    /* An outlined track rather than a filled one. The fill that runs over it is the raw accent, which
+       clears 3:1 against the page on all 188 palettes but against a --sunken track on only 121 - so
+       the track steps back toward the page (152) and the hairline draws its edge instead. */
+    box-shadow: inset 0 0 0 1px var(--hairline);
 }
 
 .char-load-bar-fill {
@@ -97,9 +101,9 @@
     transform: translateY(0.5rem);
     transition: opacity 0.4s ease, transform 0.4s ease;
     background-color: var(--main-background-colour);
-    border: 1px solid var(--main-accent-colour);
-    border-radius: 8px;
-    box-shadow: 0 4px 16px var(--main-border-colour);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-popup);
+    box-shadow: var(--shadow-raised);
 }
 
 .char-update-pill.visible {
@@ -117,7 +121,8 @@
     width: 160px;
     overflow: hidden;
     border-radius: 999px;
-    background-color: var(--main-border-colour);
+    background-color: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--hairline);
 }
 
 .char-update-bar-fill {

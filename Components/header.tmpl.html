@@ -12,12 +12,92 @@
 </noscript>
 <a class="skip-link" href="#main-content">{{ _ skip-to-content }}</a>
 <header>
-    <nav>
-        <ul id="main-page-header">
-            <li><a href="./{{ _ locale }}index.html" id="main-page-header-home" class="site-title">{{ trademark }} </a></li>
-            <li><a href="./{{ _ locale }}deck.html">{{ _ no_cards_link_deck }}</a></li>
-            <li><a href="./{{ _ locale }}marketplace.html">{{ _ marketplace-deck-button }}</a></li>
-            <li><a href="./{{ _ locale }}account.html">{{ _ account }}</a></li>
-        </ul>
-    </nav>
+    <div class="app-bar">
+        <!-- The wordmark sits outside #main-page-header on purpose: main-page.js swaps that list's
+             contents for an "Exit" link during a mobile revision round, and the brand must survive
+             that swap. -->
+        <a href="./{{ _ locale }}index.html" id="main-page-header-home" class="app-brand site-title">
+            <svg class="app-brand-mark" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                <rect x="2.6" y="2.6" width="14.8" height="14.8" rx="4.4"></rect>
+                <path d="M6.4 13.6c1.5.5 2.6 0 3.2-1.3l3.4-4.2" stroke-width="1.9"></path>
+            </svg>
+            <span>{{ trademark }}</span>
+        </a>
+        <nav class="app-nav" aria-label="{{ _ nav_primary_label }}">
+            <ul id="main-page-header">
+                <li><a href="./{{ _ locale }}index.html" class="nav-link">{{ _ nav_practise }}</a></li>
+                <li><a href="./{{ _ locale }}deck.html" class="nav-link">{{ _ no_cards_link_deck }}</a></li>
+                <li><a href="./{{ _ locale }}marketplace.html" class="nav-link">{{ _ marketplace-deck-button }}</a></li>
+                <li><a href="./{{ _ locale }}account.html" class="nav-link">{{ _ account }}</a></li>
+            </ul>
+        </nav>
+        <div class="app-bar-end">
+            <!-- Streak and gems are read from the profile that every page already loads; daily-streak.js
+                 and account.js write the two spans below on profileReady. Both marks are inline SVG
+                 rather than emoji so they inherit currentColor and retint with the theme. -->
+            <button type="button" class="chip chip-accent app-bar-stat" id="header-streak" aria-haspopup="dialog" aria-expanded="false" title="{{ _ streak-field }}">
+                <svg class="icon icon-sm" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                    <path d="M10 17c2.8 0 4.8-1.8 4.8-4.3 0-3.3-3.3-4.2-3-8.7-2 .9-3.4 3-3.4 4.8 0 .9.3 1.5.3 1.5S7.4 9.4 6.7 8.2c-1 1.2-1.5 2.8-1.5 4.5C5.2 15.2 7.2 17 10 17Z"></path>
+                </svg>
+                <b id="header-streak-value">0</b>
+            </button>
+            <button type="button" class="chip app-bar-stat" id="header-gems" aria-haspopup="dialog" aria-expanded="false" title="{{ _ gems-field }}">
+                <svg class="icon icon-sm" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                    <path d="M6.2 3.5h7.6l3 4-6.8 9-6.8-9z"></path>
+                    <path d="M3.2 7.5h13.6M8 3.5 6.5 7.5 10 16.5l3.5-9-1.5-4"></path>
+                </svg>
+                <b id="header-gems-value">0</b>
+            </button>
+            <!-- The two pickers are grouped so a phone can drop them in one move: below the mobile
+                 breakpoint the bar keeps the streak and gem chips instead, and language and theme
+                 stay reachable from their duplicates in the account page's settings list. -->
+            <div class="app-bar-pickers">
+                <span class="app-bar-divider" aria-hidden="true"></span>
+                <!-- Moved up from the footer. The ids and the .lang-select-widget / .theme-button classes
+                     are the query contract for language-selector.js and theme-selector.js — keep both. -->
+                <button type="button" id="lang-select" class="centered list-select-button lang-select-widget app-bar-picker" aria-haspopup="dialog" aria-expanded="false"></button>
+                <button type="button" id="theme-button" class="centered list-select-button theme-button app-bar-picker" aria-haspopup="dialog" aria-expanded="false" aria-label="{{ _ theme_button }}" title="{{ _ theme_button }}">
+                    <svg class="icon icon-sm" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                        <circle cx="10" cy="10" r="6.8"></circle>
+                        <path d="M10 3.2a6.8 6.8 0 0 1 0 13.6z" fill="currentColor" stroke="none"></path>
+                    </svg>
+                    <span class="app-bar-picker-label">{{ _ theme_button }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </header>
+<!-- Phone navigation. The app bar's nav collapses below the breakpoint and this takes over: always
+     visible, in the thumb zone, and it frees the ~190px the stacked 32px links used to occupy above
+     the fold. Same four destinations, so nothing becomes unreachable. -->
+<nav class="tab-bar" aria-label="{{ _ nav_primary_label }}">
+    <a href="./{{ _ locale }}index.html" class="tab-item">
+        <svg class="icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path d="M4 15.5c1.6.6 2.8.2 3.6-1.2"></path>
+            <path d="M6.6 12.9 13.2 4.6a2 2 0 0 1 3 2.6L8.8 15z"></path>
+        </svg>
+        <span>{{ _ nav_practise }}</span>
+    </a>
+    <a href="./{{ _ locale }}deck.html" class="tab-item">
+        <svg class="icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path d="M10 3 3.5 6.3 10 9.6l6.5-3.3z"></path>
+            <path d="M3.5 10 10 13.3 16.5 10"></path>
+            <path d="M3.5 13.6 10 16.9l6.5-3.3"></path>
+        </svg>
+        <span>{{ _ no_cards_link_deck }}</span>
+    </a>
+    <a href="./{{ _ locale }}marketplace.html" class="tab-item">
+        <svg class="icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <path d="M3.5 8.4V16a.8.8 0 0 0 .8.8h11.4a.8.8 0 0 0 .8-.8V8.4"></path>
+            <path d="M2.8 8.2 4.2 4.1a.8.8 0 0 1 .76-.55h10.08a.8.8 0 0 1 .76.55l1.4 4.1"></path>
+        </svg>
+        <span>{{ _ marketplace-deck-button }}</span>
+    </a>
+    <a href="./{{ _ locale }}account.html" class="tab-item">
+        <svg class="icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <circle cx="10" cy="7" r="3"></circle>
+            <path d="M4.6 16.6a5.4 5.4 0 0 1 10.8 0"></path>
+        </svg>
+        <span>{{ _ account }}</span>
+    </a>
+</nav>

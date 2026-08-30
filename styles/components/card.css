@@ -5,9 +5,8 @@
 /* Display the deck or marketplace as a grid of cards */
 .deck {
     display: grid;
-    gap: 0.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    padding-inline: 0.5rem;
+    gap: 0.875rem;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     box-sizing: border-box;
 }
 
@@ -21,11 +20,10 @@
 
 .deck-block {
     display: grid;
-    gap: 0.5rem;
+    gap: 0.875rem;
     /* auto-fill (not auto-fit) so a block's partial last row stays normal-width and left-aligned
        instead of stretching to fill the row at every block boundary */
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    padding-inline: 0.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     box-sizing: border-box;
 
     /* Isolate each block's layout and paint from the rest of the page, so rendering/collapsing one
@@ -35,38 +33,64 @@
 
 /* Match the in-grid row gap between stacked blocks */
 .deck-block + .deck-block {
-    margin-top: 0.5rem;
+    margin-top: 0.875rem;
 }
 
-/* Add border to the cards for better UI/UX */
+/* The card surface. A rounded, slightly-raised panel rather than a hard 1px box: the fill and the
+   border are both color-mix()es of the theme variables (see base.css), so this retints with every
+   palette instead of needing a per-theme surface colour. */
 .card {
-    border: 1px solid var(--main-border-colour);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    transition: box-shadow 0.2s ease;
+    background-color: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-resting);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
 
     /* A little breathing room so full-width widgets (e.g. the level-reduce slider) don't run into
        the card border */
-    padding-inline: 0.5rem;
+    padding: 0.875rem;
 
-    /* Let the browser skip rendering and layout for off-screen cards entirely. The auto intrinsic
-       size keeps the scrollbar honest before a card has ever been rendered (and is remembered once
-       it has), so a multi-thousand-card deck stays cheap to scroll on low-powered devices */
+}
+
+/* Let the browser skip rendering and layout for off-screen cards entirely. The auto intrinsic size
+   keeps the scrollbar honest before a card has ever been rendered (and is remembered once it has),
+   so a multi-thousand-card deck stays cheap to scroll on low-powered devices.
+   Keep this in step with DECK_ROW_HEIGHT_ESTIMATE in scripts/pages/deck.js — that constant is the
+   deck virtualizer's row-height guess and is documented as tracking this value plus the gap.
+
+   Scoped to cards inside a deck grid, which is the only place there are enough of them to matter.
+   content-visibility: auto implies paint containment, which clips anything a card positions outside
+   its own box — that silently cut the language picker's popup off at the edge of the account page's
+   settings card, whose only claim to the optimisation was sharing the .card class. */
+.deck > .card,
+.deck-block > .card {
     content-visibility: auto;
-    contain-intrinsic-size: auto 320px;
+    contain-intrinsic-size: auto 340px;
 }
 
 .card:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    border-color: var(--accent-tint);
+    box-shadow: var(--shadow-raised);
 }
 
+/* Heading sizes inside a card. These stay element selectors because several of the headings are
+   load-bearing for scripts/components/tutorial, which matches on tag name (the marketplace deck
+   title must remain an <h1> inside .card) and so cannot be swapped for a utility class. */
 .card h1 {
-    font-size: 1.5rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    color: var(--main-text-colour);
 }
 
 .card h2 {
-    font-size: 1.3rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--main-text-colour);
 }
 
 .card h3 {
-    font-size: 1.15rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--main-text-colour);
 }

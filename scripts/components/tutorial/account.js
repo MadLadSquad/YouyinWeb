@@ -32,6 +32,14 @@ async function tutRunAccount()
             side: "bottom",
         },
         {
+            // The goal drives the streak, the daily bar on this page and the practice page, and the
+            // price of a streak freeze, so it is worth a stop of its own
+            element: "#streak-goal-slider",
+            title: lc.tutorial_account_goal_title,
+            description: lc.tutorial_account_goal,
+            side: "bottom",
+        },
+        {
             element: "#lang-select-account",
             title: lc.tutorial_account_language_title,
             description: lc.tutorial_account_language,

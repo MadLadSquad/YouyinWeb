@@ -1,4 +1,4 @@
-const CACHE_NAME = 'static-v16';
+const CACHE_NAME = 'static-v20';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination

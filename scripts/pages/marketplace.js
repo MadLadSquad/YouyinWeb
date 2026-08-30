@@ -89,6 +89,43 @@ function hideImportOverlay(overlay)
     overlay.remove();
 }
 
+// Icon paths for the marketplace card's secondary actions. Kept as raw path data and built through
+// createElementNS rather than innerHTML so the SVG namespace is correct
+const MARKETPLACE_ICONS = {
+    source: ["m7.2 6.5-3.7 3.7 3.7 3.7", "M12.8 6.5l3.7 3.7-3.7 3.7"],
+    download: ["M10 3.5v9", "M6.3 9.2 10 12.9l3.7-3.7", "M4 16.5h12"]
+};
+
+/**
+ * Turns a button into an icon-only control: draws the icon inside it and moves the label to the
+ * accessible name and the tooltip. Used for the marketplace card's Source and Download actions,
+ * which have to share a 258px card row with the primary Import button.
+ * @param { HTMLElement } button - The button to decorate
+ * @param { string[] } paths - SVG path "d" attributes to draw
+ * @param { string } label - The visible-label text to move into aria-label/title
+ */
+function makeIconButton(button, paths, label)
+{
+    button.textContent = "";
+    button.setAttribute("aria-label", label);
+    button.setAttribute("title", label);
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 20 20");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    svg.setAttribute("class", "icon icon-sm");
+
+    for (const d of paths)
+    {
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", d);
+        svg.appendChild(path);
+    }
+
+    button.appendChild(svg);
+}
+
 /**
  * Constructs a marketplace element from a deck's metadata entry in the marketplace map.
  * @param { number } val - Running index, used purely to give elements unique ids
@@ -103,17 +140,32 @@ function constructElement(val, deckContainer, deck, type, language)
     // The deck file lives at CDN/[official|unofficial]/language/[location] in the repository
     const path = `${type}/${language}/${deck.location}`;
 
-    // Create card
-    let div = addElement("div", "", `marketplace-${type}-card-${val}`, "card centered", "", deckContainer);
+    // Create card. The <h1> deck title inside a .card is load-bearing: the onboarding tutorial finds
+    // the numbers deck by matching that heading's text (see scripts/components/tutorial/marketplace.js)
+    let div = addElement("div", "", `marketplace-${type}-card-${val}`, "card marketplace-card", "", deckContainer);
 
-    addElement("h1", deck.name, "", "", "", div);
-    addElement("p", `${lc.pre_leveled_up}: ${deck.preset_levels ? lc.leveled_up_yes : lc.leveled_up_no}`, "", "", "", div);
-    addElement("p", `${lc.phrases_count_cards}: ${deck.cards}`, "", "", "", div);
-    addElement("p", `${lc.phrases_count_phrase}: ${deck.phrases}`, "", "", "", div);
+    const head = addElement("div", "", "", "marketplace-card-head", "", div);
+    addElement("h1", deck.name, "", "marketplace-card-title", "", head);
+    if (deck.preset_levels)
+        addElement("span", lc.pre_leveled_up, "", "chip chip-accent marketplace-card-badge", "", head);
+
+    // The three "Label: value" paragraphs become metadata chips — they are attributes of the deck,
+    // not prose, and as chips they fit on one line instead of three
+    const meta = addElement("div", "", "", "marketplace-card-meta", "", div);
+    addElement("span", `${deck.cards} ${lc.phrases_count_cards.toLowerCase()}`, "", "chip", "", meta);
+    addElement("span", `${deck.phrases} ${lc.phrases_count_phrase.toLowerCase()}`, "", "chip", "", meta);
+
+    addElement("hr", "", "", "hairline marketplace-card-rule", "", div);
+
+    const actions = addElement("div", "", "", "marketplace-card-actions", "", div);
 
     // Import a deck from file
-    runEventAfterAnimation(addElement("button", lc.deck_import, `import-button-${type}-${val}`, "card-button-edit", path, div), "click", async function(e)
+    runEventAfterAnimation(addElement("button", lc.deck_import, `import-button-${type}-${val}`, "card-button-edit marketplace-import", path, actions), "click", async function(e)
     {
+        // Read the button's data before anything suspends: currentTarget is only non-null while the
+        // event is being dispatched, and everything below runs after at least one await.
+        const deckPath = e.currentTarget.getAttribute("arbitrary-data");
+
         let bExecuted = confirm(lc.import_deck_confirm_text);
         if (bExecuted)
         {
@@ -123,7 +175,7 @@ function constructElement(val, deckContainer, deck, type, language)
             try
             {
                 // If an element is created using addElement, arbitrary data is also assigned
-                let content = await loadMarketplaceData(e.target.getAttribute("arbitrary-data"),
+                let content = await loadMarketplaceData(deckPath,
                     (fraction) => updateImportOverlay(overlay, fraction));
                 if (content === undefined)
                 {
@@ -154,20 +206,25 @@ function constructElement(val, deckContainer, deck, type, language)
     // Stupid ahhhh whitespace adding code because web dev is stupid
     addTextNode(div, " ");
 
-    runEventAfterAnimation(addElement("button", lc.deck_source, `source-button-${type}-${val}`, "card-button-edit", path, div), "click", async function(e)
+    const sourceButton = addElement("button", lc.deck_source, `source-button-${type}-${val}`, "card-button-edit card-button-ghost marketplace-secondary card-button-icon", path, actions);
+    makeIconButton(sourceButton, MARKETPLACE_ICONS.source, lc.deck_source);
+    runEventAfterAnimation(sourceButton, "click", async function(e)
     {
         // If an element uses addElement, arbitrary data is also assigned
-        window.open(`${MARKETPLACE_URL}/blob/master/` + e.target.getAttribute("arbitrary-data"));
+        window.open(`${MARKETPLACE_URL}/blob/master/` + e.currentTarget.getAttribute("arbitrary-data"));
     });
 
-    addElement("br", "", "", "", "", div);
-
     // Download deck with this interesting code
-    runEventAfterAnimation(addElement("button", lc.deck_download, `download-button-${type}-${val}`, "card-button-edit", path, div), "click", async function(e)
+    const downloadButton = addElement("button", lc.deck_download, `download-button-${type}-${val}`, "card-button-edit card-button-ghost marketplace-secondary card-button-icon", path, actions);
+    makeIconButton(downloadButton, MARKETPLACE_ICONS.download, lc.deck_download);
+    runEventAfterAnimation(downloadButton, "click", async function(e)
     {
+        // Same reason as the import handler: capture before the first await.
+        const deckPath = e.currentTarget.getAttribute("arbitrary-data");
+
         try
         {
-            let content = await loadMarketplaceData(e.target.getAttribute("arbitrary-data"));
+            let content = await loadMarketplaceData(deckPath);
             if (content === undefined)
                 return;
 
@@ -176,7 +233,7 @@ function constructElement(val, deckContainer, deck, type, language)
             let file = new Blob([JSON.stringify(content)], { type: "application/json;charset=utf-8" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(file);
-            link.download = e.target.getAttribute("arbitrary-data").split("/").at(-1);
+            link.download = deckPath.split("/").at(-1);
             link.click();
             URL.revokeObjectURL(link.href);
         }
@@ -256,8 +313,8 @@ function handleMarketplaceSection(container, languages, type)
         // shares a single object between them
         for (const language of Object.keys(entry))
         {
-            const header = addElement("h1", language, "", "centered", "", container);
-            const spacer = addElement("br", "", "", "", "", container);
+            const header = addElement("p", language, "", "t-eyebrow marketplace-language", "", container);
+            const spacer = addElement("hr", "", "", "hairline marketplace-language-rule", "", container);
             const grid = addElement("section", "", `deck-${type}-${val}`, "deck", "", container);
 
             const group = { header, spacer, grid, cards: [] };
@@ -299,7 +356,11 @@ async function marketplaceMain()
             // Only surface the community section when there is at least one community deck to show
             if (map.unofficial !== undefined && map.unofficial.length > 0)
             {
-                addElement("h1", lc.community_decks_header, "", "centered", "", unofficialContainer);
+                // Same shape as the "Official decks" head in marketplace.html, so the two top-level
+                // sections match and each still outranks the language heads inside it
+                const communityHead = addElement("div", "", "", "section-head marketplace-section-head", "", unofficialContainer);
+                addElement("h2", lc.community_decks_header, "", "marketplace-section-title", "", communityHead);
+                addElement("hr", "", "", "hairline section-head-rule", "", communityHead);
                 handleMarketplaceSection(unofficialContainer, map.unofficial, "unofficial");
             }
         }

@@ -53,7 +53,7 @@
 }
 
 .driver-popover.tutorial-popover .driver-popover-title {
-    color: var(--main-accent-colour);
+    color: var(--main-text-colour);
 }
 
 .driver-popover.tutorial-popover .driver-popover-description {

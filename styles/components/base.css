@@ -3,6 +3,91 @@
    variables into :root at runtime (see the #site-theme-style element). base.css only consumes
    them. */
 
+/* ------------------------------------ Derived design tokens ------------------------------------ */
+
+/* Every token below is a color-mix() of the seven palette variables theme.js injects — no new colour
+   is introduced, so all ~190 themes keep working and a new theme still needs no extra fields. var()
+   resolves at computed-value time, so these re-derive automatically when applyPalette() rewrites the
+   base variables, including through the 400ms .theme-transition cross-fade below.
+
+   The mixes below follow two rules, both learned from measuring WCAG contrast across the whole
+   catalogue rather than from eyeballing the default palette:
+
+   1. A colour that will carry text is never mixed toward --main-background-colour. Every such mix
+      spends contrast, and the tightest palettes have almost none to spend — the narrowest theme in
+      the catalogue puts its own text at 4.62:1 against its own background, so a token that gives
+      away 20% of that is already below AA before it reaches a card. Softer text is mixed toward the
+      palette's *other* text colour (--deck-card-text-colour) instead, which keeps it on the readable
+      side of the page.
+   2. Anything that must simply be *visible* — a card fill, a hairline — is floored against
+      --main-text-colour rather than derived from --main-border-colour alone. Roughly a quarter of
+      the catalogue sets a border colour within a hair of its background (it is a "sub" colour in the
+      palettes these came from, not a border), and those cards used to have no visible edge at all. */
+:root {
+    /* Surfaces, in increasing separation from the page background. Deliberately shallow: a surface
+       moves toward --main-text-colour, so every step of fill is paid for by the text printed on it.
+       Cards are separated by their hairline and shadow instead, which cost no contrast. */
+    --surface: color-mix(in srgb, var(--main-text-colour) 5%, var(--main-background-colour));
+    --sunken: color-mix(in srgb, var(--main-text-colour) 11%, var(--main-background-colour));
+    /* A hairline, not a rule: the border colour supplies the hue, the text colour supplies the floor
+       that keeps it visible on the palettes whose border is indistinguishable from their background */
+    --hairline: color-mix(in srgb, var(--main-text-colour) 30%, color-mix(in srgb, var(--main-border-colour) 25%, var(--main-background-colour)));
+
+    /* Accent tints, used as fills behind --main-text-colour. 12% is the most the "current page" pill
+       can take before the label it carries drops below AA on the tighter palettes */
+    --accent-quiet: color-mix(in srgb, var(--main-accent-colour) 7%, var(--main-background-colour));
+    --accent-soft: color-mix(in srgb, var(--main-accent-colour) 12%, var(--main-background-colour));
+    --accent-tint: color-mix(in srgb, var(--main-accent-colour) 30%, var(--main-background-colour));
+
+    /* Text, in three weights below --main-text-colour. All three are mixes of the palette's two text
+       colours, so each one stays between them and none can wash out into the page. */
+    --body-text: color-mix(in srgb, var(--main-text-colour) 90%, var(--deck-card-text-colour));
+    /* Interactive labels that are not the primary text: nav links, ghost buttons, chips */
+    --muted-text: color-mix(in srgb, var(--deck-card-text-colour) 30%, var(--main-text-colour));
+    /* Captions and units. The quietest text on the site, and still pulled back toward the heading
+       colour — --deck-card-text-colour on its own is under AA on three quarters of the catalogue */
+    --faint-text: color-mix(in srgb, var(--deck-card-text-colour) 55%, var(--main-text-colour));
+
+    /* Labels printed on a solid accent fill. A palette's accent may be light or dark, so
+       --main-background-colour is not a safe label on all of them — it is under AA on 82 of the 188
+       for the resting fill and on 61 for the hover fill. The @supports block below replaces these
+       with black or white picked from the fill's own lightness; browsers without relative colour
+       syntax keep the old behaviour. --main-error-colour needs no such help: the background colour
+       already clears AA on it on all 188, so the danger button keeps a plain label. */
+    --on-accent: var(--main-background-colour);
+    --on-accent-active: var(--main-background-colour);
+    --on-error: var(--main-background-colour);
+
+    /* Elevation. Kept subtle and neutral: on dark themes a black shadow is nearly invisible and the
+       hairline carries the separation instead */
+    --shadow-resting: 0 1px 2px rgba(0, 0, 0, 0.045);
+    --shadow-raised: 0 6px 22px rgba(0, 0, 0, 0.075);
+
+    /* Shape */
+    --radius-pill: 999px;
+    --radius-button: 10px;
+    --radius-input: 11px;
+    --radius-card: 16px;
+    --radius-popup: 14px;
+
+    /* The shared content column. Before this, every page ran edge to edge with 0.5rem of padding,
+       which left stat rows and definition lists uncomfortably wide on a desktop monitor */
+    --content-width: 1120px;
+    --content-gutter: 24px;
+}
+
+/* Pick the label for a solid fill from the fill itself: clamp() collapses the fill's own OKLab
+   lightness to either 0 or 1, so the result is black on a light fill and white on a dark one. The
+   0.57 crossover was fitted against the catalogue. Resting fill: AA on 185 of 188 palettes, 4.29:1
+   at worst, against 106 palettes and 3.14:1 for the label it replaces. Hover fill: 188 of 188 and
+   4.50:1 at worst, against 127 palettes and 2.04:1. */
+@supports (color: oklch(from red l c h)) {
+    :root {
+        --on-accent: oklch(from var(--main-accent-colour) clamp(0, (l - 0.57) * -1000, 1) 0 0);
+        --on-accent-active: oklch(from var(--deck-button-active-colour) clamp(0, (l - 0.57) * -1000, 1) 0 0);
+    }
+}
+
 html {
     accent-color: var(--main-accent-colour);
     /* Backstop against stray horizontal overflow on mobile. The main offender - the footer
@@ -77,8 +162,10 @@ body {
     background-color: var(--main-background-colour);
     /* Default text colour for all copy (paragraphs, headers, …). Without this, text falls
        back to browser-default black and becomes unreadable on dark themes. Elements that
-       need the accent colour (links, etc.) set it explicitly and override this. */
-    color: var(--main-text-colour);
+       need the accent colour (links, etc.) set it explicitly and override this.
+       --body-text is --main-text-colour pulled slightly toward the background; headings opt
+       back up to the full-strength colour via the .t-* utilities below. */
+    color: var(--body-text);
     font-family: 'Ubuntu', sans-serif;
 }
 
@@ -213,6 +300,27 @@ ol li {
 /* Make the 404 emoji take up more or less the whole page */
 #err-404-emoji {
     font-size: clamp(4rem, 18vw, 16rem);
+    color: var(--faint-text);
+    margin: 0;
+}
+
+.error-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 60vh;
+}
+
+/* An <a> rather than a <button>, so it needs the flex centring the class assumes */
+.error-page-home {
+    text-decoration: none;
+    color: var(--main-background-colour);
+}
+
+.error-page-home:hover {
+    color: var(--main-background-colour);
 }
 
 /* The generic centered class */
@@ -222,6 +330,211 @@ ol li {
 
 .vcentered {
     margin: auto;
+}
+
+/* ------------------------------------- Content column ------------------------------------- */
+
+/* Shared page column. Pages opt in by wrapping their content in .wrap; the practice page
+   deliberately does not, because the writer split is full-bleed by design. */
+.wrap {
+    width: 100%;
+    max-width: var(--content-width);
+    margin-inline: auto;
+    padding-inline: var(--content-gutter);
+    box-sizing: border-box;
+}
+
+/* --------------------------------------- Type scale --------------------------------------- */
+
+/* One scale for the whole site, in Ubuntu (unchanged). These are utilities rather than element
+   selectors so they can sit on whatever tag the surrounding markup or the tutorial needs — several
+   headings are load-bearing as <h1>/<h3> for scripts/components/tutorial and cannot be swapped. */
+.t-display {
+    font-size: clamp(1.6rem, 3vw, 2rem);
+    line-height: 1.14;
+    font-weight: 700;
+    letter-spacing: -0.022em;
+    color: var(--main-text-colour);
+    margin: 0;
+}
+
+.t-h1 {
+    font-size: 1.3125rem;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    color: var(--main-text-colour);
+    margin: 0;
+}
+
+.t-h2 {
+    font-size: 1rem;
+    line-height: 1.3;
+    font-weight: 600;
+    letter-spacing: -0.004em;
+    color: var(--main-text-colour);
+    margin: 0;
+}
+
+.t-body {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    font-weight: 400;
+    color: var(--body-text);
+    margin: 0;
+}
+
+.t-meta {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--muted-text);
+    margin: 0;
+}
+
+/* Small caps-y section label. Sits above a group instead of giving every group an <h1>, which is
+   what made the old pages read as a stack of equally-important blocks */
+.t-eyebrow {
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: 0.085em;
+    text-transform: uppercase;
+    color: var(--faint-text);
+    margin: 0;
+}
+
+/* Statistic values. tabular-nums keeps a column of numbers from shuffling sideways as it updates */
+.t-num {
+    font-size: 1.8125rem;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--main-text-colour);
+    margin: 0;
+}
+
+.t-num-sm {
+    font-size: 1.3125rem;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    font-variant-numeric: tabular-nums;
+    color: var(--main-text-colour);
+    margin: 0;
+}
+
+/* The label above/below a statistic */
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--faint-text);
+}
+
+/* The unit suffix inside a statistic ("2.63 min.") — same colour as a label, but inline. The
+   leading space is a real break opportunity, which is what keeps the pair from overflowing a
+   narrow column as one unbreakable token. */
+.t-num-unit {
+    font-size: 0.6em;
+    font-weight: 700;
+    color: var(--muted-text);
+}
+
+/* ----------------------------------------- Chips ------------------------------------------ */
+
+/* Small rounded label used for counts, metadata and filters across the deck, marketplace,
+   session and account pages */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 28px;
+    padding: 0 0.6875rem;
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    background-color: var(--sunken);
+    color: var(--muted-text);
+    font-size: 0.78125rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.chip-accent {
+    background-color: var(--accent-soft);
+    color: var(--main-text-colour);
+}
+
+/* A chip that is a real control (the deck type filters, the calendar year picker) */
+.chip-button {
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+.chip-button:hover {
+    background-color: var(--accent-quiet);
+    color: var(--main-text-colour);
+}
+
+/* --------------------------------------- Progress bar --------------------------------------- */
+
+/* Shared track/fill used by the knowledge level on deck cards, the daily-goal bar on the account
+   page and the round progress strip on the practice page */
+.bar {
+    height: 6px;
+    border-radius: var(--radius-pill);
+    background-color: var(--surface);
+    /* An outlined track rather than a filled one. The fill that runs over it is the raw accent, which
+       clears 3:1 against the page on all 188 palettes but against a --sunken track on only 121 - so
+       the track steps back toward the page (152) and the hairline draws its edge instead. */
+    box-shadow: inset 0 0 0 1px var(--hairline);
+    overflow: hidden;
+}
+
+.bar > i {
+    display: block;
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background-color: var(--main-accent-colour);
+    transition: width 0.3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bar > i {
+        transition: none;
+    }
+}
+
+/* ----------------------------------------- Icons ------------------------------------------ */
+
+/* Inline SVG icons are stroke-based and inherit currentColor, so they retint with the theme like
+   every other piece of chrome. This is why the header's streak/gem marks are drawn rather than set
+   as emoji: a Twemoji glyph is a fixed-colour raster-ish SVG and cannot follow the palette. */
+.icon {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.icon-sm {
+    width: 16px;
+    height: 16px;
+}
+
+/* ---------------------------------------- Hairline ----------------------------------------- */
+
+.hairline {
+    height: 1px;
+    border: 0;
+    margin: 0;
+    background-color: var(--hairline);
 }
 
 /* Full-screen message shown by the <noscript> in header.tmpl.html when JavaScript is disabled.
@@ -245,8 +558,8 @@ ol li {
     text-align: center;
     color: var(--main-text-colour, #000000);
     background-color: var(--main-background-colour, #ffffff);
-    border: 2px solid var(--main-accent-colour, #c87e74);
-    border-radius: 12px;
+    border: 1px solid var(--main-border-colour, #cccccc);
+    border-radius: 20px;
 }
 
 .site-noscript-box h2 {

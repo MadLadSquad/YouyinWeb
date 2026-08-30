@@ -95,6 +95,34 @@ lc.community_decks_header = "{{ _ community_decks_header }}";
 
 // theme switcher (index.js)
 lc.theme_button = "{{ _ theme_button }}";
+lc.session_exit = "{{ _ session_exit }}";
+lc.session_queue_note = "{{ _ session_queue_note }}";
+lc.session_errors_count = "{{ _ session_errors_count }}";
+// The strip's label swaps between this and the two stage names (phrases_count_cards /
+// phrases_count_phrase) as the round moves from cards to phrases
+lc.session_round_in_progress = "{{ _ session_round_in_progress }}";
+lc.deck_knowledge_label = "{{ _ deck_knowledge_label }}";
+lc.deck_summary = "{{ _ deck_summary }}";
+lc.today_of_goal = "{{ _ today_of_goal }}";
+lc.today_no_goal = "{{ _ today_no_goal }}";
+lc.today_goal_met = "{{ _ today_goal_met }}";
+lc.today_goal_left = "{{ _ today_goal_left }}";
+lc.today_goal_left_one = "{{ _ today_goal_left_one }}";
+lc.streak_freeze_held = "{{ _ streak_freeze_held }}";
+lc.streak_freeze_held_one = "{{ _ streak_freeze_held_one }}";
+
+// app-bar streak/gems panel (daily-streak.js). The first five are the same labels the account page's
+// profile card and shop render from HTML; the panel needs them from JS as well
+lc.streak_field = "{{ _ streak-field }}";
+lc.gems_label = "{{ _ gems_label }}";
+lc.gems_panel_hint = "{{ _ gems_panel_hint }}";
+lc.streak_freeze_field = "{{ _ streak-freeze-field }}";
+lc.streak_freeze_cost_field = "{{ _ streak-freeze-cost-field }}";
+lc.buy_streak_freeze_button = "{{ _ buy_streak_freeze_button }}";
+lc.streak_panel_none = "{{ _ streak_panel_none }}";
+lc.streak_panel_safe = "{{ _ streak_panel_safe }}";
+lc.streak_panel_protected = "{{ _ streak_panel_protected }}";
+lc.streak_panel_at_risk = "{{ _ streak_panel_at_risk }}";
 lc.theme_search_placeholder = "{{ _ theme_search_placeholder }}";
 
 // browser-support gate (browser-support.js). The nojs_* keys are HTML-only (noscript) and are not
@@ -204,6 +232,8 @@ lc.tutorial_account_extensive_title = "{{ _ tutorial_account_extensive_title }}"
 lc.tutorial_account_extensive = "{{ _ tutorial_account_extensive }}";
 lc.tutorial_account_levelreduce_title = "{{ _ tutorial_account_levelreduce_title }}";
 lc.tutorial_account_levelreduce = "{{ _ tutorial_account_levelreduce }}";
+lc.tutorial_account_goal_title = "{{ _ tutorial_account_goal_title }}";
+lc.tutorial_account_goal = "{{ _ tutorial_account_goal }}";
 lc.tutorial_account_language_title = "{{ _ tutorial_account_language_title }}";
 lc.tutorial_account_language = "{{ _ tutorial_account_language }}";
 lc.tutorial_account_theme_title = "{{ _ tutorial_account_theme_title }}";

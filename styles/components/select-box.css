@@ -12,11 +12,11 @@
     -moz-appearance: none;
     appearance: none;
     background-color: transparent;
-    border: 1px solid var(--main-accent-colour);
-    border-radius: 4px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-button);
     color: var(--main-text-colour);
     font-family: inherit;
-    font-size: 18px;
+    font-size: 0.90625rem;
     line-height: 1.2;
     /* Match the shared button height (see .card-button-edit's min-height) so the language/theme pickers
        line up with the card buttons. inline-flex centring keeps the height independent of the label,
@@ -25,10 +25,17 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    min-height: 32px;
-    padding: 0 10px;
+    min-height: 40px;
+    padding: 0 0.75rem;
+    gap: 0.4375rem;
     margin-inline: 0.33rem;
     cursor: pointer;
+    transition: border-color 0.16s ease, color 0.16s ease;
+}
+
+.list-select-button:hover {
+    border-color: var(--main-accent-colour);
+    color: var(--main-text-colour);
 }
 
 .list-select-popup {
@@ -43,9 +50,9 @@
     box-sizing: border-box;
     padding: 0;
     background-color: var(--main-background-colour);
-    border: 1px solid var(--main-accent-colour);
-    border-radius: 8px;
-    box-shadow: 0 4px 16px var(--main-border-colour);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-popup);
+    box-shadow: var(--shadow-raised);
 
     /* Smooth entry/exit animation */
     opacity: 0;
@@ -67,6 +74,19 @@
                 visibility 0s 0s;
 }
 
+/* Opened downward instead, when the trigger has no room above it (see positionPopupVertically in
+   select-box.js). The entry transform mirrors the default so the popup still animates in from the
+   trigger's side rather than through it. */
+.list-select-popup.drop-below {
+    top: calc(100% + 0.5rem);
+    bottom: auto;
+    transform: translate(-50%, -10px) scale(0.95);
+}
+
+.list-select-popup.drop-below.open {
+    transform: translate(-50%, 0) scale(1);
+}
+
 /* Specific positioning & width override for the theme selection popup */
 .theme-popup {
     position: fixed;
@@ -74,7 +94,10 @@
     width: min(20rem, 90vw);
 }
 
-/* Descendant selector (specificity 0,2,0) so this beats deck-edit.css's input[type=text] (0,1,1),
+/* NOTE: the popup's max-height (min(22rem, 60vh), above) is re-implemented in JS by
+   theme-selector.js's flip-above/below maths — change one and you must change the other.
+
+   Descendant selector (specificity 0,2,0) so this beats deck-edit.css's input[type=text] (0,1,1),
    which the old #theme-popup-search id rule used to win against on its own */
 .theme-popup .theme-popup-search {
     box-sizing: border-box;
@@ -84,8 +107,8 @@
     background-color: transparent;
     color: var(--main-text-colour);
     border: none;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: var(--radius-popup);
+    border-top-right-radius: var(--radius-popup);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     font-family: inherit;
@@ -109,19 +132,21 @@
     width: 100%;
     box-sizing: border-box;
     text-align: left;
-    padding: 6px 8px;
+    padding: 0.5rem 0.625rem;
     background-color: transparent;
-    color: var(--main-text-colour);
+    color: var(--body-text);
     border: 1px solid transparent;
-    border-radius: 4px;
+    border-radius: 9px;
     font-family: inherit;
-    font-size: 16px;
+    font-size: 0.875rem;
     cursor: pointer;
     white-space: nowrap;
+    transition: background-color 0.14s ease, color 0.14s ease;
 }
 
 .list-select-option:hover, .list-select-option:focus-visible {
-    border-color: var(--main-accent-colour);
+    background-color: var(--sunken);
+    color: var(--main-text-colour);
 }
 
 .list-select-option.active {

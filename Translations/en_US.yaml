@@ -32,6 +32,74 @@ translations:
     text: " page to add some!"
   - id: footer
     text: "A {} project!"
+  - id: nav_primary_label
+    text: "Main navigation"
+  - id: nav_practise
+    text: "Practise"
+  - id: session_exit
+    text: "Exit"
+  - id: guest_initial
+    text: "G"
+  - id: today_header
+    text: "Today"
+  - id: today_of_goal
+    text: "of {goal} rounds"
+  - id: today_no_goal
+    text: "rounds today"
+  - id: today_goal_met
+    text: "Goal met — your streak is safe for today."
+  - id: today_goal_left
+    text: "{count} more to reach today's goal."
+  - id: today_goal_left_one
+    text: "1 more to reach today's goal."
+  - id: streak_freeze_held
+    text: "{count} freezes banked"
+  - id: streak_freeze_held_one
+    text: "1 freeze banked"
+  - id: gems_label
+    text: "Gems"
+  - id: gems_panel_hint
+    text: "Earned by finishing cards and phrases. Spend them on streak freezes."
+  - id: streak_panel_none
+    text: "Finish a round to start a streak."
+  - id: streak_panel_safe
+    text: "Today is counted. See you tomorrow."
+  - id: streak_panel_protected
+    text: "Not practised today - a freeze will cover it."
+  - id: streak_panel_at_risk
+    text: "Practise today to keep your streak."
+  - id: language_label
+    text: "Language"
+  - id: language_description
+    text: "Interface language. Also available from the top bar."
+  - id: theme_description
+    text: "190 palettes. Every colour on the page is derived from the active one."
+  - id: data_card_header
+    text: "Your data"
+  - id: data_card_note
+    text: "Everything is stored on this device only. Clearing it cannot be undone."
+  - id: deck_more_actions
+    text: "More actions"
+  - id: deck_knowledge_label
+    text: "Knowledge"
+  - id: deck_summary
+    text: "{cards} cards · {phrases} phrases · average knowledge {knowledge}"
+  - id: marketplace_subtitle
+    text: "Ready-made decks maintained in the public deck repository."
+  - id: new_deck_upload_title
+    text: "Have a deck to share?"
+  - id: session_ready_eyebrow
+    text: "Ready when you are"
+  - id: session_next_round
+    text: "Next round"
+  - id: session_queue_note
+    text: "{cards} cards and {phrases} phrases are queued for this round."
+  - id: session_round_in_progress
+    text: "Round in progress"
+  - id: session_end_round
+    text: "End round"
+  - id: session_errors_count
+    text: "{count} errors"
   - id: theme_button
     text: "Theme"
   - id: theme_search_placeholder
@@ -475,6 +543,10 @@ translations:
     text: "Daily level reduction"
   - id: tutorial_account_levelreduce
     text: "Each day your characters lose a little bit of their knowledge score so frequent revision keeps them fresh. This slider sets how much of their knowledge score they lose."
+  - id: tutorial_account_goal_title
+    text: "Your daily goal"
+  - id: tutorial_account_goal
+    text: "This is how many rounds a day count as practice. Meeting it keeps your streak alive, and it also sets the price of a streak freeze."
   - id: tutorial_account_language_title
     text: "Language"
   - id: tutorial_account_language

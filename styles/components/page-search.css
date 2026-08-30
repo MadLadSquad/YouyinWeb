@@ -1,24 +1,138 @@
-/* Shared search bar, centred above the listings. Used by both the deck and marketplace pages.
-   Colours come from the theme custom properties injected by theme.js (see base.css). */
-.page-search-wrapper {
+/* Shared listing chrome for the deck and marketplace pages: the page header with its action row, the
+   search toolbar and the section heads above each grid. Colours come from the theme custom properties
+   injected by theme.js (see base.css). */
+
+/* ---------------------------------------- Page head ---------------------------------------- */
+
+.page-head {
     display: flex;
-    justify-content: center;
-    margin: 1rem 0;
+    align-items: flex-end;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.page-head p {
+    margin-top: 0.3125rem;
+}
+
+.page-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5625rem;
+    margin-left: auto;
+    flex: none;
+}
+
+.page-head-actions .card-button-edit {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* ----------------------------------------- Toolbar ----------------------------------------- */
+
+.page-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 1.5rem;
+}
+
+/* The search bar used to be centred on its own row; it now sits at the head of the listing where a
+   filter belongs, and shares the row with any other list controls */
+.page-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 1;
+    max-width: 26.25rem;
+}
+
+.page-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    pointer-events: none;
+    color: var(--faint-text);
 }
 
 .page-search {
     box-sizing: border-box;
-    width: min(30rem, 90%);
-    padding: 8px 14px;
+    width: 100%;
+    min-height: 42px;
+    padding: 0 0.875rem 0 2.375rem;
     font-family: inherit;
-    font-size: 16px;
+    font-size: 0.90625rem;
     color: var(--main-text-colour);
     background-color: var(--main-background-colour);
-    border: 1px solid var(--main-accent-colour);
-    border-radius: 8px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-input);
+    transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.page-search::placeholder {
+    color: var(--faint-text);
 }
 
 .page-search:focus {
-    outline: 2px solid var(--main-accent-colour);
-    outline-offset: 1px;
+    outline: none;
+    border-color: var(--main-accent-colour);
+    box-shadow: 0 0 0 3px var(--accent-quiet);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-search {
+        transition: none;
+    }
+}
+
+/* --------------------------------------- Section head --------------------------------------- */
+
+/* An eyebrow, a count and a rule that runs to the edge — replaces the full-size <h1> that used to
+   sit above each grid and compete with the page title */
+.section-head {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 0.8125rem;
+}
+
+.section-head p {
+    margin: 0;
+}
+
+.section-count {
+    height: 22px;
+    padding: 0 0.5rem;
+    font-size: 0.71875rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.section-head-rule {
+    flex: 1;
+    margin-left: 0.25rem;
+}
+
+/* A grid followed by the next section's head needs breathing room between them */
+.deck + .section-head {
+    margin-top: 1.875rem;
+}
+
+@media (max-width: 760px) {
+    .page-head {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.875rem;
+    }
+
+    .page-head-actions {
+        margin-left: 0;
+    }
+
+    /* The two create buttons share the row and the overflow button keeps its square footprint */
+    .page-head-actions .card-button-edit:not(.card-button-icon) {
+        flex: 1;
+    }
+
+    .page-search-wrapper {
+        max-width: none;
+    }
 }

@@ -129,6 +129,43 @@ function $(x)
 }
 
 /**
+ * Reduces a URL path to the page it identifies: "deck", "account", "index", … Mirrors tutPage() in
+ * tutorial.js and pageNeedsCharacterData() below. A directory URL is the landing page, which is why
+ * a trailing slash maps to "index" — CI strips "/index.html" from every link, so in production the
+ * landing page really is served from the directory URL.
+ * @param { string } path - A URL pathname
+ * @returns { string } - The page identifier
+ */
+function pageNameFromPath(path)
+{
+    if (path.endsWith("/"))
+        return "index";
+
+    const last = path.substring(path.lastIndexOf("/") + 1).replace(/\.html$/, "");
+    return last === "" ? "index" : last;
+}
+
+/**
+ * Marks the app-bar and tab-bar link for the current page, so the nav shows where you are. Done in
+ * JS rather than the template because the header is one shared include across every page.
+ */
+function markCurrentNavLink()
+{
+    const current = pageNameFromPath(window.location.pathname);
+
+    for (const link of document.querySelectorAll(".app-nav .nav-link, .tab-bar .tab-item"))
+    {
+        // link.pathname is the resolved URL, so this works for the relative hrefs used in the source
+        // and for the absolute ones CI rewrites them into
+        if (pageNameFromPath(link.pathname) !== current)
+            continue;
+
+        link.classList.add("is-current");
+        link.setAttribute("aria-current", "page");
+    }
+}
+
+/**
  * Given an element, an event and a function to execute, tracks the given event and executes the provided callback
  * function when the animation or transition on the given element has finished playing
  * @param { HTMLElement } element - Element on which to track the event
@@ -137,15 +174,20 @@ function $(x)
  */
 function runEventAfterAnimation(element, event, f)
 {
+    // The armed flag lives on the element we bound to, not on e.target. Both events can be raised by
+    // a descendant and bubble up here: a click lands on whatever is under the cursor (for a button
+    // with an inline SVG icon that is the <svg>, not the <button>), while the ripple's transitionend
+    // is raised by the button itself. Keying off e.target would arm one node and test another, and
+    // the callback would silently never run.
     element.bWaitForAnimation = false;
-    element.addEventListener(event, (e) => {
-        e.target.bWaitForAnimation = true;
+    element.addEventListener(event, () => {
+        element.bWaitForAnimation = true;
     });
 
     const func = (e) => {
-        if (e.target.bWaitForAnimation)
+        if (element.bWaitForAnimation)
         {
-            e.target.bWaitForAnimation = false;
+            element.bWaitForAnimation = false;
             f(e);
         }
     };
@@ -527,6 +569,7 @@ async function main()
     setLanguage();
     setLanguageBox();
     setThemeBox();
+    markCurrentNavLink();
     initEmojiReplacement();
 
     // Fallback page exit transition for browsers without native Cross-Document View Transitions (like Firefox)

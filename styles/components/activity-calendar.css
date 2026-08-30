@@ -74,7 +74,7 @@
     line-height: 1;
     white-space: nowrap;
     overflow: visible;
-    color: var(--deck-card-text-colour);
+    color: var(--muted-text);
 }
 
 /* Weekday labels down the left, aligned to the cell rows (matching height + gap) */
@@ -92,7 +92,7 @@
     justify-content: flex-end;
     font-size: 0.7rem;
     white-space: nowrap;
-    color: var(--deck-card-text-colour);
+    color: var(--muted-text);
 }
 
 /* Cells, laid out as a row of week columns that stretch to fill the width */
@@ -125,10 +125,16 @@
 
 /* Intensity scale: empty days are a faint border tint; active days ramp the accent colour over the
    background. Because these reference the theme variables, switching theme recolours every cell */
-.activity-cell[data-level="0"] { background: color-mix(in srgb, var(--main-border-colour) 35%, var(--main-background-colour)); }
-.activity-cell[data-level="1"] { background: color-mix(in srgb, var(--main-accent-colour) 25%, var(--main-background-colour)); }
-.activity-cell[data-level="2"] { background: color-mix(in srgb, var(--main-accent-colour) 50%, var(--main-background-colour)); }
-.activity-cell[data-level="3"] { background: color-mix(in srgb, var(--main-accent-colour) 75%, var(--main-background-colour)); }
+/* The empty cell is a surface rather than a mix of the border colour: a quarter of the catalogue
+   sets a border within a hair of its background, and on those themes the empty grid disappeared.
+   The three filled steps were widened from 25/50/75 to 35/65/100 for the same reason the empty cell
+   was lightened - the first step has to separate from the empty cell, and at 25% over a --sunken
+   empty cell the two were indistinguishable on 104 of the 188 palettes. They now separate on all
+   but two, and each step from the one below it on every palette. */
+.activity-cell[data-level="0"] { background: var(--surface); box-shadow: inset 0 0 0 1px var(--hairline); }
+.activity-cell[data-level="1"] { background: color-mix(in srgb, var(--main-accent-colour) 35%, var(--main-background-colour)); }
+.activity-cell[data-level="2"] { background: color-mix(in srgb, var(--main-accent-colour) 65%, var(--main-background-colour)); }
+.activity-cell[data-level="3"] { background: var(--main-accent-colour); }
 .activity-cell[data-level="4"] { background: var(--main-accent-colour); }
 
 /* Less [][][][][] More */
@@ -138,7 +144,7 @@
     justify-content: flex-end;
     gap: 4px;
     font-size: 0.75rem;
-    color: var(--deck-card-text-colour);
+    color: var(--muted-text);
 }
 
 .activity-legend-label {
@@ -196,7 +202,7 @@
 
 .activity-year-button:hover {
     border-color: var(--main-accent-colour);
-    color: var(--main-accent-colour);
+    color: var(--main-text-colour);
 }
 
 .activity-year-button.active {

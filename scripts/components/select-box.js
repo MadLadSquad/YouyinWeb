@@ -115,13 +115,37 @@ function clampPopupHorizontally(popup, anchorRect)
 {
     const MARGIN = 8;
     const width = popup.offsetWidth;
+    // clientWidth, not innerWidth: innerWidth counts the classic scrollbar, so on a desktop with one
+    // the popup was being allowed to sit up to its width underneath
+    const viewportWidth = document.documentElement.clientWidth;
     const left = anchorRect.left + anchorRect.width / 2 - width / 2;
     let shift = 0;
-    if (left + width > window.innerWidth - MARGIN)
-        shift = (window.innerWidth - MARGIN) - (left + width);
+    if (left + width > viewportWidth - MARGIN)
+        shift = (viewportWidth - MARGIN) - (left + width);
     else if (left < MARGIN)
         shift = MARGIN - left;
     popup.style.marginLeft = `${shift}px`;
+}
+
+/**
+ * Picks which side of its trigger a button-anchored popup opens on. These popups default to opening
+ * upward, which is what the footer pickers wanted, but the same widget now also runs in the app bar
+ * at the very top of the page (and in the middle of the account page's settings list) where opening
+ * upward puts it off-screen entirely. Flip below whenever there isn't room above.
+ *
+ * Only for the position:absolute popups built by createCustomSelect - the theme picker is
+ * position:fixed and does this arithmetic itself against the viewport (see theme-selector.js).
+ * @param { HTMLElement } popup - The popup element, already laid out (display cleared by open())
+ * @param { DOMRect } anchorRect - The trigger button's bounding rect
+ */
+function positionPopupVertically(popup, anchorRect)
+{
+    const GAP = 8;
+    // offsetHeight ignores the open animation's scale, so it is stable whichever frame we land on
+    const height = popup.offsetHeight;
+    const spaceAbove = anchorRect.top - GAP;
+    const spaceBelow = window.innerHeight - anchorRect.bottom - GAP;
+    popup.classList.toggle("drop-below", spaceAbove < height && spaceBelow > spaceAbove);
 }
 
 /**
@@ -135,8 +159,12 @@ function clampPopupHorizontally(popup, anchorRect)
  */
 function createCustomSelect(button, ariaLabel, options, initialValue, onChange)
 {
-    // Ensure the trigger button has the correct classes and attributes
-    button.className = "list-select-button centered";
+    // Ensure the trigger button has the correct classes and attributes. Add rather than overwrite:
+    // the markup may have given the button presentation classes of its own (the header's icon-only
+    // language/theme buttons carry the shared button styling), and an assignment to className would
+    // silently drop them. The two classes below are the ones this widget's CSS needs; anything else
+    // on the button is the caller's business.
+    button.classList.add("list-select-button", "centered");
     button.setAttribute("aria-haspopup", "dialog");
     button.setAttribute("aria-expanded", "false");
     button.setAttribute("aria-label", ariaLabel);
@@ -177,8 +205,10 @@ function createCustomSelect(button, ariaLabel, options, initialValue, onChange)
     const optionButtons = {};
 
     const controller = createPopupController(button, popup, function() {
-        // Keep the popup within the viewport on narrow screens (button may sit near an edge)
-        clampPopupHorizontally(popup, button.getBoundingClientRect());
+        const rect = button.getBoundingClientRect();
+        // Open downward when there is no room above - the app bar's language picker has ~12px
+        clampPopupHorizontally(popup, rect);
+        positionPopupVertically(popup, rect);
         // Focus the active option when opening
         if (optionButtons[activeValue])
             optionButtons[activeValue].focus();

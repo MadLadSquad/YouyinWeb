@@ -89,7 +89,8 @@ window.DECK_ROWS_PER_BLOCK = 12;
 window.DECK_BLOCK_HYDRATE_MARGIN = "800px";
 // Rough rendered height (px) of one card row, used to estimate a not-yet-rendered block's spacer
 // height before it has ever been measured. Tracks the card's contain-intrinsic-size plus the row gap
-window.DECK_ROW_HEIGHT_ESTIMATE = 340;
+// (measured after the tile redesign: a character-card row is ~347px, plus the 14px grid gap)
+window.DECK_ROW_HEIGHT_ESTIMATE = 360;
 // How far ahead of the viewport a card's writer is hydrated, so it's ready by the time it's visible.
 // Kept smaller than the block margin so a card's block always exists before its writer is wanted
 window.DECK_WRITER_HYDRATE_MARGIN = "400px";
@@ -255,42 +256,64 @@ function createStaticOutline(targetEl, character, size)
 function constructCard(it, index, container, localIndex)
 {
     // Add parent div
-    let div = addElement("div", "", `card-container-${index}`, "card centered", "", container)
+    let div = addElement("div", "", `card-container-${index}`, "card deck-card", "", container)
 
-    // Add title, character render div and the definitions text. The render div reserves space via CSS
-    // (card-writer-target / phrase-card-writers) so hydrating its writer later doesn't shift layout
-    addElement("h3", `${it.name} ${formatDecimal(it.knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "", "", div);
+    // The character render div reserves space via CSS (card-writer-target / phrase-card-writers) so
+    // hydrating its writer later doesn't shift layout
     const target = it["character"]
                                     ? addElement("div", "", `card-character-target-div-${index}`, "card-writer-target", "", div)
                                     : addElement("div", "", `card-character-target-div-${index}`, "phrase-card-writers", "", div);
-    addElement("p", `${lc.deck_definitions}`, "", "", "", div);
+
+    // Name and knowledge used to share one <h3> ("好 2.4/4"). They are separated so the level can be
+    // a labelled bar — a reading and a progress figure are not the same kind of information
+    addElement("h3", it.name, "", "deck-card-name", "", div);
+
+    const level = addElement("div", "", "", "deck-card-level", "", div);
+    const levelHead = addElement("div", "", "", "deck-card-level-head", "", level);
+    addElement("span", lc.deck_knowledge_label, "", "stat-label", "", levelHead);
+    addElement("span", `${formatDecimal(it.knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`, "", "deck-card-level-value", "", levelHead);
+    const bar = addElement("div", "", "", "bar deck-card-bar", "", level);
+    const fill = addElement("i", "", "", "", "", bar);
+    fill.style.setProperty("width", (it.knowledge / window.MAX_KNOWLEDGE_LEVEL) * 100 + "%");
+
+    addElement("p", `${lc.deck_definitions}`, "", "stat-label deck-card-definitions-label", "", div);
 
     // Add the list to the card and fill it with elements
-    let list = addElement("ol", "", "", "", "", div);
+    let list = addElement("ol", "", "", "deck-card-definitions", "", div);
     for (const f of it.definitions)
         addElement("li", `${f}`, "", "", "", list);
 
     // If it's a character, list the phrases that contain it. Looked up from the prebuilt membership
-    // map, so this is a single lookup instead of a scan over every phrase for every card
+    // map, so this is a single lookup instead of a scan over every phrase for every card.
+    // The <p> and its lc.part_of prefix are load-bearing: scripts/components/tutorial/deck.js finds
+    // the "part of a phrase" card by scanning each card's <p> children for that exact prefix
     if (it["character"])
     {
         const phraseNames = deckPhraseMembership.get(it.character);
         if (phraseNames && phraseNames.length > 0)
         {
-            addElement("p", `${lc.part_of}:`, "", "", "", div);
-            let ol = addElement("ol", "", "", "", "", div);
+            const partOf = addElement("div", "", "", "deck-card-partof", "", div);
+            addElement("p", `${lc.part_of}:`, "", "stat-label", "", partOf);
+            let ol = addElement("ol", "", "", "deck-card-partof-list", "", partOf);
             for (const name of phraseNames)
-                addElement("li", `${name}`, "", "", "", ol);
+                addElement("li", `${name}`, "", "chip", "", ol);
         }
     }
 
-    // Create the "Edit" button and add an onclick event that redirects to the new card page
-    let editButton = addElement("button", lc.deck_card_edit, `card-edit-button-${index}`, "card-button-edit", `${localIndex}`, div)
+    // Create the "Edit" button and add an onclick event that redirects to the new card page. It stays
+    // a descendant of #card-container-<index> — the tutorial resolves the card from the button with
+    // closest('[id^="card-container-"]') — and keeps card-button-edit so its ripple still fires the
+    // handler that runEventAfterAnimation installs
+    const footer = addElement("div", "", "", "deck-card-footer", "", div);
+    // Bordered (secondary), not ghost: on a card the button sits against the card surface with no
+    // adjacent control to contrast with, and a borderless one read as a line of body text rather
+    // than something to click
+    let editButton = addElement("button", lc.deck_card_edit, `card-edit-button-${index}`, "card-button-edit card-button-secondary deck-card-edit", `${localIndex}`, footer)
     editButton["phrase"] = it["phrase"] ? "phrase-" : ""; // If we're using phrases add this so that the callback can redirect correctly
     runEventAfterAnimation(editButton, "click", (e) =>
     {
         // In the line above, we store the card index in the "arbitrary-data" field. Here we retrieve it
-        location.href = `./deck-edit-card.html?${e.target.phrase}edit=${e.target.attributes["arbitrary-data"].nodeValue}`;
+        location.href = `./deck-edit-card.html?${e.currentTarget.phrase}edit=${e.currentTarget.attributes["arbitrary-data"].nodeValue}`;
     });
 
     // Defer the writer — the expensive, SVG-heavy part of a card — until it nears the viewport. The
@@ -652,6 +675,9 @@ function applyDeckSearch(rawQuery, animate)
                 indices.push(i);
             }
 
+        if (source.count !== null)
+            source.count.textContent = items.length;
+
         if (items.length > 0)
         {
             source.header.style.display = "";
@@ -673,10 +699,61 @@ function applyDeckSearch(rawQuery, animate)
 }
 
 /**
+ * The line under the page title: how much is in the deck and how well it is known.
+ */
+function renderDeckSummary()
+{
+    const el = $("deck-summary");
+    if (el === null)
+        return;
+
+    const data = window.profileData;
+
+    let knowledge = 0;
+    for (const card of data.cards)
+        knowledge += card.knowledge;
+    knowledge /= data.cards.length;
+    if (isNaN(knowledge))
+        knowledge = 0;
+
+    el.textContent = lc.deck_summary
+        .replace("{cards}", data.cards.length)
+        .replace("{phrases}", data.phrases.length)
+        .replace("{knowledge}", `${formatDecimal(knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`);
+}
+
+/**
+ * Wires the deck toolbar's overflow menu. Reuses createPopupController so it shares the site's single
+ * document-level outside-click/Escape handling with the language and theme pickers, and so only one
+ * popup can ever be open at a time
+ */
+function setupDeckOverflowMenu()
+{
+    const button = $("deck-more-button");
+    const popup = $("deck-more-popup");
+    if (button === null || popup === null)
+        return;
+
+    const controller = createPopupController(button, popup);
+
+    // The menu's own entries navigate or open a confirm, so close it as soon as one is used. These
+    // are plain click listeners rather than runEventAfterAnimation: the buttons' real handlers are
+    // already wired that way in deckmain, and this only needs to dismiss the popup
+    for (const option of popup.querySelectorAll(".overflow-option"))
+        option.addEventListener("click", () => controller.close());
+}
+
+/**
  * Main function for the deck page
  */
 function deckmain()
 {
+    // The header summary line and the overflow menu holding import/export/clear. The marketplace
+    // used to be a fourth entry here, but it is one of the four destinations in the nav and the tab
+    // bar, so the menu was offering a second way to the same page
+    renderDeckSummary();
+    setupDeckOverflowMenu();
+
     // Get the elements and load their onclick events, holy shit that's massive! That's what she said!
     runEventAfterAnimation($("export-deck-button"), "click", updateExportButton);
     runEventAfterAnimation($("clear-deck-button"), "click", clearDeck);
@@ -687,7 +764,6 @@ function deckmain()
 
     runEventAfterAnimation($("new-card-button"), "click", function() { location.href = './deck-edit-card.html?new' });
     runEventAfterAnimation($("new-phrase-button"), "click", function() { location.href = './deck-edit-card.html?phrase-new' });
-    runEventAfterAnimation($("marketplace-deck-button"), "click", function() { location.href = './marketplace.html' });
 
     const data = window.profileData;
     let cardsContainer = $("deck-characters-section");
@@ -708,7 +784,7 @@ function deckmain()
         phrasesContainer.remove();
     }
     else
-        deckSearchSources.push({ items: data.phrases, container: phrasesContainer, header: $("deck-phrases-header"), domOffset: 0 });
+        deckSearchSources.push({ items: data.phrases, container: phrasesContainer, header: $("deck-phrases-header"), count: $("deck-phrases-count"), domOffset: 0 });
 
     if (data.cards.length === 0)
     {
@@ -716,7 +792,7 @@ function deckmain()
         cardsContainer.remove();
     }
     else
-        deckSearchSources.push({ items: data.cards, container: cardsContainer, header: $("deck-characters-header"), domOffset: data.phrases.length });
+        deckSearchSources.push({ items: data.cards, container: cardsContainer, header: $("deck-characters-header"), count: $("deck-characters-count"), domOffset: data.phrases.length });
 
     // The initial render is an empty-query filter (matches everything), which fills deckLists and
     // builds the blocks row-aligned to the current column count. Keep them aligned across resizes

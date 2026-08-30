@@ -15,9 +15,10 @@ function localDayIndex(date)
 }
 
 /**
- * Rewrites the streak field on the deck page, if present. The element initially contains only the
- * translated label from the template; the label is captured into a data attribute on first call so
- * that later calls replace the value instead of appending to it
+ * Rewrites the streak value on the account page, if present. The element is value-only — its label
+ * is a sibling in the template — so this is a plain replace and safe to call repeatedly. (It used to
+ * snapshot the element's own text as the label and rebuild "Label: value" from it, which meant the
+ * label could never be its own element.)
  */
 function renderStreakField()
 {
@@ -25,14 +26,238 @@ function renderStreakField()
     if (el === null)
         return;
 
-    if (el.getAttribute("data-streak-label") === null)
-        el.setAttribute("data-streak-label", el.textContent);
+    el.textContent = window.profileData.streak;
+}
 
-    // The singular/plural wording was resolved at build time by the ui18n switch pattern; pick
-    // the right baked variant and fill in the count
-    const streak = window.profileData.streak;
-    el.textContent = el.getAttribute("data-streak-label")
-        + (streak === 1 ? lc.streak_days_count_one : lc.streak_days_count).replace("{streak}", streak);
+/**
+ * Fills the streak and gem readouts in the app bar. These live in the shared header, so this runs on
+ * every page; both spans are value-only (their icon and label are separate elements), which keeps
+ * the write idempotent and safe to repeat whenever either number changes.
+ */
+function renderHeaderStats()
+{
+    if (window.profileData === null || window.profileData === undefined)
+        return;
+
+    const streakEl = $("header-streak-value");
+    if (streakEl !== null)
+        streakEl.textContent = window.profileData.streak;
+
+    const gemsEl = $("header-gems-value");
+    if (gemsEl !== null)
+        gemsEl.textContent = window.profileData.gems;
+}
+
+window.renderHeaderStats = renderHeaderStats;
+
+// ------------------------------ App-bar streak / gems panel ------------------------------
+// Every render function the panels installed, so a purchase (or a freeze spent at midnight) can
+// repaint each open one. Both app-bar chips build a panel of their own, so there are two.
+const streakPanelRenderers = [];
+
+/**
+ * Repaints every streak- or gem-derived readout on the page after the numbers change: the app bar,
+ * the account page's profile card and shop if we happen to be on it, and any app-bar panel.
+ * renderGemsField / renderShopFields are globals defined by scripts/pages/account.js and are simply
+ * absent everywhere else
+ */
+function refreshStreakReadouts()
+{
+    renderStreakField();
+    renderHeaderStats();
+    if (window.renderGemsField)
+        window.renderGemsField();
+    if (window.renderShopFields)
+        window.renderShopFields();
+    for (const render of streakPanelRenderers)
+        render();
+}
+
+/**
+ * Buys one streak freeze. The affordability checks are repeated here rather than trusted from a
+ * disabled button: the price moves with the streak-goal slider, and freezes can be spent underneath
+ * by checkStreakExpiry at midnight. Lives here rather than in the account page's shop because the
+ * app-bar panel sells them too, on every page
+ * @returns { boolean } - True when a freeze was actually bought
+ */
+function buyStreakFreeze()
+{
+    let data = window.profileData;
+    const cost = streakFreezeCost(data.streakGoal);
+
+    if (data.streakGoal <= 0 || data.streakFreezes >= window.MAX_STREAK_FREEZES || data.gems < cost)
+        return false;
+
+    data.gems -= cost;
+    ++data.streakFreezes;
+
+    // Repaint from the in-memory copy immediately; the write is fire-and-forget because nothing here
+    // navigates away, and saveProfileData rejects on failure so it needs a catch
+    saveProfileData(data).catch(() => {});
+    refreshStreakReadouts();
+    return true;
+}
+window.buyStreakFreeze = buyStreakFreeze;
+
+/**
+ * Describes where the streak currently stands, in one line: counted for today, riding on a freeze,
+ * or about to be lost. "Frozen" is not a stored flag - a freeze is spent by checkStreakExpiry on a
+ * day that passed with nothing completed - so what we can honestly say is whether today is already
+ * banked and, if it is not, whether a freeze is standing by to cover it
+ * @returns { string } - The localised status line
+ */
+function streakStatusText()
+{
+    const data = window.profileData;
+    if (data.streak === 0)
+        return lc.streak_panel_none;
+    if (data.lastStreakDay >= localDayIndex(new Date()))
+        return lc.streak_panel_safe;
+    if (data.streakFreezes > 0)
+        return lc.streak_panel_protected;
+    return lc.streak_panel_at_risk;
+}
+
+/**
+ * Builds the panel behind an app-bar chip. The two chips ask different questions, so they get
+ * different panels off the same builder:
+ *   "streak" - how the streak stands, the freeze wallet backing it, and the shop underneath
+ *   "gems"   - the balance and the one thing it buys; no streak count and no status line, because
+ *              a gem balance says nothing about the streak and repeating it made the two chips
+ *              indistinguishable
+ * @param { HTMLElement } button - The chip that opens it
+ * @param { string } mode - "streak" or "gems"
+ */
+function createStreakPanel(button, mode)
+{
+    if (button === null || button.parentNode === null)
+        return;
+
+    const bStreak = mode === "streak";
+
+    // Same wrapper createCustomSelect uses, so the popup anchors to the chip and inherits the
+    // shared open/close, outside-click and Escape handling
+    const container = document.createElement("div");
+    container.className = "list-select-container";
+    button.parentNode.insertBefore(container, button);
+    container.appendChild(button);
+
+    const popup = addElement("div", "", "", "list-select-popup streak-panel", "", container);
+    popup.setAttribute("role", "dialog");
+    popup.setAttribute("aria-label", bStreak ? lc.streak_field : lc.gems_label);
+
+    // The headline number is whichever one the chip shows
+    const head = addElement("div", "", "", "streak-panel-head", "", popup);
+    const count = addElement("span", "0", "", "t-num streak-panel-count", "", head);
+    addElement("span", bStreak ? lc.streak_field : lc.gems_label, "", "stat-label", "", head);
+
+    let status = null;
+    if (bStreak)
+        status = addElement("p", "", "", "t-meta streak-panel-status", "", popup);
+    else
+        addElement("p", lc.gems_panel_hint, "", "t-meta streak-panel-hint", "", popup);
+
+    addElement("hr", "", "", "hairline", "", popup);
+
+    const freezeRow = addElement("div", "", "", "streak-panel-row", "", popup);
+    addElement("span", lc.streak_freeze_field, "", "stat-label", "", freezeRow);
+    const freezeCount = addElement("span", "", "", "chip streak-panel-value", "", freezeRow);
+    const slots = addElement("div", "", "", "streak-panel-slots", "", popup);
+    slots.setAttribute("aria-hidden", "true");
+
+    // Only the streak panel repeats the balance - on the gems panel it is already the headline
+    let gemCount = null;
+    if (bStreak)
+    {
+        const gemRow = addElement("div", "", "", "streak-panel-row", "", popup);
+        addElement("span", lc.gems_label, "", "stat-label", "", gemRow);
+        gemCount = addElement("span", "", "", "chip chip-accent streak-panel-value", "", gemRow);
+    }
+
+    const priceRow = addElement("div", "", "", "streak-panel-row", "", popup);
+    addElement("span", lc.streak_freeze_cost_field, "", "stat-label", "", priceRow);
+    const price = addElement("span", "", "", "streak-panel-value", "", priceRow);
+
+    const buy = addElement("button", lc.buy_streak_freeze_button, "", "streak-panel-buy", "", popup);
+    buy.type = "button";
+
+    // A plain listener rather than runEventAfterAnimation: this button is not a .card-button-edit
+    // (styles/components/button.css is a per-page stylesheet and the app bar is on every page), so
+    // there is no ripple transition to wait on
+    buy.addEventListener("click", function(e) {
+        e.stopPropagation();
+        buyStreakFreeze();
+    });
+
+    function render()
+    {
+        if (window.profileData === null || window.profileData === undefined)
+            return;
+
+        const data = window.profileData;
+        const goal = data.streakGoal;
+        const cost = streakFreezeCost(goal > 0 ? goal : window.STREAK_GOAL_MIN);
+        const held = data.streakFreezes;
+
+        count.textContent = bStreak ? data.streak : data.gems;
+        if (status !== null)
+            status.textContent = streakStatusText();
+        freezeCount.textContent = `${held}/${window.MAX_STREAK_FREEZES}`;
+        if (gemCount !== null)
+            gemCount.textContent = data.gems;
+        price.textContent = lc.gems_amount.replace("{gems}", cost);
+
+        slots.replaceChildren();
+        for (let i = 0; i < window.MAX_STREAK_FREEZES; i++)
+            addElement("span", "", "", i < held ? "streak-panel-slot streak-panel-slot-filled" : "streak-panel-slot", "", slots);
+
+        // Same three refusals the account shop reports, worded identically
+        if (goal <= 0)
+        {
+            buy.disabled = true;
+            buy.title = lc.streak_freeze_needs_goal;
+        }
+        else if (held >= window.MAX_STREAK_FREEZES)
+        {
+            buy.disabled = true;
+            buy.title = lc.streak_freeze_full;
+        }
+        else if (data.gems < cost)
+        {
+            buy.disabled = true;
+            buy.title = lc.streak_freeze_too_expensive.replace("{gems}", cost - data.gems);
+        }
+        else
+        {
+            buy.disabled = false;
+            buy.title = "";
+        }
+    }
+
+    streakPanelRenderers.push(render);
+
+    createPopupController(button, popup, function() {
+        // The chips sit at the top-right of the viewport, so the popup always drops below and
+        // usually needs pulling back from the right edge
+        const rect = button.getBoundingClientRect();
+        render();
+
+        // Below the phone breakpoint header.css turns the panel into a viewport-anchored sheet: its
+        // left and right come from the screen, so the centring correction has nothing to correct and
+        // the vertical flip has nothing to flip - it always hangs under the bar. Reading the computed
+        // position rather than re-testing the width keeps the breakpoint written once, in the CSS.
+        if (window.getComputedStyle(popup).position === "fixed")
+        {
+            popup.classList.remove("drop-below");
+            popup.style.removeProperty("margin-left");
+            popup.style.setProperty("top", `${Math.round(rect.bottom + 8)}px`);
+            return;
+        }
+
+        popup.style.removeProperty("top");
+        clampPopupHorizontally(popup, rect);
+        positionPopupVertically(popup, rect);
+    }, null);
 }
 
 /**
@@ -63,6 +288,7 @@ function updateDailyStreak()
     data.streak = (data.lastStreakDay === today - 1) ? (data.streak + 1) : 1;
     data.lastStreakDay = today;
     renderStreakField();
+    renderHeaderStats();
     return true;
 }
 
@@ -110,10 +336,9 @@ function checkStreakExpiry()
     if (changed)
     {
         saveProfileData(data);
-        renderStreakField();
-        // Repaints the freeze count on the account page; a no-op everywhere else
-        if (window.renderShopFields)
-            window.renderShopFields();
+        // Repaints the app bar, its panels, and the account page's profile card and shop when we
+        // happen to be on that page
+        refreshStreakReadouts();
     }
 }
 
@@ -199,6 +424,11 @@ window.profileReady.then(() => {
     applyDailyLevelReduction();
     checkStreakExpiry();
     scheduleDailyMidnightCheck();
+    // checkStreakExpiry only re-renders when it actually changed something, so paint the app-bar
+    // readouts unconditionally here — this is the first point on every page where the profile exists
+    renderHeaderStats();
+    createStreakPanel($("header-streak"), "streak");
+    createStreakPanel($("header-gems"), "gems");
 });
 
 // Timers are throttled or paused in background tabs and across system sleep, and the timezone may
@@ -213,5 +443,6 @@ document.addEventListener("visibilitychange", function() {
         applyDailyLevelReduction();
         checkStreakExpiry();
         scheduleDailyMidnightCheck();
+        renderHeaderStats();
     }
 });

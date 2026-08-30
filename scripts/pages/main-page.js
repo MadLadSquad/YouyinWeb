@@ -117,20 +117,32 @@ function getDrawElementHeight()
     // Batch every layout read up front, before any style write below, so the function forces at most
     // one reflow instead of interleaving reads and writes (layout thrash). Values needed more than once
     // (the list widget height, the main width) are read a single time into locals.
-    const parentBottom = html.getBoundingClientRect().bottom;
-    const lastChildBottom = html.lastElementChild.getBoundingClientRect().bottom;
     // The header (incl. its margin-top) and the hr between main and footer also eat vertical space
     // outside main, so subtract them too — otherwise the page overflows the viewport.
     const headerBottom = document.querySelector("header").getBoundingClientRect().bottom;
     const hrHeight = $("main-page-hr").getBoundingClientRect().height;
-    const listWidgetHeight = listWidget.getBoundingClientRect().height;
     const footerHeight = footer.getBoundingClientRect().height;
     const mainWidth = mainEl.getBoundingClientRect().width;
     const sectionPaddingLeft = getComputedStyle(startButtonWriterSection).paddingLeft.replace("px", "") * 2;
     const viewportHeight = window.innerHeight;
 
-    // The list widget causes problems, so we account for the space it (and the chrome) occupies
-    const unusedSpace = parentBottom - lastChildBottom;
+    // Chrome that is fixed rather than in flow, so the measurements above cannot see it:
+    //  - the round progress strip sits between the header and main, and only exists mid-round
+    //  - the phone tab bar is position:fixed over the bottom of the viewport (and is hidden for the
+    //    duration of a round, hence reading its live rect rather than assuming its height)
+    const progressStrip = $("session-progress-strip");
+    const progressStripHeight = progressStrip === null ? 0 : progressStrip.getBoundingClientRect().height;
+    const tabBar = document.querySelector(".tab-bar");
+    const tabBarHeight = tabBar === null ? 0 : tabBar.getBoundingClientRect().height;
+
+    // Everything outside the writer, measured directly. This used to be derived from <html>'s own box
+    // (html.bottom minus its last child's bottom), which measures whatever empty space happens to be
+    // below the content — so the answer depended on how tall the document was at the instant of the
+    // call. At the start of a round the page is briefly short (the start button is gone, the writer
+    // not yet sized) and that made the writer come out ~300px smaller than the space available; once
+    // the document was taller than the viewport it read as 0 instead and the footer was pushed off
+    // the bottom. Summing the chrome we can actually name is both simpler and stable.
+    const chromeHeight = headerBottom + progressStripHeight + hrHeight + footerHeight + tabBarHeight;
     window.bMobile = navigator.userAgent.toLowerCase().includes("mobile");
 
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
@@ -141,7 +153,7 @@ function getDrawElementHeight()
         listWidget.style.setProperty("height", targetInfoHeight + "px");
 
         // Calculate the writer height to fit the remaining space
-        const availableWriterHeight = viewportHeight - headerBottom - footerHeight - hrHeight - unusedSpace - targetInfoHeight - 16;
+        const availableWriterHeight = viewportHeight - chromeHeight - targetInfoHeight - 16;
         let finalHeight = Math.min(mainWidth - sectionPaddingLeft, availableWriterHeight);
         if (finalHeight < 100)
             finalHeight = 100;
@@ -149,11 +161,9 @@ function getDrawElementHeight()
         return finalHeight;
     }
 
-    let finalHeight = viewportHeight - unusedSpace + listWidgetHeight;
-    if (window.bMobile)
-        finalHeight -= (footerHeight + headerBottom + hrHeight);
-    else
-        finalHeight -= (listWidgetHeight + footerHeight + headerBottom + hrHeight);
+    // Landscape: the sidebar sits beside the writer rather than above it, so the writer gets the whole
+    // remaining column height
+    let finalHeight = viewportHeight - chromeHeight;
 
     if (mainWidth < finalHeight)
         finalHeight = mainWidth - sectionPaddingLeft;
@@ -165,6 +175,117 @@ function getDrawElementHeight()
     }
 
     return finalHeight;
+}
+
+/**
+ * Fills the idle screen: the ring showing how many rounds have been completed today against the
+ * daily goal, and the line describing what is queued. Both read data that already exists —
+ * activityByDay, streakGoal, and the same capped counts the round itself will draw from.
+ */
+function renderSessionIdle()
+{
+    const data = window.profileData;
+    const goal = data.streakGoal > 0 ? data.streakGoal : 0;
+    const done = (data.activityByDay && data.activityByDay[localDayIndex(new Date())]) || 0;
+
+    const doneEl = $("session-goal-done");
+    if (doneEl !== null)
+        doneEl.textContent = done;
+
+    const ofEl = $("session-goal-of");
+    if (ofEl !== null)
+        ofEl.textContent = goal > 0 ? lc.today_of_goal.replace("{goal}", goal) : lc.today_no_goal;
+
+    // The ring is a stroked circle of radius 52, so its full sweep is 2 * PI * 52
+    const arc = $("session-goal-arc");
+    if (arc !== null)
+    {
+        const circumference = 2 * Math.PI * 52;
+        const fraction = goal > 0 ? Math.min(1, done / goal) : 0;
+        arc.style.setProperty("stroke-dasharray", circumference.toFixed(1));
+        arc.style.setProperty("stroke-dashoffset", (circumference * (1 - fraction)).toFixed(1));
+    }
+
+    const note = $("session-queue-note");
+    if (note !== null)
+        note.textContent = lc.session_queue_note
+            .replace("{cards}", sessionRevisionCount(data.cards))
+            .replace("{phrases}", sessionRevisionCount(data.phrases));
+}
+
+/**
+ * Updates the round progress strip under the header. The same counts the sidebar renders as text,
+ * surfaced where they stay visible for the whole round.
+ */
+function renderSessionProgress()
+{
+    const strip = $("session-progress-strip");
+    if (strip === null || strip.hidden)
+        return;
+
+    const data = window.profileData;
+
+    // A round has two stages and the strip has to follow whichever one is on screen. bInPhrase flips
+    // once the cards are done; from then on currentIndex counts characters WITHIN the current phrase,
+    // not items completed, and the item counter is currentPhraseIndex. Reading currentIndex against
+    // the card cap through both stages is what made a two-phrase round report "3 / 16".
+    const bPhrases = window.bInPhrase;
+    const total = bPhrases ? sessionRevisionCount(data.phrases) : sessionRevisionCount(data.cards);
+    const done = Math.min(bPhrases ? window.currentPhraseIndex : window.currentIndex, total);
+
+    // How far into the phrase currently being written, so the bar keeps creeping through a long
+    // phrase instead of standing still and then jumping a whole step
+    let partial = 0;
+    if (bPhrases && done < total)
+    {
+        const length = toCharacters(data.phrases[window.currentPhraseIndex].phrase).length;
+        if (length > 0)
+            partial = Math.min(window.currentIndex, length) / length;
+    }
+
+    const label = $("session-progress-label");
+    if (label !== null)
+        label.textContent = bPhrases ? lc.phrases_count_phrase : lc.phrases_count_cards;
+
+    const fill = $("session-progress-fill");
+    if (fill !== null)
+        fill.style.setProperty("width", total > 0 ? Math.min(100, ((done + partial) / total) * 100) + "%" : "0%");
+
+    const count = $("session-progress-count");
+    if (count !== null)
+        count.textContent = `${done} / ${total}`;
+
+    const errors = $("session-progress-errors");
+    if (errors !== null)
+        errors.textContent = lc.session_errors_count.replace("{count}", window.totalSessionErrors);
+}
+
+/**
+ * Shows or hides the round progress strip. Hiding it also clears the inline width so the bar starts
+ * from empty next round rather than animating down from wherever it stopped.
+ * @param { boolean } visible - Whether a round is in progress
+ */
+function setSessionProgressVisible(visible)
+{
+    const strip = $("session-progress-strip");
+    if (strip === null)
+        return;
+
+    strip.hidden = !visible;
+    if (visible)
+    {
+        renderSessionProgress();
+        return;
+    }
+
+    // Back to the generic wording, so the next round does not open on the last one's stage
+    const label = $("session-progress-label");
+    if (label !== null)
+        label.textContent = lc.session_round_in_progress;
+
+    const fill = $("session-progress-fill");
+    if (fill !== null)
+        fill.style.setProperty("width", "0%");
 }
 
 function writerOnMistake(strokeData)
@@ -197,6 +318,7 @@ function writerOnMistake(strokeData)
     // The errors counter is the global session total, not per-card. While revising a phrase the phrase
     // widget already shows it, so omit it here to avoid two identical counters
     $("character-info-widget-errors").textContent = cardSidebarText(num);
+    renderSessionProgress();
 }
 
 function writerOnCorrectStroke(_)
@@ -259,9 +381,11 @@ function changeSidebarText(phrase, phraseNum, card, cardNum)
     {
         updateIndividualSidebarElementText("character", lc.unknown_character, cardSidebarText(cardNum), null);
         definitionParagraph.style.display = "none";
+        renderSessionProgress();
         return;
     }
     definitionParagraph.style.display = "block";
+    renderSessionProgress();
 }
 
 function resetSidebar()
@@ -274,6 +398,124 @@ function resetSidebar()
 
     // Hide the phrase info widget
     $("phrase-info-widget").style.display = "none";
+}
+
+/**
+ * Builds the round-summary card that forms the final slide: an accuracy ring, the round's three
+ * headline numbers, and the gems and streak chips. Everything shown is already computed for the
+ * per-stat slides that precede it; nothing new is tracked.
+ * @param { HTMLElement } slide - The slide to build into
+ * @param { Object } entry - The summary descriptor { accuracy, items, errors, time, gems, streak }
+ */
+function buildFinishSummary(slide, entry)
+{
+    const card = addElement("div", "", "", "finish-summary", "", slide);
+
+    // Accuracy ring. Radius 52 to match the idle screen's goal ring, so the two read as one family
+    const ring = addElement("div", "", "", "finish-summary-ring", "", card);
+    const circumference = 2 * Math.PI * 52;
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 120 120");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    for (const cls of ["finish-ring-track", "finish-ring-fill"])
+    {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", "60");
+        circle.setAttribute("cy", "60");
+        circle.setAttribute("r", "52");
+        circle.setAttribute("class", cls);
+        if (cls === "finish-ring-fill")
+        {
+            circle.style.setProperty("stroke-dasharray", circumference.toFixed(1));
+            // Drawn from empty; the CSS transition below fills it once the slide has landed
+            circle.style.setProperty("stroke-dashoffset", circumference.toFixed(1));
+            slide.addEventListener("animationend", () => {
+                circle.style.setProperty("stroke-dashoffset",
+                    (circumference * (1 - entry.accuracy / 100)).toFixed(1));
+            }, { once: true });
+        }
+        svg.appendChild(circle);
+    }
+    ring.appendChild(svg);
+
+    const ringInner = addElement("div", "", "", "finish-summary-ring-inner", "", ring);
+    addElement("span", `${entry.accuracy}%`, "", "t-num finish-summary-accuracy", "", ringInner);
+    addElement("span", lc.finish_page_accuracy, "", "stat-label", "", ringInner);
+
+    addElement("h3", entry.text, "", "finish-summary-title", "", card);
+
+    const stats = addElement("div", "", "", "finish-summary-stats", "", card);
+    // Reuses the exact labels the individual slides just showed, so the summary reads as a recap
+    const rows = [
+        { label: lc.finish_page_characters_reviewed, value: entry.characters },
+        { label: lc.finish_page_phrases_reviewed, value: entry.phrases },
+        { label: lc.finish_page_session_len, value: entry.time }
+    ];
+    for (const row of rows)
+    {
+        const tile = addElement("div", "", "", "finish-summary-stat", "", stats);
+        addElement("span", row.label, "", "stat-label", "", tile);
+        addElement("span", row.value, "", "t-num-sm", "", tile);
+    }
+
+    const chips = addElement("div", "", "", "finish-summary-chips", "", card);
+    addElement("span", lc.gems_gain.replace("{gems}", entry.gems), "", "chip chip-accent", "", chips);
+    if (entry.streakText !== "")
+        addElement("span", entry.streakText, "", "chip", "", chips);
+
+    return card;
+}
+
+/**
+ * Expands the finished-round stage into whatever vertical space is actually free below it.
+ *
+ * The stage starts out the size of the writer it replaces, which is a square: on a phone that square
+ * is bounded by the screen's *width*, so it stops well short of the bottom of the screen and the
+ * recap ends up sitting high with a band of dead space under it. The slides centre their contents in
+ * the stage, so handing the stage the leftover height is all it takes to centre the recap on the
+ * screen. Landscape and desktop are width-generous and height-bound, so there the writer square is
+ * already about as tall as the space allows and this is a no-op.
+ *
+ * Measured rather than derived: whatever sits under the stage (the rule, the footer, the phone tab
+ * bar's body padding) is read straight off the current layout, so the page never gains a scrollbar.
+ * @param { HTMLElement } container - The stage, already sized to the writer's footprint
+ */
+function growFinishStageToViewport(container)
+{
+    const rect = container.getBoundingClientRect();
+    const belowStage = document.body.getBoundingClientRect().bottom - rect.bottom;
+    const available = document.documentElement.clientHeight - rect.top - belowStage;
+
+    if (available > rect.height)
+        container.style.setProperty("height", Math.floor(available) + "px");
+}
+
+/**
+ * Makes sure the slide deck's stage is tall enough for whatever the given slide holds. The stage is
+ * sized to the square the writer occupied, which is the right footprint for the one-line stat
+ * slides but not for the summary: on a small phone in portrait that square is barely taller than
+ * the card, and since the stage clips (overflow:hidden) and the slide centres its content, the ring
+ * lost its top and the Continue button lost its bottom. Growing the stage pushes the page down
+ * instead, which scrolls. Measures the slide's actual children (the summary card and the Continue
+ * button, both already built by the time this runs) rather than reserving a guessed button height.
+ * @param { HTMLElement } slide - The summary slide (absolutely positioned, so it cannot grow it)
+ */
+function growFinishStage(slide)
+{
+    const stage = slide.parentElement;
+    if (stage === null)
+        return;
+
+    const PADDING = 24;
+    const gap = parseFloat(window.getComputedStyle(slide).rowGap) || 0;
+
+    let needed = PADDING;
+    for (let i = 0; i < slide.children.length; i++)
+        needed += slide.children[i].getBoundingClientRect().height + (i > 0 ? gap : 0);
+
+    if (needed > stage.getBoundingClientRect().height)
+        stage.style.setProperty("height", `${Math.ceil(needed)}px`);
 }
 
 /**
@@ -294,7 +536,20 @@ function slideInFinishStat(stats, i, container, previous)
 
     const entry = stats[i];
     let slide = addElement("div", "", "", "finish-slide slide-able", "", container);
-    addElement("h3", entry.text, "", "", "", slide);
+
+    // The last slide is the round summary rather than another single line. It rides the same
+    // slide-from-right animation and the same animationend chain as every other slide — only its
+    // contents differ — so the sequence and its timing are unchanged.
+    // The Continue button is built into it here, before it animates, so the recap and the button
+    // arrive together in one movement instead of the button sliding in separately afterwards.
+    if (entry.card)
+    {
+        buildFinishSummary(slide, entry);
+        addFinishContinueButton(slide);
+        growFinishStage(slide);
+    }
+    else
+        addElement("h3", entry.text, "", "", "", slide);
 
     // The fire celebration starts the moment the streak slide begins sliding over. The slide itself
     // is still off to the right at this point, so aim the burst at the stage it is sliding into
@@ -316,17 +571,17 @@ function slideInFinishStat(stats, i, container, previous)
         if (previous !== null)
             previous.remove();
 
-        if (i === stats.length - 1)
-            addFinishContinueButton(slide);
-        else
+        // The last slide already carries its Continue button, so there is nothing left to chain
+        if (i < stats.length - 1)
             slideInFinishStat(stats, i + 1, container, slide);
     }, { once: true });
 }
 
 /**
- * Slides the Continue button in below the final stat. It shares that slide (a centred column), so
- * it sits under the text rather than covering it, and dismisses the finished-round screen on click.
- * @param { HTMLElement } slide - The final stat slide to append the button to
+ * Appends the Continue button below the round summary. It shares that slide (a centred column), so
+ * it sits under the recap rather than covering it, slides in with it, and dismisses the
+ * finished-round screen on click.
+ * @param { HTMLElement } slide - The summary slide to append the button to
  */
 function addFinishContinueButton(slide)
 {
@@ -405,9 +660,11 @@ function showFinishedSessionPage(st, bStreakAdvanced)
     let container = addElement("section", "", "finished-session-section", "centered", "", mainContainer);
     // Give the deck the same footprint the writer had, so the stacked slides have room to overlap
     container.style.setProperty("height", getDrawElementHeight() + "px");
+    growFinishStageToViewport(container);
 
     // One entry per stat slide, in arrival order. The streak slide is flagged so we can burst the
-    // fire over it. The Continue button is not a slide of its own - it lands below the final stat.
+    // fire over it. The Continue button is not a slide of its own - it is built into the final
+    // summary slide and slides in with it.
     const stats = [
         { text: lc.finish_page_header },
         { text: `${lc.finish_page_characters_reviewed}: ${window.cardsReviewedCounter}` },
@@ -419,13 +676,27 @@ function showFinishedSessionPage(st, bStreakAdvanced)
     // Rounds that started or extended the daily streak get to brag about its new length. The
     // singular/plural wording was resolved at build time by the ui18n switch pattern; here we
     // only pick the right baked variant and fill in the count
+    let streakText = "";
     if (bStreakAdvanced)
     {
         const streak = window.profileData.streak;
-        const text = (streak === 1 ? lc.finish_page_streak_increased_one : lc.finish_page_streak_increased)
+        streakText = (streak === 1 ? lc.finish_page_streak_increased_one : lc.finish_page_streak_increased)
             .replace("{streak}", streak);
-        stats.push({ text: text, streak: true });
+        stats.push({ text: streakText, streak: true });
     }
+
+    // The round summary lands last, after the individual stats have slid past. Gems are derived, not
+    // tracked: awardItemGems pays GEMS_PER_ITEM per completed card and per completed whole phrase
+    stats.push({
+        card: true,
+        text: lc.finish_page_header,
+        accuracy: computeSessionAccuracy(),
+        characters: window.cardsReviewedCounter,
+        phrases: window.phrasesReviewedCounter,
+        time: `${formatDecimal(result.time)}${result.postfix}`,
+        gems: (window.cardsReviewedCounter + window.phrasesReviewedCounter) * window.GEMS_PER_ITEM,
+        streakText: streakText
+    });
 
     slideInFinishStat(stats, 0, container, null);
 }
@@ -728,6 +999,10 @@ function awardItemGems()
 {
     window.profileData.gems += window.GEMS_PER_ITEM;
 
+    // Keep the app-bar readout honest as the round runs — this is where the gem count changes most
+    if (window.renderHeaderStats)
+        window.renderHeaderStats();
+
     // The gems are banked first and the flourish is contained: a cosmetic animation must never be
     // able to abort the round it is celebrating, and this runs deep inside writerOnComplete where a
     // throw would strand the session mid-character
@@ -948,6 +1223,7 @@ async function writerOnComplete(_)
     };
     $("character-target-div").remove();
     $("main-content").classList.remove("in-session");
+    setSessionProgressVisible(false);
 
     // Save user data
     const now = Date.now();
@@ -959,6 +1235,11 @@ async function writerOnComplete(_)
     // saveProfileData call below. Starting or extending a streak gets a little celebration,
     // played on the streak slide itself from inside showFinishedSessionPage
     const bStreakAdvanced = updateDailyStreak();
+
+    // The app bar shows the streak on every page, including this one; awardItemGems keeps the gem
+    // half current during the round, and this is the one moment the streak half changes
+    if (window.renderHeaderStats)
+        window.renderHeaderStats();
 
     // Tally this completed session against today for the account-page activity calendar. Also
     // persisted by the saveProfileData call below
@@ -980,23 +1261,43 @@ async function writerOnComplete(_)
 
     // On mobile, we remove all header elements when playing, so re-add them
     if (window.bMobile)
+    {
         $("main-page-header").replaceChildren(...window.linkChildren);
+        document.body.classList.remove("session-immersive");
+    }
+}
+
+/**
+ * Wires the progress strip's "End round" control. Leaving mid-round is a plain navigation back to the
+ * landing page — exactly what the mobile Exit link has always done — so no partial round is recorded.
+ */
+function setupSessionEndButton()
+{
+    const button = $("session-end-button");
+    if (button === null)
+        return;
+
+    runEventAfterAnimation(button, "click", function() {
+        location.href = "./index.html";
+    });
 }
 
 function createStartButton()
 {
-    // Get the desired element height. These calculations will be used for the start button and
-    // drawing widget
-    const drawElementHeight = getDrawElementHeight();
+    // Called for its side effects: getDrawElementHeight sizes the info widget and <main>. The round
+    // itself re-measures once its chrome is on screen (see the click handler below)
+    getDrawElementHeight();
 
-    // Get start button, create if exists
+    // Get start button, create if exists. It belongs to the idle block (the ring, heading and queue
+    // line above it); the block is only absent if the markup changed, in which case fall back to the
+    // section so the button still exists for the tutorial to wait on
     let startButton = $("start-button");
     if (startButton === null)
-        startButton = addElement("button", lc.start_button_text, "start-button", "card-button-edit centered character-prop large-button-text", "", $("start-button-writer-section"));
+        startButton = addElement("button", lc.start_button_text, "start-button", "card-button-edit centered large-button-text", "", $("session-idle") || $("start-button-writer-section"));
 
-    // Set the button width
-    startButton.style.setProperty("width", drawElementHeight + "px");
-    startButton.style.setProperty("height", drawElementHeight + "px");
+    // The button used to be sized to the writer's square footprint, which made it a several-hundred
+    // pixel block. It is a normal button now.
+    renderSessionIdle();
 
     // When the button is clicked, we will create the writer view
     runEventAfterAnimation(startButton, "click", function(_)
@@ -1005,19 +1306,24 @@ function createStartButton()
         // Also, add an exit button, even though it does the same as clicking the main page link.
         if (window.bMobile)
         {
+            // The wordmark is no longer the list's first child — it lives outside #main-page-header
+            // in the app bar precisely so it survives this swap, so the whole list is replaced by
+            // the Exit link rather than keeping children[0]
             const buttonList = $("main-page-header");
             window.linkChildren = [ ...buttonList.children ];
-            const headerHome = buttonList.children[0];
-
-            buttonList.replaceChildren(headerHome);
 
             const el = document.createElement("li");
             const link = document.createElement("a");
-            link.textContent = "Exit"
+            link.className = "nav-link";
+            link.textContent = lc.session_exit;
             link.setAttribute("href", "./index.html");
 
             el.appendChild(link);
-            buttonList.appendChild(el);
+            buttonList.replaceChildren(el);
+
+            // The phone tab bar would otherwise sit under the writer offering four ways to leave
+            // mid-round; hide it for the duration and restore it in resetSessionData
+            document.body.classList.add("session-immersive");
         }
 
         // Remove the start session button and set the global to indicate that we're in a test
@@ -1027,6 +1333,15 @@ function createStartButton()
         // Reveal the sidebar for the duration of the revision round (see styles/pages/index.css). It is removed
         // again in writerOnComplete when we switch to the finished-round slide deck
         $("main-content").classList.add("in-session");
+
+        // The progress strip is measured by getDrawElementHeight, so it has to be visible before the
+        // writer is sized below — otherwise the writer is laid out for a viewport that is 53px taller
+        setSessionProgressVisible(true);
+
+        // Re-measure now that the round's chrome is on screen. The height captured at the top of
+        // createStartButton() described the idle page, which has no progress strip and (per
+        // index.css) no divider above the footer, so reusing it oversizes the writer by both
+        const sessionDrawHeight = getDrawElementHeight();
 
         // Append HTML for the writer background, which is just a star. insertAdjacentHTML parses only
         // this fragment and appends it, rather than innerHTML += which reserializes and reparses the
@@ -1046,8 +1361,8 @@ function createStartButton()
         // Get the width of the writer border, since the element will not be truly centered if we do not subtract from it
         const borderWidth = window.getComputedStyle($("character-target-div")).borderWidth.replace("px", "") * 2;
         window.writer = createWriter('character-target-div', data.cards[window.currentIndex].character + data.cards[window.currentIndex].variant, {
-            width: drawElementHeight - borderWidth,
-            height: drawElementHeight - borderWidth,
+            width: sessionDrawHeight - borderWidth,
+            height: sessionDrawHeight - borderWidth,
             showCharacter: false,
             showHintAfterMisses: window.WRITER_SHOW_HINT_ON_ERRORS,
         });
@@ -1071,11 +1386,18 @@ function createStartButton()
 function mainPageMain()
 {
     getDrawElementHeight();
+    setupSessionEndButton();
 
     // If there are no cards there, create a widget to inform the user that they need to create a deck
     if (window.profileData.cards.length === 0)
     {
-        $("start-button").remove();
+        // The whole idle block goes, not just the button: its ring and "what is queued" line describe
+        // a round that cannot be started yet
+        const idle = $("session-idle");
+        if (idle !== null)
+            idle.remove();
+        else
+            $("start-button").remove();
 
         let link = document.createElement("a");
         link.href = "./deck.html"
@@ -1101,18 +1423,12 @@ function mainPageMain()
     // Function to be called on the window resize event. This is needed because of a number of custom calculations we perform
     // to compute the width and height of the writer widget/start button from Javascript
     const notify = function() {
+        // Called for the side effect too: getDrawElementHeight sizes the info widget and main
         const newDrawElementHeight = getDrawElementHeight();
-        const startButton = $("start-button");
         if (bInTest)
-        {
             window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
-        }
-        else if (startButton !== null)
-        {
-            startButton.style.setProperty("width", newDrawElementHeight + "px");
-            startButton.style.setProperty("height", newDrawElementHeight + "px");
-        }
-        //window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
+        else
+            renderSessionIdle();
     };
 
     // notify recomputes geometry through getDrawElementHeight (layout reads + writes) and can call

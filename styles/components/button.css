@@ -7,7 +7,10 @@
     position: relative;
     overflow: hidden;
 
-    color: var(--main-background-colour);
+    /* --on-accent is black or white picked from the accent's own lightness (see base.css). A flat
+       --main-background-colour label is under AA on 82 of the 188 palettes - the default palette
+       among them, at 3.14:1 - because a palette's accent may be light or dark. */
+    color: var(--on-accent);
     background-color: var(--main-accent-colour);
     margin-top: 12px;
     margin-bottom: 12px;
@@ -20,17 +23,24 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    /* Space between an inline SVG icon and the label. Buttons that carry an icon read their own
+       arbitrary-data via e.currentTarget (see deck.js / marketplace.js), so a child element is safe */
+    gap: 0.5rem;
     box-sizing: border-box;
-    min-height: 32px;
-    padding: 4px 12px;
+    /* 40px, up from 32: the old height was below a comfortable touch target, and these are the
+       primary controls on the deck and marketplace pages */
+    min-height: 40px;
+    padding: 4px 16px;
     text-align: center;
     vertical-align: middle;
     line-height: 1.2;
+    font-size: 0.90625rem;
+    font-weight: 500;
     user-select: none;
     -webkit-user-select: none;
     background-image: none;
     border: 2px solid transparent;
-    border-radius: 6px;
+    border-radius: var(--radius-button);
     cursor: pointer;
     touch-action: manipulation;
 
@@ -61,42 +71,111 @@
 }
 
 .card-button-edit:hover {
-    color: var(--main-background-colour);
+    color: var(--on-accent-active);
     background-color: var(--deck-button-active-colour);
     border-color: var(--deck-button-active-colour);
-    border-radius: 4px;
 }
 
 .card-button-edit:active {
+    color: var(--on-accent-active);
     border-color: var(--main-accent-colour);
     background-color: var(--deck-button-active-colour);
 }
 
-/* Destructive actions (clearing the deck, deleting a card/phrase, wiping all account data). Layered
-   on top of .card-button-edit, it just swaps in a warning-red palette so the button reads as dangerous
-   regardless of the active theme. These rules come after .card-button-edit's, so at equal specificity
-   they win on source order. */
+/* ------------------------------------- Button variants ------------------------------------- */
+
+/* Everything below layers on top of .card-button-edit rather than replacing it, exactly the way
+   .card-button-danger already did. That is not a style preference: runEventAfterAnimation (see
+   scripts/index.js) only fires a button's click handler once an animation or transition ends on
+   that element, and the ripple above is what produces it. A button that dropped .card-button-edit
+   would look right and silently do nothing.
+
+   These rules come after .card-button-edit's, so at equal specificity they win on source order. */
+
+/* Quiet, bordered button. The second action in a pair - "New phrase" next to "New card". */
+.card-button-secondary {
+    color: var(--main-text-colour);
+    background-color: var(--main-background-colour);
+    border-color: var(--hairline);
+}
+
+/* The border carries the accent, the label does not: accent-coloured text is under AA on 82 of the
+   188 palettes and there is no mix that fixes all of them, whereas --main-text-colour clears it on
+   every one. The same reasoning applies to the ghost and picker hovers below. */
+.card-button-secondary:hover {
+    color: var(--main-text-colour);
+    background-color: var(--main-background-colour);
+    border-color: var(--main-accent-colour);
+}
+
+.card-button-secondary:active {
+    background-color: var(--accent-quiet);
+    border-color: var(--main-accent-colour);
+}
+
+/* Borderless. Tertiary actions that should not compete: card "Edit", the marketplace icon
+   buttons, the round's "End round". */
+.card-button-ghost {
+    color: var(--muted-text);
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.card-button-ghost:hover {
+    color: var(--main-text-colour);
+    background-color: var(--accent-quiet);
+    border-color: transparent;
+}
+
+.card-button-ghost:active {
+    background-color: var(--accent-soft);
+    border-color: transparent;
+}
+
+/* Icon-only square button */
+.card-button-icon {
+    padding: 0;
+    width: 40px;
+    min-height: 40px;
+}
+
+/* Destructive actions (clearing the deck, deleting a card/phrase, wiping all account data). Outlined
+   rather than a solid red block: these buttons sit permanently on the page, and a filled red was the
+   loudest thing on the account page despite being the action we least want taken. It fills on hover,
+   so the warning still arrives before the click.
+
+   The colour is the palette's own --main-error-colour rather than a literal red. The literal was
+   there so danger would not depend on the accent (which may itself be red or green) - but the error
+   colour is not the accent, and it is the one palette field that is already legible everywhere:
+   #c0392b was under AA against the page on 165 of the 188 palettes (1.02:1 at worst on the darker
+   ones), while --main-error-colour clears AA on all 188, and so does the background colour printed
+   on top of it. Blending the two is not a middle ground - a fifth of literal red mixed in already
+   drops 106 palettes back under AA. The cost is that 35 palettes pick something other than red for
+   their error colour, so on those the button is not red; the icon and the wording still say what it
+   does, and an unreadable warning is worse than an off-hue one. */
 .card-button-danger {
-    color: #ffffff;
-    background-color: #c0392b;
+    color: var(--main-error-colour);
+    background-color: transparent;
+    border-color: color-mix(in srgb, var(--main-error-colour) 42%, var(--main-background-colour));
 }
 
 .card-button-danger:hover {
-    color: #ffffff;
-    background-color: #a93226;
-    border-color: #a93226;
+    color: var(--on-error);
+    background-color: var(--main-error-colour);
+    border-color: var(--main-error-colour);
 }
 
 .card-button-danger:active {
-    border-color: #c0392b;
-    background-color: #a93226;
+    color: var(--on-error);
+    border-color: color-mix(in srgb, var(--main-error-colour) 82%, var(--main-text-colour));
+    background-color: color-mix(in srgb, var(--main-error-colour) 82%, var(--main-text-colour));
 }
 
 /* Some buttons, like the start button may require large text*/
 .large-button-text {
-    font-size: 32px;
+    font-size: clamp(1.5rem, 4vw, 2rem);
     border: 6px solid transparent;
-    border-radius: 12px;
+    border-radius: var(--radius-card);
 }
 
 button {

@@ -79,11 +79,13 @@ function showStreakGoalModal()
             window.renderShopFields();
         const settingsSlider = $("streak-goal-slider");
         if (settingsSlider !== null)
-        {
             settingsSlider.value = window.profileData.streakGoal;
-            settingsSlider.labels[0].childNodes[0].textContent =
-                `${lc.streak_goal_label} ${streakGoalText(settingsSlider.value)} `;
-        }
+
+        // The readout beside that slider is its own element, so it is updated directly rather than
+        // by reaching into the label's first child text node
+        const settingsReadout = $("streak-goal-value");
+        if (settingsReadout !== null)
+            settingsReadout.textContent = streakGoalText(window.profileData.streakGoal);
     });
 
     document.body.appendChild(overlay);
