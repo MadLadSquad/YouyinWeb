@@ -125,6 +125,25 @@ header {
     font-weight: 700;
 }
 
+/* The 🔥 / 💎 marks. img.emoji sizes a Twemoji SVG off the surrounding font-size, and the chip's is
+   deliberately small, so the badge sets its own — otherwise the glyphs come out smaller than the
+   drawn icons they replaced. line-height:1 keeps them from stretching the chip. */
+.app-bar-stat-emoji {
+    font-size: 1.0625rem;
+    line-height: 1;
+    transition: filter 0.16s ease, opacity 0.16s ease;
+}
+
+/* An unbanked streak. Until a round is finished today the flame reads as "not yet" rather than as
+   something already earned, so renderHeaderStats greys it out (see streakCountedToday in
+   daily-streak.js). Desaturating instead of swapping the glyph keeps the chip the same width, and
+   works on both the twemoji <img> the observer swaps in and the native glyph a browser without it
+   keeps. */
+.app-bar-stat-emoji.is-dormant {
+    filter: grayscale(1);
+    opacity: 0.55;
+}
+
 /* The container select-box.js wraps a popup trigger in must not disturb the bar's flex row */
 .app-bar-end .list-select-container {
     display: inline-flex;

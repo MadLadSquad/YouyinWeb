@@ -45,6 +45,7 @@ function redirectWithLanguage(localStorageLang, previous)
 const SUPPORTED_LOCALES = [
     { value: "en_US", text: "🇬🇧   EN" },
     { value: "bg_BG", text: "🇧🇬   BG" },
+    { value: "ro_RO", text: "🇷🇴   RO" },
 ];
 
 /**

@@ -10,6 +10,7 @@
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="{{ cannonical_url }}/en_US"/>
     <xhtml:link rel="alternate" hreflang="bg" href="{{ cannonical_url }}/bg_BG"/>
+    <xhtml:link rel="alternate" hreflang="ro" href="{{ cannonical_url }}/ro_RO"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/"/>
   </url>
 
@@ -21,6 +22,7 @@
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="{{ cannonical_url }}/en_US/marketplace"/>
     <xhtml:link rel="alternate" hreflang="bg" href="{{ cannonical_url }}/bg_BG/marketplace"/>
+    <xhtml:link rel="alternate" hreflang="ro" href="{{ cannonical_url }}/ro_RO/marketplace"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/marketplace"/>
   </url>
 
@@ -32,6 +34,7 @@
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en" href="{{ cannonical_url }}/en_US/deck"/>
     <xhtml:link rel="alternate" hreflang="bg" href="{{ cannonical_url }}/bg_BG/deck"/>
+    <xhtml:link rel="alternate" hreflang="ro" href="{{ cannonical_url }}/ro_RO/deck"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/deck"/>
   </url>
 
@@ -43,6 +46,7 @@
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="en" href="{{ cannonical_url }}/en_US/account"/>
     <xhtml:link rel="alternate" hreflang="bg" href="{{ cannonical_url }}/bg_BG/account"/>
+    <xhtml:link rel="alternate" hreflang="ro" href="{{ cannonical_url }}/ro_RO/account"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/account"/>
   </url>
 
@@ -54,6 +58,7 @@
     <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="en" href="{{ cannonical_url }}/en_US/privacy"/>
     <xhtml:link rel="alternate" hreflang="bg" href="{{ cannonical_url }}/bg_BG/privacy"/>
+    <xhtml:link rel="alternate" hreflang="ro" href="{{ cannonical_url }}/ro_RO/privacy"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/privacy"/>
   </url>
 

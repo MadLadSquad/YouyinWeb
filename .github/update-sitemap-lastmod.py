@@ -24,6 +24,7 @@ SHARED = [
     "Components/footer.tmpl.html",
     "Translations/en_US.yaml",
     "Translations/bg_BG.yaml",
+    "Translations/ro_RO.yaml",
 ]
 
 # Production URL path (no scheme/host, no trailing slash) -> page source file(s).

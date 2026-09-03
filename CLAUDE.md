@@ -26,7 +26,7 @@ There are no unit tests, no linter, and no package.json. Don't add tooling witho
 HTML files are not plain HTML — they're processed by UVKBuildTool using directives configured in `uvproj.yaml`:
 
 - `{{ include path/to/file.tmpl.html }}` — inline another template. Shared chrome lives in `Components/*.tmpl.html` (`head`, `header`, `footer`).
-- `{{ _ key }}` — translation lookup. The key is resolved against the active locale's `Translations/<locale>.yaml` (`en_US.yaml`, `bg_BG.yaml`, …). The translation system can interpolate via `{{ list a b c }}` for positional `{}` substitutions inside the translated string.
+- `{{ _ key }}` — translation lookup. The key is resolved against the active locale's `Translations/<locale>.yaml` (`en_US.yaml`, `bg_BG.yaml`, `ro_RO.yaml`, …). The translation system can interpolate via `{{ list a b c }}` for positional `{}` substitutions inside the translated string.
 - `{{ trademark }}` — variable substitution from `uvproj.yaml`'s `variables:` section. Uses the site's name even.
 - **Brand name in strings:** never hardcode the site's name inside translation strings. Write the placeholder `{brand}` instead (e.g. `text: "Welcome to {brand}"`); the build substitutes it with the `trademark` variable's value from `uvproj.yaml`, even for a bare `{{ _ key }}` lookup with no explicit `{{ list }}`. This keeps the product name in one place so the site can be renamed by editing only `uvproj.yaml`. Other literal placeholders that *are* filled at runtime by JS (e.g. `{streak}`, see `i18n.js`) follow the same `{name}` convention but are substituted in the browser, not at build time.
 - `.tmpl.html` files (see `intermediate-extensions` in `uvproj.yaml`) are partials only — they don't produce standalone output.

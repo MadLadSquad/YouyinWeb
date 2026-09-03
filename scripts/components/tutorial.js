@@ -168,7 +168,14 @@ function tutDriverFactory()
 // side?, align?, showButtons?, onHighlighted?, onNext? }. onHighlighted(driver) runs when the step renders
 // (used to auto-type into the form the user is reading about). onNext(driver) runs when Next/Done is
 // clicked: return true to let the wrapper advance/destroy, false if it navigates away or drives flow
-// itself. Closing the tour early (× or Esc) ends the whole tutorial via tutFinish unless onClose is given.
+// itself. Closing the tour early (the × button or Esc) ends the whole tutorial via tutFinish.
+//
+// Driver's allowClose bundles three exits together: the popover's × button, the Esc key AND a click on the
+// dim overlay. That last one made a stray click anywhere outside the popover or the highlighted cut-out
+// silently kill the tour for the whole page, which is exactly what a user does when they try to click the
+// thing being pointed at and miss. We turn allowClose off — it is the only switch Driver offers for the
+// overlay click — and put Esc back ourselves with a document-level key handler, so the two deliberate ways
+// out (× and Esc) keep working and only the accidental one is gone.
 function tutRunTour(steps, extraConfig)
 {
     const factory = tutDriverFactory();
@@ -226,15 +233,27 @@ function tutRunTour(steps, extraConfig)
         };
     });
 
+    const closeTour = () => {
+        driverObj.destroy();
+        tutFinish();
+    };
+
+    // Esc, restored by hand because allowClose:false takes Driver's own handler away with the overlay
+    // click. Captured on the way down so a focused popover button can't swallow it, and torn down from
+    // onDestroyed — which fires for every exit, including the tour finishing normally.
+    const onKeyDown = (e) => {
+        if (e.key === "Escape")
+            closeTour();
+    };
+    document.addEventListener("keydown", onKeyDown, true);
+
     driverObj = factory(Object.assign({
-        allowClose: true,
+        allowClose: false, // a stray click on the overlay must not end the tutorial — see above
         overlayOpacity: 0.6,
         stagePadding: 6,
         smoothScroll: true,
-        onCloseClick: () => {
-            driverObj.destroy();
-            tutFinish();
-        },
+        onCloseClick: closeTour,
+        onDestroyed: () => document.removeEventListener("keydown", onKeyDown, true),
         steps: driverSteps,
     }, extraConfig || {}));
     driverObj.drive();

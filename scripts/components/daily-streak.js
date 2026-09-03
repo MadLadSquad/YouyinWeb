@@ -15,6 +15,22 @@ function localDayIndex(date)
 }
 
 /**
+ * Whether today is already banked into the streak. lastStreakDay is written by updateDailyStreak
+ * when a round completes (and nudged forward by a freeze spent at midnight), so "not before today"
+ * means the user has kept the streak alive for the day they are currently having. The comparison is
+ * >= rather than === for the same reason updateDailyStreak uses it: a clock or timezone moved
+ * backwards must never read as a day lost. Safe to call before the profile has loaded
+ * @returns { boolean } - True when the streak is alive and already counted for today
+ */
+function streakCountedToday()
+{
+    const data = window.profileData;
+    if (data === null || data === undefined)
+        return false;
+    return data.streak > 0 && data.lastStreakDay >= localDayIndex(new Date());
+}
+
+/**
  * Rewrites the streak value on the account page, if present. The element is value-only — its label
  * is a sibling in the template — so this is a plain replace and safe to call repeatedly. (It used to
  * snapshot the element's own text as the label and rebuild "Label: value" from it, which meant the
@@ -42,6 +58,14 @@ function renderHeaderStats()
     const streakEl = $("header-streak-value");
     if (streakEl !== null)
         streakEl.textContent = window.profileData.streak;
+
+    // The flame only burns once the day is banked; until a round is finished today it sits greyed
+    // out, so the chip says whether the streak still needs feeding rather than just how long it is.
+    // The class goes on the wrapper span, not the glyph: the twemoji observer replaces the glyph
+    // itself with an <img> (see emoji.js) and would carry any class written onto it away with it
+    const streakEmoji = $("header-streak-emoji");
+    if (streakEmoji !== null)
+        streakEmoji.classList.toggle("is-dormant", !streakCountedToday());
 
     const gemsEl = $("header-gems-value");
     if (gemsEl !== null)
@@ -111,7 +135,7 @@ function streakStatusText()
     const data = window.profileData;
     if (data.streak === 0)
         return lc.streak_panel_none;
-    if (data.lastStreakDay >= localDayIndex(new Date()))
+    if (streakCountedToday())
         return lc.streak_panel_safe;
     if (data.streakFreezes > 0)
         return lc.streak_panel_protected;
@@ -413,6 +437,9 @@ function scheduleDailyMidnightCheck()
         applyDailyLevelReduction();
         checkStreakExpiry();
         scheduleDailyMidnightCheck();
+        // Unconditionally, unlike checkStreakExpiry's own repaint: crossing midnight with the
+        // streak intact changes nothing about the numbers, but yesterday's flame has to go out
+        renderHeaderStats();
     }, msUntilNextLocalMidnight() + window.SECOND_UNIX);
 }
 

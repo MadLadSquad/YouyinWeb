@@ -76,8 +76,6 @@ translations:
     text: "190 palettes. Every colour on the page is derived from the active one."
   - id: data_card_header
     text: "Your data"
-  - id: data_card_note
-    text: "Everything is stored on this device only. Clearing it cannot be undone."
   - id: deck_more_actions
     text: "More actions"
   - id: deck_knowledge_label
@@ -605,7 +603,7 @@ translations:
   - id: privacy_hero_title
     text: "Privacy Policy"
   - id: privacy_last_updated
-    text: "Last updated: August 2026"
+    text: "Last updated: September 2026"
   - id: privacy_hero_lead
     text: "{brand} is built with a local-first, privacy-by-design architecture. Your learning progress, custom flashcards, and preferences are stored exclusively on your own device and are never transmitted to a remote server."
   - id: privacy_hl_local_title
@@ -627,9 +625,17 @@ translations:
   - id: privacy_sec_controller_title
     text: "1. Overview & Data Controller"
   - id: privacy_sec_controller_p1
-    text: "{brand} is an open-source, non-commercial educational web application dedicated to helping people learn and practise handwriting characters from various writing systems. Under the European Union General Data Protection Regulation (GDPR - Regulation (EU) 2016/679), the data controller responsible for this website is the {brand} project maintainers (MadLadSquad / Heapforge)."
+    text: "{brand} is an open-source educational web application dedicated to helping people learn and practise handwriting characters from various writing systems. The website is operated by Heapforge Ltd, a company registered in England and Wales. Heapforge Ltd is the data controller for this website under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018, and - for visitors in the European Economic Area - under the EU General Data Protection Regulation (Regulation (EU) 2016/679)."
   - id: privacy_sec_controller_p2
     text: "Because {brand} operates as a static, client-side application without user accounts or server-side databases, we do not collect, store, sell, or process personal data on any remote server."
+  - id: privacy_controller_company_label
+    text: "Company"
+  - id: privacy_controller_number_label
+    text: "Companies House number"
+  - id: privacy_controller_address_label
+    text: "Registered address"
+  - id: privacy_sec_controller_p3
+    text: "Because no personal data ever reaches us, Heapforge Ltd has not appointed a data protection officer and has not designated a representative in the European Economic Area under Article 27 of the EU GDPR. Written enquiries can be sent to the registered address above; questions about this policy are answered fastest through the GitHub repository linked at the end of it."
   - id: privacy_sec_localdata_title
     text: "2. Data Stored on Your Device"
   - id: privacy_sec_localdata_p1
@@ -655,54 +661,54 @@ translations:
   - id: privacy_sec_thirdparty_li3
     text: "Google Fonts (Google LLC): Distribution of the open-source Ubuntu typeface."
   - id: privacy_sec_thirdparty_p2
-    text: "These providers process technical metadata in accordance with their respective privacy policies and comply with applicable international data transfer mechanisms (such as the EU-U.S. Data Privacy Framework and Standard Contractual Clauses)."
+    text: "These providers process technical metadata in accordance with their respective privacy policies and under the international data transfer mechanisms that apply to them (such as the EU-U.S. Data Privacy Framework and its UK Extension, and standard contractual clauses)."
   - id: privacy_sec_legal_title
-    text: "4. Legal Bases for Processing (Art. 6 GDPR)"
+    text: "4. Legal Bases for Processing (Art. 6 UK GDPR / EU GDPR)"
   - id: privacy_sec_legal_p1
-    text: "Under Article 6(1) of the GDPR, the limited technical processing required to deliver the website relies on:"
+    text: "Under Article 6(1) of the UK GDPR and of the EU GDPR, the limited technical processing required to deliver the website relies on:"
   - id: privacy_sec_legal_li1
-    text: "Article 6(1)(b) GDPR (Performance of a Contract / Service Delivery): Processing technical requests necessary to provide the web app and its interactive character practice tools upon your visit."
+    text: "Article 6(1)(b) (Performance of a Contract / Service Delivery): Processing technical requests necessary to provide the web app and its interactive character practice tools upon your visit."
   - id: privacy_sec_legal_li2
-    text: "Article 6(1)(f) GDPR (Legitimate Interests): The legitimate interest of maintaining website availability, fast CDN delivery, system integrity, and protection against network attacks or abuse."
+    text: "Article 6(1)(f) (Legitimate Interests): The legitimate interest of maintaining website availability, fast CDN delivery, system integrity, and protection against network attacks or abuse."
   - id: privacy_sec_cookies_title
     text: "5. Cookies & Tracking Technologies"
   - id: privacy_sec_cookies_p1
     text: "{brand} does not use any tracking cookies, analytics cookies, targeting cookies, or third-party advertising scripts. We do not track your behavior across websites, nor do we build personal user profiles."
   - id: privacy_sec_cookies_p2
-    text: "We utilize standard client-side storage technologies (IndexedDB, localStorage, and Service Worker Cache API) solely for strictly necessary technical functionality — storing your decks, keeping track of your revision levels, enabling offline practice as a Progressive Web App (PWA), and remembering your UI preferences. In accordance with the EU ePrivacy Directive (Directive 2002/58/EC) and GDPR, strictly necessary functional storage does not require consent banners."
+    text: "We utilize standard client-side storage technologies (IndexedDB, localStorage, and Service Worker Cache API) solely for strictly necessary technical functionality — storing your decks, keeping track of your revision levels, enabling offline practice as a Progressive Web App (PWA), and remembering your UI preferences. In accordance with the UK Privacy and Electronic Communications Regulations 2003 (PECR), the EU ePrivacy Directive (Directive 2002/58/EC) and the UK and EU GDPR, strictly necessary functional storage does not require a consent banner."
   - id: privacy_sec_rights_title
-    text: "6. Your Rights Under the GDPR"
+    text: "6. Your Rights Under the UK and EU GDPR"
   - id: privacy_sec_rights_p1
-    text: "As a user in the European Union / European Economic Area, the GDPR grants you specific rights concerning your data:"
+    text: "The UK GDPR - and, if you are in the European Economic Area, the EU GDPR - grants you specific rights concerning your data:"
   - id: privacy_sec_rights_li1
-    text: "Right of Access (Art. 15 GDPR): You can view all data stored about your learning progress directly on the Deck and Account pages."
+    text: "Right of Access (Art. 15): You can view all data stored about your learning progress directly on the Deck and Account pages."
   - id: privacy_sec_rights_li2
-    text: "Right to Rectification (Art. 16 GDPR): You have complete control to edit, correct, or rename any card, phrase, definition, or preference at any time directly in the application."
+    text: "Right to Rectification (Art. 16): You have complete control to edit, correct, or rename any card, phrase, definition, or preference at any time directly in the application."
   - id: privacy_sec_rights_li3
-    text: "Right to Erasure (Art. 17 GDPR - 'Right to be Forgotten'): You can delete all your stored data immediately at any time by clicking the 'Clear account data' button on the Account page, or by clearing your browser's site data."
+    text: "Right to Erasure (Art. 17 - 'Right to be Forgotten'): You can delete all your stored data immediately at any time by clicking the 'Clear account data' button on the Account page, or by clearing your browser's site data."
   - id: privacy_sec_rights_li4
-    text: "Right to Data Portability (Art. 20 GDPR): You can export all your decks and phrases in machine-readable JSON format at any time using the Export Deck option on the Deck page."
+    text: "Right to Data Portability (Art. 20): You can export all your decks and phrases in machine-readable JSON format at any time using the Export Deck option on the Deck page."
   - id: privacy_sec_rights_li5
-    text: "Right to Restriction and Objection (Art. 18 & 21 GDPR): Since no personal data is stored on remote servers, you can stop all local processing at any moment by closing the application or clearing local storage."
+    text: "Right to Restriction and Objection (Art. 18 & 21): Since no personal data is stored on remote servers, you can stop all local processing at any moment by closing the application or clearing local storage."
   - id: privacy_sec_rights_li6
-    text: "Right to Lodge a Complaint (Art. 77 GDPR): You have the right to file a complaint with a data protection supervisory authority in your EU member state (for example, the Commission for Personal Data Protection in Bulgaria - CPDP / КЗЛД) if you believe your data protection rights have been violated."
+    text: "Right to Lodge a Complaint (Art. 77): Our lead supervisory authority is the UK Information Commissioner's Office (ICO), which you can contact at ico.org.uk. If you are in the European Economic Area you may instead complain to the supervisory authority of your own country (for example, the Commission for Personal Data Protection in Bulgaria - CPDP / КЗЛД)."
   - id: privacy_sec_security_title
     text: "7. Data Retention & Security"
   - id: privacy_sec_security_p1
-    text: "Your learning data remains saved in your browser until you choose to erase it, reset your account, or clear your browser's site data. Because your data is stored locally within the browser origin sandbox and never sent to a central server database, it is protected against central database breaches."
+    text: "Your learning data remains saved in your browser until you choose to erase it, reset your account, or clear your browser's site data. Because your data is stored locally within the browser origin sandbox and never sent to a central server database, it is protected against central database breaches, and Heapforge Ltd never holds a copy of it."
   - id: privacy_sec_children_title
     text: "8. Children's Privacy"
   - id: privacy_sec_children_p1
-    text: "{brand} is a safe, educational learning environment suitable for learners of all ages. We do not collect, request, or store personal information from children or any other users."
+    text: "{brand} is a safe, educational learning environment suitable for learners of all ages. We do not collect, request, or store personal information from children or any other users, and since nothing is profiled, advertised or nudged, the app is built in line with the ICO's Age Appropriate Design Code."
   - id: privacy_sec_transfers_title
     text: "9. International Data Transfers"
   - id: privacy_sec_transfers_p1
-    text: "External infrastructure and CDN providers (GitHub, Google, Cloudflare) operate global networks and data centers. To the extent technical connection metadata is processed outside the European Economic Area (EEA), such transfers are governed by standard contractual clauses (SCCs) and adequacy frameworks approved by the European Commission."
+    text: "External infrastructure and CDN providers (GitHub, Google, Cloudflare) operate global networks and data centres. To the extent technical connection metadata is processed outside the United Kingdom or the European Economic Area (EEA), those transfers are covered by the UK's adequacy regulations and by the International Data Transfer Agreement (IDTA) or the UK Addendum to the European Commission's standard contractual clauses (SCCs); for visitors in the EEA they are covered by the SCCs and adequacy decisions adopted by the European Commission."
   - id: privacy_sec_contact_title
     text: "10. Changes to This Policy & Contact"
   - id: privacy_sec_contact_p1
     text: "We may update this Privacy Policy periodically to reflect improvements to the application or legal developments. Any changes will be posted on this page with a revised 'Last updated' date."
   - id: privacy_sec_contact_p2
-    text: "If you have questions, feedback, or inquiries regarding this Privacy Policy or the security of {brand}, you can open an issue or reach out via our official GitHub repository:"
+    text: "If you have questions, feedback, or inquiries regarding this Privacy Policy or the security of {brand}, you can write to Heapforge Ltd at the registered address in section 1, or open an issue on our official GitHub repository:"
   - id: privacy_contact_github
     text: "Visit {brand} on GitHub"

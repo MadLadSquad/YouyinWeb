@@ -11,7 +11,7 @@
 - **Cards and phrases.** Practice single characters ("cards") or multi-character sequences ("phrases").
 - **Spaced revision.** A knowledge-level system surfaces the characters you most need to review.
 - **Private and offline.** All progress lives on your device; the PWA caches assets so it keeps working without a connection.
-- **Free and multilingual.** No paywall. The interface is available in English and Bulgarian.
+- **Free and multilingual.** No paywall. The interface is available in English, Bulgarian, and Romanian.
 
 ## Key pages
 
@@ -24,6 +24,7 @@
 
 - [English]({{ cannonical_url }}/en_US)
 - [Bulgarian (Български)]({{ cannonical_url }}/bg_BG)
+- [Romanian (Română)]({{ cannonical_url }}/ro_RO)
 
 ## Project & source
 

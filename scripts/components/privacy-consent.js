@@ -22,7 +22,7 @@ const PRIVACY_CONSENT_KEY = "privacyAccepted";
 // What was accepted, not just that something was. The stored value is compared against this, so
 // bumping it after a material change to privacy.html re-prompts everyone exactly once. Keep it in
 // step with the privacy_last_updated translation string.
-const PRIVACY_POLICY_VERSION = "2026-08";
+const PRIVACY_POLICY_VERSION = "2026-09";
 
 const PRIVACY_CONSENT_OVERLAY_ID = "privacy-consent-prompt";
 

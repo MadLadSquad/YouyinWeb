@@ -510,8 +510,8 @@ ol li {
 /* ----------------------------------------- Icons ------------------------------------------ */
 
 /* Inline SVG icons are stroke-based and inherit currentColor, so they retint with the theme like
-   every other piece of chrome. This is why the header's streak/gem marks are drawn rather than set
-   as emoji: a Twemoji glyph is a fixed-colour raster-ish SVG and cannot follow the palette. */
+   every other piece of chrome. The header's streak/gem marks are the deliberate exception: they are
+   emoji, matching the fire burst and the freeze shop's ice cube, and so keep their own colours. */
 .icon {
     width: 20px;
     height: 20px;

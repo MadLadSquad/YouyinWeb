@@ -143,11 +143,15 @@
 
 /* ---------------------------------------- Columns ----------------------------------------- */
 
+/* One grid row of two columns, left to the default stretch alignment rather than pinned to the
+   start: whichever side is taller sets the row height and the other one fills it, so the two
+   columns begin and end on the same lines. Both columns hand that height down to their cards
+   (see .account-side > .card and .settings-card), which is what keeps the leftover inside a card
+   instead of showing up as a ragged gap under the shorter column. */
 .account-columns {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 25rem;
     gap: 1.25rem;
-    align-items: start;
 }
 
 .account-side {
@@ -156,10 +160,27 @@
     gap: 1.25rem;
 }
 
+/* The shop and the data card divide whatever height the row won between them - equally, so the
+   split does not swing about as the two cards' contents change with the locale. Each becomes a
+   flex column in turn so it can park its own bottom control (the buy button, the button stack) on
+   its lower edge and let the slack open up above it rather than trail off the end. */
+.account-side > .card {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
 /* --------------------------------------- Settings ----------------------------------------- */
 
+/* The other half of the equal-height pair. When the side column is the taller of the two - which
+   is the usual way round, the shop and data cards together outrunning the settings rows - this is
+   the card with height to spare, so its rows take a share of it each instead of leaving a blank
+   strip below the last one. The rows still centre their own contents, so the only visible effect
+   is slightly roomier spacing. */
 .settings-card {
     padding: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .settings-card:hover {
@@ -178,6 +199,9 @@
     align-items: center;
     gap: 1.25rem;
     padding: 0.9375rem 1.25rem;
+    /* Absorbs an equal share of any height the card was stretched to. Below 1000px the columns
+       stack and there is no slack to take, so this is inert there */
+    flex: 1 1 auto;
 }
 
 .setting-row + .setting-row {
@@ -391,9 +415,13 @@
     font-variant-numeric: tabular-nums;
 }
 
+/* Pinned to the bottom of the card: the auto top margin eats the height the card was stretched
+   to, so a taller settings column pushes the price box and the button apart instead of leaving
+   dead space under the button. With no slack the auto margin is zero and the gap is the price
+   box's own margin-bottom, exactly as before. */
 .shop-buy {
     width: 100%;
-    margin: 0;
+    margin: auto 0 0;
 }
 
 /* The shop's buy button is disabled whenever the user cannot afford a freeze or already holds the
@@ -425,22 +453,22 @@
     padding: 1.25rem;
 }
 
+/* The stack grows into the card's spare height and keeps its buttons at the far end of it, which
+   lines the bottom button up with the card's lower edge the way the shop's buy button is. The
+   fixed top margin stays so the heading keeps its gap when there is no slack to hand out. */
 .data-card-actions {
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
     gap: 0.5625rem;
     margin-top: 0.875rem;
+    flex: 1 1 auto;
 }
 
 .data-card-button {
     width: 100%;
     justify-content: flex-start;
     margin: 0;
-}
-
-.data-card-note {
-    margin-top: 0.6875rem;
-    color: var(--faint-text);
 }
 
 /* ---------------------------------------- Activity ----------------------------------------- */

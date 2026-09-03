@@ -1,8 +1,8 @@
-const CACHE_NAME = 'static-v22';
+const CACHE_NAME = 'static-v26';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination
-const LOCALES = ['en_US', 'bg_BG'];
+const LOCALES = ['en_US', 'bg_BG', 'ro_RO'];
 // index.html is deliberately absent: the directory URLs ('./' and './<locale>/') already serve
 // it, and the CI's URL rewriting would otherwise turn an index.html entry into a duplicate of
 // the directory URL — cache.addAll() rejects duplicate entries, failing the whole install

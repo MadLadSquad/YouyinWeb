@@ -401,15 +401,142 @@ function resetSidebar()
 }
 
 /**
- * Builds the round-summary card that forms the final slide: an accuracy ring, the round's three
- * headline numbers, and the gems and streak chips. Everything shown is already computed for the
- * per-stat slides that precede it; nothing new is tracked.
- * @param { HTMLElement } slide - The slide to build into
- * @param { Object } entry - The summary descriptor { accuracy, items, errors, time, gems, streak }
+ * The finished-round recap.
+ *
+ * The round used to be reported as a deck of slides, one stat per slide, each sliding in from the
+ * right over the last, with the summary card arriving at the end. That made the user sit through a
+ * sequence they had already seen the numbers of. Now the summary card is the *only* thing shown,
+ * and the movement is spent on it instead: its parts fly in one after another the way a lesson
+ * recap does in Duolingo, and every number counts up from zero as its part lands.
+ *
+ * The reveal is described declaratively - each part is pushed onto a list in the order it should
+ * appear, and playFinishReveal turns that list into staggered CSS animations plus the matching
+ * timers for the counters. Nothing about the card's layout depends on the timing, so a part can be
+ * added, removed or reordered by moving one push.
  */
-function buildFinishSummary(slide, entry)
+
+// The first part lands after this, and each subsequent part this much later again. Chosen so the
+// whole card (card, ring, title, three stat tiles, chips, button - nine parts) is on screen in
+// roughly a second: long enough to read as a sequence, short enough not to be a wait.
+const FINISH_POP_BASE = 90;
+const FINISH_POP_STEP = 110;
+
+// How long a counter takes to run up to its final value once its part has landed
+const FINISH_COUNT_DURATION = 700;
+
+// Matches the finish-pop keyframes in styles/pages/index.css. Only used to work out when the last
+// part has finished arriving, which is when the recap is announced as ready
+const FINISH_POP_DURATION = 420;
+
+function finishReducedMotion()
 {
-    const card = addElement("div", "", "", "finish-summary", "", slide);
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/**
+ * Counts an element's number up from zero to its real value. Every counter on the recap runs the
+ * same easeOutCubic - it sprints away and settles onto the final number rather than crawling to it,
+ * which is what makes the value feel earned instead of merely printed. Reduced motion gets the
+ * finished number and nothing else.
+ * @param { HTMLElement } el - The element whose textContent is the number
+ * @param { number } to - The final value
+ * @param { function(number): string } format - Renders an in-between value (rounding, unit, postfix)
+ */
+function countUpTo(el, to, format)
+{
+    if (finishReducedMotion())
+    {
+        el.textContent = format(to);
+        return;
+    }
+
+    const start = performance.now();
+    const tick = (now) => {
+        const t = Math.min((now - start) / FINISH_COUNT_DURATION, 1);
+        el.textContent = format(to * (1 - Math.pow(1 - t, 3)));
+        if (t < 1)
+            requestAnimationFrame(tick);
+    };
+    el.textContent = format(0);
+    requestAnimationFrame(tick);
+}
+
+/**
+ * Renders a translated string that carries exactly one {placeholder} into a chip, putting the
+ * placeholder's value in a span of its own so it can be counted up while the words around it stay
+ * put. Falls back to the plain string when the placeholder is missing (a translation may drop it).
+ *
+ * The words go into a wrapper rather than straight into the chip. .chip is an inline-flex row with a
+ * gap, meant to space an icon from its label; rendering a sentence into it directly would make every
+ * text fragment around the number its own flex item and open that same gap mid-sentence. One wrapper
+ * child keeps the whole string as ordinary inline text.
+ * @param { HTMLElement } chip - The chip to render into
+ * @param { string } template - The translated string, e.g. "+ {gems} 💎"
+ * @param { string } placeholder - The placeholder including its braces, e.g. "{gems}"
+ * @param { number } value - The value the placeholder stands for
+ * @returns { HTMLElement | null } - The span holding the number, or null when there was no placeholder
+ */
+function addPlaceholderNumber(chip, template, placeholder, value)
+{
+    const text = addElement("span", "", "", "", "", chip);
+    const at = template.indexOf(placeholder);
+    if (at < 0)
+    {
+        text.textContent = template;
+        return null;
+    }
+
+    addTextNode(text, template.substring(0, at));
+    const number = addElement("span", String(value), "", "", "", text);
+    addTextNode(text, template.substring(at + placeholder.length));
+    return number;
+}
+
+/**
+ * Plays a reveal built by buildFinishSummary: hands each part its slot in the stagger and fires the
+ * part's onReveal (counters, the ring fill, the fire burst) as it lands.
+ *
+ * Reduced motion skips the whole thing - no fly-in, no counting - and shows the finished card, so
+ * the recap is instant rather than merely calm.
+ * @param { Array } parts - Ordered { el, onReveal? } descriptors
+ * @returns { number } - Milliseconds until the last part has finished arriving
+ */
+function playFinishReveal(parts)
+{
+    if (finishReducedMotion())
+    {
+        for (const part of parts)
+            if (part.onReveal)
+                part.onReveal();
+        return 0;
+    }
+
+    let delay = FINISH_POP_BASE;
+    for (const part of parts)
+    {
+        part.el.classList.add("finish-pop");
+        part.el.style.setProperty("--pop-delay", `${delay}ms`);
+        if (part.onReveal)
+            window.setTimeout(part.onReveal, delay);
+        delay += FINISH_POP_STEP;
+    }
+    return delay - FINISH_POP_STEP + FINISH_POP_DURATION;
+}
+
+/**
+ * Builds the round-summary card: an accuracy ring, the round's three headline numbers, and the gems
+ * and streak chips. Everything shown was already computed by showFinishedSessionPage; nothing new
+ * is tracked. Parts are pushed onto `parts` in the order they should fly in - the card first, then
+ * its contents top to bottom - and playFinishReveal times them.
+ * @param { HTMLElement } container - The stage to build the card into
+ * @param { Object } entry - The summary descriptor { accuracy, characters, phrases, time, gems, ... }
+ * @param { Array } parts - Reveal list to append this card's parts to
+ * @returns { HTMLElement } - The card
+ */
+function buildFinishSummary(container, entry, parts)
+{
+    const card = addElement("div", "", "", "finish-summary", "", container);
+    parts.push({ el: card });
 
     // Accuracy ring. Radius 52 to match the idle screen's goal ring, so the two read as one family
     const ring = addElement("div", "", "", "finish-summary-ring", "", card);
@@ -418,6 +545,7 @@ function buildFinishSummary(slide, entry)
     svg.setAttribute("viewBox", "0 0 120 120");
     svg.setAttribute("aria-hidden", "true");
     svg.setAttribute("focusable", "false");
+    let fill = null;
     for (const cls of ["finish-ring-track", "finish-ring-fill"])
     {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -428,54 +556,96 @@ function buildFinishSummary(slide, entry)
         if (cls === "finish-ring-fill")
         {
             circle.style.setProperty("stroke-dasharray", circumference.toFixed(1));
-            // Drawn from empty; the CSS transition below fills it once the slide has landed
+            // Drawn from empty; the CSS transition sweeps it round once the ring has landed
             circle.style.setProperty("stroke-dashoffset", circumference.toFixed(1));
-            slide.addEventListener("animationend", () => {
-                circle.style.setProperty("stroke-dashoffset",
-                    (circumference * (1 - entry.accuracy / 100)).toFixed(1));
-            }, { once: true });
+            fill = circle;
         }
         svg.appendChild(circle);
     }
     ring.appendChild(svg);
 
     const ringInner = addElement("div", "", "", "finish-summary-ring-inner", "", ring);
-    addElement("span", `${entry.accuracy}%`, "", "t-num finish-summary-accuracy", "", ringInner);
+    const accuracy = addElement("span", "0%", "", "t-num finish-summary-accuracy", "", ringInner);
     addElement("span", lc.finish_page_accuracy, "", "stat-label", "", ringInner);
+    // The arc sweeping round and the percentage counting up are the same measurement, so they run
+    // together off the ring's slot in the stagger
+    parts.push({
+        el: ring,
+        onReveal: () => {
+            fill.style.setProperty("stroke-dashoffset",
+                (circumference * (1 - entry.accuracy / 100)).toFixed(1));
+            countUpTo(accuracy, entry.accuracy, (v) => `${Math.round(v)}%`);
+        }
+    });
 
-    addElement("h3", entry.text, "", "finish-summary-title", "", card);
+    parts.push({ el: addElement("h3", entry.text, "", "finish-summary-title", "", card) });
 
     const stats = addElement("div", "", "", "finish-summary-stats", "", card);
-    // Reuses the exact labels the individual slides just showed, so the summary reads as a recap
+    // Reuses the exact labels the per-stat slides used to show, so the card still reads as a recap.
+    // Each tile carries its own formatter: the two tallies are whole numbers, the session length is
+    // a two-decimal value with a localised unit after it.
     const rows = [
-        { label: lc.finish_page_characters_reviewed, value: entry.characters },
-        { label: lc.finish_page_phrases_reviewed, value: entry.phrases },
-        { label: lc.finish_page_session_len, value: entry.time }
+        { label: lc.finish_page_characters_reviewed, value: entry.characters, format: (v) => String(Math.round(v)) },
+        { label: lc.finish_page_phrases_reviewed, value: entry.phrases, format: (v) => String(Math.round(v)) },
+        { label: lc.finish_page_session_len, value: entry.timeValue, format: (v) => `${formatDecimal(v)}${entry.timePostfix}` }
     ];
     for (const row of rows)
     {
         const tile = addElement("div", "", "", "finish-summary-stat", "", stats);
         addElement("span", row.label, "", "stat-label", "", tile);
-        addElement("span", row.value, "", "t-num-sm", "", tile);
+        const value = addElement("span", "", "", "t-num-sm", "", tile);
+        // Each tile flies in on its own slot, so the three of them read as a run rather than a block
+        parts.push({ el: tile, onReveal: () => countUpTo(value, row.value, row.format) });
     }
 
     const chips = addElement("div", "", "", "finish-summary-chips", "", card);
-    addElement("span", lc.gems_gain.replace("{gems}", entry.gems), "", "chip chip-accent", "", chips);
-    if (entry.streakText !== "")
-        addElement("span", entry.streakText, "", "chip", "", chips);
+
+    const gems = addElement("span", "", "", "chip chip-accent", "", chips);
+    const gemsNumber = addPlaceholderNumber(gems, lc.gems_gain, "{gems}", entry.gems);
+    parts.push({
+        el: gems,
+        onReveal: gemsNumber === null
+            ? undefined
+            : () => countUpTo(gemsNumber, entry.gems, (v) => String(Math.round(v)))
+    });
+
+    // The streak chip is the round's one piece of good news that is not about this round, so it is
+    // what the fire burst celebrates: the emojis go up as the chip lands
+    if (entry.streakTemplate !== "")
+    {
+        const streak = addElement("span", "", "", "chip", "", chips);
+        const streakNumber = addPlaceholderNumber(streak, entry.streakTemplate, "{streak}", entry.streak);
+        parts.push({
+            el: streak,
+            onReveal: () => {
+                if (streakNumber !== null)
+                    countUpTo(streakNumber, entry.streak, (v) => String(Math.round(v)));
+                const r = container.getBoundingClientRect();
+                playStreakFireAnimation({
+                    left: r.left + window.scrollX,
+                    top: r.top + window.scrollY,
+                    width: r.width,
+                    height: r.height
+                });
+            }
+        });
+    }
 
     return card;
 }
 
 /**
- * Expands the finished-round stage into whatever vertical space is actually free below it.
+ * Gives the finished-round stage whatever vertical space is actually free below it.
  *
  * The stage starts out the size of the writer it replaces, which is a square: on a phone that square
  * is bounded by the screen's *width*, so it stops well short of the bottom of the screen and the
- * recap ends up sitting high with a band of dead space under it. The slides centre their contents in
- * the stage, so handing the stage the leftover height is all it takes to centre the recap on the
- * screen. Landscape and desktop are width-generous and height-bound, so there the writer square is
- * already about as tall as the space allows and this is a no-op.
+ * recap ends up sitting high with a band of dead space under it. The stage centres its contents, so
+ * handing it the leftover height is all it takes to centre the recap on the screen. Landscape and
+ * desktop are width-generous and height-bound, so there the writer square is already about as tall
+ * as the space allows and this is a no-op.
+ *
+ * It is a *minimum* height, not a fixed one: a tall recap on a short phone grows the stage and the
+ * page scrolls, rather than the card losing its ring off the top and its button off the bottom.
  *
  * Measured rather than derived: whatever sits under the stage (the rule, the footer, the phone tab
  * bar's body padding) is read straight off the current layout, so the page never gains a scrollbar.
@@ -488,109 +658,25 @@ function growFinishStageToViewport(container)
     const available = document.documentElement.clientHeight - rect.top - belowStage;
 
     if (available > rect.height)
-        container.style.setProperty("height", Math.floor(available) + "px");
+        container.style.setProperty("min-height", Math.floor(available) + "px");
 }
 
 /**
- * Makes sure the slide deck's stage is tall enough for whatever the given slide holds. The stage is
- * sized to the square the writer occupied, which is the right footprint for the one-line stat
- * slides but not for the summary: on a small phone in portrait that square is barely taller than
- * the card, and since the stage clips (overflow:hidden) and the slide centres its content, the ring
- * lost its top and the Continue button lost its bottom. Growing the stage pushes the page down
- * instead, which scrolls. Measures the slide's actual children (the summary card and the Continue
- * button, both already built by the time this runs) rather than reserving a guessed button height.
- * @param { HTMLElement } slide - The summary slide (absolutely positioned, so it cannot grow it)
+ * Appends the Continue button below the round summary and registers it as the last part of the
+ * reveal, so it arrives once there is something to continue from. Dismisses the finished-round
+ * screen on click.
+ * @param { HTMLElement } container - The stage to append the button to
+ * @param { Array } parts - Reveal list to append the button to
  */
-function growFinishStage(slide)
+function addFinishContinueButton(container, parts)
 {
-    const stage = slide.parentElement;
-    if (stage === null)
-        return;
-
-    const PADDING = 24;
-    const gap = parseFloat(window.getComputedStyle(slide).rowGap) || 0;
-
-    let needed = PADDING;
-    for (let i = 0; i < slide.children.length; i++)
-        needed += slide.children[i].getBoundingClientRect().height + (i > 0 ? gap : 0);
-
-    if (needed > stage.getBoundingClientRect().height)
-        stage.style.setProperty("height", `${Math.ceil(needed)}px`);
-}
-
-/**
- * Shows the finished-round stats one slide at a time. Each slide slides in from the right over the
- * previous one (slides are opaque), and the covered slide is then removed so only the current stat
- * stays on screen. The streak slide, if present, is the last one, and its fire celebration kicks
- * off as it begins sliding over. The final stat stays put and addFinishContinueButton drops the
- * Continue button in below it.
- * @param { Array } stats - Per-slide { text, streak? } descriptors
- * @param { number } i - Current index into the stats array
- * @param { HTMLElement } container - The deck stage the slides stack inside
- * @param { HTMLElement | null } previous - The slide to remove once this one has covered it
- */
-function slideInFinishStat(stats, i, container, previous)
-{
-    if (i >= stats.length)
-        return;
-
-    const entry = stats[i];
-    let slide = addElement("div", "", "", "finish-slide slide-able", "", container);
-
-    // The last slide is the round summary rather than another single line. It rides the same
-    // slide-from-right animation and the same animationend chain as every other slide — only its
-    // contents differ — so the sequence and its timing are unchanged.
-    // The Continue button is built into it here, before it animates, so the recap and the button
-    // arrive together in one movement instead of the button sliding in separately afterwards.
-    if (entry.card)
-    {
-        buildFinishSummary(slide, entry);
-        addFinishContinueButton(slide);
-        growFinishStage(slide);
-    }
-    else
-        addElement("h3", entry.text, "", "", "", slide);
-
-    // The fire celebration starts the moment the streak slide begins sliding over. The slide itself
-    // is still off to the right at this point, so aim the burst at the stage it is sliding into
-    if (entry.streak)
-    {
-        slide.addEventListener("animationstart", (_) => {
-            const r = container.getBoundingClientRect();
-            playStreakFireAnimation({
-                left: r.left + window.scrollX,
-                top: r.top + window.scrollY,
-                width: r.width,
-                height: r.height
-            });
-        }, { once: true });
-    }
-
-    slide.addEventListener("animationend", (_) => {
-        // The incoming slide has fully covered the previous one, so drop it now
-        if (previous !== null)
-            previous.remove();
-
-        // The last slide already carries its Continue button, so there is nothing left to chain
-        if (i < stats.length - 1)
-            slideInFinishStat(stats, i + 1, container, slide);
-    }, { once: true });
-}
-
-/**
- * Appends the Continue button below the round summary. It shares that slide (a centred column), so
- * it sits under the recap rather than covering it, slides in with it, and dismisses the
- * finished-round screen on click.
- * @param { HTMLElement } slide - The summary slide to append the button to
- */
-function addFinishContinueButton(slide)
-{
-    const button = addElement("button", lc.finish_page_continue, "", "card-button-edit finish-continue", "", slide);
+    const button = addElement("button", lc.finish_page_continue, "", "card-button-edit finish-continue", "", container);
     runEventAfterAnimation(button, "click", (_) => {
         $("finished-session-section").remove();
         createStartButton();
         resetSidebar();
     });
+    parts.push({ el: button });
 }
 
 /**
@@ -599,8 +685,8 @@ function addFinishContinueButton(slide)
  * MutationObserver picks the emojis up automatically, so they render as SVGs like everywhere else
  * on the site. Skipped entirely for users who prefer reduced motion
  * @param { Object } rect - Document-space { left, top, width, height } the burst covers. Defaults
- *                          to the writer area the play field occupied; the finished-round deck
- *                          passes the streak slide's rectangle so the fire plays over that slide
+ *                          to the writer area the play field occupied; the finished-round recap
+ *                          passes the stage's rectangle so the fire plays over the summary card
  */
 function playStreakFireAnimation(rect = window.lastWriterRect)
 {
@@ -652,53 +738,49 @@ function computeSessionAccuracy()
     return Math.round(Math.min(Math.max(accuracy, 0), 100));
 }
 
+// Dispatched on document once the recap has fully arrived. The onboarding tutorial waits on it
+// before pointing the user at their profile, so its popover doesn't land on a half-built card
+const FINISH_SUMMARY_READY_EVENT = "finish-summary-ready";
+
 function showFinishedSessionPage(st, bStreakAdvanced)
 {
     const result = getLocalisedTimePostfix(st);
 
     let mainContainer = $("start-button-writer-section");
     let container = addElement("section", "", "finished-session-section", "centered", "", mainContainer);
-    // Give the deck the same footprint the writer had, so the stacked slides have room to overlap
-    container.style.setProperty("height", getDrawElementHeight() + "px");
+    // Start the stage off at the footprint the writer had, so the recap lands where the play field
+    // was rather than jumping up the page. It is a floor, not a ceiling - see growFinishStageToViewport
+    container.style.setProperty("min-height", getDrawElementHeight() + "px");
     growFinishStageToViewport(container);
 
-    // One entry per stat slide, in arrival order. The streak slide is flagged so we can burst the
-    // fire over it. The Continue button is not a slide of its own - it is built into the final
-    // summary slide and slides in with it.
-    const stats = [
-        { text: lc.finish_page_header },
-        { text: `${lc.finish_page_characters_reviewed}: ${window.cardsReviewedCounter}` },
-        { text: `${lc.finish_page_phrases_reviewed}: ${window.phrasesReviewedCounter}` },
-        { text: `${lc.finish_page_accuracy}: ${computeSessionAccuracy()}%` },
-        { text: `${lc.finish_page_session_len}: ${formatDecimal(result.time)}${result.postfix}` }
-    ];
-
     // Rounds that started or extended the daily streak get to brag about its new length. The
-    // singular/plural wording was resolved at build time by the ui18n switch pattern; here we
-    // only pick the right baked variant and fill in the count
-    let streakText = "";
+    // singular/plural wording was resolved at build time by the ui18n switch pattern; here we only
+    // pick the right baked variant - the count itself is left as its {streak} placeholder so the
+    // card can count it up in place
+    let streakTemplate = "";
     if (bStreakAdvanced)
-    {
-        const streak = window.profileData.streak;
-        streakText = (streak === 1 ? lc.finish_page_streak_increased_one : lc.finish_page_streak_increased)
-            .replace("{streak}", streak);
-        stats.push({ text: streakText, streak: true });
-    }
+        streakTemplate = window.profileData.streak === 1
+            ? lc.finish_page_streak_increased_one
+            : lc.finish_page_streak_increased;
 
-    // The round summary lands last, after the individual stats have slid past. Gems are derived, not
-    // tracked: awardItemGems pays GEMS_PER_ITEM per completed card and per completed whole phrase
-    stats.push({
-        card: true,
+    // Gems are derived, not tracked: awardItemGems pays GEMS_PER_ITEM per completed card and per
+    // completed whole phrase
+    const parts = [];
+    buildFinishSummary(container, {
         text: lc.finish_page_header,
         accuracy: computeSessionAccuracy(),
         characters: window.cardsReviewedCounter,
         phrases: window.phrasesReviewedCounter,
-        time: `${formatDecimal(result.time)}${result.postfix}`,
+        timeValue: result.time,
+        timePostfix: result.postfix,
         gems: (window.cardsReviewedCounter + window.phrasesReviewedCounter) * window.GEMS_PER_ITEM,
-        streakText: streakText
-    });
+        streak: window.profileData.streak,
+        streakTemplate: streakTemplate
+    }, parts);
+    addFinishContinueButton(container, parts);
 
-    slideInFinishStat(stats, 0, container, null);
+    const total = playFinishReveal(parts);
+    window.setTimeout(() => document.dispatchEvent(new CustomEvent(FINISH_SUMMARY_READY_EVENT)), total);
 }
 
 function setWriterState(ref)

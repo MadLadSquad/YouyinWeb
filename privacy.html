@@ -80,7 +80,26 @@
                 <h2 class="t-h1">{{ _ privacy_sec_controller_title }}</h2>
                 <hr class="hairline">
                 <p class="t-body">{{ _ privacy_sec_controller_p1 }}</p>
+                <!-- The controller's registered identity. Only the labels go through the translation
+                     files: the company name, its Companies House number and its registered address are
+                     legal identifiers that must read identically in every locale, so keeping one copy
+                     of them here is what stops a translation drifting away from the register. -->
+                <dl class="privacy-details">
+                    <div class="privacy-detail">
+                        <dt>{{ _ privacy_controller_company_label }}</dt>
+                        <dd>Heapforge Ltd</dd>
+                    </div>
+                    <div class="privacy-detail">
+                        <dt>{{ _ privacy_controller_number_label }}</dt>
+                        <dd>17418393</dd>
+                    </div>
+                    <div class="privacy-detail">
+                        <dt>{{ _ privacy_controller_address_label }}</dt>
+                        <dd>82a James Carter Road, Mildenhall, Bury St. Edmunds, England, IP28 7DE</dd>
+                    </div>
+                </dl>
                 <p class="t-body">{{ _ privacy_sec_controller_p2 }}</p>
+                <p class="t-body">{{ _ privacy_sec_controller_p3 }}</p>
             </section>
 
             <!-- ============================== 2. Local Data ============================== -->

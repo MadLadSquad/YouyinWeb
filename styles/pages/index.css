@@ -1,5 +1,5 @@
 /* Main practice page only (index.html): the writer/sidebar split layout, the character & phrase
-   info widgets, the finished-round slide deck, and the streak-fire / fly-into-counter reward
+   info widgets, the finished-round recap, and the streak-fire / fly-into-counter reward
    animations. Colours come from the theme custom properties injected by theme.js (see base.css). */
 
 #start-button-writer-section {
@@ -177,52 +177,76 @@
     text-align: center;
 }
 
-/* The finished-round screen is a slide deck: a writer-sized stage (height set inline by JS to
-   match the play field it replaces) over which each stat slides in from the right, stacking on
-   top of the previous one. The last slide carries the Continue button. */
+/* The finished-round screen. It used to be a deck of slides, one stat per slide, each sliding in
+   from the right; it is now the summary card alone, whose parts fly in one after another. The stage
+   is a plain centred column - the min-height JS sets keeps the recap where the play field was, and
+   because it is a minimum a tall card grows the stage instead of being clipped by it. */
 #finished-session-section {
     position: relative;
     width: 100%;
-    overflow: hidden;
-}
-
-/* Each slide fills the stage and centres its single header/button. Stacking is what lets a new
-   slide cover the one before it. */
-.finish-slide {
-    position: absolute;
-    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 1rem;
     text-align: center;
-    margin: 0;
-    font-size: 32px;
-    /* Opaque so the incoming slide hides the one it slides over (which is then removed in JS) */
-    background-color: var(--main-background-colour);
+    /* The reveal overshoots to scale(1.02); on a narrow screen the card is already the full width of
+       the stage, so clip that sliver rather than let it hand the page a horizontal scrollbar. Only
+       the x axis is clipped, so a card taller than the stage still grows it and scrolls normally. */
+    overflow-x: clip;
 }
 
-/* Each stat slide, and the Continue button on the final slide, slide in from the right with the
-   same timing. The button is a normal column child, so it lands below the text without covering it. */
-/* The Continue button used to carry this animation of its own, sliding in only after the last
-   slide had landed. It is now built into the summary slide before it animates, so it arrives with
-   the recap in one movement and needs no animation of its own. */
-.finish-slide.slide-able {
-    -webkit-animation: 1.5s slide-from-right 0.25s forwards;
-    animation: 1.5s slide-from-right 0.25s forwards;
-    transform: translateX(100%);
+/* One part of the recap arriving. main-page.js adds this class to each part and hands it its slot
+   in the stagger through --pop-delay; the part is invisible until then (`backwards` applies the
+   0% frame during the delay) and stays put afterwards (`forwards`). The overshoot at 70% is what
+   gives it the small bounce a Duolingo-style recap lands with. */
+.finish-pop {
+    -webkit-animation: 0.42s finish-pop-in var(--pop-delay, 0ms) cubic-bezier(0.22, 0.68, 0.3, 1.2) both;
+    animation: 0.42s finish-pop-in var(--pop-delay, 0ms) cubic-bezier(0.22, 0.68, 0.3, 1.2) both;
 }
 
-@-webkit-keyframes slide-from-right {
-    to {
-        transform: translateX(0);
+@-webkit-keyframes finish-pop-in {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(14px) scale(0.94);
+        transform: translateY(14px) scale(0.94);
+    }
+    70% {
+        opacity: 1;
+        -webkit-transform: translateY(0) scale(1.02);
+        transform: translateY(0) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
     }
 }
 
-@keyframes slide-from-right {
-    to {
-        transform: translateX(0);
+@keyframes finish-pop-in {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(14px) scale(0.94);
+        transform: translateY(14px) scale(0.94);
+    }
+    70% {
+        opacity: 1;
+        -webkit-transform: translateY(0) scale(1.02);
+        transform: translateY(0) scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
+    }
+}
+
+/* Belt and braces alongside the finishReducedMotion guard in main-page.js, which already skips both
+   the stagger and the counters */
+@media (prefers-reduced-motion: reduce) {
+    .finish-pop {
+        -webkit-animation: none;
+        animation: none;
     }
 }
 
@@ -490,8 +514,8 @@
 
 /* ------------------------------------- Round summary card ------------------------------------- */
 
-/* The final slide of the finished-round deck. It rides the same slide-from-right animation as every
-   other slide — only its contents differ — so the chain and its timing are untouched. */
+/* The recap card itself: the only thing the finished-round screen shows. It flies in first, and its
+   ring, title, stat tiles and chips follow it one slot at a time (see .finish-pop). */
 .finish-summary {
     display: flex;
     flex-direction: column;
@@ -571,10 +595,10 @@
     gap: 0.5rem;
 }
 
-/* The Continue button is a flow child of this slide, so it lands below the card. It keeps
-   .finish-continue and .card-button-edit (whose ripple fires the click handler). Both margins are
-   zeroed: .card-button-edit carries 12px top and bottom, and the bottom one is counted by the
-   slide's justify-content:center, which pushed the whole recap 6px above the true centre. */
+/* The Continue button sits under the card as the stage's second child and is the last part of the
+   reveal. It keeps .finish-continue and .card-button-edit (whose ripple fires the click handler).
+   Both margins are zeroed: .card-button-edit carries 12px top and bottom, and the stage already
+   supplies the gap, so keeping them pushed the recap off the true centre. */
 .finish-continue {
     margin-top: 0;
     margin-bottom: 0;
@@ -597,9 +621,9 @@
         margin-bottom: 0.875rem;
     }
 
-    /* Every fixed vertical measure in the card shrinks on a phone: the stage the slides live in is
-       sized to the writer's square footprint, and on a 375x667 screen that is barely taller than
-       this card. main-page.js grows the stage when it still does not fit (see growFinishStage). */
+    /* Every fixed vertical measure in the card shrinks on a phone: the stage is sized to the
+       writer's square footprint, and on a 375x667 screen that is barely taller than this card. That
+       size is only a min-height, so a card that still does not fit grows the stage and scrolls. */
     .finish-summary-ring {
         width: 104px;
         height: 104px;

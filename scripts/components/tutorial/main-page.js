@@ -182,30 +182,20 @@ async function tutRunSession()
     }, { once: true });
 }
 
-// Waits for the finished-session screen's stat animations to play out — the Continue button (.finish-continue)
-// is only added after the last stat slide finishes animating — then points the user to their profile.
+// Waits for the finished-round recap to finish arriving, then points the user to their profile.
+//
+// The recap builds its whole card (Continue button included) up front and then flies the parts in one
+// at a time, so the DOM is no longer a usable signal for "the screen has settled" — watching for the
+// button would put this popover on top of a card still animating. main-page.js announces the end of
+// that reveal with a finish-summary-ready event instead. This listener is attached the moment the user
+// starts the session, long before the round can end, so the event cannot be missed.
 function tutObserveSessionEnd()
 {
-    const promptProfile = () => {
+    document.addEventListener("finish-summary-ready", () => {
         tutRunTour([{
             title: lc.tutorial_session_done_title,
             description: lc.tutorial_session_done,
             onNext: () => { tutSetStep(TUT.account); tutNavigate("./account.html"); return false; },
         }]);
-    };
-
-    if (document.querySelector(".finish-continue"))
-    {
-        promptProfile();
-        return;
-    }
-
-    const observer = new MutationObserver(() => {
-        if (document.querySelector(".finish-continue"))
-        {
-            observer.disconnect();
-            promptProfile();
-        }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    }, { once: true });
 }
