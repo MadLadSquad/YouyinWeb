@@ -190,6 +190,16 @@
                                 </svg>
                                 {{ _ tutorial_replay_button }}
                             </button>
+                            <!-- The policy the "Your data" card is describing, one click away. An
+                                 <a> rather than a button: it is a navigation, and the class pair only
+                                 borrows the button's look -->
+                            <a href="./{{ _ locale }}privacy.html" class="card-button-edit card-button-secondary data-card-button">
+                                <svg class="icon icon-sm" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                                    <path d="M10 2.8 4.8 4.9v4.4c0 3.2 2.1 6.1 5.2 7.1 3.1-1 5.2-3.9 5.2-7.1V4.9z"></path>
+                                    <path d="M7.8 10.1 9.4 11.7l3-3.4"></path>
+                                </svg>
+                                {{ _ privacy_policy_title }}
+                            </a>
                             <button type="button" id="clear-account-button" class="card-button-edit card-button-danger data-card-button">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
                                     <path d="M4.5 6h11M8 6V4.6h4V6M6 6l.7 10h6.6L14 6"></path>

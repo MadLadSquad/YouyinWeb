@@ -268,3 +268,10 @@ lc.streak_freeze_full = "{{ _ streak_freeze_full }}";
 lc.streak_freeze_too_expensive = "{{ _ streak_freeze_too_expensive }}";
 lc.gems_amount = "{{ _ gems_amount }}";
 lc.gems_gain = "{{ _ gems_gain }}";
+
+// privacy-policy consent gate (privacy-consent.js). The modal is built in JS on every page, so its
+// strings have to come through here rather than out of a template
+lc.privacy_consent_title = "{{ _ privacy_consent_title }}";
+lc.privacy_consent_body = "{{ _ privacy_consent_body }}";
+lc.privacy_consent_link = "{{ _ privacy_consent_link }}";
+lc.privacy_consent_accept = "{{ _ privacy_consent_accept }}";

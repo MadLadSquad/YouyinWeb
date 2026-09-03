@@ -12,6 +12,9 @@
 <script src="./{{ _ locale }}scripts/components/language-selector.js"></script>
 <script src="./{{ _ locale }}scripts/components/emoji.js"></script>
 <script src="./{{ _ locale }}scripts/components/char-loading-ui.js"></script>
+<!-- Privacy-policy consent gate. Like char-loading-ui.js it only defines functions here and is
+     called from index.js#main(), so it must be parsed before index.js runs -->
+<script src="./{{ _ locale }}scripts/components/privacy-consent.js"></script>
 <script src="./{{ _ locale }}scripts/index.js"></script>
 <script src="./{{ _ locale }}scripts/components/daily-streak.js"></script>
 <!-- Driver.js (product-tour library) + the first-visit onboarding orchestrator. Loaded after index.js

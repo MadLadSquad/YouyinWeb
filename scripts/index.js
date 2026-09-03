@@ -605,6 +605,13 @@ async function main()
         });
     }
 
+    // Privacy-policy consent gate (see scripts/components/privacy-consent.js). Nothing the policy
+    // describes may happen before the user has accepted it, so this sits ahead of the onboarding
+    // tutorial, ahead of resolveProfileReady (which is what every page script, the tutorial and the
+    // streak-goal prompt wait on) and ahead of the downloads below. Already-consenting visitors and
+    // the privacy page itself pass through without a modal
+    await awaitPrivacyConsent();
+
     // First-visit onboarding gate. On a brand-new visit to a non-landing page this redirects to the landing
     // page, so stop initializing here and let the fresh page load take over (no point downloading the
     // character database for a page we're leaving)
@@ -616,48 +623,53 @@ async function main()
     // redirected, in which case this never runs and the fresh page load takes over
     resolveProfileReady();
 
-    // Register service worker for PWA support. It transparently caches the character chunks it sees
-    // fetched (see sw.js) — the download itself is driven here on the page thread
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => {
-                    console.log('Service Worker registered successfully with scope:', reg.scope);
-                })
-                .catch(err => {
-                    console.error('Service Worker registration failed:', err);
-                });
-        });
+    // Everything from here on caches or downloads, so it is all behind the consent answer rather than
+    // behind the await above: the privacy page is exempt from the modal (the policy has to stay
+    // readable) and therefore reaches this point without having answered anything
+    if (privacyConsentGiven())
+    {
+        // Register service worker for PWA support. It transparently caches the character chunks it sees
+        // fetched (see sw.js) — the download itself is driven here on the page thread
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => {
+                        console.log('Service Worker registered successfully with scope:', reg.scope);
+                    })
+                    .catch(err => {
+                        console.error('Service Worker registration failed:', err);
+                    });
+            });
+        }
+
+        // Bring the character stroke database into memory, but only on the pages that actually draw
+        // characters (see pageNeedsCharacterData). A first visit downloads every chunk behind a blocking
+        // modal (awaited, so character data is ready before charDataReady resolves); later visits
+        // load the cached copy instantly and reconcile changed chunks in the background
+        if (pageNeedsCharacterData())
+        {
+            try
+            {
+                const localCharManifest = await loadCharacterDataFromIDB();
+                if (localCharManifest === null)
+                    await firstTimeDownload();
+                else
+                    backgroundUpdate(localCharManifest);
+            }
+            finally
+            {
+                // Always signal readiness, even if loading failed — writers then simply render nothing (as
+                // they did when a per-character fetch 404'd) instead of consumers waiting on this forever
+                resolveCharDataReady();
+            }
+        }
     }
 
-    // Bring the character stroke database into memory, but only on the pages that actually draw
-    // characters (see pageNeedsCharacterData). A first visit downloads every chunk behind a blocking
-    // modal (awaited, so character data is ready before charDataReady resolves); later visits
-    // load the cached copy instantly and reconcile changed chunks in the background
-    if (pageNeedsCharacterData())
-    {
-        try
-        {
-            const localCharManifest = await loadCharacterDataFromIDB();
-            if (localCharManifest === null)
-                await firstTimeDownload();
-            else
-                backgroundUpdate(localCharManifest);
-        }
-        finally
-        {
-            // Always signal readiness, even if loading failed — writers then simply render nothing (as
-            // they did when a per-character fetch 404'd) instead of consumers waiting on this forever
-            resolveCharDataReady();
-        }
-    }
-    else
-    {
-        // This page never instantiates a writer, so the database was never loaded. Resolve anyway so
-        // any incidental consumer of charDataReady (and storageReady, which is main()
-        // itself) doesn't hang waiting on data that isn't coming
-        resolveCharDataReady();
-    }
+    // Pages that never instantiate a writer (and the privacy page, which skipped the block above
+    // entirely) never loaded the database. Resolve anyway so any incidental consumer of charDataReady
+    // — and storageReady, which is main() itself — doesn't hang waiting on data that isn't coming.
+    // Re-resolving an already-settled promise is a no-op, so the path above needs no guard here
+    resolveCharDataReady();
 }
 
 // Loading profile data from IndexedDB is asynchronous, so page scripts must wait for this promise

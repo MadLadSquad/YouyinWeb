@@ -585,3 +585,124 @@ translations:
     text: "{brand} is a free web app that teaches you to handwrite characters from Chinese (Hanzi), Japanese (Kana & Kanji), Korean (Hangul), Greek, Cyrillic and more. Practice real stroke order, build decks, and learn through spaced revision."
   - id: og_locale
     text: "en_US"
+
+  # Privacy-policy consent gate (privacy-consent.js). Shown once, before anything else, on the
+  # first visit and again whenever the policy version is bumped
+  - id: privacy_consent_title
+    text: "Before you start"
+  - id: privacy_consent_body
+    text: "{brand} keeps your decks, progress and settings on this device, and downloads its character data and decks from public CDNs. Read the Privacy Policy to see exactly what that means — you can only continue once you accept it."
+  - id: privacy_consent_link
+    text: "Read the Privacy Policy"
+  - id: privacy_consent_accept
+    text: "I accept the Privacy Policy"
+
+  # privacy.html
+  - id: privacy_policy_title
+    text: "Privacy Policy"
+  - id: privacy_hero_eyebrow
+    text: "Privacy & Data Protection"
+  - id: privacy_hero_title
+    text: "Privacy Policy"
+  - id: privacy_last_updated
+    text: "Last updated: August 2026"
+  - id: privacy_hero_lead
+    text: "{brand} is built with a local-first, privacy-by-design architecture. Your learning progress, custom flashcards, and preferences are stored exclusively on your own device and are never transmitted to a remote server."
+  - id: privacy_hl_local_title
+    text: "100% Local Storage"
+  - id: privacy_hl_local_desc
+    text: "All cards, phrases, stats, and streak history live in your browser's IndexedDB."
+  - id: privacy_hl_noacct_title
+    text: "No Accounts or Sign-up"
+  - id: privacy_hl_noacct_desc
+    text: "Use {brand} freely without creating an account, providing an email, or setting a password."
+  - id: privacy_hl_notrack_title
+    text: "No Tracking or Ads"
+  - id: privacy_hl_notrack_desc
+    text: "Zero analytics trackers, zero profiling scripts, and zero advertising cookies."
+  - id: privacy_hl_control_title
+    text: "Full Data Control"
+  - id: privacy_hl_control_desc
+    text: "Export your decks to JSON or erase all local data in one click at any time."
+  - id: privacy_sec_controller_title
+    text: "1. Overview & Data Controller"
+  - id: privacy_sec_controller_p1
+    text: "{brand} is an open-source, non-commercial educational web application dedicated to helping people learn and practise handwriting characters from various writing systems. Under the European Union General Data Protection Regulation (GDPR - Regulation (EU) 2016/679), the data controller responsible for this website is the {brand} project maintainers (MadLadSquad / Heapforge)."
+  - id: privacy_sec_controller_p2
+    text: "Because {brand} operates as a static, client-side application without user accounts or server-side databases, we do not collect, store, sell, or process personal data on any remote server."
+  - id: privacy_sec_localdata_title
+    text: "2. Data Stored on Your Device"
+  - id: privacy_sec_localdata_p1
+    text: "All application data generated during your learning journey is saved locally in your browser's persistent storage (IndexedDB and localStorage). This data includes:"
+  - id: privacy_sec_localdata_li1
+    text: "Cards and Phrases: Character definitions, pronunciations, regional variant selections, and custom phrases you create or import."
+  - id: privacy_sec_localdata_li2
+    text: "Study Statistics: Revision history, error counts, knowledge levels, daily streaks, streak freeze balances, and gem rewards."
+  - id: privacy_sec_localdata_li3
+    text: "Activity Calendar: Daily session counts used to draw your practice heatmap on the Account page."
+  - id: privacy_sec_localdata_li4
+    text: "Preferences: Selected color theme, interface language, game modifiers (such as extensive mode and daily level reduction), and onboarding tutorial progress."
+  - id: privacy_sec_localdata_p2
+    text: "This information remains entirely on your device. It is never transmitted to us or any third party."
+  - id: privacy_sec_thirdparty_title
+    text: "3. Technical Data & Third-Party Providers"
+  - id: privacy_sec_thirdparty_p1
+    text: "When you visit {brand}, your web browser connects to third-party infrastructure providers to download the website files, fonts, character stroke data, and public decks. These providers may process technical connection data (such as your IP address, browser User-Agent, and request timestamps) strictly for the purpose of transmitting content and securing network operations:"
+  - id: privacy_sec_thirdparty_li1
+    text: "GitHub Pages (GitHub, Inc. / Microsoft): Static web hosting for the site application files."
+  - id: privacy_sec_thirdparty_li2
+    text: "jsDelivr CDN (ProspectOne / Cloudflare): Content Delivery Network used to distribute stroke animations, stroke databases, and public deck repositories."
+  - id: privacy_sec_thirdparty_li3
+    text: "Google Fonts (Google LLC): Distribution of the open-source Ubuntu typeface."
+  - id: privacy_sec_thirdparty_p2
+    text: "These providers process technical metadata in accordance with their respective privacy policies and comply with applicable international data transfer mechanisms (such as the EU-U.S. Data Privacy Framework and Standard Contractual Clauses)."
+  - id: privacy_sec_legal_title
+    text: "4. Legal Bases for Processing (Art. 6 GDPR)"
+  - id: privacy_sec_legal_p1
+    text: "Under Article 6(1) of the GDPR, the limited technical processing required to deliver the website relies on:"
+  - id: privacy_sec_legal_li1
+    text: "Article 6(1)(b) GDPR (Performance of a Contract / Service Delivery): Processing technical requests necessary to provide the web app and its interactive character practice tools upon your visit."
+  - id: privacy_sec_legal_li2
+    text: "Article 6(1)(f) GDPR (Legitimate Interests): The legitimate interest of maintaining website availability, fast CDN delivery, system integrity, and protection against network attacks or abuse."
+  - id: privacy_sec_cookies_title
+    text: "5. Cookies & Tracking Technologies"
+  - id: privacy_sec_cookies_p1
+    text: "{brand} does not use any tracking cookies, analytics cookies, targeting cookies, or third-party advertising scripts. We do not track your behavior across websites, nor do we build personal user profiles."
+  - id: privacy_sec_cookies_p2
+    text: "We utilize standard client-side storage technologies (IndexedDB, localStorage, and Service Worker Cache API) solely for strictly necessary technical functionality — storing your decks, keeping track of your revision levels, enabling offline practice as a Progressive Web App (PWA), and remembering your UI preferences. In accordance with the EU ePrivacy Directive (Directive 2002/58/EC) and GDPR, strictly necessary functional storage does not require consent banners."
+  - id: privacy_sec_rights_title
+    text: "6. Your Rights Under the GDPR"
+  - id: privacy_sec_rights_p1
+    text: "As a user in the European Union / European Economic Area, the GDPR grants you specific rights concerning your data:"
+  - id: privacy_sec_rights_li1
+    text: "Right of Access (Art. 15 GDPR): You can view all data stored about your learning progress directly on the Deck and Account pages."
+  - id: privacy_sec_rights_li2
+    text: "Right to Rectification (Art. 16 GDPR): You have complete control to edit, correct, or rename any card, phrase, definition, or preference at any time directly in the application."
+  - id: privacy_sec_rights_li3
+    text: "Right to Erasure (Art. 17 GDPR - 'Right to be Forgotten'): You can delete all your stored data immediately at any time by clicking the 'Clear account data' button on the Account page, or by clearing your browser's site data."
+  - id: privacy_sec_rights_li4
+    text: "Right to Data Portability (Art. 20 GDPR): You can export all your decks and phrases in machine-readable JSON format at any time using the Export Deck option on the Deck page."
+  - id: privacy_sec_rights_li5
+    text: "Right to Restriction and Objection (Art. 18 & 21 GDPR): Since no personal data is stored on remote servers, you can stop all local processing at any moment by closing the application or clearing local storage."
+  - id: privacy_sec_rights_li6
+    text: "Right to Lodge a Complaint (Art. 77 GDPR): You have the right to file a complaint with a data protection supervisory authority in your EU member state (for example, the Commission for Personal Data Protection in Bulgaria - CPDP / КЗЛД) if you believe your data protection rights have been violated."
+  - id: privacy_sec_security_title
+    text: "7. Data Retention & Security"
+  - id: privacy_sec_security_p1
+    text: "Your learning data remains saved in your browser until you choose to erase it, reset your account, or clear your browser's site data. Because your data is stored locally within the browser origin sandbox and never sent to a central server database, it is protected against central database breaches."
+  - id: privacy_sec_children_title
+    text: "8. Children's Privacy"
+  - id: privacy_sec_children_p1
+    text: "{brand} is a safe, educational learning environment suitable for learners of all ages. We do not collect, request, or store personal information from children or any other users."
+  - id: privacy_sec_transfers_title
+    text: "9. International Data Transfers"
+  - id: privacy_sec_transfers_p1
+    text: "External infrastructure and CDN providers (GitHub, Google, Cloudflare) operate global networks and data centers. To the extent technical connection metadata is processed outside the European Economic Area (EEA), such transfers are governed by standard contractual clauses (SCCs) and adequacy frameworks approved by the European Commission."
+  - id: privacy_sec_contact_title
+    text: "10. Changes to This Policy & Contact"
+  - id: privacy_sec_contact_p1
+    text: "We may update this Privacy Policy periodically to reflect improvements to the application or legal developments. Any changes will be posted on this page with a revised 'Last updated' date."
+  - id: privacy_sec_contact_p2
+    text: "If you have questions, feedback, or inquiries regarding this Privacy Policy or the security of {brand}, you can open an issue or reach out via our official GitHub repository:"
+  - id: privacy_contact_github
+    text: "Visit {brand} on GitHub"

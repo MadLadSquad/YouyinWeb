@@ -1,4 +1,4 @@
-const CACHE_NAME = 'static-v20';
+const CACHE_NAME = 'static-v22';
 
 // The site is built once per locale, so every page and script exists at the root and once per
 // locale directory — generate the pre-cache list instead of hand-maintaining each combination
@@ -11,6 +11,7 @@ const PAGES = [
     'account.html',
     'marketplace.html',
     'deck-edit-card.html',
+    'privacy.html',
     '404.html'
 ];
 const SCRIPTS = [
@@ -20,6 +21,7 @@ const SCRIPTS = [
     'scripts/data/character-database.js',
     'scripts/index.js',
     'scripts/components/char-loading-ui.js',
+    'scripts/components/privacy-consent.js',
     'scripts/components/daily-streak.js',
     'scripts/components/activity-calendar.js',
     'scripts/components/tutorial.js',
@@ -62,6 +64,7 @@ const ROOT_ONLY_ASSETS = [
     'styles/pages/deck-edit.css',
     'styles/pages/account.css',
     'styles/pages/marketplace.css',
+    'styles/pages/privacy.css',
     'favicon.png',
     'favicon-new.png',
     'icon-192.png',

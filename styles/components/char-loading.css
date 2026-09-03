@@ -132,3 +132,36 @@
     background-color: var(--main-accent-colour);
     transition: width 0.2s ease-out;
 }
+
+/* ---------------------------- Privacy-policy consent gate ---------------------------------- */
+/* The consent modal (privacy-consent.js) reuses the .char-load-overlay/.char-load-box chrome above,
+   as the streak-goal prompt and the tutorial modals do. It is the first thing any visitor sees, so
+   it sits above the character-download overlay (2000) and the streak-goal prompt (2100) and below
+   the tutorial (3000) — nothing it gates can be on screen while it is up, but the ordering keeps the
+   stack honest if one ever slips through. */
+.privacy-consent-overlay {
+    z-index: 2200;
+}
+
+/* The body copy leads straight into the link, so it gives up the 1.5rem the download modal needs
+   between its subtitle and its progress bar */
+.privacy-consent-overlay .char-load-subtitle {
+    margin-bottom: 0.75rem;
+}
+
+/* The policy link, between the body copy and the accept button. Deliberately not a button: it opens
+   privacy.html in a new tab rather than acting on the modal, and it should not compete with the one
+   control that dismisses it. */
+.privacy-consent-link {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--main-text-colour);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.privacy-consent-link:hover,
+.privacy-consent-link:focus-visible {
+    color: var(--main-accent-colour);
+}

@@ -46,4 +46,15 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/account"/>
   </url>
 
+  <!-- Privacy policy -->
+  <url>
+    <loc>{{ cannonical_url }}/en_US/privacy</loc>
+    <lastmod>2026-09-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="{{ cannonical_url }}/en_US/privacy"/>
+    <xhtml:link rel="alternate" hreflang="bg" href="{{ cannonical_url }}/bg_BG/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="{{ cannonical_url }}/privacy"/>
+  </url>
+
 </urlset>

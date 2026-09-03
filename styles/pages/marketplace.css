@@ -43,8 +43,11 @@
     gap: 0.375rem;
 }
 
+/* The rule floats in the free space a short card inherits from the tallest card in its row: auto
+   margins on both sides centre it there, and with no other auto margin left in the column the
+   actions settle against the card's bottom edge. */
 .marketplace-card-rule {
-    margin: 0;
+    margin: auto 0;
 }
 
 /* Import is the action people came for, so it takes the row and the accent; source and download are
@@ -53,7 +56,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-top: auto;
+    margin-top: 0;
 }
 
 .marketplace-import {
