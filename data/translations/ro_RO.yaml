@@ -1,0 +1,703 @@
+# Generated from Translations/ro_RO.yaml. Hugo/go-i18n format.
+
+# index.html
+phrase-info-widget-spelling:
+  other: "Fraza mea"
+phrase-info-widget-errors:
+  other: "Fraze: {progress}; Erori: {errors}"
+character-info-widget-def-p:
+  other: "Definiții:"
+character-info-widget-info-default:
+  other: "Urmează să fie încărcat"
+character-info-widget-errors:
+  other: "Carduri: {progress}; Erori: {errors}"
+character-info-widget-spelling:
+  other: "Ortografie: Urmează să fie încărcat"
+start-button:
+  other: "Apasă pentru a începe recapitularea"
+404-text:
+  other: "Din păcate, această pagină nu există"
+phrases_count_errors:
+  other: "Erori"
+phrases_count_cards:
+  other: "Carduri"
+phrases_count_spelling:
+  other: "Ortografie"
+to_be_loaded:
+  other: "Urmează să fie încărcat"
+no_cards_link_deck:
+  other: "Pachet"
+no_cards_text:
+  other: "Momentan nu ai niciun card, mergi la pagina "
+no_cards_text_postfix:
+  other: " pentru a adăuga câteva!"
+footer:
+  other: "Un proiect {credits}!"
+nav_primary_label:
+  other: "Navigare principală"
+nav_practise:
+  other: "Exersează"
+session_exit:
+  other: "Ieșire"
+guest_initial:
+  other: "O"
+today_header:
+  other: "Astăzi"
+today_of_goal:
+  other: "din {goal} runde"
+today_no_goal:
+  other: "runde astăzi"
+today_goal_met:
+  other: "Obiectiv atins — seria ta este în siguranță astăzi."
+today_goal_left:
+  other: "Încă {count} pentru a atinge obiectivul de astăzi."
+today_goal_left_one:
+  other: "Încă 1 pentru a atinge obiectivul de astăzi."
+streak_freeze_held:
+  other: "{count} înghețări păstrate"
+streak_freeze_held_one:
+  other: "1 înghețare păstrată"
+gems_label:
+  other: "Nestemate"
+gems_panel_hint:
+  other: "Câștigate prin finalizarea cardurilor și frazelor. Cheltuiește-le pe înghețări de serie."
+streak_panel_none:
+  other: "Finalizează o rundă pentru a începe o serie."
+streak_panel_safe:
+  other: "Ziua de azi este contorizată. Pe mâine!"
+streak_panel_protected:
+  other: "Nu ai exersat astăzi - o înghețare o va acoperi."
+streak_panel_at_risk:
+  other: "Exersează astăzi pentru a-ți păstra seria."
+language_label:
+  other: "Limbă"
+language_description:
+  other: "Limba interfeței. Disponibilă și în bara de sus."
+theme_description:
+  other: "190 de palete. Fiecare culoare din pagină este derivată din cea activă."
+data_card_header:
+  other: "Datele tale"
+deck_more_actions:
+  other: "Mai multe acțiuni"
+deck_knowledge_label:
+  other: "Cunoștințe"
+deck_summary:
+  other: "{cards} carduri · {phrases} fraze · cunoștințe medii {knowledge}"
+marketplace_subtitle:
+  other: "Pachete gata făcute, menținute în depozitul public de pachete."
+new_deck_upload_title:
+  other: "Ai un pachet de împărtășit?"
+session_ready_eyebrow:
+  other: "Gata oricând ești pregătit"
+session_next_round:
+  other: "Runda următoare"
+session_queue_note:
+  other: "{cards} carduri și {phrases} fraze sunt în așteptare pentru această rundă."
+session_round_in_progress:
+  other: "Rundă în desfășurare"
+session_end_round:
+  other: "Încheie runda"
+session_errors_count:
+  other: "{count} erori"
+theme_button:
+  other: "Temă"
+theme_search_placeholder:
+  other: "Caută teme…"
+account:
+  other: "Cont"
+guest:
+  other: "Oaspete"
+locale:
+  other: "ro_RO/"
+extensive-mode-title:
+  other: "Activează modul extins. În loc să parcurgă toate cardurile o singură dată, modul extins parcurge pachetul de mai multe ori, eliminând treptat cardurile cu cel mai ridicat nivel de cunoaștere."
+extensive-mode-aria-label:
+  other: "Casetă de selectare pentru modul extins"
+extensive-mode-label:
+  other: "Mod extins"
+level-reduce-title:
+  other: "Reduce în fiecare zi cunoștințele pentru toate cardurile și frazele cu valoarea selectată."
+level-reduce-aria-label:
+  other: "Glisor pentru reducerea nivelului"
+level-reduce-label:
+  other: "Reducere zilnică a nivelului:"
+game_modifiers_header:
+  other: "Modificatori de joc"
+
+# Gems, streak freezes and the daily streak goal (account.html shop + settings slider, and the
+# blocking goal prompt in scripts/components/streak-goal.js)
+streak-goal-title:
+  other: "Numărul de runde de recapitulare pe zi pe care ți-l propui. De asemenea, stabilește prețul unei înghețări de serie, astfel încât una costă întotdeauna patru zile de practică în ritmul tău."
+streak-goal-aria-label:
+  other: "Glisor pentru obiectivul zilnic"
+streak-goal-label:
+  other: "Obiectiv zilnic:"
+gems-field:
+  other: "💎"
+shop_header:
+  other: "Magazin"
+streak-freeze-field:
+  other: "Înghețări de serie"
+streak-freeze-cost-field:
+  other: "Preț"
+streak-freeze-description:
+  other: "O înghețare de serie este folosită automat într-o zi în care nu exersezi, menținându-ți seria activă. Aceasta nu crește numărul de zile din serie."
+buy_streak_freeze_button:
+  other: "Cumpără o înghețare de serie"
+streak_goal_sessions:
+  other: "{goal} runde pe zi"
+streak_goal_sessions_one:
+  other: "{goal} rundă pe zi"
+streak_goal_modal_title:
+  other: "Setează-ți obiectivul zilnic"
+streak_goal_modal_body:
+  other: "Câte runde de recapitulare pe zi îți propui? {brand} folosește acest număr pentru a stabili prețul înghețărilor de serie și îl poți schimba oricând din pagina contului tău."
+streak_goal_modal_confirm:
+  other: "Setează obiectivul"
+streak_freeze_needs_goal:
+  other: "Setează mai întâi obiectivul zilnic"
+streak_freeze_full:
+  other: "Ai deja numărul maxim de înghețări de serie"
+streak_freeze_too_expensive:
+  other: "Mai ai nevoie de {gems} 💎"
+gems_amount:
+  other: "{gems} 💎"
+gems_gain:
+  other: "+ {gems} 💎"
+finish_page_header:
+  other: "Rundă finalizată"
+finish_page_characters_reviewed:
+  other: "Total caractere recapitulate"
+finish_page_phrases_reviewed:
+  other: "Total fraze recapitulate"
+finish_page_accuracy:
+  other: "Acuratețe"
+finish_page_session_len:
+  other: "Durata rundei"
+finish_page_streak_increased:
+  other: "Ți-ai mărit seria astăzi - {streak} zile"
+finish_page_streak_increased_one:
+  other: "Ți-ai mărit seria astăzi - {streak} zi"
+finish_page_continue:
+  other: "Continuă"
+
+# Coming soon
+coming-soon-header:
+  other: "Această pagină va fi disponibilă în curând!"
+# Add coming soon text 1
+coming-soon-text-1:
+  other: "Poate arunci o privire pe {} sau {}!"
+coming-soon-text-2:
+  other: "Vă mulțumim pentru răbdare!"
+
+# deck-edit-card.html
+edit-card-site-title:
+  other: "Editează cardul"
+new-card-h1:
+  other: "Card nou"
+input-mode-p:
+  other: "Metodă de introducere: "
+input-mode-none:
+  other: "Niciuna"
+pinyin-input-description:
+  other: "Îți permite să folosești notația numerică Pinyin în casetele de text. Textul va fi apoi convertit în pinyin real. Exemplu: 'pin1 yin1' va deveni 'pīn yīn'."
+romaji-hiragana-input-description:
+  other: "Îți permite să folosești Romaji pentru a introduce Hiragana. Nota 1: Hiragana mici pot fi introduse adăugând prefixul 'x'. Nota 2: Introducerea 'っ' se poate face doar folosind 'xtsu'. Nota 3: Folosește '-' pentru a introduce 'ー'"
+romaji-katakana-input-description:
+  other: "Îți permite să folosești Romaji pentru a introduce Katakana. Nota 1: Katakana mici pot fi introduse adăugând prefixul 'x'. Nota 2: Introducerea 'ッ' se poate face doar folosind 'xtsu'. Nota 3: Folosește '-' pentru a introduce 'ー'"
+phrase-preview-section-header:
+  other: "Previzualizări"
+finish-edit-button:
+  other: "Finalizează"
+cancel-edit-button:
+  other: "Anulează"
+unknown_character:
+  other: "Caracter necunoscut"
+unknown_phrase:
+  other: "Frază necunoscută"
+character_variant_default:
+  other: "Implicit"
+character_variant_kanji:
+  other: "Kanji"
+character_variant_hanja:
+  other: "Hanja"
+name_text_field_aria:
+  other: "Câmp text pentru nume"
+character_text_field_aria:
+  other: "Câmp text pentru caracter"
+meaning_text_field_aria:
+  other: "Câmp text pentru semnificație"
+character_variant_box_aria:
+  other: "Casetă pentru varianta caracterului"
+card_name:
+  other: "Nume"
+card_phrase:
+  other: "Frază"
+card_character:
+  other: "Caracter"
+delete-edit-button:
+  other: "Șterge"
+deck-new-delete-phrase:
+  other: "Ești sigur că vrei să ȘTERGI această frază? ACEASTĂ ACȚIUNE ESTE IREVOCABILĂ!"
+deck-new-delete-card:
+  other: "Ești sigur că vrei să ȘTERGI acest caracter? ACEASTĂ ACȚIUNE ESTE IREVOCABILĂ!"
+
+# deck.html
+profile-statistics-header:
+  other: "Statistici profil"
+total-sessions-field:
+  other: "Total runde de recapitulare"
+streak-field:
+  other: "Serie"
+deck-card-num-field:
+  other: "Carduri în pachet"
+deck-phrase-num-field:
+  other: "Fraze în pachet"
+last-session-date-field:
+  other: "Ultima rundă"
+average-knowledge-level-field:
+  other: "Nivel mediu de cunoaștere"
+average-session-length-field:
+  other: "Durata medie a rundei de recapitulare"
+time-spent-in-sessions-field:
+  other: "Timp petrecut recapitulând"
+new-card-header:
+  other: "Adaugă un card sau o frază nouă în pachet"
+new-card-button:
+  other: "Card nou"
+new-phrase-button:
+  other: "Frază nouă"
+import-deck-button:
+  other: "Importă"
+export-deck-button:
+  other: "Exportă"
+clear-deck-button:
+  other: "Golește"
+marketplace-deck-button:
+  other: "Piață"
+deck-phrases-header:
+  other: "Fraze"
+deck-characters-header:
+  other: "Carduri de caractere"
+clear_deck_confirm_text:
+  other: "Ești sigur că vrei să ȘTERGI pachetul actual? ACEASTĂ ACȚIUNE ESTE IREVOCABILĂ! Exportă-ți datele pentru a le salva pentru orice eventualitate!"
+clear_account_confirm_text:
+  other: "Ești sigur că vrei să ȘTERGI TOATE datele contului tău - pachetele, sesiunile, seria și modificatorii de joc? ACEASTĂ ACȚIUNE ESTE IREVOCABILĂ! Exportă-ți datele mai întâi dacă vrei să le păstrezi!"
+streak_days_count:
+  other: "{streak} zile"
+streak_days_count_one:
+  other: "{streak} zi"
+hours:
+  other: "h."
+milliseconds:
+  other: "ms."
+minutes:
+  other: "min."
+seconds:
+  other: "sec."
+js_locale:
+  other: "ro-RO"
+no_sessions_recorded:
+  other: "Nicio rundă de recapitulare înregistrată încă"
+average_knowledge_level:
+  other: "Nivel mediu de cunoaștere"
+part_of:
+  other: "Parte din"
+deck_card_edit:
+  other: "Editează"
+deck_search_placeholder:
+  other: "Caută în pachet…"
+
+# marketplace.html
+official_decks_header:
+  other: "Pachete oficiale"
+new_deck_upload_info:
+  other: "Vrei să-ți adaugi pachetul în piață? Apasă mai jos pentru a afla mai multe!"
+upload-deck-public:
+  other: "Încarcă"
+community_decks_header:
+  other: "Pachete ale comunității"
+marketplace_search_placeholder:
+  other: "Caută pachete…"
+
+import_deck_confirm_text:
+  other: "Importarea unui pachet VA ÎMBINA pachetul actual cu cel nou; pentru a-l înlocui, golește mai întâi pachetul actual!"
+leveled_up_no:
+  other: "Nu"
+leveled_up_yes:
+  other: "Da"
+pre_leveled_up:
+  other: "Pre-avansat"
+deck_source:
+  other: "Sursă"
+deck_download:
+  other: "Descarcă"
+marketplace_load_error:
+  other: "Eroare {}: Nu s-a putut încărca piața, reîncearcă mai târziu!"
+
+skip-to-content:
+  other: "Sari la conținut"
+
+# browser-support gate (noscript in header.tmpl.html + scripts/data/browser-support.js)
+nojs_title:
+  other: "Este necesar JavaScript"
+nojs_body:
+  other: "{brand} are nevoie de JavaScript pentru a funcționa. Te rugăm să activezi JavaScript pentru acest site (sau să dezactivezi programul de blocare a scripturilor / profilul de securitate strictă care îl blochează), apoi reîncarcă pagina."
+unsupported_title:
+  other: "{brand} nu poate rula în acest browser"
+unsupported_privacy_body:
+  other: "Browserul tău blochează stocarea de care {brand} are nevoie pentru a-ți salva pachetele și setările. Acest lucru înseamnă de obicei că este activ un profil de confidențialitate sau de securitate strictă. Dezactivează modul Lockdown, dezactivează protecțiile stricte de confidențialitate sau permite salvarea datelor pentru acest site, apoi reîncarcă pagina."
+unsupported_outdated_body:
+  other: "Browserului tău îi lipsesc funcționalități de care {brand} are nevoie pentru a rula. Te rugăm să actualizezi la o versiune recentă a unui browser modern, apoi reîncarcă pagina."
+unsupported_reload:
+  other: "Reîncarcă pagina"
+
+# character database loading UI (index.js)
+char_loading_title:
+  other: "Se descarcă caracterele"
+char_loading_subtitle:
+  other: "Se configurează baza de date cu caractere pentru utilizare offline. Acest lucru se întâmplă o singură dată."
+char_updating_label:
+  other: "Se actualizează caracterele…"
+
+# deck import loading UI (marketplace.js)
+deck_import_title:
+  other: "Se importă pachetul"
+deck_import_subtitle:
+  other: "Se descarcă pachetul și se îmbină în colecția ta."
+
+# onboarding tutorial (tutorial.js / account.html). Avoid double quotes in any string surfaced
+# through i18n.js — they are injected into a double-quoted JS string literal; use single quotes.
+tutorial_next:
+  other: "Următorul"
+tutorial_done:
+  other: "Gata"
+tutorial_skip:
+  other: "Omite tutorialul"
+tutorial_continue:
+  other: "Începe turul"
+tutorial_preparing:
+  other: "Se pregătește…"
+tutorial_finish:
+  other: "Finalizează"
+tutorial_replay_button:
+  other: "Reia tutorialul"
+clear_account_button:
+  other: "Șterge datele contului"
+tutorial_intro_title:
+  other: "Bun venit la {brand}"
+tutorial_intro_body:
+  other: "{brand} te învață să scrii caractere din chineză, japoneză și multe altele - linie cu linie. Fă un tur rapid pentru a vedea cum funcționează."
+tutorial_outro_title:
+  other: "Totul este pregătit!"
+tutorial_outro_body:
+  other: "Aceasta este întreaga aplicație. Pachetul introductiv și primele tale carduri sunt gata - mult succes și spor la scris!"
+tutorial_marketplace_title:
+  other: "Piața"
+tutorial_marketplace_intro:
+  other: "Piața conține pachete gata făcute pe care le poți importa cu un singur clic. Haide să alegem un pachet introductiv."
+tutorial_marketplace_search_title:
+  other: "Găsește un pachet"
+tutorial_marketplace_search:
+  other: "Caută aici pentru a filtra pachetele după nume."
+tutorial_marketplace_import_title:
+  other: "Importă un pachet"
+tutorial_marketplace_import:
+  other: "Vom importa pachetul Numere chinezești pentru tine. Apasă Următorul pentru a-l adăuga în colecție."
+tutorial_marketplace_import_replay:
+  other: "Apasă butonul Importă pentru a-l adăuga în colecție. Apasă Următorul pentru a continua."
+tutorial_marketplace_unavailable:
+  other: "Lista de pachete nu a putut fi încărcată acum. Apasă Următorul pentru a continua către pachetul tău."
+tutorial_deck_title:
+  other: "Pachetul tău"
+tutorial_deck_intro:
+  other: "Acesta este pachetul tău - fiecare caracter și frază pe care le înveți se află aici."
+tutorial_deck_newcard_title:
+  other: "Adaugă carduri"
+tutorial_deck_newcard:
+  other: "Hai să creăm primul tău caracter. Apasă Card nou pentru a începe."
+tutorial_deck_phrases_title:
+  other: "Fraze"
+tutorial_deck_phrases:
+  other: "Frazele formate din mai multe caractere apar în această secțiune."
+tutorial_deck_characters_title:
+  other: "Caractere"
+tutorial_deck_characters:
+  other: "Caracterele individuale apar aici - inclusiv cele pe care tocmai le-ai importat."
+tutorial_deck_search_title:
+  other: "Caută în pachet"
+tutorial_deck_search:
+  other: "Filtrează cardurile și frazele pe măsură ce pachetul tău se mărește."
+tutorial_review_edit_title:
+  other: "Editează orice card"
+tutorial_review_edit:
+  other: "Folosește butonul Editează al unui card pentru a-l modifica mai târziu."
+tutorial_review_partof_title:
+  other: "Folosit în fraze"
+tutorial_review_partof:
+  other: "Când un caracter apare într-o frază, pe cardul său sunt enumerate frazele care îl folosesc."
+tutorial_card_ime_title:
+  other: "Metode de introducere"
+tutorial_card_ime:
+  other: "Poți selecta o metodă de introducere pentru a tasta caractere sau simboluri fonetice speciale. O vom lăsa dezactivată pentru moment."
+tutorial_card_input_title:
+  other: "Introdu caracterul"
+tutorial_card_input:
+  other: "Acum caracterul în sine — vom scrie 好 (hǎo, adică bun)."
+tutorial_card_preview_title:
+  other: "Previzualizare în timp real"
+tutorial_card_preview:
+  other: "Previzualizarea arată cum va arăta cardul, cu liniile sale animate."
+tutorial_card_save_title:
+  other: "Salvează cardul"
+tutorial_card_save:
+  other: "Apasă Gata pentru a adăuga cardul în pachet."
+tutorial_phrase_input_title:
+  other: "Introdu o frază"
+tutorial_phrase_input:
+  other: "Acum fraza în sine - vom scrie 你好. Se creează un card pentru fiecare caracter necunoscut pe care îl conține."
+tutorial_phrase_autocards_title:
+  other: "Creare automată a cardurilor"
+tutorial_phrase_autocards:
+  other: "Se creează automat un card pentru fiecare caracter din frază - un card pentru 好 este adăugat automat, iar cardul pentru 你 este refolosit deoarece face deja parte din pachetul tău."
+tutorial_phrase_save_title:
+  other: "Salvează fraza"
+tutorial_phrase_save:
+  other: "Apasă Gata pentru a adăuga fraza și caracterele sale."
+tutorial_session_title:
+  other: "Timpul pentru practică"
+tutorial_session_start:
+  other: "Apasă Start pentru a începe prima ta sesiune de scriere. Trasează fiecare caracter linie cu linie!"
+tutorial_session_replay:
+  other: "Apasă Start oricând dorești să exersezi scrierea caracterelor din pachetul tău."
+tutorial_session_done_title:
+  other: "Foarte bine!"
+tutorial_session_done:
+  other: "Tocmai ai recapitulat cardurile și frazele din pachet pentru prima dată!"
+tutorial_account_stats_title:
+  other: "Profilul tău"
+tutorial_account_stats:
+  other: "Statisticile profilului tău se află aici - numărul de sesiuni, seria, dimensiunea pachetului și nivelul mediu de cunoaștere."
+tutorial_account_settings_title:
+  other: "Setări"
+tutorial_account_settings:
+  other: "Personalizează-ți practica, schimbă limba sau tema."
+tutorial_card_pron_title:
+  other: "Adaugă pronunția"
+tutorial_card_pron:
+  other: "Începe cu pronunția caracterului - vom tasta hǎo."
+tutorial_card_defs_title:
+  other: "Adaugă semnificații"
+tutorial_card_defs:
+  other: "Enumeră ce înseamnă cardul, câte o intrare pe rând - vom adăuga 'bun', 'bine' și 'ok'."
+tutorial_cardreview_title:
+  other: "Noul tău card"
+tutorial_cardreview:
+  other: "Iată cardul pentru caracterul 好 pe care tocmai l-ai creat."
+tutorial_cardreview_phrase_title:
+  other: "Acum hai să creăm o frază"
+tutorial_cardreview_phrase:
+  other: "Frazele unesc caracterele. Apasă Frază nouă pentru a construi una."
+tutorial_phrase_pron_title:
+  other: "Pronunția frazei"
+tutorial_phrase_pron:
+  other: "Introdu pronunția frazei — vom tasta nǐ hǎo."
+tutorial_phrase_defs_title:
+  other: "Semnificația frazei"
+tutorial_phrase_defs:
+  other: "Adaugă ce înseamnă fraza - vom adăuga 'salut'."
+tutorial_phrase_subcard_title:
+  other: "Un caracter nou-nouț"
+tutorial_phrase_subcard:
+  other: "Caracterul 你 nu făcea parte din pachet anterior, așa că vom crea un card pentru el. Cardul pentru caracterul 好 a fost refolosit dinainte."
+tutorial_review_phrase_title:
+  other: "Fraza ta"
+tutorial_review_phrase:
+  other: "Iată fraza pe care am creat-o."
+tutorial_review_navigate_title:
+  other: "Timpul pentru exersare"
+tutorial_review_navigate:
+  other: "Așa se construiesc pachetele. Hai să începem să recapitulăm caracterele din pachetul nostru."
+tutorial_card_variant_title:
+  other: "Variante regionale"
+tutorial_card_variant:
+  other: "Unele caractere se scriu diferit în funcție de regiune. Folosește această casetă pentru a selecta o formă regională a caracterului tău."
+tutorial_account_extensive_title:
+  other: "Mod extins"
+tutorial_account_extensive:
+  other: "Activează această opțiune pentru a recapitula fiecare card în fiecare sesiune, în loc să recapitulezi doar un subgrup restrâns."
+tutorial_account_levelreduce_title:
+  other: "Reducere zilnică a nivelului"
+tutorial_account_levelreduce:
+  other: "În fiecare zi caracterele tale pierd puțin din scorul de cunoaștere, astfel încât recapitularea frecventă le menține proaspete. Acest glisor stabilește cât anume din scorul de cunoaștere pierd."
+tutorial_account_goal_title:
+  other: "Obiectivul tău zilnic"
+tutorial_account_goal:
+  other: "Acesta este numărul de runde pe zi care contează drept practică. Îndeplinirea lui îți menține seria activă și stabilește, de asemenea, prețul unei înghețări de serie."
+tutorial_account_language_title:
+  other: "Limbă"
+tutorial_account_language:
+  other: "Acestea sunt limbile în care este disponibil {brand} - poți comuta oricând dorești."
+tutorial_account_theme_title:
+  other: "Teme"
+tutorial_account_theme:
+  other: "Acestea sunt temele de culori dintre care poți alege."
+tutorial_account_replay_title:
+  other: "Reia acest tutorial"
+tutorial_account_replay:
+  other: "Ai nevoie de o recapitulare? Acest buton repornește întregul tutorial oricând dorești."
+tutorial_account_clear_title:
+  other: "Șterge datele contului"
+tutorial_account_clear:
+  other: "Vrei să începi de la zero? Această acțiune șterge totul - pachetele, sesiunile, seria și modificatorii de joc - și nu poate fi anulată, așa că exportă mai întâi tot ce vrei să păstrezi."
+tutorial_account_activity_title:
+  other: "Activitatea ta"
+tutorial_account_activity:
+  other: "Fiecare sesiune de recapitulare pe care o finalizezi colorează o zi în acest calendar - cu cât exersezi mai mult, cu atât devine mai aprinsă. Alege un an din lateral pentru a privi în urmă."
+activity_calendar_header:
+  other: "Activitate"
+activity_legend_less:
+  other: "Mai puțin"
+activity_legend_more:
+  other: "Mai mult"
+activity_tooltip:
+  other: "{count} runde de recapitulare pe {date}"
+activity_tooltip_one:
+  other: "1 rundă de recapitulare pe {date}"
+activity_tooltip_none:
+  other: "Nicio rundă de recapitulare pe {date}"
+
+# SEO / social metadata
+site-description:
+  other: "{brand} este o aplicație web gratuită care te învață să scrii de mână caractere din chineză (Hanzi), japoneză (Kana și Kanji), coreeană (Hangul), greacă, chirilică și multe altele. Exersează ordinea reală a liniilor, creează pachete și învață prin recapitulare spațiată."
+og_locale:
+  other: "ro_RO"
+
+# Privacy-policy consent gate (privacy-consent.js). Shown once, before anything else, on the
+# first visit and again whenever the policy version is bumped
+privacy_consent_title:
+  other: "Înainte de a începe"
+privacy_consent_body:
+  other: "{brand} păstrează pachetele, progresul și setările tale pe acest dispozitiv și descarcă datele caracterelor și pachetele din rețele CDN publice. Citește Politica de confidențialitate pentru a vedea exact ce înseamnă acest lucru — poți continua doar după ce o accepți."
+privacy_consent_link:
+  other: "Citește Politica de confidențialitate"
+privacy_consent_accept:
+  other: "Accept Politica de confidențialitate"
+
+# privacy.html
+privacy_policy_title:
+  other: "Politică de confidențialitate"
+privacy_hero_eyebrow:
+  other: "Confidențialitate și protecția datelor"
+privacy_hero_title:
+  other: "Politică de confidențialitate"
+privacy_last_updated:
+  other: "Ultima actualizare: Septembrie 2026"
+privacy_hero_lead:
+  other: "{brand} este construit pe o arhitectură orientată spre stocare locală și confidențialitate prin design. Progresul tău de învățare, cardurile personalizate și preferințele sunt stocate exclusiv pe propriul dispozitiv și nu sunt niciodată transmise către un server la distanță."
+privacy_hl_local_title:
+  other: "Stocare 100% locală"
+privacy_hl_local_desc:
+  other: "Toate cardurile, frazele, statisticile și istoricul seriei se află în IndexedDB-ul browserului tău."
+privacy_hl_noacct_title:
+  other: "Fără conturi sau înregistrare"
+privacy_hl_noacct_desc:
+  other: "Folosește {brand} liber, fără a crea un cont, fără a furniza o adresă de e-mail sau a seta o parolă."
+privacy_hl_notrack_title:
+  other: "Fără urmărire sau reclame"
+privacy_hl_notrack_desc:
+  other: "Zero instrumente de analiză, zero scripturi de profilare și zero module cookie publicitare."
+privacy_hl_control_title:
+  other: "Control deplin asupra datelor"
+privacy_hl_control_desc:
+  other: "Exportă-ți pachetele în format JSON sau șterge toate datele locale cu un singur clic în orice moment."
+privacy_sec_controller_title:
+  other: "1. Prezentare generală și operatorul de date"
+privacy_sec_controller_p1:
+  other: "{brand} este o aplicație web educațională cu sursă deschisă, dedicată sprijinirii celor care învață și exersează scrierea de mână a caracterelor din diverse sisteme de scriere. Site-ul web este operat de Heapforge Ltd, o companie înregistrată în Anglia și Țara Galilor. Heapforge Ltd este operatorul de date pentru acest site conform Regulamentului general privind protecția datelor din Regatul Unit (UK GDPR) și Data Protection Act 2018, iar - pentru vizitatorii din Spațiul Economic European - conform Regulamentului general privind protecția datelor din UE (Regulamentul (UE) 2016/679)."
+privacy_sec_controller_p2:
+  other: "Deoarece {brand} funcționează ca o aplicație statică, pe partea de client, fără conturi de utilizator sau baze de date pe server, nu colectăm, nu stocăm, nu vindem și nu prelucrăm date cu caracter personal pe niciun server la distanță."
+privacy_controller_company_label:
+  other: "Companie"
+privacy_controller_number_label:
+  other: "Număr de înregistrare Companies House"
+privacy_controller_address_label:
+  other: "Sediu social"
+privacy_sec_controller_p3:
+  other: "Deoarece nicio dată cu caracter personal nu ajunge la noi, Heapforge Ltd nu a numit un responsabil cu protecția datelor și nu a desemnat un reprezentant în Spațiul Economic European în conformitate cu articolul 27 din GDPR UE. Solicitările scrise pot fi trimise la adresa sediului social menționată mai sus; la întrebările privind această politică se răspunde cel mai rapid prin intermediul depozitului GitHub menționat la sfârșitul acesteia."
+privacy_sec_localdata_title:
+  other: "2. Date stocate pe dispozitivul tău"
+privacy_sec_localdata_p1:
+  other: "Toate datele aplicației generate în timpul învățării sunt salvate local în spațiul de stocare persistent al browserului tău (IndexedDB și localStorage). Aceste date includ:"
+privacy_sec_localdata_li1:
+  other: "Carduri și fraze: Definițiile caracterelor, pronunțiile, selecțiile de variante regionale și frazele personalizate pe care le creezi sau le imporți."
+privacy_sec_localdata_li2:
+  other: "Statistici de studiu: Istoricul recapitulărilor, numărul de erori, nivelurile de cunoaștere, seriile zilnice, soldul de înghețări ale seriei și recompensele în nestemate."
+privacy_sec_localdata_li3:
+  other: "Calendar de activitate: Numărul zilnic de sesiuni utilizat pentru a genera harta termică a practicii tale pe pagina Cont."
+privacy_sec_localdata_li4:
+  other: "Preferințe: Tema de culori selectată, limba interfeței, modificatorii de joc (cum ar fi modul extins și reducerea zilnică a nivelului) și progresul în tutorialul introductiv."
+privacy_sec_localdata_p2:
+  other: "Aceste informații rămân în întregime pe dispozitivul tău. Ele nu sunt niciodată transmise către noi sau către terți."
+privacy_sec_thirdparty_title:
+  other: "3. Date tehnice și furnizori terți"
+privacy_sec_thirdparty_p1:
+  other: "Când vizitezi {brand}, browserul tău web se conectează la furnizori terți de infrastructură pentru a descărca fișierele site-ului, fonturile, datele despre liniile caracterelor și pachetele publice. Acești furnizori pot prelucra date tehnice de conectare (cum ar fi adresa ta IP, User-Agent-ul browserului și marcajele temporale ale solicitărilor) strict în scopul transmiterii conținutului și securizării operațiunilor de rețea:"
+privacy_sec_thirdparty_li1:
+  other: "GitHub Pages (GitHub, Inc. / Microsoft): Găzduire web statică pentru fișierele aplicației site-ului."
+privacy_sec_thirdparty_li2:
+  other: "jsDelivr CDN (ProspectOne / Cloudflare): Rețea de distribuție a conținutului (CDN) utilizată pentru a distribui animațiile liniilor, bazele de date cu linii și depozitele publice de pachete."
+privacy_sec_thirdparty_li3:
+  other: "Google Fonts (Google LLC): Distribuirea fontului open-source Ubuntu."
+privacy_sec_thirdparty_p2:
+  other: "Acești furnizori prelucrează metadate tehnice în conformitate cu propriile politici de confidențialitate și în baza mecanismelor internaționale de transfer de date aplicabile (cum ar fi Cadrul de confidențialitate a datelor UE-SUA și extinderea sa pentru Regatul Unit, precum și clauzele contractuale standard)."
+privacy_sec_legal_title:
+  other: "4. Temeiuri juridice pentru prelucrare (Art. 6 GDPR UK / GDPR UE)"
+privacy_sec_legal_p1:
+  other: "În conformitate cu articolul 6 alineatul (1) din GDPR UK și din GDPR UE, prelucrarea tehnică limitată necesară pentru furnizarea site-ului web se bazează pe:"
+privacy_sec_legal_li1:
+  other: "Articolul 6 alineatul (1) litera (b) (Executarea unui contract / Furnizarea serviciilor): Prelucrarea cererilor tehnice necesare pentru furnizarea aplicației web și a instrumentelor sale interactive de exersare a caracterelor la vizitarea site-ului."
+privacy_sec_legal_li2:
+  other: "Articolul 6 alineatul (1) litera (f) (Interese legitime): Interesul legitim de a menține disponibilitatea site-ului web, livrarea rapidă prin CDN, integritatea sistemului și protecția împotriva atacurilor sau abuzurilor de rețea."
+privacy_sec_cookies_title:
+  other: "5. Module cookie și tehnologii de urmărire"
+privacy_sec_cookies_p1:
+  other: "{brand} nu utilizează module cookie de urmărire, cookie-uri de analiză, cookie-uri de direcționare sau scripturi publicitare terțe. Nu îți urmărim comportamentul pe alte site-uri web și nu construim profiluri personale de utilizator."
+privacy_sec_cookies_p2:
+  other: "Utilizăm tehnologii standard de stocare pe partea de client (IndexedDB, localStorage și Service Worker Cache API) exclusiv pentru funcționalități tehnice strict necesare — stocarea pachetelor tale, urmărirea nivelurilor de recapitulare, permiterea exersării offline ca Aplicație Web Progresivă (PWA) și memorarea preferințelor tale de interfață. În conformitate cu Reglementările privind confidențialitatea și comunicațiile electronice din Regatul Unit din 2003 (PECR), Directiva UE privind confidențialitatea în mediul electronic (Directiva 2002/58/CE) și GDPR din Regatul Unit și UE, stocarea funcțională strict necesară nu necesită un banner de consimțământ."
+privacy_sec_rights_title:
+  other: "6. Drepturile tale conform GDPR UK și UE"
+privacy_sec_rights_p1:
+  other: "GDPR din Regatul Unit - și, dacă vă aflați în Spațiul Economic European, GDPR UE - vă conferă drepturi specifice privind datele dumneavoastră:"
+privacy_sec_rights_li1:
+  other: "Dreptul de acces (art. 15): Puteți vizualiza toate datele stocate despre progresul dumneavoastră de învățare direct pe paginile Pachet și Cont."
+privacy_sec_rights_li2:
+  other: "Dreptul la rectificare (art. 16): Aveți control total pentru a edita, corecta sau redenumi orice card, frază, definiție sau preferință în orice moment, direct în aplicație."
+privacy_sec_rights_li3:
+  other: "Dreptul la ștergere (art. 17 - 'Dreptul de a fi uitat'): Puteți șterge imediat toate datele stocate, în orice moment, apăsând butonul 'Șterge datele contului' de pe pagina Cont sau ștergând datele site-ului din browser."
+privacy_sec_rights_li4:
+  other: "Dreptul la portabilitatea datelor (art. 20): Puteți exporta oricând toate pachetele și frazele într-un format JSON ușor de citit automat, utilizând opțiunea Exportă de pe pagina Pachet."
+privacy_sec_rights_li5:
+  other: "Dreptul la restricționare și opoziție (art. 18 și 21): Deoarece nu sunt stocate date cu caracter personal pe servere la distanță, puteți opri orice prelucrare locală în orice moment prin închiderea aplicației sau ștergerea stocării locale."
+privacy_sec_rights_li6:
+  other: "Dreptul de a depune o plângere (art. 77): Autoritatea noastră principală de supraveghere este Information Commissioner's Office (ICO) din Regatul Unit, pe care o puteți contacta la ico.org.uk. Dacă vă aflați în Spațiul Economic European, puteți depune o plângere la autoritatea de supraveghere din țara dumneavoastră (de exemplu, Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal din România - ANSPDCP)."
+privacy_sec_security_title:
+  other: "7. Păstrarea datelor și securitatea"
+privacy_sec_security_p1:
+  other: "Datele tale de învățare rămân salvate în browser până când alegi să le ștergi, să îți resetezi contul sau să ștergi datele site-ului din browser. Deoarece datele tale sunt stocate local în cadrul sandbox-ului de origine al browserului și nu sunt trimise niciodată către o bază de date centrală de server, acestea sunt protejate împotriva breșelor bazelor de date centrale, iar Heapforge Ltd nu deține niciodată o copie a acestora."
+privacy_sec_children_title:
+  other: "8. Confidențialitatea datelor minorilor"
+privacy_sec_children_p1:
+  other: "{brand} este un mediu educațional sigur, potrivit pentru cursanți de toate vârstele. Nu colectăm, nu solicităm și nu stocăm informații cu caracter personal de la copii sau de la orice alți utilizatori și, deoarece nimic nu este profilat, promovat publicitar sau direcționat subtil, aplicația este construită în conformitate cu Age Appropriate Design Code al ICO."
+privacy_sec_transfers_title:
+  other: "9. Transferuri internaționale de date"
+privacy_sec_transfers_p1:
+  other: "Furnizorii externi de infrastructură și CDN (GitHub, Google, Cloudflare) operează rețele globale și centre de date. În măsura în care metadatele tehnice de conectare sunt prelucrate în afara Regatului Unit sau a Spațiului Economic European (SEE), aceste transferuri sunt acoperite de reglementările de adecvare ale Regatului Unit și de Acordul internațional de transfer de date (IDTA) sau de Anexa Regatului Unit la clauzele contractuale standard (SCC) ale Comisiei Europene; pentru vizitatorii din SEE, acestea sunt acoperite de SCC și de deciziile de adecvare adoptate de Comisia Europeană."
+privacy_sec_contact_title:
+  other: "10. Modificări ale acestei politici și contact"
+privacy_sec_contact_p1:
+  other: "Putem actualiza periodic această Politică de confidențialitate pentru a reflecta îmbunătățirile aduse aplicației sau evoluțiile legislative. Orice modificări vor fi publicate pe această pagină cu o dată revizuită a 'Ultimei actualizări'."
+privacy_sec_contact_p2:
+  other: "Dacă aveți întrebări, feedback sau solicitări referitoare la această Politică de confidențialitate sau la securitatea {brand}, puteți scrie companiei Heapforge Ltd la adresa sediului social din secțiunea 1 sau puteți deschide o sesizare pe depozitul nostru oficial de pe GitHub:"
+privacy_contact_github:
+  other: "Vizitează {brand} pe GitHub"

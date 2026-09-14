@@ -1,0 +1,14 @@
+{{- /*
+  Publishes the locale-independent files that live at the site root. They are templates — they carry
+  params.trademark / params.cannonical_url, and sw.js and sitemap.xml are generated from the asset
+  pipeline and the page list — so they cannot be plain static/ files; but they are not pages either,
+  so they are published directly rather than through a layout.
+
+  Called from baseof.html. Publishing the same target path repeatedly is idempotent, so running once
+  per page in every language is harmless.
+*/ -}}
+{{- range (slice "sw.js" "manifest.json" "robots.txt" "llms.txt" "sitemap.xml") -}}
+  {{- $r := resources.Get . -}}
+  {{- if not $r -}}{{- errorf "missing root file assets/%s" . -}}{{- end -}}
+  {{- ($r | resources.ExecuteAsTemplate . $).Publish -}}
+{{- end -}}

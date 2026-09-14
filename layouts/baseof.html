@@ -1,0 +1,18 @@
+{{- /* Page identity: `slug` is the URL segment ("" for the home page) and `bundle` is the key
+       layouts/_partials/assets.html uses for this page's script bundle. */ -}}
+{{- $slug := cond .IsHome "" (.Params.slug | default "") -}}
+{{- $bundle := cond .IsHome "index" $slug -}}
+{{- partial "root-files.html" . -}}
+{{- $assets := partialCached "assets.html" (dict "loc" site.Params.dir "slug" $bundle) site.Params.dir $bundle -}}
+<!DOCTYPE html>
+<html lang="{{ substr site.Params.dir 0 2 }}">
+    <head>
+        {{ partial "head.html" (dict "assets" $assets "slug" $slug) }}
+        <title class="site-title">{{ block "title" . }}{{ site.Params.trademark }}{{ end }}</title>
+    </head>
+    <body data-gramm="false" data-gramm_editor="false" data-enable-grammarly="false" spellcheck="false">
+        {{ partial "header.html" . }}
+        {{ block "main" . }}{{ end }}
+        {{ partial "footer.html" (dict "assets" $assets) }}
+    </body>
+</html>

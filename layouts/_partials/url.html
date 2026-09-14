@@ -1,0 +1,13 @@
+{{- /*
+  Locale-aware internal link. Args (dict): slug (page slug, "" for the home page) and optional loc
+  (locale directory; defaults to the language being rendered). Returns e.g. "/en_US/deck/".
+
+  Hugo lowercases the language key when it derives the output directory, so .RelPermalink would emit
+  "/en_us/deck/". The cased URLs are load-bearing — SUPPORTED_LOCALES in language-selector.js, the
+  `language` localStorage value, existing bookmarks — so every link is built from params.dir instead,
+  and build.sh renames the three directories after the build.
+*/ -}}
+{{- $dir := (.loc | default site.Params.dir) -}}
+{{- $out := printf "/%s/" $dir -}}
+{{- with .slug -}}{{- $out = printf "/%s/%s/" $dir . -}}{{- end -}}
+{{- return $out -}}

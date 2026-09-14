@@ -1,0 +1,703 @@
+# Generated from Translations/en_US.yaml. Hugo/go-i18n format.
+
+# index.html
+phrase-info-widget-spelling:
+  other: "My phrase"
+phrase-info-widget-errors:
+  other: "Phrases: {progress}; Errors: {errors}"
+character-info-widget-def-p:
+  other: "Definitions:"
+character-info-widget-info-default:
+  other: "To be loaded"
+character-info-widget-errors:
+  other: "Cards: {progress}; Errors: {errors}"
+character-info-widget-spelling:
+  other: "Spelling: To be loaded"
+start-button:
+  other: "Click to start revising"
+404-text:
+  other: "Unfortunately, this page doesn't exist"
+phrases_count_errors:
+  other: "Errors"
+phrases_count_cards:
+  other: "Cards"
+phrases_count_spelling:
+  other: "Spelling"
+to_be_loaded:
+  other: "To be loaded"
+no_cards_link_deck:
+  other: "Deck"
+no_cards_text:
+  other: "You currently have no cards, go to the "
+no_cards_text_postfix:
+  other: " page to add some!"
+footer:
+  other: "A {credits} project!"
+nav_primary_label:
+  other: "Main navigation"
+nav_practise:
+  other: "Practise"
+session_exit:
+  other: "Exit"
+guest_initial:
+  other: "G"
+today_header:
+  other: "Today"
+today_of_goal:
+  other: "of {goal} rounds"
+today_no_goal:
+  other: "rounds today"
+today_goal_met:
+  other: "Goal met — your streak is safe for today."
+today_goal_left:
+  other: "{count} more to reach today's goal."
+today_goal_left_one:
+  other: "1 more to reach today's goal."
+streak_freeze_held:
+  other: "{count} freezes banked"
+streak_freeze_held_one:
+  other: "1 freeze banked"
+gems_label:
+  other: "Gems"
+gems_panel_hint:
+  other: "Earned by finishing cards and phrases. Spend them on streak freezes."
+streak_panel_none:
+  other: "Finish a round to start a streak."
+streak_panel_safe:
+  other: "Today is counted. See you tomorrow."
+streak_panel_protected:
+  other: "Not practised today - a freeze will cover it."
+streak_panel_at_risk:
+  other: "Practise today to keep your streak."
+language_label:
+  other: "Language"
+language_description:
+  other: "Interface language. Also available from the top bar."
+theme_description:
+  other: "190 palettes. Every colour on the page is derived from the active one."
+data_card_header:
+  other: "Your data"
+deck_more_actions:
+  other: "More actions"
+deck_knowledge_label:
+  other: "Knowledge"
+deck_summary:
+  other: "{cards} cards · {phrases} phrases · average knowledge {knowledge}"
+marketplace_subtitle:
+  other: "Ready-made decks maintained in the public deck repository."
+new_deck_upload_title:
+  other: "Have a deck to share?"
+session_ready_eyebrow:
+  other: "Ready when you are"
+session_next_round:
+  other: "Next round"
+session_queue_note:
+  other: "{cards} cards and {phrases} phrases are queued for this round."
+session_round_in_progress:
+  other: "Round in progress"
+session_end_round:
+  other: "End round"
+session_errors_count:
+  other: "{count} errors"
+theme_button:
+  other: "Theme"
+theme_search_placeholder:
+  other: "Search themes…"
+account:
+  other: "Account"
+guest:
+  other: "Guest"
+locale:
+  other: "en_US/"
+extensive-mode-title:
+  other: "Turns on extensive mode. Instead of going through all cards only once, extensive mode goes through the deck multiple times, gradually eliminating the cards with the highest knowledge."
+extensive-mode-aria-label:
+  other: "Extensive mode checkbox"
+extensive-mode-label:
+  other: "Extensive mode"
+level-reduce-title:
+  other: "Reduces your knowledge for all cards and phrases using the selected value every day."
+level-reduce-aria-label:
+  other: "Level reduction slider"
+level-reduce-label:
+  other: "Daily level reduction:"
+game_modifiers_header:
+  other: "Game modifiers"
+
+# Gems, streak freezes and the daily streak goal (account.html shop + settings slider, and the
+# blocking goal prompt in scripts/components/streak-goal.js)
+streak-goal-title:
+  other: "How many revision rounds a day you are aiming for. It also sets the price of a streak freeze, so one always costs four days of practice at your own pace."
+streak-goal-aria-label:
+  other: "Daily goal slider"
+streak-goal-label:
+  other: "Daily goal:"
+gems-field:
+  other: "💎"
+shop_header:
+  other: "Shop"
+streak-freeze-field:
+  other: "Streak freezes"
+streak-freeze-cost-field:
+  other: "Price"
+streak-freeze-description:
+  other: "A streak freeze is spent automatically on a day you do not practise, keeping your streak alive. It does not raise the streak count."
+buy_streak_freeze_button:
+  other: "Buy a streak freeze"
+streak_goal_sessions:
+  other: "{goal} rounds a day"
+streak_goal_sessions_one:
+  other: "{goal} round a day"
+streak_goal_modal_title:
+  other: "Set your daily goal"
+streak_goal_modal_body:
+  other: "How many revision rounds a day are you aiming for? {brand} uses this to price streak freezes, and you can change it any time from your account page."
+streak_goal_modal_confirm:
+  other: "Set goal"
+streak_freeze_needs_goal:
+  other: "Set your daily goal first"
+streak_freeze_full:
+  other: "You are already holding the maximum number of streak freezes"
+streak_freeze_too_expensive:
+  other: "You need {gems} more 💎"
+gems_amount:
+  other: "{gems} 💎"
+gems_gain:
+  other: "+ {gems} 💎"
+finish_page_header:
+  other: "Round complete"
+finish_page_characters_reviewed:
+  other: "Total characters reviewed"
+finish_page_phrases_reviewed:
+  other: "Total phrases reviewed"
+finish_page_accuracy:
+  other: "Accuracy"
+finish_page_session_len:
+  other: "Round length"
+finish_page_streak_increased:
+  other: "You increased your streak today - {streak} days"
+finish_page_streak_increased_one:
+  other: "You increased your streak today - {streak} day"
+finish_page_continue:
+  other: "Continue"
+
+# Coming soon
+coming-soon-header:
+  other: "This page is coming soon!"
+# Add coming soon text 1
+coming-soon-text-1:
+  other: "Maybe check out the main {} or {}!"
+coming-soon-text-2:
+  other: "Thank you for your patience!"
+
+# deck-edit-card.html
+edit-card-site-title:
+  other: Edit Card
+new-card-h1:
+  other: "New Card"
+input-mode-p:
+  other: "Input: "
+input-mode-none:
+  other: "None"
+pinyin-input-description:
+  other: "Enables you to use Pinyin number notation in text boxes. It will then convert the text to actual pinyin. Example: 'pin1 yin1' will become 'pīn yīn'."
+romaji-hiragana-input-description:
+  other: "Enables you to use Romaji to input Hiragana. Note 1: Small Hiragana can be inputted by prepending 'x' to it. Note 2: Inputting 'っ' can only be done using 'xtsu'. Note 3: Use '-' to input 'ー'"
+romaji-katakana-input-description:
+  other: "Enables you to use Romaji to input Katakana. Note 1: Small Katakana can be inputted by prepending 'x' to it. Note 2: Inputting 'ッ' can only be done using 'xtsu'. Note 3: Use '-' to input 'ー'"
+phrase-preview-section-header:
+  other: "Previews"
+finish-edit-button:
+  other: "Finish"
+cancel-edit-button:
+  other: "Cancel"
+unknown_character:
+  other: "Unknown character"
+unknown_phrase:
+  other: "Unknown phrase"
+character_variant_default:
+  other: "Default"
+character_variant_kanji:
+  other: "Kanji"
+character_variant_hanja:
+  other: "Hanja"
+name_text_field_aria:
+  other: "Name text field"
+character_text_field_aria:
+  other: "Character text field"
+meaning_text_field_aria:
+  other: "Meaning text field"
+character_variant_box_aria:
+  other: "Character variant box"
+card_name:
+  other: "Name"
+card_phrase:
+  other: "Phrase"
+card_character:
+  other: "Character"
+delete-edit-button:
+  other: "Delete"
+deck-new-delete-phrase:
+  other: "Are you sure you want to DELETE this phrase. THIS CANNOT BE UNDONE!"
+deck-new-delete-card:
+  other: "Are you sure you want to DELETE this character. THIS CANNOT BE UNDONE!"
+
+# deck.html
+profile-statistics-header:
+  other: "Profile Statistics"
+total-sessions-field:
+  other: "Total revision rounds"
+streak-field:
+  other: "Streak"
+deck-card-num-field:
+  other: "Cards in deck"
+deck-phrase-num-field:
+  other: "Phrases in deck"
+last-session-date-field:
+  other: "Last round"
+average-knowledge-level-field:
+  other: "Average knowledge level"
+average-session-length-field:
+  other: "Average revision round length"
+time-spent-in-sessions-field:
+  other: "Time spent revising"
+new-card-header:
+  other: "Add a new card or phrase to the deck"
+new-card-button:
+  other: "New card"
+new-phrase-button:
+  other: "New phrase"
+import-deck-button:
+  other: "Import"
+export-deck-button:
+  other: "Export"
+clear-deck-button:
+  other: "Clear"
+marketplace-deck-button:
+  other: "Marketplace"
+deck-phrases-header:
+  other: "Phrases"
+deck-characters-header:
+  other: "Character cards"
+clear_deck_confirm_text:
+  other: "Are you sure you want to DELETE the current deck, THIS CANNOT BE UNDONE! Export your data to save it just in case!"
+clear_account_confirm_text:
+  other: "Are you sure you want to DELETE ALL of your account data - your decks, sessions, streak and game modifiers? THIS CANNOT BE UNDONE! Export your data first if you want to keep it!"
+streak_days_count:
+  other: "{streak} days"
+streak_days_count_one:
+  other: "{streak} day"
+hours:
+  other: "h."
+milliseconds:
+  other: "ms."
+minutes:
+  other: "min."
+seconds:
+  other: "sec."
+js_locale:
+  other: "en-US"
+no_sessions_recorded:
+  other: "No revision rounds yet recorded"
+average_knowledge_level:
+  other: "Average knowledge level"
+part_of:
+  other: "Part of"
+deck_card_edit:
+  other: "Edit"
+deck_search_placeholder:
+  other: "Search your deck…"
+
+# marketplace.html
+official_decks_header:
+  other: "Official decks"
+new_deck_upload_info:
+  other: "Want to add your deck to the marketplace? Click below to learn more!"
+upload-deck-public:
+  other: "Upload"
+community_decks_header:
+  other: "Community decks"
+marketplace_search_placeholder:
+  other: "Search decks…"
+
+import_deck_confirm_text:
+  other: "Importing a deck WILL merge your current deck with the new one, to replace it first clear your current deck!"
+leveled_up_no:
+  other: "No"
+leveled_up_yes:
+  other: "Yes"
+pre_leveled_up:
+  other: "Pre-leveled up"
+deck_source:
+  other: "Source"
+deck_download:
+  other: "Download"
+marketplace_load_error:
+  other: "Error {}: Couldn't load the marketplace, retry later!"
+
+skip-to-content:
+  other: "Skip to content"
+
+# browser-support gate (noscript in header.tmpl.html + scripts/data/browser-support.js)
+nojs_title:
+  other: "JavaScript is required"
+nojs_body:
+  other: "{brand} needs JavaScript to run. Please enable JavaScript for this site (or disable the script blocker / lockdown profile that is blocking it), then reload the page."
+unsupported_title:
+  other: "{brand} can't run in this browser"
+unsupported_privacy_body:
+  other: "Your browser is blocking the storage {brand} needs to save your decks and settings. This usually means a privacy or lockdown profile is active. Disable Lockdown Mode, turn off strict privacy protections, or allow site data for this site, then reload."
+unsupported_outdated_body:
+  other: "Your browser is missing features {brand} needs to run. Please update to a current version of a modern browser, then reload."
+unsupported_reload:
+  other: "Reload page"
+
+# character database loading UI (index.js)
+char_loading_title:
+  other: "Downloading characters"
+char_loading_subtitle:
+  other: "Setting up the character database for offline use. This only happens once."
+char_updating_label:
+  other: "Updating characters…"
+
+# deck import loading UI (marketplace.js)
+deck_import_title:
+  other: "Importing deck"
+deck_import_subtitle:
+  other: "Downloading the deck and merging it into your collection."
+
+# onboarding tutorial (tutorial.js / account.html). Avoid double quotes in any string surfaced
+# through i18n.js — they are injected into a double-quoted JS string literal; use single quotes.
+tutorial_next:
+  other: "Next"
+tutorial_done:
+  other: "Done"
+tutorial_skip:
+  other: "Skip tutorial"
+tutorial_continue:
+  other: "Start tour"
+tutorial_preparing:
+  other: "Preparing…"
+tutorial_finish:
+  other: "Finish"
+tutorial_replay_button:
+  other: "Replay tutorial"
+clear_account_button:
+  other: "Clear account data"
+tutorial_intro_title:
+  other: "Welcome to {brand}"
+tutorial_intro_body:
+  other: "{brand} teaches you to write characters from Chinese, Japanese and more - one stroke at a time. Take a quick tour to see how it works."
+tutorial_outro_title:
+  other: "You are all set!"
+tutorial_outro_body:
+  other: "That is the whole app. Your starter deck and first cards are ready - good luck, and have fun writing!"
+tutorial_marketplace_title:
+  other: "The marketplace"
+tutorial_marketplace_intro:
+  other: "The marketplace has ready-made decks you can import in one click. Let us grab a starter deck."
+tutorial_marketplace_search_title:
+  other: "Find a deck"
+tutorial_marketplace_search:
+  other: "Search here to filter decks by name."
+tutorial_marketplace_import_title:
+  other: "Import a deck"
+tutorial_marketplace_import:
+  other: "We will import the Chinese Numbers deck for you. Click Next to add it to your collection."
+tutorial_marketplace_import_replay:
+  other: "Press the Import button to add it to your collection. Click Next to continue."
+tutorial_marketplace_unavailable:
+  other: "The deck list could not load right now. Click Next to continue to your deck."
+tutorial_deck_title:
+  other: "Your deck"
+tutorial_deck_intro:
+  other: "This is your deck - every character and phrase you are learning lives here."
+tutorial_deck_newcard_title:
+  other: "Add cards"
+tutorial_deck_newcard:
+  other: "Let's create your first character. Click New Card to begin."
+tutorial_deck_phrases_title:
+  other: "Phrases"
+tutorial_deck_phrases:
+  other: "Multi-character phrases appear in this section."
+tutorial_deck_characters_title:
+  other: "Characters"
+tutorial_deck_characters:
+  other: "Individual characters appear here - including the ones you just imported."
+tutorial_deck_search_title:
+  other: "Search your deck"
+tutorial_deck_search:
+  other: "Filter your cards and phrases as your deck grows."
+tutorial_review_edit_title:
+  other: "Edit any card"
+tutorial_review_edit:
+  other: "Use a card's Edit button to change it later."
+tutorial_review_partof_title:
+  other: "Used in phrases"
+tutorial_review_partof:
+  other: "When a character appears in a phrase, its card lists which phrases use it."
+tutorial_card_ime_title:
+  other: "Input methods"
+tutorial_card_ime:
+  other: "You can select an input method to type characters or special pronunciation symbols phonetically. We will leave it off for now."
+tutorial_card_input_title:
+  other: "Enter the character"
+tutorial_card_input:
+  other: "Now the character itself — we will write 好 (hǎo, meaning good)."
+tutorial_card_preview_title:
+  other: "Live preview"
+tutorial_card_preview:
+  other: "The preview shows how the card will look, with its animated strokes."
+tutorial_card_save_title:
+  other: "Save the card"
+tutorial_card_save:
+  other: "Click Done to add the card to your deck."
+tutorial_phrase_input_title:
+  other: "Enter a phrase"
+tutorial_phrase_input:
+  other: "Now the phrase itself - we'll write 你好. A card is created for each unknown character it contains."
+tutorial_phrase_autocards_title:
+  other: "Automatic card creation"
+tutorial_phrase_autocards:
+  other: "A card is created automatically for each character in the phrase - a card for 好 is added automatically, and the card for 你 is reused since it's already part of your deck."
+tutorial_phrase_save_title:
+  other: "Save the phrase"
+tutorial_phrase_save:
+  other: "Click Done to add the phrase and its characters."
+tutorial_session_title:
+  other: "Practice time"
+tutorial_session_start:
+  other: "Click Start to begin your first writing session. Trace each character stroke by stroke!"
+tutorial_session_replay:
+  other: "Click Start whenever you want to practise writing the characters in your deck."
+tutorial_session_done_title:
+  other: "Nicely done!"
+tutorial_session_done:
+  other: "You just revised your deck's cards and phrases for the first time!"
+tutorial_account_stats_title:
+  other: "Your profile"
+tutorial_account_stats:
+  other: "Your profile stats live here - sessions count, streak, deck size and average knowledge level."
+tutorial_account_settings_title:
+  other: "Settings"
+tutorial_account_settings:
+  other: "Tune your practice, switch language or theme."
+tutorial_card_pron_title:
+  other: "Add the pronunciation"
+tutorial_card_pron:
+  other: "Start with the character's pronunciation - we'll type hǎo."
+tutorial_card_defs_title:
+  other: "Add meanings"
+tutorial_card_defs:
+  other: "List what the card means, one entry at a time - we will add 'good', 'fine' and 'ok'."
+tutorial_cardreview_title:
+  other: "Your new card"
+tutorial_cardreview:
+  other: "Here is the card for the character 好 you just made."
+tutorial_cardreview_phrase_title:
+  other: "Now let's make a phrase"
+tutorial_cardreview_phrase:
+  other: "Phrases join characters together. Click New Phrase to build one."
+tutorial_phrase_pron_title:
+  other: "Phrase pronunciation"
+tutorial_phrase_pron:
+  other: "Enter the phrase's pronunciation — we will type nǐ hǎo."
+tutorial_phrase_defs_title:
+  other: "Phrase meaning"
+tutorial_phrase_defs:
+  other: "Add what the phrase means - we will add 'hello'."
+tutorial_phrase_subcard_title:
+  other: "A brand-new character"
+tutorial_phrase_subcard:
+  other: "The character 你 was not part of the deck previosly, so we create a card for it. The card for the character 好 was reused from before."
+tutorial_review_phrase_title:
+  other: "Your phrase"
+tutorial_review_phrase:
+  other: "Here is the phrase we created."
+tutorial_review_navigate_title:
+  other: "Time to practise"
+tutorial_review_navigate:
+  other: "That is how decks are built. Let's start revising the characters in our deck."
+tutorial_card_variant_title:
+  other: "Regional variants"
+tutorial_card_variant:
+  other: "Some characters are written differently across regions. Use this box to select a regional form of your character."
+tutorial_account_extensive_title:
+  other: "Extensive mode"
+tutorial_account_extensive:
+  other: "Turn this on to review every card each session, rather than reviewing only a focused subset."
+tutorial_account_levelreduce_title:
+  other: "Daily level reduction"
+tutorial_account_levelreduce:
+  other: "Each day your characters lose a little bit of their knowledge score so frequent revision keeps them fresh. This slider sets how much of their knowledge score they lose."
+tutorial_account_goal_title:
+  other: "Your daily goal"
+tutorial_account_goal:
+  other: "This is how many rounds a day count as practice. Meeting it keeps your streak alive, and it also sets the price of a streak freeze."
+tutorial_account_language_title:
+  other: "Language"
+tutorial_account_language:
+  other: "These are the languages {brand} is available in - switch whenever you like."
+tutorial_account_theme_title:
+  other: "Themes"
+tutorial_account_theme:
+  other: "These are the colour themes you can choose from."
+tutorial_account_replay_title:
+  other: "Replay this tutorial"
+tutorial_account_replay:
+  other: "Ever need a refresher? This button restarts the whole tutorial whenever you like."
+tutorial_account_clear_title:
+  other: "Clear account data"
+tutorial_account_clear:
+  other: "Need to start from a clean slate? This wipes everything - your decks, sessions, streak and game modifiers - and cannot be undone, so export anything you want to keep first."
+tutorial_account_activity_title:
+  other: "Your activity"
+tutorial_account_activity:
+  other: "Every revision session you finish fills in a day on this calendar - the more you practise, the brighter it gets. Pick a year on the side to look back."
+activity_calendar_header:
+  other: "Activity"
+activity_legend_less:
+  other: "Less"
+activity_legend_more:
+  other: "More"
+activity_tooltip:
+  other: "{count} revision rounds on {date}"
+activity_tooltip_one:
+  other: "1 revision round on {date}"
+activity_tooltip_none:
+  other: "No revision round on {date}"
+
+# SEO / social metadata
+site-description:
+  other: "{brand} is a free web app that teaches you to handwrite characters from Chinese (Hanzi), Japanese (Kana & Kanji), Korean (Hangul), Greek, Cyrillic and more. Practice real stroke order, build decks, and learn through spaced revision."
+og_locale:
+  other: "en_US"
+
+# Privacy-policy consent gate (privacy-consent.js). Shown once, before anything else, on the
+# first visit and again whenever the policy version is bumped
+privacy_consent_title:
+  other: "Before you start"
+privacy_consent_body:
+  other: "{brand} keeps your decks, progress and settings on this device, and downloads its character data and decks from public CDNs. Read the Privacy Policy to see exactly what that means — you can only continue once you accept it."
+privacy_consent_link:
+  other: "Read the Privacy Policy"
+privacy_consent_accept:
+  other: "I accept the Privacy Policy"
+
+# privacy.html
+privacy_policy_title:
+  other: "Privacy Policy"
+privacy_hero_eyebrow:
+  other: "Privacy & Data Protection"
+privacy_hero_title:
+  other: "Privacy Policy"
+privacy_last_updated:
+  other: "Last updated: September 2026"
+privacy_hero_lead:
+  other: "{brand} is built with a local-first, privacy-by-design architecture. Your learning progress, custom flashcards, and preferences are stored exclusively on your own device and are never transmitted to a remote server."
+privacy_hl_local_title:
+  other: "100% Local Storage"
+privacy_hl_local_desc:
+  other: "All cards, phrases, stats, and streak history live in your browser's IndexedDB."
+privacy_hl_noacct_title:
+  other: "No Accounts or Sign-up"
+privacy_hl_noacct_desc:
+  other: "Use {brand} freely without creating an account, providing an email, or setting a password."
+privacy_hl_notrack_title:
+  other: "No Tracking or Ads"
+privacy_hl_notrack_desc:
+  other: "Zero analytics trackers, zero profiling scripts, and zero advertising cookies."
+privacy_hl_control_title:
+  other: "Full Data Control"
+privacy_hl_control_desc:
+  other: "Export your decks to JSON or erase all local data in one click at any time."
+privacy_sec_controller_title:
+  other: "1. Overview & Data Controller"
+privacy_sec_controller_p1:
+  other: "{brand} is an open-source educational web application dedicated to helping people learn and practise handwriting characters from various writing systems. The website is operated by Heapforge Ltd, a company registered in England and Wales. Heapforge Ltd is the data controller for this website under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018, and - for visitors in the European Economic Area - under the EU General Data Protection Regulation (Regulation (EU) 2016/679)."
+privacy_sec_controller_p2:
+  other: "Because {brand} operates as a static, client-side application without user accounts or server-side databases, we do not collect, store, sell, or process personal data on any remote server."
+privacy_controller_company_label:
+  other: "Company"
+privacy_controller_number_label:
+  other: "Companies House number"
+privacy_controller_address_label:
+  other: "Registered address"
+privacy_sec_controller_p3:
+  other: "Because no personal data ever reaches us, Heapforge Ltd has not appointed a data protection officer and has not designated a representative in the European Economic Area under Article 27 of the EU GDPR. Written enquiries can be sent to the registered address above; questions about this policy are answered fastest through the GitHub repository linked at the end of it."
+privacy_sec_localdata_title:
+  other: "2. Data Stored on Your Device"
+privacy_sec_localdata_p1:
+  other: "All application data generated during your learning journey is saved locally in your browser's persistent storage (IndexedDB and localStorage). This data includes:"
+privacy_sec_localdata_li1:
+  other: "Cards and Phrases: Character definitions, pronunciations, regional variant selections, and custom phrases you create or import."
+privacy_sec_localdata_li2:
+  other: "Study Statistics: Revision history, error counts, knowledge levels, daily streaks, streak freeze balances, and gem rewards."
+privacy_sec_localdata_li3:
+  other: "Activity Calendar: Daily session counts used to draw your practice heatmap on the Account page."
+privacy_sec_localdata_li4:
+  other: "Preferences: Selected color theme, interface language, game modifiers (such as extensive mode and daily level reduction), and onboarding tutorial progress."
+privacy_sec_localdata_p2:
+  other: "This information remains entirely on your device. It is never transmitted to us or any third party."
+privacy_sec_thirdparty_title:
+  other: "3. Technical Data & Third-Party Providers"
+privacy_sec_thirdparty_p1:
+  other: "When you visit {brand}, your web browser connects to third-party infrastructure providers to download the website files, fonts, character stroke data, and public decks. These providers may process technical connection data (such as your IP address, browser User-Agent, and request timestamps) strictly for the purpose of transmitting content and securing network operations:"
+privacy_sec_thirdparty_li1:
+  other: "GitHub Pages (GitHub, Inc. / Microsoft): Static web hosting for the site application files."
+privacy_sec_thirdparty_li2:
+  other: "jsDelivr CDN (ProspectOne / Cloudflare): Content Delivery Network used to distribute stroke animations, stroke databases, and public deck repositories."
+privacy_sec_thirdparty_li3:
+  other: "Google Fonts (Google LLC): Distribution of the open-source Ubuntu typeface."
+privacy_sec_thirdparty_p2:
+  other: "These providers process technical metadata in accordance with their respective privacy policies and under the international data transfer mechanisms that apply to them (such as the EU-U.S. Data Privacy Framework and its UK Extension, and standard contractual clauses)."
+privacy_sec_legal_title:
+  other: "4. Legal Bases for Processing (Art. 6 UK GDPR / EU GDPR)"
+privacy_sec_legal_p1:
+  other: "Under Article 6(1) of the UK GDPR and of the EU GDPR, the limited technical processing required to deliver the website relies on:"
+privacy_sec_legal_li1:
+  other: "Article 6(1)(b) (Performance of a Contract / Service Delivery): Processing technical requests necessary to provide the web app and its interactive character practice tools upon your visit."
+privacy_sec_legal_li2:
+  other: "Article 6(1)(f) (Legitimate Interests): The legitimate interest of maintaining website availability, fast CDN delivery, system integrity, and protection against network attacks or abuse."
+privacy_sec_cookies_title:
+  other: "5. Cookies & Tracking Technologies"
+privacy_sec_cookies_p1:
+  other: "{brand} does not use any tracking cookies, analytics cookies, targeting cookies, or third-party advertising scripts. We do not track your behavior across websites, nor do we build personal user profiles."
+privacy_sec_cookies_p2:
+  other: "We utilize standard client-side storage technologies (IndexedDB, localStorage, and Service Worker Cache API) solely for strictly necessary technical functionality — storing your decks, keeping track of your revision levels, enabling offline practice as a Progressive Web App (PWA), and remembering your UI preferences. In accordance with the UK Privacy and Electronic Communications Regulations 2003 (PECR), the EU ePrivacy Directive (Directive 2002/58/EC) and the UK and EU GDPR, strictly necessary functional storage does not require a consent banner."
+privacy_sec_rights_title:
+  other: "6. Your Rights Under the UK and EU GDPR"
+privacy_sec_rights_p1:
+  other: "The UK GDPR - and, if you are in the European Economic Area, the EU GDPR - grants you specific rights concerning your data:"
+privacy_sec_rights_li1:
+  other: "Right of Access (Art. 15): You can view all data stored about your learning progress directly on the Deck and Account pages."
+privacy_sec_rights_li2:
+  other: "Right to Rectification (Art. 16): You have complete control to edit, correct, or rename any card, phrase, definition, or preference at any time directly in the application."
+privacy_sec_rights_li3:
+  other: "Right to Erasure (Art. 17 - 'Right to be Forgotten'): You can delete all your stored data immediately at any time by clicking the 'Clear account data' button on the Account page, or by clearing your browser's site data."
+privacy_sec_rights_li4:
+  other: "Right to Data Portability (Art. 20): You can export all your decks and phrases in machine-readable JSON format at any time using the Export Deck option on the Deck page."
+privacy_sec_rights_li5:
+  other: "Right to Restriction and Objection (Art. 18 & 21): Since no personal data is stored on remote servers, you can stop all local processing at any moment by closing the application or clearing local storage."
+privacy_sec_rights_li6:
+  other: "Right to Lodge a Complaint (Art. 77): Our lead supervisory authority is the UK Information Commissioner's Office (ICO), which you can contact at ico.org.uk. If you are in the European Economic Area you may instead complain to the supervisory authority of your own country (for example, the Commission for Personal Data Protection in Bulgaria - CPDP / КЗЛД)."
+privacy_sec_security_title:
+  other: "7. Data Retention & Security"
+privacy_sec_security_p1:
+  other: "Your learning data remains saved in your browser until you choose to erase it, reset your account, or clear your browser's site data. Because your data is stored locally within the browser origin sandbox and never sent to a central server database, it is protected against central database breaches, and Heapforge Ltd never holds a copy of it."
+privacy_sec_children_title:
+  other: "8. Children's Privacy"
+privacy_sec_children_p1:
+  other: "{brand} is a safe, educational learning environment suitable for learners of all ages. We do not collect, request, or store personal information from children or any other users, and since nothing is profiled, advertised or nudged, the app is built in line with the ICO's Age Appropriate Design Code."
+privacy_sec_transfers_title:
+  other: "9. International Data Transfers"
+privacy_sec_transfers_p1:
+  other: "External infrastructure and CDN providers (GitHub, Google, Cloudflare) operate global networks and data centres. To the extent technical connection metadata is processed outside the United Kingdom or the European Economic Area (EEA), those transfers are covered by the UK's adequacy regulations and by the International Data Transfer Agreement (IDTA) or the UK Addendum to the European Commission's standard contractual clauses (SCCs); for visitors in the EEA they are covered by the SCCs and adequacy decisions adopted by the European Commission."
+privacy_sec_contact_title:
+  other: "10. Changes to This Policy & Contact"
+privacy_sec_contact_p1:
+  other: "We may update this Privacy Policy periodically to reflect improvements to the application or legal developments. Any changes will be posted on this page with a revised 'Last updated' date."
+privacy_sec_contact_p2:
+  other: "If you have questions, feedback, or inquiries regarding this Privacy Policy or the security of {brand}, you can write to Heapforge Ltd at the registered address in section 1, or open an issue on our official GitHub repository:"
+privacy_contact_github:
+  other: "Visit {brand} on GitHub"

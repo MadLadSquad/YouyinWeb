@@ -1,0 +1,10 @@
+{{ define "title" }}404 | {{ site.Params.trademark }}{{ end }}
+
+{{ define "main" }}
+        <main id="main-content" class="wrap centered error-page">
+            <h1 id="err-404-emoji">\(o_o)/</h1>
+            <h2 class="t-display">{{ partial "t.html" (dict "k" "404-text") }} 😔</h2>
+            <a href="{{ partial "url.html" (dict "slug" "") }}" class="card-button-edit error-page-home">{{ partial "t.html" (dict "k" "nav_practise") }}</a>
+        </main>
+    
+{{ end }}

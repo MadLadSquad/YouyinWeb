@@ -1,0 +1,50 @@
+{{ define "title" }}{{ partial "t.html" (dict "k" "marketplace-deck-button") }} | {{ site.Params.trademark }}{{ end }}
+
+{{ define "main" }}
+        <main id="main-content" class="wrap marketplace-page">
+            <div class="page-head">
+                <div>
+                    <h1 class="t-display">{{ partial "t.html" (dict "k" "marketplace-deck-button") }}</h1>
+                    <p class="t-meta">{{ partial "t.html" (dict "k" "marketplace_subtitle") }}</p>
+                </div>
+            </div>
+
+            <div class="page-toolbar">
+                <div class="page-search-wrapper">
+                    <svg class="icon icon-sm page-search-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                        <circle cx="9" cy="9" r="5.2"></circle>
+                        <path d="m12.8 12.8 3.4 3.4"></path>
+                    </svg>
+                    <input type="search" id="marketplace-search" class="page-search" placeholder="{{ partial "t.html" (dict "k" "marketplace_search_placeholder") }}" aria-label="{{ partial "t.html" (dict "k" "marketplace_search_placeholder") }}" autocomplete="off">
+                </div>
+            </div>
+
+            <!-- A full section title, not the quiet eyebrow the per-language heads use: with both at
+                 the same weight "Official decks" and "Chinese" read as two peers in a row rather
+                 than a heading and the first group inside it -->
+            <div class="section-head marketplace-section-head">
+                <h2 class="marketplace-section-title">{{ partial "t.html" (dict "k" "official_decks_header") }}</h2>
+                <hr class="hairline section-head-rule">
+            </div>
+            <section id="marketplace-deck-container">
+            </section>
+            <section id="deck-community-master">
+            </section>
+
+            <!-- Was a full "+" card at the top of the grid pretending to be a deck. It is an
+                 invitation, not an item, so it moves to the end as a slim banner -->
+            <aside id="new-deck-upload-card" class="upload-banner">
+                <div>
+                    <p class="t-h2">{{ partial "t.html" (dict "k" "new_deck_upload_title") }}</p>
+                    <p class="t-meta">{{ partial "t.html" (dict "k" "new_deck_upload_info") }}</p>
+                </div>
+                <button id="upload-deck-public" class="card-button-edit card-button-secondary">{{ partial "t.html" (dict "k" "upload-deck-public") }}</button>
+            </aside>
+        </main>
+        <!-- Loaded BEFORE the footer (which runs index.js then tutorial.js): tutorial.js's dispatch calls
+             this file's stage functions from a profileReady microtask that drains before any script
+             placed after the footer would run, so the definitions must exist beforehand -->
+        <!-- Loaded AFTER the footer: marketplace.js consumes the readiness promises (storageReady, …)
+             that index.js creates, so index.js must run first -->
+    
+{{ end }}

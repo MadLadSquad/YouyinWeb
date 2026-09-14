@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-cd UVKBuildTool/build || exit
-./UVKBuildTool --build ../../build ../../
+# Builds the site and serves it on http://localhost:8080
+exec "$(dirname "$0")/build.sh" --serve "$@"

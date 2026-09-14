@@ -1,0 +1,28 @@
+{{- /* Replaces the hand-written sitemap.xml and .github/update-sitemap-lastmod.py.
+
+  Hugo's built-in sitemap is disabled (see disableKinds in hugo.yaml) because it emits
+  .RelPermalink, which carries Hugo's lowercased locale directories — and because the hreflang
+  alternates and the x-default entry pointing at the root mirror have to be written by hand anyway.
+
+  <lastmod> comes from data/lastmod.yaml, which build.sh regenerates from git: a page's date only
+  moves when its own layout, the shared chrome, or the translations changed. */ -}}
+{{- $slugs := slice "index" "deck" "account" "marketplace" "privacy" -}}
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+{{- $base := site.Params.cannonical_url -}}
+{{- range $slug := $slugs -}}
+  {{- $s := cond (eq $slug "index") "" $slug -}}
+  {{- $lastmod := index hugo.Data.lastmod $slug | default (index hugo.Data.lastmod "index") -}}
+  {{- range $lang := hugo.Sites }}
+    <url>
+        <loc>{{ $base }}{{ partial "url.html" (dict "slug" $s "loc" $lang.Params.dir) }}</loc>
+        <lastmod>{{ $lastmod }}</lastmod>
+    {{- range $alt := hugo.Sites }}
+        <xhtml:link rel="alternate" hreflang="{{ substr $alt.Params.dir 0 2 }}" href="{{ $base }}{{ partial "url.html" (dict "slug" $s "loc" $alt.Params.dir) }}"/>
+    {{- end }}
+        <xhtml:link rel="alternate" hreflang="x-default" href="{{ $base }}/{{ with $s }}{{ . }}/{{ end }}"/>
+    </url>
+  {{- end }}
+{{- end }}
+</urlset>

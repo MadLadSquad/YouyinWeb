@@ -1,0 +1,82 @@
+{{- $a := .assets -}}
+{{- $dir := site.Params.dir -}}
+{{- $langs := slice -}}
+{{- range hugo.Sites -}}{{- $langs = $langs | append (substr .Params.dir 0 2) -}}{{- end -}}
+{{- $canonical := printf "%s%s" site.Params.cannonical_url (partial "url.html" (dict "slug" .slug)) -}}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="{{ partial "t.html" (dict "k" "site-description") }}">
+<meta name="keywords" content="{{ site.Params.trademark }}, learn to write Chinese characters, Hanzi stroke order, Japanese Kana, Hiragana, Katakana, Kanji, Korean Hangul, Hanja, Greek alphabet, Cyrillic, handwriting practice, stroke order practice, language learning app, writing systems, flashcards, spaced repetition, 卣囙, Yǒuyīn">
+<meta name="author" content="MadLadSquad">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<link rel="canonical" href="{{ $canonical }}">
+
+<!-- Open Graph / social + LLM rich-link metadata -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site.Params.trademark }}">
+<meta property="og:title" content="{{ site.Params.trademark }} — learn to handwrite Chinese, Japanese, Korean, Greek & more">
+<meta property="og:description" content="{{ partial "t.html" (dict "k" "site-description") }}">
+<meta property="og:image" content="{{ site.Params.cannonical_url }}/icon-512.png">
+<meta property="og:url" content="{{ $canonical }}">
+<meta property="og:locale" content="{{ partial "t.html" (dict "k" "og_locale") }}">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ site.Params.trademark }} — learn to handwrite Chinese, Japanese, Korean, Greek & more">
+<meta name="twitter:description" content="{{ partial "t.html" (dict "k" "site-description") }}">
+<meta name="twitter:image" content="{{ site.Params.cannonical_url }}/icon-512.png">
+{{- range hugo.Sites }}
+<link rel="alternate" hreflang="{{ substr .Params.dir 0 2 }}" href="{{ site.Params.cannonical_url }}{{ partial "url.html" (dict "slug" $.slug "loc" .Params.dir) }}">
+{{- end }}
+<link rel="alternate" hreflang="x-default" href="{{ site.Params.cannonical_url }}/{{ with .slug }}{{ . }}/{{ end }}">
+
+<!-- Structured data: helps search engines and LLMs understand the site -->
+<script type="application/ld+json">
+{{ dict
+  "@context" "https://schema.org"
+  "@graph" (slice
+    (dict
+      "@type" "WebApplication"
+      "name" site.Params.trademark
+      "url" site.Params.cannonical_url
+      "applicationCategory" "EducationalApplication"
+      "operatingSystem" "Any (web browser)"
+      "browserRequirements" "Requires JavaScript and a modern browser."
+      "description" (partial "t.html" (dict "k" "site-description"))
+      "inLanguage" $langs
+      "isAccessibleForFree" true
+      "offers" (dict "@type" "Offer" "price" "0" "priceCurrency" "USD")
+      "featureList" (slice
+        "Stroke-order handwriting practice graded in real time"
+        "Chinese Hanzi, Japanese Kana and Kanji, Korean Hangul and Hanja, Greek and Cyrillic"
+        "Spaced revision of cards and phrases"
+        "Importable public deck marketplace"
+        "Offline-capable installable PWA, data stored locally")
+      "author" (dict "@type" "Organization" "name" "Heapforge" "url" "https://heapforge.com"))
+    (dict
+      "@type" "WebSite"
+      "name" site.Params.trademark
+      "url" site.Params.cannonical_url
+      "inLanguage" $langs
+      "publisher" (dict "@type" "Organization" "name" "MadLadSquad" "url" "https://heapforge.com")))
+  | jsonify (dict "indent" "    ") | safeJS }}
+</script>
+
+<link rel="icon" type="image/png" href="/favicon-new.png">
+
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c87e74">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="{{ site.Params.trademark }}">
+<link rel="apple-touch-icon" href="/icon-192.png">
+
+<!-- Browser-support gate + theme injection. Blocking on purpose and first in the document: the gate
+     has to run before any storage access, request or app code so it can freeze the app when a
+     privacy/lockdown profile blocks IndexedDB, and the theme has to be applied before the stylesheet
+     below paints so there is no flash of unthemed colours. (The JS-disabled case is handled by the
+     <noscript> block in the header.) -->
+<script src="{{ $a.boot }}"></script>
+<!-- One stylesheet for the whole site: components, the vendored driver.css, and every page's rules,
+     concatenated and fingerprinted by layouts/_partials/assets.html. The self-hosted @font-face
+     rules are prepended to it, so no font request leaves the origin either. -->
+<link rel="stylesheet" href="{{ $a.css }}" type="text/css">

@@ -1,0 +1,58 @@
+# Replaces uvproj.yaml. The `variables:` block there is now `params:` below; the per-locale
+# output directories that UVKBuildTool produced are now Hugo's multilingual mode.
+baseURL: https://youyin.madladsquad.com/
+title: Youyin
+enableGitInfo: true          # feeds <lastmod> in the sitemap (replaces .github/update-sitemap-lastmod.py)
+disableKinds: [taxonomy, term, rss, section, sitemap]
+defaultContentLanguage: en_US
+defaultContentLanguageInSubdir: true
+disablePathToLower: true
+
+# Hugo lowercases the language *key* when it builds the output directory (public/en_us/), so every
+# internal link is built from params.dir instead of .RelPermalink, and build.sh renames the three
+# directories afterwards. Keep params.dir in sync with SUPPORTED_LOCALES in
+# assets/scripts/components/language-selector.js and with LOCALES in assets/sw.js.
+languages:
+  en_US:
+    locale: en-US
+    weight: 1
+    contentDir: content/en_US
+    params: { dir: en_US }
+  bg_BG:
+    locale: bg-BG
+    weight: 2
+    contentDir: content/bg_BG
+    params: { dir: bg_BG }
+  ro_RO:
+    locale: ro-RO
+    weight: 3
+    contentDir: content/ro_RO
+    params: { dir: ro_RO }
+
+params:
+  trademark: Youyin
+  cannonical_url: https://youyin.madladsquad.com
+  marketplace_url: https://github.com/MadLadSquad/YouyinPublicDeckRepository
+  marketplace_cdn_url: https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest
+  char_data_url: https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin@latest
+  additional_cdn_hosts: "none"
+
+  # Third-party code, fetched once at build time by resources.GetRemote and concatenated into our
+  # own bundles, so the running site talks to no CDN at all. Bump these to update a library.
+  # Keys must be lowercase: Hugo lowercases config map keys, so a camelCase lookup returns nil.
+  vendor:
+    hanzi_writer: https://cdn.jsdelivr.net/npm/hanzi-writer@3.7.3/dist/hanzi-writer.min.js
+    driver_js:    https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.js.iife.js
+    driver_css:   https://cdn.jsdelivr.net/npm/driver.js@1.3.1/dist/driver.css
+    twemoji:      https://cdn.jsdelivr.net/npm/@twemoji/api@15.1.0/dist/twemoji.min.js
+
+# The pages are pure app shell with no article content, so they are declared once in
+# layouts/_partials/pages.gotmpl and instantiated per language by content/<locale>/_content.gotmpl.
+outputs:
+  home: [html]
+  page: [html]
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true

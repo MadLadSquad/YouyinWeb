@@ -1,0 +1,18 @@
+{{- $a := .assets -}}
+<!-- The language and theme pickers used to live here; they moved into the app bar (see the header
+     partial) so persistent controls sit where people look for them, which leaves the footer as a
+     single quiet credit line. The account page keeps its own duplicate pair of pickers. -->
+<footer class="centered site-footer">
+    <p>
+    {{ partial "t.html" (dict "k" "footer" "ctx" (dict "credits" `<a href="https://heapforge.com">Heapforge</a> / <a href="https://madladsquad.com/">MadLadSquad</a>`)) | safeHTML }}
+    </p>
+</footer>
+<!-- Two bundles, both deferred so neither blocks parsing, and executed in order:
+       core — the translations, shared chrome, index.js and the vendored driver.js/twemoji, built
+              once per locale (it is the only locale-varying bundle).
+       page — this page's scripts, ending in the bootstrap() call that starts index.js#main().
+     The old templates split the page's scripts around the shared footer and leaned on microtasks
+     draining between <script> tags to order them; concatenation removes that gap, so main() is
+     started explicitly at the end instead. See layouts/_partials/assets.html. -->
+<script defer src="{{ $a.core }}"></script>
+<script defer src="{{ $a.page }}"></script>

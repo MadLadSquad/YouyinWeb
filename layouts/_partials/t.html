@@ -1,0 +1,27 @@
+{{- /*
+  Translation lookup — the replacement for UVKBuildTool's `{{ _ key }}`.
+
+  Args (dict):
+    k    translation key (required)
+    loc  locale directory to read, e.g. "bg_BG". Defaults to the language being rendered.
+    ctx  dict of {placeholder} substitutions, e.g. (dict "errors" 0)
+
+  Reads data/translations/<loc>.yaml rather than Hugo's language-bound `i18n` function, because the
+  service worker's precache list has to enumerate every locale's bundles from a single render pass —
+  see layouts/_partials/assets.html. Missing keys fall back to en_US and then hard-fail the build.
+
+  {brand} is substituted from params.trademark on every lookup so the product name lives only in
+  hugo.yaml; other {name} placeholders are filled by JS in the browser and must survive untouched.
+*/ -}}
+{{- $loc := (.loc | default site.Params.dir) -}}
+{{- $e := index hugo.Data.translations $loc .k -}}
+{{- if not $e -}}
+  {{- $e = index hugo.Data.translations "en_US" .k -}}
+  {{- if not $e -}}{{- errorf "translation key %q is missing from every locale" .k -}}{{- end -}}
+  {{- warnf "translation key %q missing for %s, falling back to en_US" .k $loc -}}
+{{- end -}}
+{{- $s := replace $e.other "{brand}" site.Params.trademark -}}
+{{- range $k, $v := .ctx -}}
+  {{- $s = replace $s (printf "{%s}" $k) (printf "%v" $v) -}}
+{{- end -}}
+{{- return $s -}}

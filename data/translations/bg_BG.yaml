@@ -1,0 +1,702 @@
+# Generated from Translations/bg_BG.yaml. Hugo/go-i18n format.
+
+# index.html
+phrase-info-widget-spelling:
+  other: "Моята фраза"
+phrase-info-widget-errors:
+  other: "Фрази: {progress}; Грешки: {errors}"
+character-info-widget-def-p:
+  other: "Значения:"
+character-info-widget-info-default:
+  other: "Ще бъде попълнено, когато започнете сесия"
+character-info-widget-errors:
+  other: "Карти: {progress}; Грешки: {errors}"
+character-info-widget-spelling:
+  other: "Произношение: Ще бъде попълнено, когато започнете серия"
+start-button:
+  other: "Започване на нова серия!"
+404-text:
+  other: "За съжаление, тази страница не съществува"
+phrases_count_errors:
+  other: "Грешки"
+phrases_count_cards:
+  other: "Карти"
+phrases_count_spelling:
+  other: "Произношение"
+to_be_loaded:
+  other: "Ще бъде заредено скоро"
+no_cards_link_deck:
+  other: "Тесте"
+no_cards_text:
+  other: "В момента нямате карти, влезте в "
+no_cards_text_postfix:
+  other: " страницата, за да добавите!"
+footer:
+  other: "Проект на {credits}!"
+nav_primary_label:
+  other: "Основна навигация"
+nav_practise:
+  other: "Преговор"
+session_exit:
+  other: "Изход"
+guest_initial:
+  other: "Г"
+today_header:
+  other: "Днес"
+today_of_goal:
+  other: "от {goal} серии"
+today_no_goal:
+  other: "серии днес"
+today_goal_met:
+  other: "Целта е изпълнена — сериите ви са в безопасност за днес."
+today_goal_left:
+  other: "Още {count} до днешната цел."
+today_goal_left_one:
+  other: "Още 1 до днешната цел."
+streak_freeze_held:
+  other: "{count} замразявания в наличност"
+streak_freeze_held_one:
+  other: "1 замразяване в наличност"
+gems_label:
+  other: "Диаманти"
+gems_panel_hint:
+  other: "Печелят се със завършване на карти и фрази. Харчат се за замразявания."
+streak_panel_none:
+  other: "Завършете една серия, за да започнете поредица."
+streak_panel_safe:
+  other: "Днешният ден е отчетен. До утре!"
+streak_panel_protected:
+  other: "Днес не сте преговаряли - едно замразяване ще покрие деня."
+streak_panel_at_risk:
+  other: "Преговорете днес, за да запазите поредицата си."
+language_label:
+  other: "Език"
+language_description:
+  other: "Език на интерфейса. Достъпен е и от лентата горе."
+theme_description:
+  other: "190 палитри. Всеки цвят на страницата се извлича от активната."
+data_card_header:
+  other: "Вашите данни"
+deck_more_actions:
+  other: "Още действия"
+deck_knowledge_label:
+  other: "Владеене"
+deck_summary:
+  other: "{cards} карти · {phrases} фрази · средно владеене {knowledge}"
+marketplace_subtitle:
+  other: "Готови тестета, поддържани в публичното хранилище."
+new_deck_upload_title:
+  other: "Имате тесте за споделяне?"
+session_ready_eyebrow:
+  other: "Готови ли сте?"
+session_next_round:
+  other: "Следваща серия"
+session_queue_note:
+  other: "{cards} карти и {phrases} фрази са подредени за тази серия."
+session_round_in_progress:
+  other: "Серия в ход"
+session_end_round:
+  other: "Край на серията"
+session_errors_count:
+  other: "{count} грешки"
+theme_button:
+  other: "Цветови теми"
+theme_search_placeholder:
+  other: "Търсене на цветови теми…"
+account:
+  other: "Профил"
+guest:
+  other: "Гост"
+locale:
+  other: "bg_BG/"
+extensive-mode-title:
+  other: "Включва т.н. подробен режим. Вместо преговаряне на картите само веднъж, картите се преглеждат няколко пъти, като постепенно се премахват картите с най-високо ниво на познание."
+extensive-mode-aria-label:
+  other: "Чекбокс за подробен режим"
+extensive-mode-label:
+  other: "Подробен режим"
+level-reduce-title:
+  other: "Понижава нивото на познанието Ви за всички символи и фрази със зададеното от вас количество точки всеки ден."
+level-reduce-aria-label:
+  other: "Слайдер за дневно понижаване на нивото"
+level-reduce-label:
+  other: "Дневно понижаване на нивовото:"
+game_modifiers_header:
+  other: "Настройки"
+
+# Gems, streak freezes and the daily streak goal (account.html shop + settings slider, and the
+# blocking goal prompt in scripts/components/streak-goal.js)
+streak-goal-title:
+  other: "Колко серии на ден си поставяте за цел. Това определя и цената на замразяването на серията, така че то винаги струва четири дни преговаряне със собственото Ви темпо."
+streak-goal-aria-label:
+  other: "Слайдер за дневна цел"
+streak-goal-label:
+  other: "Дневна цел:"
+gems-field:
+  other: "💎"
+shop_header:
+  other: "Магазин"
+streak-freeze-field:
+  other: "Замразявания на серията"
+streak-freeze-cost-field:
+  other: "Цена"
+streak-freeze-description:
+  other: "Замразяването се изразходва автоматично в ден, в който не преговаряте, и запазва серията Ви жива. То не увеличава броя на дните в серията."
+buy_streak_freeze_button:
+  other: "Купи замразяване"
+streak_goal_sessions:
+  other: "{goal} серии на ден"
+streak_goal_sessions_one:
+  other: "{goal} серия на ден"
+streak_goal_modal_title:
+  other: "Задайте дневната си цел"
+streak_goal_modal_body:
+  other: "Колко серии на ден си поставяте за цел? {brand} използва това, за да определи цената на замразяванията на серията, а можете да я промените по всяко време от страницата на акаунта си."
+streak_goal_modal_confirm:
+  other: "Задай цел"
+streak_freeze_needs_goal:
+  other: "Първо задайте дневната си цел"
+streak_freeze_full:
+  other: "Вече държите максималния брой замразявания"
+streak_freeze_too_expensive:
+  other: "Нужни са Ви още {gems} 💎"
+gems_amount:
+  other: "{gems} 💎"
+gems_gain:
+  other: "+ {gems} 💎"
+finish_page_header:
+  other: "Тестето е преговорено"
+finish_page_characters_reviewed:
+  other: "Преговорени символи"
+finish_page_phrases_reviewed:
+  other: "Преговорени фрази"
+finish_page_accuracy:
+  other: "Точност"
+finish_page_session_len:
+  other: "Времетраене на серията"
+finish_page_streak_increased:
+  other: "Увеличихте дневната си серия днес - {streak} дни"
+finish_page_streak_increased_one:
+  other: "Увеличихте дневната си серия днес - {streak} ден"
+finish_page_continue:
+  other: "Продължи"
+
+# Coming soon
+coming-soon-header:
+  other: "Очаквайте скоро!"
+# Add coming soon text 1
+coming-soon-text-1:
+  other: "Може да разгледате главният сайт на {}, или {}!"
+coming-soon-text-2:
+  other: "Благодарим за търпението Ви!"
+
+# deck-edit-card.html
+edit-card-site-title:
+  other: "Редактиране на карта"
+new-card-h1:
+  other: "Нова Карта"
+input-mode-p:
+  other: "Метод на въвеждане: "
+input-mode-none:
+  other: "Нормален"
+pinyin-input-description:
+  other: "Позволява Ви да използвате Pinyin с числа в полетата за въвеждане на текст. Ще превърне текста във валиден Pinyin. Пример: 'pin1 yin1' става 'pīn yīn'."
+romaji-hiragana-input-description:
+  other: "Позволява Ви да използвате Romaji за да пишете на Хирагана. Забележка 1: Слагайки 'x' преди звука Ви позволява пишете малка Хирагана. Забележка 2: Единственият начин да напишете 'っ', е като напишете 'xtsu'. Забележка 3: Използвайте '-' за 'ー'."
+romaji-katakana-input-description:
+  other: "Позволява Ви да използвате Romaji за да пишете на Катакана. Забележка 1: Слагайки 'x' преди звука Ви позволява пишете малка Катакана. Забележка 2: Единственият начин да напишете 'ッ', е като напишете 'xtsu'. Забележка 3: Използвайте '-' за 'ー'."
+phrase-preview-section-header:
+  other: "Визуализации"
+finish-edit-button:
+  other: "Запази"
+cancel-edit-button:
+  other: "Назад"
+unknown_character:
+  other: "Непознат символ"
+unknown_phrase:
+  other: "Непозната фраза"
+character_variant_default:
+  other: "Стандартен"
+character_variant_kanji:
+  other: "Канжи"
+character_variant_hanja:
+  other: "Ханжа"
+name_text_field_aria:
+  other: "Текстово поле за името"
+character_text_field_aria:
+  other: "Текстово поле за символа"
+meaning_text_field_aria:
+  other: "Текстово поле за добавяне на определение"
+character_variant_box_aria:
+  other: "Лист за избор на разновидност на символа"
+card_name:
+  other: "Име"
+card_phrase:
+  other: "Фраза"
+card_character:
+  other: "Символ"
+delete-edit-button:
+  other: "Изтрий"
+deck-new-delete-phrase:
+  other: "Сигурни ли сте, че искате да ИЗТРИЕТЕ тази фраза. ИЗТРИТАТА ИНФОРМАЦИЯ НЕ МОЖЕ ДА СЕ ВЪЗСТАНОВЕНА!"
+deck-new-delete-card:
+  other: "Сигурни ли сте, че искате да ИЗТРИЕТЕ този символ. ИЗТРИТАТА ИНФОРМАЦИЯ НЕ МОЖЕ ДА БЪДЕ ВЪЗСТАНОВЕНА!"
+
+# deck.html
+profile-statistics-header:
+  other: "Статистика за потребителя"
+total-sessions-field:
+  other: "Общ брой серии"
+streak-field:
+  other: "Дневна серия"
+deck-card-num-field:
+  other: "Карти в тестето"
+deck-phrase-num-field:
+  other: "Фрази в тестето"
+last-session-date-field:
+  other: "Дата на последната серия"
+average-knowledge-level-field:
+  other: "Средно ниво на познанието"
+average-session-length-field:
+  other: "Средна дължина на серия"
+time-spent-in-sessions-field:
+  other: "Време прекарано в преговаряне"
+new-card-header:
+  other: "Добавете нова карта или фраза в тестето си"
+new-card-button:
+  other: "Нова карта"
+new-phrase-button:
+  other: "Нова фраза"
+import-deck-button:
+  other: "Внеси тесте"
+export-deck-button:
+  other: "Запази тесте"
+clear-deck-button:
+  other: "Занули тестето"
+marketplace-deck-button:
+  other: "Пазар"
+deck-phrases-header:
+  other: "Фрази"
+deck-characters-header:
+  other: "Карти за символи"
+clear_deck_confirm_text:
+  other: "Сигурни ли сте, че искате да ИЗТРИЕТЕ сегашното си тесте? ТОВА НЕ МОЖЕ ДА БЪДЕ ОТМЕНЕНО! Препоръчително е да запазите данните си за всеки случай!"
+clear_account_confirm_text:
+  other: "Сигурни ли сте, че искате да ИЗТРИЕТЕ ВСИЧКИ данни на акаунта си - тестета, сесии, серия и модификатори на играта? ТОВА НЕ МОЖЕ ДА БЪДЕ ОТМЕНЕНО! Първо запазете данните си, ако искате да ги задържите!"
+streak_days_count:
+  other: "{streak} дни"
+streak_days_count_one:
+  other: "{streak} ден"
+hours:
+  other: "ч."
+milliseconds:
+  other: "мс."
+minutes:
+  other: "мин."
+seconds:
+  other: "сек."
+js_locale:
+  other: "bg-BG"
+no_sessions_recorded:
+  other: "Няма записани серии!"
+average_knowledge_level:
+  other: "Средно ниво на познанията"
+part_of:
+  other: "Част от"
+deck_card_edit:
+  other: "Редактирай"
+deck_search_placeholder:
+  other: "Търсене в тестето…"
+
+# marketplace.html
+official_decks_header:
+  other: "Oфициални тестета"
+new_deck_upload_info:
+  other: "Искате да качите своето тесте на пазара? Научете повече, като натиснете бутона долу!"
+upload-deck-public:
+  other: "Качване на тесте"
+community_decks_header:
+  other: "Обществени тестета"
+marketplace_search_placeholder:
+  other: "Търсене на тестета…"
+import_deck_confirm_text:
+  other: "Внасянето на тесте ЩЕ слее сегашното Ви тесте с новото! За да внесете само новото, първо изчистете тестето си!"
+leveled_up_no:
+  other: "Не"
+leveled_up_yes:
+  other: "Да"
+pre_leveled_up:
+  other: "Предварително поставено ниво"
+deck_source:
+  other: "Източник"
+deck_download:
+  other: "Изтегли"
+marketplace_load_error:
+  other: "Грешка {}: Пазарът не можа да бъде зареден, опитайте отново по-късно!"
+
+skip-to-content:
+  other: "Към съдържанието"
+
+# browser-support gate (noscript in header.tmpl.html + scripts/data/browser-support.js)
+nojs_title:
+  other: "Необходим е JavaScript"
+nojs_body:
+  other: "{brand} се нуждае от JavaScript, за да работи. Моля, разрешете JavaScript за този сайт (или изключете разширенията или профили като Lockdown mode, които могат да го блокират) и презаредете страницата."
+unsupported_title:
+  other: "{brand} не може да работи в този браузър"
+unsupported_privacy_body:
+  other: "Браузърът Ви блокира хранилището, от което {brand} се нуждае, за да запазва тестетата и настройките Ви. Това обикновено означава, че е активен защитен профил като Lockdown mode. Изключете Lockdown mode, спрете строгите защити на поверителността или разрешете запазването на данни за този сайт и презаредете станицата."
+unsupported_outdated_body:
+  other: "Браузърът Ви няма функциите, които са нужни на {brand}, за да работи. Моля, обновете до съвременна версия на модерен браузър и презаредете."
+unsupported_reload:
+  other: "Презареждане"
+
+# character database loading UI (index.js)
+char_loading_title:
+  other: "Изтегляне на нужните символи"
+char_loading_subtitle:
+  other: "Предварително изтегляне на данни за работа офлайн. Това се случва само веднъж."
+char_updating_label:
+  other: "Обновяване на символите…"
+
+# deck import loading UI (marketplace.js)
+deck_import_title:
+  other: "Внасяне на тесте"
+deck_import_subtitle:
+  other: "Изтегляне на тестето и сливането му с Вашата колекция."
+
+# onboarding tutorial (tutorial.js / account.html). Без двойни кавички в низовете, които се подават
+# през i18n.js — те се вмъкват в JS низ в двойни кавички; ползвайте единични кавички.
+tutorial_next:
+  other: "Напред"
+tutorial_done:
+  other: "Готово"
+tutorial_skip:
+  other: "Пропусни обучението"
+tutorial_continue:
+  other: "Започни"
+tutorial_preparing:
+  other: "Подготовка…"
+tutorial_finish:
+  other: "Край"
+tutorial_replay_button:
+  other: "Повтори обучението"
+clear_account_button:
+  other: "Изтрий данните на акаунта"
+tutorial_intro_title:
+  other: "Добре дошли в {brand}"
+tutorial_intro_body:
+  other: "{brand} Ви учи да пишете символи от китайски, японски и други писмености — щрих по щрих. Направете кратка обиколка, за да видите как работи."
+tutorial_outro_title:
+  other: "Готови сте!"
+tutorial_outro_body:
+  other: "Това е цялото приложение. Началното Ви тесте и първите карти са готови — успех и приятно писане!"
+tutorial_marketplace_title:
+  other: "Магазинът"
+tutorial_marketplace_intro:
+  other: "Магазинът съдържа готови тестета, които можете да внесете с едно щракване. Нека вземем начално тесте."
+tutorial_marketplace_search_title:
+  other: "Намери тесте"
+tutorial_marketplace_search:
+  other: "Търсете тук, за да филтрирате тестета по име."
+tutorial_marketplace_import_title:
+  other: "Внеси тесте"
+tutorial_marketplace_import:
+  other: "Ще внесем тестето с китайски числа вместо Вас. Натиснете Напред, за да го добавите към колекцията си."
+tutorial_marketplace_import_replay:
+  other: "Натиснете бутона Внеси на дадено тесте, за да го добавите към колекцията си. Натиснете Напред, за да продължите."
+tutorial_marketplace_unavailable:
+  other: "Списъкът с тестета не можа да се зареди в момента. Натиснете Напред, за да продължите към тестето си."
+tutorial_deck_title:
+  other: "Вашето тесте"
+tutorial_deck_intro:
+  other: "Това е Вашето тесте - всеки символ и фраза, които учите ще се появи тук."
+tutorial_deck_newcard_title:
+  other: "Добавяне на карти"
+tutorial_deck_newcard:
+  other: "Нека създадем първият Ви символ. Натиснете Нова карта, за да започнете."
+tutorial_deck_phrases_title:
+  other: "Фрази"
+tutorial_deck_phrases:
+  other: "Фразите от няколко символа, които учите, се показват в този раздел."
+tutorial_deck_characters_title:
+  other: "Символи"
+tutorial_deck_characters:
+  other: "Отделните символи се показват тук — включително тези, които току-що внесохте."
+tutorial_deck_search_title:
+  other: "Търсене в тестето"
+tutorial_deck_search:
+  other: "Филтрирайте картите и фразите си, докато тестето Ви расте."
+tutorial_review_edit_title:
+  other: "Редактиране на карта"
+tutorial_review_edit:
+  other: "Използвайте бутона Редактирай на дадена карта, за да я редактирате."
+tutorial_review_partof_title:
+  other: "Използване във фрази"
+tutorial_review_partof:
+  other: "Когато символ участва във фраза, картата му показва от кои фрази той е част."
+tutorial_card_ime_title:
+  other: "Методи за въвеждане"
+tutorial_card_ime:
+  other: "Имате избор от няколко метода за фонетично изписване на символи, или на тяхното произношение. Засега няма да използваме метод за въвеждане."
+tutorial_card_input_title:
+  other: "Въведи символа"
+tutorial_card_input:
+  other: "Сега самият символ - ще напишем 好 (hǎo, означава добро)."
+tutorial_card_preview_title:
+  other: "Преглед на живо"
+tutorial_card_preview:
+  other: "Прегледът показва как ще изглежда картата, с анимираните си щрихи."
+tutorial_card_save_title:
+  other: "Запази картата"
+tutorial_card_save:
+  other: "Натиснете Готово, за да добавите картата към тестето си."
+tutorial_phrase_input_title:
+  other: "Въведи фраза"
+tutorial_phrase_input:
+  other: "Сега самата фраза - ще напишем 你好. За всеки символ в нея се създава карта."
+tutorial_phrase_autocards_title:
+  other: "Вашите карти"
+tutorial_phrase_autocards:
+  other: "За всеки символ във фразата автоматично се създава карта - картата за 好 се добавя, а тази за 你 се използва повторно, тъй като вече съществува."
+tutorial_phrase_save_title:
+  other: "Запази фразата"
+tutorial_phrase_save:
+  other: "Натиснете Готово, за да добавите фразата и нейните символи."
+tutorial_session_title:
+  other: "Време за упражнение"
+tutorial_session_start:
+  other: "Натиснете Старт за да започнете да преговаряте картите от тестето Ви. Изписвайте всеки символ щрих по щрих!"
+tutorial_session_replay:
+  other: "Натиснете Старт за да започнете да преговаряте картите от тестето Ви."
+tutorial_session_done_title:
+  other: "Браво!"
+tutorial_session_done:
+  other: "Преговорихте символите и фразите от тестето си за първи път!"
+tutorial_account_stats_title:
+  other: "Вашият профил"
+tutorial_account_stats:
+  other: "Статистиките за профилът Ви са тук - брой сесии, серия, размер на тестето и средно ниво на познание."
+tutorial_account_settings_title:
+  other: "Настройки"
+tutorial_account_settings:
+  other: "Настройте сложността и честотата на упражненията си, сменете езика или цветовата тема"
+tutorial_card_pron_title:
+  other: "Задаване на прозношение"
+tutorial_card_pron:
+  other: "Да започнем с произношението на символа - ще напишем hǎo."
+tutorial_card_defs_title:
+  other: "Добави значения"
+tutorial_card_defs:
+  other: "Нека да зададем значението на символа - ще добавим 'good', 'fine' и 'ok'."
+tutorial_cardreview_title:
+  other: "Вашата нова карта"
+tutorial_cardreview:
+  other: "Това е картата за символа 好, която току-що беше създадена. Тя вече част от тестето Ви."
+tutorial_cardreview_phrase_title:
+  other: "Нека да създадем нова фраза"
+tutorial_cardreview_phrase:
+  other: "Фразите свързват символи заедно. Нека да създадем нова фраза през бутона 'Нова фраза'."
+tutorial_phrase_pron_title:
+  other: "Произношение на фразата"
+tutorial_phrase_pron:
+  other: "Както при картата, започнете със произношението - ще напишем nǐ hǎo."
+tutorial_phrase_defs_title:
+  other: "Значение на фразата"
+tutorial_phrase_defs:
+  other: "Тук може да добавите различните значения на фразата - ще добавим 'hello'."
+tutorial_phrase_subcard_title:
+  other: "Съвсем нов символ"
+tutorial_phrase_subcard:
+  other: "你 не присъстваше в тестето, затова получава своя карта - ще попълним произношението и значението му също."
+tutorial_review_phrase_title:
+  other: "Вашата фраза"
+tutorial_review_phrase:
+  other: "Фразата 你好, вече в тестето Ви."
+tutorial_review_navigate_title:
+  other: "Време за упражнение"
+tutorial_review_navigate:
+  other: "Така се изграждат тестета. Нека да преговорим картите в тестето си."
+tutorial_card_variant_title:
+  other: "Регионални изписвания"
+tutorial_card_variant:
+  other: "Някои символи имат регионални изписвания. Използвайте тази кутия за да изберете регионалната форма на символа си."
+tutorial_account_extensive_title:
+  other: "Разширен режим"
+tutorial_account_extensive:
+  other: "Включете този режим, за да преговаряте всяка карта при всяка сесия, вместо подбрана част."
+tutorial_account_levelreduce_title:
+  other: "Дневно намаляване на нивото"
+tutorial_account_levelreduce:
+  other: "Всеки ден символите и фразите Ви губят малко от оценката за владеене за да може да преговаряте тестето си по-често. Този плъзгач определя коефициентът на намаляване."
+tutorial_account_goal_title:
+  other: "Дневната Ви цел"
+tutorial_account_goal:
+  other: "Толкова серии на ден се броят за преговор. Изпълнението ѝ поддържа поредицата Ви жива и определя цената на едно замразяване."
+tutorial_account_language_title:
+  other: "Език"
+tutorial_account_language:
+  other: "Това са езиците, на които е достъпен {brand}."
+tutorial_account_theme_title:
+  other: "Цветови теми"
+tutorial_account_theme:
+  other: "А това са цветовите теми, които можете да изберете."
+tutorial_account_replay_title:
+  other: "Повтори това обучение"
+tutorial_account_replay:
+  other: "Имате нужда от опресняване? Този бутон рестартира цялото обучение, когато пожелаете."
+tutorial_account_clear_title:
+  other: "Изтрий данните на профила си"
+tutorial_account_clear:
+  other: "Искате да започнете на чисто? Този бутон изтрива всичият Ви прогрес - тестета, сесии, серия и настройки. Действието не може да бъде отменено, така че първо запазете това, което искате да задържите."
+tutorial_account_activity_title:
+  other: "Вашата активност"
+tutorial_account_activity:
+  other: "Всяка завършена серия за упражнение запълва ден в този календар - колкото повече се упражнявате, толкова по-ярък става. Изберете година отстрани, за да погледнете назад."
+activity_calendar_header:
+  other: "Активност"
+activity_legend_less:
+  other: "По-малко"
+activity_legend_more:
+  other: "Повече"
+activity_tooltip:
+  other: "{count} серии на {date}"
+activity_tooltip_one:
+  other: "1 серия на {date}"
+activity_tooltip_none:
+  other: "Няма серия на {date}"
+
+# SEO / social metadata
+site-description:
+  other: "{brand} е безплатно уеб приложение, което ви учи да пишете на ръка знаци от китайски (хандзъ), японски (кана и канджи), корейски (хангъл), гръцки, кирилица и други писмености. Упражнявайте реалния ред на щрихите и учете използвайки системата ни за разпределено повторение."
+og_locale:
+  other: "bg_BG"
+
+# Privacy-policy consent gate (privacy-consent.js). Shown once, before anything else, on the
+# first visit and again whenever the policy version is bumped
+privacy_consent_title:
+  other: "Преди да започнете"
+privacy_consent_body:
+  other: "{brand} пази вашите колоди, напредък и настройки на това устройство и изтегля данните за знаците и колодите от публични CDN мрежи. Прочетете Политиката за поверителност, за да видите какво точно означава това — можете да продължите само след като я приемете."
+privacy_consent_link:
+  other: "Прочетете Политиката за поверителност"
+privacy_consent_accept:
+  other: "Приемам Политиката за поверителност"
+
+# privacy.html
+privacy_policy_title:
+  other: "Декларация за поверителност"
+privacy_hero_eyebrow:
+  other: "Поверителност и защита на данните"
+privacy_hero_title:
+  other: "Декларация за поверителност"
+privacy_last_updated:
+  other: "Последна актуализация: Септември 2026 г."
+privacy_hero_lead:
+  other: "{brand} е изграден с фокус върху поверителността и локалното съхранение на данни. Вашият напредък в обучението, създадените карти и настройките се съхраняват единствено на вашето собствено устройство и никога не се изпращат към външен сървър."
+privacy_hl_local_title:
+  other: "100% локално съхранение"
+privacy_hl_local_desc:
+  other: "Всички карти, фрази, статистики и серии живеят в IndexedDB на вашия браузър."
+privacy_hl_noacct_title:
+  other: "Без профили и регистрация"
+privacy_hl_noacct_desc:
+  other: "Използвайте {brand} свободно без създаване на профил, въвеждане на имейл или парола."
+privacy_hl_notrack_title:
+  other: "Без проследяване и реклами"
+privacy_hl_notrack_desc:
+  other: "Няма аналитични тракери, профилиращи скриптове или рекламни бисквитки."
+privacy_hl_control_title:
+  other: "Пълен контрол над данните"
+privacy_hl_control_desc:
+  other: "Експортирайте тестетата си в JSON или изтрийте всички локални данни с един клик по всяко време."
+privacy_sec_controller_title:
+  other: "1. Общ преглед и администратор на данни"
+privacy_sec_controller_p1:
+  other: "{brand} е уеб приложение с отворен код с образователна цел, създадено да помага при изучаването и упражняването на ръкописно писане на символи от различни писмени системи. Уебсайтът се управлява от Heapforge Ltd - дружество, регистрирано в Англия и Уелс. Heapforge Ltd е администратор на лични данни за този уебсайт съгласно Общия регламент за защита на данните на Обединеното кралство (UK GDPR) и Закона за защита на данните от 2018 г., а за посетители от Европейското икономическо пространство - съгласно Общия регламент за защита на данните на ЕС (Регламент (ЕС) 2016/679)."
+privacy_sec_controller_p2:
+  other: "Тъй като {brand} функционира като статично приложение от страна на клиента (client-side) без потребителски профили или сървърни бази данни, ние не събираме, не съхраняваме, не продаваме и не обработваме лични данни на отдалечен сървър."
+privacy_controller_company_label:
+  other: "Дружество"
+privacy_controller_number_label:
+  other: "Регистрационен номер (Companies House)"
+privacy_controller_address_label:
+  other: "Адрес на управление"
+privacy_sec_controller_p3:
+  other: "Тъй като до нас никога не достигат лични данни, Heapforge Ltd не е назначило длъжностно лице по защита на данните и не е определило представител в Европейското икономическо пространство по член 27 от GDPR на ЕС. Писмени запитвания могат да се изпращат на посочения по-горе адрес на управление; най-бързо отговаряме на въпроси по тази декларация през хранилището в GitHub, посочено в края ѝ."
+privacy_sec_localdata_title:
+  other: "2. Данни, съхранявани на вашето устройство"
+privacy_sec_localdata_p1:
+  other: "Всички данни от приложението, генерирани по време на вашето обучение, се записват локално в паметта на вашия браузър (IndexedDB и localStorage). Тези данни включват:"
+privacy_sec_localdata_li1:
+  other: "Карти и фрази: Определения на символи, произношение, избрани регионални варианти и създадени или импортирани от вас фрази."
+privacy_sec_localdata_li2:
+  other: "Статистика на обучението: История на преговорите, брой грешки, нива на знание, дневни серии, наличност на замразявания и спечелени диаманти."
+privacy_sec_localdata_li3:
+  other: "Календар на активността: Дневен брой сесии, използвани за показване на графиката на активността в страницата за профил."
+privacy_sec_localdata_li4:
+  other: "Потребителски настройки: Избрана цветова тема, език на интерфейса, модификатори на играта (като разширен режим и дневно намаляване на нивото) и статус на въвеждащия урок."
+privacy_sec_localdata_p2:
+  other: "Тази информация остава изцяло на вашето устройство. Тя никога не се предава към нас или към трети страни."
+privacy_sec_thirdparty_title:
+  other: "3. Технически данни и външни доставчици"
+privacy_sec_thirdparty_p1:
+  other: "Когато посещавате {brand}, вашият уеб браузър осъществява връзка с външни доставчици на инфраструктура, за да изтегли файловете на уебсайта, шрифтовете, данните за изписване на символи и публичните тестета. Тези доставчици могат да обработват технически данни за връзката (като вашия IP адрес, User-Agent на браузъра и времеви маркери на заявките) единствено с цел предаване на съдържание и сигурност на мрежата:"
+privacy_sec_thirdparty_li1:
+  other: "GitHub Pages (GitHub, Inc. / Microsoft): Статичен хостинг за файловете на уеб приложението."
+privacy_sec_thirdparty_li2:
+  other: "jsDelivr CDN (ProspectOne / Cloudflare): Мрежа за доставка на съдържание (CDN) за анимации на щрихи, бази данни със символи и публични тестета."
+privacy_sec_thirdparty_li3:
+  other: "Google Fonts (Google LLC): Доставка на шрифта с отворен код Ubuntu."
+privacy_sec_thirdparty_p2:
+  other: "Тези доставчици обработват технически метаданни съгласно своите политики за поверителност и приложимите за тях механизми за международен трансфер на данни (като Рамката за поверителност на данните между ЕС и САЩ и нейното разширение за Обединеното кралство, както и стандартните договорни клаузи)."
+privacy_sec_legal_title:
+  other: "4. Правно основание за обработване (чл. 6 от UK GDPR / GDPR на ЕС)"
+privacy_sec_legal_p1:
+  other: "Съгласно член 6, параграф 1 от UK GDPR и от GDPR на ЕС, ограниченото техническо обработване, необходимо за доставяне на уебсайта, се основава на:"
+privacy_sec_legal_li1:
+  other: "Член 6, параграф 1, буква „б“ (Изпълнение на договор / Предоставяне на услуга): Обработване на технически заявки, необходими за предоставяне на уеб приложението и интерактивните упражнения при вашето посещение."
+privacy_sec_legal_li2:
+  other: "Член 6, параграф 1, буква „е“ (Легитимен интерес): Легитимният интерес от поддържане на достъпност на уебсайта, бърза доставка чрез CDN, надеждност на системите и защита срещу мрежови атаки или злоупотреби."
+privacy_sec_cookies_title:
+  other: "5. Бисквитки и технологии за проследяване"
+privacy_sec_cookies_p1:
+  other: "{brand} не използва бисквитки за проследяване, аналитични бисквитки, таргетиращи бисквитки или рекламни скриптове на трети страни. Ние не проследяваме вашето поведение в други уебсайтове и не създаваме потребителски профили."
+privacy_sec_cookies_p2:
+  other: "Използваме стандартни технологии за съхранение от страна на клиента (IndexedDB, localStorage и Service Worker Cache API) единствено за строго необходима техническа функционалност — запазване на вашите тестета, нива на преговор, осигуряване на офлайн работа като прогресивно уеб приложение (PWA) и запаметяване на избраната тема и език. Съгласно Регламента за поверителност и електронни съобщения на Обединеното кралство от 2003 г. (PECR), Директивата за правото на неприкосновеност на личния живот в електронните съобщения (Директива 2002/58/ЕО) и UK GDPR / GDPR на ЕС, за строго необходимото функционално съхранение не се изисква банер за съгласие."
+privacy_sec_rights_title:
+  other: "6. Вашите права съгласно UK GDPR и GDPR на ЕС"
+privacy_sec_rights_p1:
+  other: "UK GDPR - а ако се намирате в Европейското икономическо пространство, GDPR на ЕС - ви предоставя конкретни права относно вашите данни:"
+privacy_sec_rights_li1:
+  other: "Право на достъп (чл. 15): Можете да прегледате всички данни за напредъка си директно в страниците „Тесте“ и „Профил“."
+privacy_sec_rights_li2:
+  other: "Право на коригиране (чл. 16): Имате пълен контрол да редактирате, поправяте или преименувате всяка карта, фраза, определение или настройка по всяко време директно в приложението."
+privacy_sec_rights_li3:
+  other: "Право на изтриване (чл. 17 - „Право да бъдеш забравен“): Можете да изтриете всички свои съхранени данни незабавно по всяко време чрез бутона „Изчистване на данните на профила“ в страницата „Профил“ или чрез изчистване на данните за сайта от браузъра."
+privacy_sec_rights_li4:
+  other: "Право на преносимост на данните (чл. 20): Можете да експортирате всички ваши тестета и фрази в машинночетим JSON формат по всяко време чрез опцията „Експортиране на тесте“ в страницата „Тесте“."
+privacy_sec_rights_li5:
+  other: "Право на ограничаване и възражение (чл. 18 и 21): Тъй като не се съхраняват лични данни на отдалечени сървъри, можете да прекратите всякаква локална обработка по всяко време, като затворите приложението или изчистите локалната памет."
+privacy_sec_rights_li6:
+  other: "Право на жалба (чл. 77): Водещият за нас надзорен орган е Службата на Информационния комисар на Обединеното кралство (ICO), с която можете да се свържете на ico.org.uk. Ако се намирате в Европейското икономическо пространство, можете вместо това да подадете жалба до надзорния орган във вашата държава (например Комисията за защита на личните данни в България - КЗЛД)."
+privacy_sec_security_title:
+  other: "7. Съхранение на данните и сигурност"
+privacy_sec_security_p1:
+  other: "Данните от вашето обучение остават записани в браузъра ви, докато не решите да ги изтриете, да нулирате профила си или да изчистите данните на браузъра. Тъй като данните се съхраняват локално в изолираната среда на браузъра и никога не се изпращат към централна база данни, те са защитени от централизирани пробиви в сигурността, а Heapforge Ltd никога не разполага с тяхно копие."
+privacy_sec_children_title:
+  other: "8. Защита на личните данни на деца"
+privacy_sec_children_p1:
+  other: "{brand} е сигурна образователна среда, подходяща за учащи от всички възрасти. Ние не събираме, не изискваме и не съхраняваме лична информация от деца или от които и да е други потребители, а тъй като няма профилиране, реклами или подтикващи механизми, приложението е изградено в съответствие с Кодекса за проектиране, съобразено с възрастта (Age Appropriate Design Code) на ICO."
+privacy_sec_transfers_title:
+  other: "9. Международни трансфери на данни"
+privacy_sec_transfers_p1:
+  other: "Външните доставчици на инфраструктура и CDN (GitHub, Google, Cloudflare) оперират глобални мрежи и центрове за данни. Доколкото технически метаданни за връзката се обработват извън Обединеното кралство или Европейското икономическо пространство (ЕИП), тези трансфери се уреждат от разпоредбите за адекватност на Обединеното кралство и от Споразумението за международен трансфер на данни (IDTA) или Допълнението на Обединеното кралство към стандартните договорни клаузи (SCC) на Европейската комисия, а за посетители от ЕИП - от SCC и решенията за адекватност, приети от Европейската комисия."
+privacy_sec_contact_title:
+  other: "10. Промени в декларацията и контакт"
+privacy_sec_contact_p1:
+  other: "Можем периодично да актуализираме тази Декларация за поверителност, за да отразим подобрения в приложението или правни промени. Всички актуализации ще бъдат публикувани на тази страница с нова дата на последна промяна."
+privacy_sec_contact_p2:
+  other: "Ако имате въпроси, обратна връзка или запитвания относно тази Декларация за поверителност или сигурността на {brand}, можете да пишете на Heapforge Ltd на адреса на управление, посочен в раздел 1, или да отворите тема в нашето официално хранилище в GitHub:"
+privacy_contact_github:
+  other: "Посетете {brand} в GitHub"

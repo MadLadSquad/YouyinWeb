@@ -1,0 +1,159 @@
+{{- /*
+  The asset pipeline. Returns a dict of published URLs for one page in one locale:
+
+    css     site-wide stylesheet bundle (locale-independent)
+    boot    render-blocking <head> bundle: browser-support.js + theme.js
+    core    per-locale bundle: translations, shared chrome, index.js, vendored driver.js + twemoji
+    page    per-page bundle, ending in the bootstrap() call that starts main()
+
+  Args (dict): loc (locale directory, e.g. "en_US"), slug (page slug; "index" for the home page).
+
+  Callable for any locale from any render pass — that is what lets layouts/sw.js enumerate every
+  locale's bundles. Every third-party dependency listed under params.vendor is fetched once at build
+  time and concatenated in, so the running site issues no cross-origin requests at all.
+*/ -}}
+
+{{- /* resources.Concat needs a typed resource.Resources slice, which `slice` does not produce —
+       an empty resources.Match does, and append preserves it. */ -}}
+{{- $none := resources.Match "__no_such_asset__/*" -}}
+{{- $loc  := .loc -}}
+{{- $slug := (.slug | default "index") -}}
+
+{{- /* ---------- vendored third-party ---------- */ -}}
+{{- $vendor := dict -}}
+{{- range $k, $url := site.Params.vendor -}}
+  {{- $t := try (resources.GetRemote $url) -}}
+  {{- with $t.Err -}}{{- errorf "vendor %s (%s): %s" $k $url . -}}{{- end -}}
+  {{- if not $t.Value -}}{{- errorf "vendor %s: fetch of %s returned nothing" $k $url -}}{{- end -}}
+  {{- $vendor = merge $vendor (dict $k $t.Value) -}}
+{{- end -}}
+
+{{- /* ---------- self-hosted webfont ---------- */ -}}
+{{- $f := hugo.Data.font -}}
+{{- $faces := slice -}}
+{{- $fontUrls := slice -}}
+{{- range $f.subsets -}}
+  {{- $url := printf "%s/ubuntu-%s-%d-normal.woff2" $f.base .name $f.weight -}}
+  {{- $t := try (resources.GetRemote $url) -}}
+  {{- with $t.Err -}}{{- errorf "font %s: %s" $url . -}}{{- end -}}
+  {{- if not $t.Value -}}{{- errorf "font: fetch of %s returned nothing" $url -}}{{- end -}}
+  {{- $pub := $t.Value | resources.Copy (printf "/fonts/ubuntu-%s-%d.woff2" .name $f.weight) | fingerprint -}}
+  {{- $pub.Publish -}}
+  {{- $fontUrls = $fontUrls | append $pub.RelPermalink -}}
+  {{- $faces = $faces | append (printf "@font-face{font-family:'%s';font-style:normal;font-weight:%d;font-display:swap;src:url(%s) format('woff2');unicode-range:%s}"
+        $f.family $f.weight $pub.RelPermalink .unicodeRange) -}}
+{{- end -}}
+{{- $fontCss := resources.FromString "styles/_font.css" (delimit $faces "") -}}
+
+{{- /* ---------- stylesheets ---------- */ -}}
+{{- /* Order is the cascade contract inherited from the old templates: the generated @font-face
+       rules first, then the global components, then driver.css *before* tutorial.css so the
+       theme-aware .tutorial-popover overrides still win, then the page stylesheets. */ -}}
+{{- $cssFiles := slice
+      "styles/components/base.css"
+      "styles/components/header.css"
+      "styles/components/select-box.css"
+      "styles/components/char-loading.css"
+      "styles/components/card.css"
+      "styles/components/button.css"
+      "styles/components/writer.css"
+      "styles/components/page-search.css"
+      "styles/components/slider.css"
+      "styles/components/activity-calendar.css" -}}
+{{- $css := $none | append $fontCss -}}
+{{- range $cssFiles -}}
+  {{- $r := resources.Get . -}}
+  {{- if not $r -}}{{- errorf "missing stylesheet %s" . -}}{{- end -}}
+  {{- $css = $css | append $r -}}
+{{- end -}}
+{{- $css = $css | append $vendor.driver_css (resources.Get "styles/components/tutorial.css") -}}
+{{- range (slice "index" "deck" "deck-edit" "account" "marketplace" "privacy") -}}
+  {{- $r := resources.Get (printf "styles/pages/%s.css" .) -}}
+  {{- if not $r -}}{{- errorf "missing page stylesheet %s" . -}}{{- end -}}
+  {{- $css = $css | append $r -}}
+{{- end -}}
+{{- $cssBundle := $css | resources.Concat "styles/app.css" | minify | fingerprint -}}
+
+{{- /* ---------- theme catalogue (lazily fetched by theme.js) ---------- */ -}}
+{{- $themesData := resources.Get "scripts/data/themes-data.js" | minify | fingerprint -}}
+{{- $themesData.Publish -}}
+
+{{- /* ---------- boot bundle: <head>, render-blocking ---------- */ -}}
+{{- /* browser-support.js has to run before any storage access and theme.js before the stylesheets
+       paint, so this stays a blocking script in <head>, exactly as the two separate tags did. */ -}}
+{{- $theme := resources.Get "scripts/data/theme.js"
+      | resources.ExecuteAsTemplate "scripts/_theme.js" (dict "themesDataURL" $themesData.RelPermalink) -}}
+{{- $boot := ($none | append (resources.Get "scripts/data/browser-support.js") $theme)
+      | resources.Concat "scripts/boot.js" | minify | fingerprint -}}
+
+{{- /* ---------- core bundle: per locale ---------- */ -}}
+{{- /* Exactly the order the shared footer used to load these in. i18n.js is the only locale-varying
+       file; the vendored libraries ride along so the whole of the shared chrome is one request. */ -}}
+{{- $i18n := resources.Get "scripts/data/i18n.js"
+      | resources.ExecuteAsTemplate (printf "scripts/_i18n.%s.js" $loc) (dict "loc" $loc) -}}
+{{- $core := $none | append $vendor.twemoji $i18n -}}
+{{- range (slice
+      "scripts/components/select-box.js"
+      "scripts/components/theme-selector.js"
+      "scripts/components/language-selector.js"
+      "scripts/components/emoji.js"
+      "scripts/components/char-loading-ui.js"
+      "scripts/components/privacy-consent.js"
+      "scripts/index.js"
+      "scripts/components/daily-streak.js") -}}
+  {{- $r := resources.Get . -}}
+  {{- if not $r -}}{{- errorf "missing core script %s" . -}}{{- end -}}
+  {{- $core = $core | append $r -}}
+{{- end -}}
+{{- $core = $core | append $vendor.driver_js (resources.Get "scripts/components/tutorial.js") -}}
+{{- $coreBundle := $core | resources.Concat (printf "scripts/core.%s.js" $loc) | minify | fingerprint -}}
+
+{{- /* ---------- page bundle ---------- */ -}}
+{{- /* `pre` held the scripts the old templates put *before* the shared footer (they only define
+       things main()'s async continuations reach for) and `post` the ones after it. Inside a single
+       bundle there is no microtask gap between them, so the split is preserved by order alone and
+       bootstrap() is called last — see the tail of scripts/index.js. */ -}}
+{{- $pages := dict
+  "index"          (dict "hanzi" true  "pre" (slice "scripts/data/character-database.js" "scripts/components/tutorial/main-page.js")  "post" (slice "scripts/components/writer.js" "scripts/utils/format.js" "scripts/components/streak-goal.js" "scripts/pages/main-page.js"))
+  "deck"           (dict "hanzi" true  "pre" (slice "scripts/data/character-database.js" "scripts/components/tutorial/deck.js")       "post" (slice "scripts/components/writer.js" "scripts/utils/format.js" "scripts/utils/fuzzy-match.js" "scripts/components/card-search.js" "scripts/pages/deck.js"))
+  "deck-edit-card" (dict "hanzi" true  "pre" (slice "scripts/data/character-database.js" "scripts/components/tutorial/deck-new.js")   "post" (slice "scripts/components/writer.js" "scripts/utils/IME.js" "scripts/pages/deck-new.js"))
+  "account"        (dict "hanzi" false "pre" (slice "scripts/components/tutorial/account.js")                                          "post" (slice "scripts/utils/format.js" "scripts/components/activity-calendar.js" "scripts/components/streak-goal.js" "scripts/pages/account.js"))
+  "marketplace"    (dict "hanzi" false "pre" (slice "scripts/components/tutorial/marketplace.js")                                      "post" (slice "scripts/utils/fuzzy-match.js" "scripts/components/card-search.js" "scripts/pages/marketplace.js"))
+  "privacy"        (dict "hanzi" false "pre" (slice) "post" (slice))
+  "404"            (dict "hanzi" false "pre" (slice) "post" (slice))
+-}}
+{{- /* Page scripts that carry build-time variables and must be executed as templates. */ -}}
+{{- $templated := slice "scripts/data/character-database.js" "scripts/pages/marketplace.js" -}}
+{{- $spec := index $pages $slug -}}
+{{- if not $spec -}}{{- errorf "no script bundle defined for page %q" $slug -}}{{- end -}}
+{{- $pageRes := $none -}}
+{{- if $spec.hanzi -}}{{- $pageRes = $pageRes | append $vendor.hanzi_writer -}}{{- end -}}
+{{- range $spec.pre -}}
+  {{- $r := resources.Get . -}}
+  {{- if not $r -}}{{- errorf "missing page script %s" . -}}{{- end -}}
+  {{- if in $templated . -}}
+    {{- $r = $r | resources.ExecuteAsTemplate (printf "scripts/_%s" (path.Base .)) $ -}}
+  {{- end -}}
+  {{- $pageRes = $pageRes | append $r -}}
+{{- end -}}
+{{- /* main() starts here, between the two groups: the `post` scripts read window.storageReady at
+       their top level, and the `pre` scripts have to be defined before main() runs. This is exactly
+       where index.js used to call main() — from the shared footer, between the two script blocks. */ -}}
+{{- $pageRes = $pageRes | append (resources.FromString (printf "scripts/_bootstrap.%s.js" $slug) "\nwindow.bootstrap();\n") -}}
+{{- range $spec.post -}}
+  {{- $r := resources.Get . -}}
+  {{- if not $r -}}{{- errorf "missing page script %s" . -}}{{- end -}}
+  {{- if in $templated . -}}
+    {{- $r = $r | resources.ExecuteAsTemplate (printf "scripts/_%s" (path.Base .)) $ -}}
+  {{- end -}}
+  {{- $pageRes = $pageRes | append $r -}}
+{{- end -}}
+{{- $pageBundle := $pageRes | resources.Concat (printf "scripts/page.%s.js" $slug) | minify | fingerprint -}}
+
+{{- return (dict
+      "css"  $cssBundle.RelPermalink
+      "boot" $boot.RelPermalink
+      "core" $coreBundle.RelPermalink
+      "page" $pageBundle.RelPermalink
+      "themesData" $themesData.RelPermalink
+      "fonts" $fontUrls) -}}

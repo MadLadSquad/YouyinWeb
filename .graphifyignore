@@ -1,4 +1,3 @@
-# Exclude the UVKBuildTool C++ submodule and its vendored dependencies
-# (rapidyaml/c4core) from the graphify knowledge graph — they're third-party
-# build-tool internals, not source.
-UVKBuildTool/
+# Hugo build output and asset cache — generated, not source
+public/
+resources/
