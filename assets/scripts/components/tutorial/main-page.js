@@ -1,9 +1,9 @@
 'use strict';
 // Tutorial: index-page stages (intro / session / outro).
 //
-// Loaded only on index.html, before the shared footer so these stage functions are defined before footer's
-// tutorial.js runs tutDispatch (it only routes to them at call time, by which point the cross-page core in
-// scripts/components/tutorial.js — helpers, tutRunTour, tutDispatch — exists). Defines the
+// Bundled only into the index page's script bundle, ahead of the bootstrap() call, so these stage functions
+// are defined before main() resolves profileReady and tutorial.js's tutDispatch routes to them. The
+// cross-page core in scripts/components/tutorial.js (helpers, tutRunTour, tutDispatch) lives in the core bundle. Defines the
 // landing-page stage functions that tutDispatch() routes to: the bespoke intro/outro modals (the
 // intro embeds the animated 你好 hanzi-writer widgets) and the practice-session walkthrough.
 

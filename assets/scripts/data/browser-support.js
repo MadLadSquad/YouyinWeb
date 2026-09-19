@@ -1,10 +1,10 @@
 'use strict';
-// Browser-support gate. This is the FIRST script that runs on every page — loaded at the top of
-// Components/head.tmpl.html, before theme.js and before <body> exists — so it runs before any
-// storage access, network request, or app code does.
+// Browser-support gate. This is the FIRST script that runs on every page — first in the render-blocking
+// boot bundle in layouts/_partials/head.html, before theme.js and before <body> exists — so it runs
+// before any storage access, network request, or app code does.
 //
 // Two failure modes are communicated to the user. JavaScript being disabled entirely is handled by
-// the <noscript> block in Components/header.tmpl.html (nothing here runs in that case). When
+// the <noscript> block in layouts/_partials/header.html (nothing here runs in that case). When
 // JavaScript runs but a privacy/lockdown profile blocks the APIs the app hard-depends on, this
 // module sets window.UNSUPPORTED and renders a blocking overlay explaining how to fix it.
 //
@@ -15,7 +15,7 @@
 
 (function () {
     // English fallbacks, used only if i18n.js (the global lc object) somehow hasn't populated. The
-    // overlay renders at DOMContentLoaded, by which point the footer's i18n.js has normally run.
+    // overlay renders at DOMContentLoaded, by which point the deferred core bundle (i18n.js) has run.
     const FALLBACK = {
         unsupported_title: "The app can't run in this browser",
         unsupported_privacy_body: "Your browser is blocking the storage this app needs to save your decks and settings. This usually means a privacy or lockdown profile is active. Disable Lockdown Mode, turn off strict privacy protections, or allow site data for this site, then reload.",
@@ -97,12 +97,23 @@
             }
         }
 
-        // Core JS the async startup and CDN downloads can't run without. Missing means an outdated
-        // browser rather than a privacy profile.
+        // Core features the app can't run without. Missing means an outdated browser rather than a
+        // privacy profile. Beyond the async startup and the CDN downloads, the scripts use
+        // Array/String .at() and replaceChildren(), the deck is virtualised with IntersectionObserver,
+        // and every colour in the stylesheets is derived from the theme with color-mix(), so a
+        // browser without it renders an unreadable page rather than a degraded one.
         if (typeof window.Promise !== "function")
             reasons.push("Promise");
         if (typeof window.fetch !== "function")
             reasons.push("fetch");
+        if (typeof Array.prototype.at !== "function" || typeof String.prototype.at !== "function")
+            reasons.push("at");
+        if (typeof Element.prototype.replaceChildren !== "function")
+            reasons.push("replaceChildren");
+        if (typeof window.IntersectionObserver !== "function")
+            reasons.push("IntersectionObserver");
+        if (!(window.CSS && typeof CSS.supports === "function" && CSS.supports("color", "color-mix(in srgb, red, blue)")))
+            reasons.push("color-mix");
 
         if (reasons.length === 0)
             return null;

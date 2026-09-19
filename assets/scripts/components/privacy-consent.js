@@ -10,8 +10,10 @@
 // page script that waits on that promise stay dormant behind the modal) and ahead of both the service
 // worker registration and the character-database download.
 //
-// Loaded from the shared footer before index.js, next to char-loading-ui.js: it only defines
-// functions here, and by the time main() calls them addElement/$/lc all exist.
+// Concatenated into the core bundle before index.js, next to char-loading-ui.js: it only defines
+// functions here, and by the time main() calls them addElement/$/lc all exist. index.js's
+// saveProfileData and saveGameModifiers also check privacyConsentGiven, so nothing is written to
+// IndexedDB on the pages that are exempt from the modal either.
 
 // The answer is stored in localStorage rather than the IndexedDB profile: it has to be readable
 // synchronously before any storage-backed work starts, it survives "Clear account data" (which wipes
@@ -37,15 +39,17 @@ function privacyConsentGiven()
 window.privacyConsentGiven = privacyConsentGiven;
 
 /**
- * Whether the current page is the privacy policy itself. It is the one page that must stay readable
- * without consent — the modal links to it, and putting the policy behind "accept the policy" would be
- * a closed loop. Matched by URL (via index.js's pageNameFromPath, which already handles the .html the
- * CI strips) so it doesn't depend on script load timing
- * @returns { boolean } - True on privacy.html
+ * Whether the current page is the privacy policy itself, or the open-source licenses page. These are
+ * the pages that must stay readable without consent — the modal links to the policy, and putting the
+ * policy behind "accept the policy" would be a closed loop; the licenses page is the same kind of
+ * static legal text. Matched by URL (via index.js's pageNameFromPath, which already handles the .html
+ * the CI strips) so it doesn't depend on script load timing
+ * @returns { boolean } - True on privacy.html or licenses.html
  */
 function onPrivacyPolicyPage()
 {
-    return pageNameFromPath(location.pathname) === "privacy";
+    const page = pageNameFromPath(location.pathname);
+    return page === "privacy" || page === "licenses";
 }
 
 /**

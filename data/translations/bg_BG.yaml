@@ -107,8 +107,6 @@ account:
   other: "Профил"
 guest:
   other: "Гост"
-locale:
-  other: "bg_BG/"
 extensive-mode-title:
   other: "Включва т.н. подробен режим. Вместо преговаряне на картите само веднъж, картите се преглеждат няколко пъти, като постепенно се премахват картите с най-високо ниво на познание."
 extensive-mode-aria-label:
@@ -182,15 +180,6 @@ finish_page_continue:
   other: "Продължи"
 
 # Coming soon
-coming-soon-header:
-  other: "Очаквайте скоро!"
-# Add coming soon text 1
-coming-soon-text-1:
-  other: "Може да разгледате главният сайт на {}, или {}!"
-coming-soon-text-2:
-  other: "Благодарим за търпението Ви!"
-
-# deck-edit-card.html
 edit-card-site-title:
   other: "Редактиране на карта"
 new-card-h1:
@@ -261,8 +250,6 @@ average-session-length-field:
   other: "Средна дължина на серия"
 time-spent-in-sessions-field:
   other: "Време прекарано в преговаряне"
-new-card-header:
-  other: "Добавете нова карта или фраза в тестето си"
 new-card-button:
   other: "Нова карта"
 new-phrase-button:
@@ -299,8 +286,6 @@ js_locale:
   other: "bg-BG"
 no_sessions_recorded:
   other: "Няма записани серии!"
-average_knowledge_level:
-  other: "Средно ниво на познанията"
 part_of:
   other: "Част от"
 deck_card_edit:
@@ -321,10 +306,6 @@ marketplace_search_placeholder:
   other: "Търсене на тестета…"
 import_deck_confirm_text:
   other: "Внасянето на тесте ЩЕ слее сегашното Ви тесте с новото! За да внесете само новото, първо изчистете тестето си!"
-leveled_up_no:
-  other: "Не"
-leveled_up_yes:
-  other: "Да"
 pre_leveled_up:
   other: "Предварително поставено ниво"
 deck_source:
@@ -375,8 +356,6 @@ tutorial_skip:
   other: "Пропусни обучението"
 tutorial_continue:
   other: "Започни"
-tutorial_preparing:
-  other: "Подготовка…"
 tutorial_finish:
   other: "Край"
 tutorial_replay_button:
@@ -415,18 +394,6 @@ tutorial_deck_newcard_title:
   other: "Добавяне на карти"
 tutorial_deck_newcard:
   other: "Нека създадем първият Ви символ. Натиснете Нова карта, за да започнете."
-tutorial_deck_phrases_title:
-  other: "Фрази"
-tutorial_deck_phrases:
-  other: "Фразите от няколко символа, които учите, се показват в този раздел."
-tutorial_deck_characters_title:
-  other: "Символи"
-tutorial_deck_characters:
-  other: "Отделните символи се показват тук — включително тези, които току-що внесохте."
-tutorial_deck_search_title:
-  other: "Търсене в тестето"
-tutorial_deck_search:
-  other: "Филтрирайте картите и фразите си, докато тестето Ви расте."
 tutorial_review_edit_title:
   other: "Редактиране на карта"
 tutorial_review_edit:
@@ -455,10 +422,6 @@ tutorial_phrase_input_title:
   other: "Въведи фраза"
 tutorial_phrase_input:
   other: "Сега самата фраза - ще напишем 你好. За всеки символ в нея се създава карта."
-tutorial_phrase_autocards_title:
-  other: "Вашите карти"
-tutorial_phrase_autocards:
-  other: "За всеки символ във фразата автоматично се създава карта - картата за 好 се добавя, а тази за 你 се използва повторно, тъй като вече съществува."
 tutorial_phrase_save_title:
   other: "Запази фразата"
 tutorial_phrase_save:
@@ -477,10 +440,6 @@ tutorial_account_stats_title:
   other: "Вашият профил"
 tutorial_account_stats:
   other: "Статистиките за профилът Ви са тук - брой сесии, серия, размер на тестето и средно ниво на познание."
-tutorial_account_settings_title:
-  other: "Настройки"
-tutorial_account_settings:
-  other: "Настройте сложността и честотата на упражненията си, сменете езика или цветовата тема"
 tutorial_card_pron_title:
   other: "Задаване на прозношение"
 tutorial_card_pron:
@@ -641,13 +600,11 @@ privacy_sec_localdata_p2:
 privacy_sec_thirdparty_title:
   other: "3. Технически данни и външни доставчици"
 privacy_sec_thirdparty_p1:
-  other: "Когато посещавате {brand}, вашият уеб браузър осъществява връзка с външни доставчици на инфраструктура, за да изтегли файловете на уебсайта, шрифтовете, данните за изписване на символи и публичните тестета. Тези доставчици могат да обработват технически данни за връзката (като вашия IP адрес, User-Agent на браузъра и времеви маркери на заявките) единствено с цел предаване на съдържание и сигурност на мрежата:"
+  other: "Когато посещавате {brand}, вашият уеб браузър осъществява връзка с външни доставчици на инфраструктура, за да изтегли файловете на уебсайта, данните за изписване на символи, публичните тестета и изображенията на емоджи. Тези доставчици могат да обработват технически данни за връзката (като вашия IP адрес, User-Agent на браузъра и времеви маркери на заявките) единствено с цел предаване на съдържание и сигурност на мрежата:"
 privacy_sec_thirdparty_li1:
   other: "GitHub Pages (GitHub, Inc. / Microsoft): Статичен хостинг за файловете на уеб приложението."
 privacy_sec_thirdparty_li2:
-  other: "jsDelivr CDN (ProspectOne / Cloudflare): Мрежа за доставка на съдържание (CDN) за анимации на щрихи, бази данни със символи и публични тестета."
-privacy_sec_thirdparty_li3:
-  other: "Google Fonts (Google LLC): Доставка на шрифта с отворен код Ubuntu."
+  other: "jsDelivr CDN (ProspectOne / Cloudflare): Мрежа за доставка на съдържание (CDN) за базата данни със символи, публичните тестета и изображенията на емоджи."
 privacy_sec_thirdparty_p2:
   other: "Тези доставчици обработват технически метаданни съгласно своите политики за поверителност и приложимите за тях механизми за международен трансфер на данни (като Рамката за поверителност на данните между ЕС и САЩ и нейното разширение за Обединеното кралство, както и стандартните договорни клаузи)."
 privacy_sec_legal_title:
@@ -691,7 +648,7 @@ privacy_sec_children_p1:
 privacy_sec_transfers_title:
   other: "9. Международни трансфери на данни"
 privacy_sec_transfers_p1:
-  other: "Външните доставчици на инфраструктура и CDN (GitHub, Google, Cloudflare) оперират глобални мрежи и центрове за данни. Доколкото технически метаданни за връзката се обработват извън Обединеното кралство или Европейското икономическо пространство (ЕИП), тези трансфери се уреждат от разпоредбите за адекватност на Обединеното кралство и от Споразумението за международен трансфер на данни (IDTA) или Допълнението на Обединеното кралство към стандартните договорни клаузи (SCC) на Европейската комисия, а за посетители от ЕИП - от SCC и решенията за адекватност, приети от Европейската комисия."
+  other: "Външните доставчици на инфраструктура и CDN (GitHub, Cloudflare) оперират глобални мрежи и центрове за данни. Доколкото технически метаданни за връзката се обработват извън Обединеното кралство или Европейското икономическо пространство (ЕИП), тези трансфери се уреждат от разпоредбите за адекватност на Обединеното кралство и от Споразумението за международен трансфер на данни (IDTA) или Допълнението на Обединеното кралство към стандартните договорни клаузи (SCC) на Европейската комисия, а за посетители от ЕИП - от SCC и решенията за адекватност, приети от Европейската комисия."
 privacy_sec_contact_title:
   other: "10. Промени в декларацията и контакт"
 privacy_sec_contact_p1:
@@ -700,3 +657,57 @@ privacy_sec_contact_p2:
   other: "Ако имате въпроси, обратна връзка или запитвания относно тази Декларация за поверителност или сигурността на {brand}, можете да пишете на Heapforge Ltd на адреса на управление, посочен в раздел 1, или да отворите тема в нашето официално хранилище в GitHub:"
 privacy_contact_github:
   other: "Посетете {brand} в GitHub"
+footer_licenses_link:
+  other: "Лицензи с отворен код"
+licenses_title:
+  other: "Лицензи с отворен код"
+licenses_hero_eyebrow:
+  other: "Благодарности и лицензи"
+licenses_hero_lead:
+  other: "{brand} е изграден върху труда на много проекти с отворен код. По-долу са изброени всички външни библиотеки, шрифтове, набори от данни и ресурси, които сайтът използва, заедно с лиценза, под който се разпространяват. Текстовете на лицензите са възпроизведени в оригинал на английски език, точно както са публикувани от авторите им."
+licenses_group_bundled_title:
+  other: "Вградени в сайта"
+licenses_group_bundled_desc:
+  other: "Включени в собствените файлове на {brand} и доставяни от същия хост като сайта."
+licenses_group_runtime_title:
+  other: "Изтегляни по време на използване"
+licenses_group_runtime_desc:
+  other: "Данни, които {brand} изтегля от CDN мрежата jsDelivr, докато го използвате."
+licenses_version:
+  other: "Версия {version}"
+licenses_source_link:
+  other: "Изходен код"
+licenses_show_text:
+  other: "Покажи текста на лиценза"
+licenses_used_for_hanzi_writer:
+  other: "Изрисува символите, анимира щрихите им и оценява вашия почерк."
+licenses_used_for_driver_js:
+  other: "Откроява части от страницата по време на въвеждащото обучение."
+licenses_used_for_twemoji:
+  other: "Заменя емоджитата с еднакви изображения на всички устройства. Кодът е вграден в сайта, а изображенията се изтеглят от jsDelivr при нужда."
+licenses_used_for_ubuntu_font:
+  other: "Шрифтът Ubuntu, използван за текста на сайта, доставян от нашия собствен хост."
+licenses_used_for_char_data:
+  other: "Обединената база данни с щрихи на символите, съставена от MadLadSquad от изброените по-долу източници."
+licenses_used_for_hanzi_writer_data:
+  other: "Данни за щрихите на китайските йероглифи, получени от проекта Make Me a Hanzi и шрифтове на Arphic Technology."
+licenses_used_for_animcjk:
+  other: "Данни за щрихите на японските канджи и кана."
+licenses_used_for_marketplace:
+  other: "Публичните тестета, които можете да разглеждате и добавяте от Пазара."
+import_deck_invalid:
+  other: "Този файл не е валидно тесте, затова нищо не беше внесено."
+deck_edit_error_empty_character:
+  other: "Въведете символа за тази карта, преди да запазите."
+deck_edit_error_single_character:
+  other: "Една карта съдържа точно един символ. За по-дълъг текст използвайте фраза."
+deck_edit_error_empty_phrase:
+  other: "Въведете текста на тази фраза, преди да запазите."
+deck_edit_error_no_stroke_data:
+  other: "Няма данни за щрихите на „{character}“, затова не може да се упражнява."
+deck_edit_error_duplicate:
+  other: "„{character}“ вече е във Вашето тесте."
+og_title:
+  other: "{brand} — научете се да пишете на ръка китайски, японски, корейски, гръцки и още"
+meta_keywords:
+  other: "писане на китайски йероглифи, ред на щрихите, японска кана, хирагана, катакана, канджи, корейски хангъл, ханджа, гръцка азбука, кирилица, упражнения по писане на ръка, приложение за изучаване на езици, писмени системи, флашкарти, повторение през интервали"

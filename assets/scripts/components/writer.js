@@ -19,12 +19,16 @@ window.WRITER_PADDING = 5;
 // ---------------------------------- CONSTANT BLOCK END ----------------------------------
 
 // hanzi-writer's data loader. The whole character database is already in memory (downloaded once and
-// cached in IndexedDB — see character-database.js), so this is a synchronous map lookup. Returns
-// undefined for a character that isn't in the database, which hanzi-writer handles the same way it
-// used to handle a 404 from the old per-character fetch
-function charDataLoader(character, _, __)
+// cached in IndexedDB — see character-database.js), so this is a synchronous map lookup. A character
+// that isn't in the database is reported through onError: hanzi-writer waits on one of the two
+// callbacks when the loader returns nothing, so staying silent would leave the writer (and a practice
+// round waiting on it) stuck forever. Callers that don't pass the callbacks just get the lookup
+function charDataLoader(character, _, onError)
 {
-    return window.characterData[character];
+    const data = window.characterData[character];
+    if (data === undefined && typeof onError === "function")
+        onError(new Error(`No stroke data for "${character}"`));
+    return data;
 }
 
 /**
@@ -42,6 +46,10 @@ function createWriter(targetId, character, overrides)
         outlineColor: window.WRITER_OUTLINE_COLOUR,
         radicalColor: window.WRITER_RADICAL_COLOUR,
         charDataLoader: charDataLoader,
+        // Without a handler hanzi-writer rethrows a failed load as an unhandled rejection. A missing
+        // character simply renders nothing on a card or preview; the practice page passes its own
+        // handler to skip the character instead
+        onLoadCharDataError: () => {},
     }, overrides));
 }
 

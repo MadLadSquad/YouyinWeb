@@ -107,8 +107,6 @@ account:
   other: "Account"
 guest:
   other: "Guest"
-locale:
-  other: "en_US/"
 extensive-mode-title:
   other: "Turns on extensive mode. Instead of going through all cards only once, extensive mode goes through the deck multiple times, gradually eliminating the cards with the highest knowledge."
 extensive-mode-aria-label:
@@ -182,17 +180,8 @@ finish_page_continue:
   other: "Continue"
 
 # Coming soon
-coming-soon-header:
-  other: "This page is coming soon!"
-# Add coming soon text 1
-coming-soon-text-1:
-  other: "Maybe check out the main {} or {}!"
-coming-soon-text-2:
-  other: "Thank you for your patience!"
-
-# deck-edit-card.html
 edit-card-site-title:
-  other: Edit Card
+  other: "Edit Card"
 new-card-h1:
   other: "New Card"
 input-mode-p:
@@ -261,8 +250,6 @@ average-session-length-field:
   other: "Average revision round length"
 time-spent-in-sessions-field:
   other: "Time spent revising"
-new-card-header:
-  other: "Add a new card or phrase to the deck"
 new-card-button:
   other: "New card"
 new-phrase-button:
@@ -299,8 +286,6 @@ js_locale:
   other: "en-US"
 no_sessions_recorded:
   other: "No revision rounds yet recorded"
-average_knowledge_level:
-  other: "Average knowledge level"
 part_of:
   other: "Part of"
 deck_card_edit:
@@ -322,10 +307,6 @@ marketplace_search_placeholder:
 
 import_deck_confirm_text:
   other: "Importing a deck WILL merge your current deck with the new one, to replace it first clear your current deck!"
-leveled_up_no:
-  other: "No"
-leveled_up_yes:
-  other: "Yes"
 pre_leveled_up:
   other: "Pre-leveled up"
 deck_source:
@@ -376,8 +357,6 @@ tutorial_skip:
   other: "Skip tutorial"
 tutorial_continue:
   other: "Start tour"
-tutorial_preparing:
-  other: "Preparing…"
 tutorial_finish:
   other: "Finish"
 tutorial_replay_button:
@@ -416,18 +395,6 @@ tutorial_deck_newcard_title:
   other: "Add cards"
 tutorial_deck_newcard:
   other: "Let's create your first character. Click New Card to begin."
-tutorial_deck_phrases_title:
-  other: "Phrases"
-tutorial_deck_phrases:
-  other: "Multi-character phrases appear in this section."
-tutorial_deck_characters_title:
-  other: "Characters"
-tutorial_deck_characters:
-  other: "Individual characters appear here - including the ones you just imported."
-tutorial_deck_search_title:
-  other: "Search your deck"
-tutorial_deck_search:
-  other: "Filter your cards and phrases as your deck grows."
 tutorial_review_edit_title:
   other: "Edit any card"
 tutorial_review_edit:
@@ -456,10 +423,6 @@ tutorial_phrase_input_title:
   other: "Enter a phrase"
 tutorial_phrase_input:
   other: "Now the phrase itself - we'll write 你好. A card is created for each unknown character it contains."
-tutorial_phrase_autocards_title:
-  other: "Automatic card creation"
-tutorial_phrase_autocards:
-  other: "A card is created automatically for each character in the phrase - a card for 好 is added automatically, and the card for 你 is reused since it's already part of your deck."
 tutorial_phrase_save_title:
   other: "Save the phrase"
 tutorial_phrase_save:
@@ -478,10 +441,6 @@ tutorial_account_stats_title:
   other: "Your profile"
 tutorial_account_stats:
   other: "Your profile stats live here - sessions count, streak, deck size and average knowledge level."
-tutorial_account_settings_title:
-  other: "Settings"
-tutorial_account_settings:
-  other: "Tune your practice, switch language or theme."
 tutorial_card_pron_title:
   other: "Add the pronunciation"
 tutorial_card_pron:
@@ -642,13 +601,11 @@ privacy_sec_localdata_p2:
 privacy_sec_thirdparty_title:
   other: "3. Technical Data & Third-Party Providers"
 privacy_sec_thirdparty_p1:
-  other: "When you visit {brand}, your web browser connects to third-party infrastructure providers to download the website files, fonts, character stroke data, and public decks. These providers may process technical connection data (such as your IP address, browser User-Agent, and request timestamps) strictly for the purpose of transmitting content and securing network operations:"
+  other: "When you visit {brand}, your web browser connects to third-party infrastructure providers to download the website files, character stroke data, public decks, and emoji images. These providers may process technical connection data (such as your IP address, browser User-Agent, and request timestamps) strictly for the purpose of transmitting content and securing network operations:"
 privacy_sec_thirdparty_li1:
   other: "GitHub Pages (GitHub, Inc. / Microsoft): Static web hosting for the site application files."
 privacy_sec_thirdparty_li2:
-  other: "jsDelivr CDN (ProspectOne / Cloudflare): Content Delivery Network used to distribute stroke animations, stroke databases, and public deck repositories."
-privacy_sec_thirdparty_li3:
-  other: "Google Fonts (Google LLC): Distribution of the open-source Ubuntu typeface."
+  other: "jsDelivr CDN (ProspectOne / Cloudflare): Content Delivery Network used to distribute the character stroke database, the public deck repository, and emoji images."
 privacy_sec_thirdparty_p2:
   other: "These providers process technical metadata in accordance with their respective privacy policies and under the international data transfer mechanisms that apply to them (such as the EU-U.S. Data Privacy Framework and its UK Extension, and standard contractual clauses)."
 privacy_sec_legal_title:
@@ -692,7 +649,7 @@ privacy_sec_children_p1:
 privacy_sec_transfers_title:
   other: "9. International Data Transfers"
 privacy_sec_transfers_p1:
-  other: "External infrastructure and CDN providers (GitHub, Google, Cloudflare) operate global networks and data centres. To the extent technical connection metadata is processed outside the United Kingdom or the European Economic Area (EEA), those transfers are covered by the UK's adequacy regulations and by the International Data Transfer Agreement (IDTA) or the UK Addendum to the European Commission's standard contractual clauses (SCCs); for visitors in the EEA they are covered by the SCCs and adequacy decisions adopted by the European Commission."
+  other: "External infrastructure and CDN providers (GitHub, Cloudflare) operate global networks and data centres. To the extent technical connection metadata is processed outside the United Kingdom or the European Economic Area (EEA), those transfers are covered by the UK's adequacy regulations and by the International Data Transfer Agreement (IDTA) or the UK Addendum to the European Commission's standard contractual clauses (SCCs); for visitors in the EEA they are covered by the SCCs and adequacy decisions adopted by the European Commission."
 privacy_sec_contact_title:
   other: "10. Changes to This Policy & Contact"
 privacy_sec_contact_p1:
@@ -701,3 +658,57 @@ privacy_sec_contact_p2:
   other: "If you have questions, feedback, or inquiries regarding this Privacy Policy or the security of {brand}, you can write to Heapforge Ltd at the registered address in section 1, or open an issue on our official GitHub repository:"
 privacy_contact_github:
   other: "Visit {brand} on GitHub"
+footer_licenses_link:
+  other: "Open-source licenses"
+licenses_title:
+  other: "Open-Source Licenses"
+licenses_hero_eyebrow:
+  other: "Credits & Licenses"
+licenses_hero_lead:
+  other: "{brand} is built on the work of many open-source projects. Below is every third-party library, font, data set and asset the site uses, with the license it is distributed under. License texts are reproduced in their original English, exactly as published by their authors."
+licenses_group_bundled_title:
+  other: "Bundled with the site"
+licenses_group_bundled_desc:
+  other: "Built into {brand}'s own files and served from the same host as the site."
+licenses_group_runtime_title:
+  other: "Downloaded while you use the site"
+licenses_group_runtime_desc:
+  other: "Data that {brand} downloads from the jsDelivr CDN as you use it."
+licenses_version:
+  other: "Version {version}"
+licenses_source_link:
+  other: "Source code"
+licenses_show_text:
+  other: "Show license text"
+licenses_used_for_hanzi_writer:
+  other: "Draws the characters, animates their strokes and grades your handwriting."
+licenses_used_for_driver_js:
+  other: "Highlights parts of the page during the onboarding tour."
+licenses_used_for_twemoji:
+  other: "Replaces emoji with consistent images on every device. The code is bundled with the site; the emoji graphics are downloaded from jsDelivr as they are needed."
+licenses_used_for_ubuntu_font:
+  other: "The Ubuntu typeface used for the site's text, served from our own host."
+licenses_used_for_char_data:
+  other: "The merged character stroke database, compiled by MadLadSquad from the sources listed below."
+licenses_used_for_hanzi_writer_data:
+  other: "Stroke data for Chinese characters, derived from the Make Me a Hanzi project and fonts by Arphic Technology."
+licenses_used_for_animcjk:
+  other: "Stroke data for Japanese kanji and kana."
+licenses_used_for_marketplace:
+  other: "The public decks you can browse and import from the Marketplace."
+import_deck_invalid:
+  other: "This file isn't a valid deck, so nothing was imported."
+deck_edit_error_empty_character:
+  other: "Enter the character for this card before saving."
+deck_edit_error_single_character:
+  other: "A card holds exactly one character. Use a phrase for anything longer."
+deck_edit_error_empty_phrase:
+  other: "Enter the text of this phrase before saving."
+deck_edit_error_no_stroke_data:
+  other: "There is no stroke data for “{character}”, so it can't be practised."
+deck_edit_error_duplicate:
+  other: "“{character}” is already in your deck."
+og_title:
+  other: "{brand} — learn to handwrite Chinese, Japanese, Korean, Greek & more"
+meta_keywords:
+  other: "learn to write Chinese characters, Hanzi stroke order, Japanese Kana, Hiragana, Katakana, Kanji, Korean Hangul, Hanja, Greek alphabet, Cyrillic, handwriting practice, stroke order practice, language learning app, writing systems, flashcards, spaced repetition"

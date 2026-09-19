@@ -116,7 +116,7 @@
                         </div>
                         <div class="setting-control">
                             <span class="chip chip-accent setting-readout" id="streak-goal-value"></span>
-                            <input type="range" id="streak-goal-slider" class="settings-slider" name="{{ partial "t.html" (dict "k" "streak-goal-aria-label") }}" aria-label="{{ partial "t.html" (dict "k" "streak-goal-aria-label") }}" min="3" max="30" value="3" step="1">
+                            <input type="range" id="streak-goal-slider" class="settings-slider" name="{{ partial "t.html" (dict "k" "streak-goal-aria-label") }}" aria-label="{{ partial "t.html" (dict "k" "streak-goal-aria-label") }}" step="1">
                         </div>
                     </div>
 
@@ -187,6 +187,13 @@
                                 </svg>
                                 {{ partial "t.html" (dict "k" "privacy_policy_title") }}
                             </a>
+                            <a href="{{ partial "url.html" (dict "slug" "licenses") }}" class="card-button-edit card-button-secondary data-card-button">
+                                <svg class="icon icon-sm" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+                                    <path d="M5.5 2.8h6l3 3v11.4h-9z"></path>
+                                    <path d="M11.5 2.8v3h3M8 10h4.5M8 13h4.5"></path>
+                                </svg>
+                                {{ partial "t.html" (dict "k" "footer_licenses_link") }}
+                            </a>
                             <button type="button" id="clear-account-button" class="card-button-edit card-button-danger data-card-button">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
                                     <path d="M4.5 6h11M8 6V4.6h4V6M6 6l.7 10h6.6L14 6"></path>
@@ -207,10 +214,4 @@
             </section>
         </main>
         <hr id="main-page-hr">
-        <!-- Loaded BEFORE the footer (which runs index.js then tutorial.js): tutorial.js's dispatch calls
-             this file's stage functions from a profileReady microtask that drains before any script
-             placed after the footer would run, so the definitions must exist beforehand -->
-        <!-- Loaded AFTER the footer: account.js consumes the readiness promises (profileReady, …)
-             that index.js creates, so index.js must run first -->
-    
 {{ end }}

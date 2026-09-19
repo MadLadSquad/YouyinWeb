@@ -1,9 +1,9 @@
 'use strict';
 // Tutorial: deck-page stages — deck tour, card review and deck review.
 //
-// Loaded only on deck.html, before the shared footer so these stage functions are defined before footer's
-// tutorial.js runs tutDispatch (it only routes to them at call time, by which point the cross-page core in
-// scripts/components/tutorial.js — helpers, tutRunTour, tutDispatch — exists). These stages run
+// Bundled only into the deck page's script bundle, ahead of the bootstrap() call, so these stage functions
+// are defined before main() resolves profileReady and tutorial.js's tutDispatch routes to them. The
+// cross-page core in scripts/components/tutorial.js (helpers, tutRunTour, tutDispatch) lives in the core bundle. These stages run
 // when the orchestrator returns to the deck between the editor visits.
 
 // ---------------------------------------------------------------------------------------------------------

@@ -1,0 +1,71 @@
+{{ define "title" }}{{ partial "t.html" (dict "k" "licenses_title") }} | {{ site.Params.trademark }}{{ end }}
+
+{{ define "main" }}
+        <main id="main-content" class="wrap licenses-page">
+
+            <!-- ============================== Hero ============================== -->
+            <section class="card privacy-hero">
+                <div class="privacy-hero-head">
+                    <p class="t-eyebrow">{{ partial "t.html" (dict "k" "licenses_hero_eyebrow") }}</p>
+                    <h1 class="t-display">{{ partial "t.html" (dict "k" "licenses_title") }}</h1>
+                </div>
+                <p class="t-body privacy-hero-lead">{{ partial "t.html" (dict "k" "licenses_hero_lead") }}</p>
+            </section>
+
+            <!-- One card per group of data/licenses.yaml. The license texts are fetched at build time
+                 (see layouts/_partials/license-text.html) and stay in their original English: they are
+                 legal texts, and only the chrome around them is translated. -->
+            {{- range $group := hugo.Data.licenses.groups }}
+            <section class="card privacy-section">
+                <div class="licenses-group-head">
+                    <h2 class="t-h1">{{ partial "t.html" (dict "k" (printf "licenses_group_%s_title" $group.id)) }}</h2>
+                    <p class="t-meta">{{ partial "t.html" (dict "k" (printf "licenses_group_%s_desc" $group.id)) }}</p>
+                </div>
+                <hr class="hairline">
+                <div class="license-list">
+                {{- range $e := $group.entries }}
+                    {{- /* Resolve the entry's license files and, for vendored packages, its version */ -}}
+                    {{- $srcs := slice -}}
+                    {{- $version := "" -}}
+                    {{- $base := "" -}}
+                    {{- if $e.vendor -}}
+                      {{- $url := index site.Params.vendor $e.vendor -}}
+                      {{- if not $url -}}{{- errorf "licenses.yaml: %s names unknown vendor key %q" $e.id $e.vendor -}}{{- end -}}
+                      {{- $base = replaceRE "/dist/.*$" "" $url -}}
+                      {{- $version = replaceRE "^.*@([0-9][^/]*)/.*$" "$1" $url -}}
+                    {{- else if $e.font -}}
+                      {{- $base = strings.TrimSuffix "/files" hugo.Data.font.base -}}
+                      {{- $version = replaceRE "^.*@([0-9][^/]*)/.*$" "$1" hugo.Data.font.base -}}
+                    {{- end -}}
+                    {{- with $base -}}
+                      {{- range $e.files -}}{{- $srcs = $srcs | append (printf "%s/%s" $base .) -}}{{- end -}}
+                    {{- end -}}
+                    {{- range $e.urls -}}{{- $srcs = $srcs | append . -}}{{- end -}}
+                    {{- with $e.local -}}{{- $srcs = $srcs | append . -}}{{- end -}}
+                    {{- if not $srcs -}}{{- errorf "licenses.yaml: %s has no license text source" $e.id -}}{{- end }}
+                    <article class="license-entry" id="license-{{ $e.id }}">
+                        <div class="license-entry-head">
+                            <h3 class="t-h2">{{ $e.name }}</h3>
+                            <div class="license-chips">
+                                {{- with $version }}
+                                <span class="chip">{{ partial "t.html" (dict "k" "licenses_version" "ctx" (dict "version" .)) }}</span>
+                                {{- end }}
+                                <span class="chip chip-accent">{{ $e.license }}</span>
+                            </div>
+                        </div>
+                        <p class="t-body">{{ partial "t.html" (dict "k" (printf "licenses_used_for_%s" $e.id)) }}</p>
+                        <a href="{{ $e.homepage }}" class="license-source" target="_blank" rel="noopener noreferrer">{{ partial "t.html" (dict "k" "licenses_source_link") }}</a>
+                        {{- range $srcs }}
+                        <details class="license-text-block">
+                            <summary>{{ partial "t.html" (dict "k" "licenses_show_text") }} <code>{{ path.Base . }}</code></summary>
+                            <pre class="license-text">{{ partialCached "license-text.html" . . }}</pre>
+                        </details>
+                        {{- end }}
+                    </article>
+                {{- end }}
+                </div>
+            </section>
+            {{- end }}
+        </main>
+
+{{ end }}

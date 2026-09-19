@@ -1,7 +1,7 @@
 {{/* The site's pages. `index` is the home page and is emitted by Hugo itself, so it is absent here.
      Adding a page means adding its slug here plus a layouts/<slug>.html and, if it needs scripts of
      its own, an entry in the $pages table in layouts/_partials/assets.html. */}}
-{{ range slice "deck" "account" "marketplace" "deck-edit-card" "privacy" }}
+{{ range slice "deck" "account" "marketplace" "deck-edit-card" "privacy" "licenses" }}
   {{ $.AddPage (dict
       "path"   .
       "kind"   "page"

@@ -41,10 +41,4 @@
                 <button id="upload-deck-public" class="card-button-edit card-button-secondary">{{ partial "t.html" (dict "k" "upload-deck-public") }}</button>
             </aside>
         </main>
-        <!-- Loaded BEFORE the footer (which runs index.js then tutorial.js): tutorial.js's dispatch calls
-             this file's stage functions from a profileReady microtask that drains before any script
-             placed after the footer would run, so the definitions must exist beforehand -->
-        <!-- Loaded AFTER the footer: marketplace.js consumes the readiness promises (storageReady, …)
-             that index.js creates, so index.js must run first -->
-    
 {{ end }}

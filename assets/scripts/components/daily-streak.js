@@ -1,18 +1,5 @@
 'use strict';
-
-/**
- * Encodes the LOCAL calendar date of the given Date as a timezone-independent integer day index.
- * Date.UTC re-interprets the local Y/M/D as if it were UTC, so the result identifies the calendar
- * day the user saw on their own clock, is immune to DST and stays comparable after the device
- * moves to another timezone. The same formula is inlined in index.js's lastStreakDay migration —
- * keep the two in sync
- * @param { Date } date - The date to encode
- * @returns { number } - Days since 1970-01-01 of the local calendar date
- */
-function localDayIndex(date)
-{
-    return Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000);
-}
+// Day boundaries throughout this file use localDayIndex from index.js
 
 /**
  * Whether today is already banked into the streak. lastStreakDay is written by updateDailyStreak
@@ -359,7 +346,7 @@ function checkStreakExpiry()
 
     if (changed)
     {
-        saveProfileData(data);
+        saveProfileData(data).catch(() => {});
         // Repaints the app bar, its panels, and the account page's profile card and shop when we
         // happen to be on that page
         refreshStreakReadouts();
@@ -382,7 +369,7 @@ function applyDailyLevelReduction()
     if (!data.lastLevelReduceDay)
     {
         data.lastLevelReduceDay = today;
-        saveProfileData(data);
+        saveProfileData(data).catch(() => {});
         return;
     }
 
@@ -405,7 +392,7 @@ function applyDailyLevelReduction()
     // Advance even when the slider sits at 0, so that raising it later only counts the days
     // after the change
     data.lastLevelReduceDay = today;
-    saveProfileData(data);
+    saveProfileData(data).catch(() => {});
 }
 
 /**
@@ -421,6 +408,10 @@ function msUntilNextLocalMidnight()
 }
 
 let dailyMidnightTimer = null;
+
+// Set once the profile is loaded and every page gate (the privacy consent above all) has been passed.
+// The visibility handler below is registered at script load and must not act before that
+let bDailyChecksReady = false;
 
 /**
  * (Re)arms the midnight check for both daily systems. The delay is recomputed on every schedule,
@@ -448,6 +439,7 @@ function scheduleDailyMidnightCheck()
 // only the profile (not the character database), and daily-streak.js loads before every page script,
 // so this still runs before the deck page renders — the deck shows already-reduced levels
 window.profileReady.then(() => {
+    bDailyChecksReady = true;
     applyDailyLevelReduction();
     checkStreakExpiry();
     scheduleDailyMidnightCheck();
@@ -461,11 +453,11 @@ window.profileReady.then(() => {
 // Timers are throttled or paused in background tabs and across system sleep, and the timezone may
 // have changed while suspended — re-evaluate whenever the tab becomes visible again.
 // This listener is registered at script load, before main() has loaded the profile (and in an
-// UNSUPPORTED browser main() never resolves profileReady, so profileData stays null forever). Bail
-// out until the profile is in memory, otherwise applyDailyLevelReduction dereferences a null profile
-// and throws — the profileReady handler above runs these once the data is actually ready.
+// UNSUPPORTED browser main() never resolves profileReady at all). Bail out until profileReady has
+// resolved: before that the profile may be null, and even once it is loaded the consent modal may
+// still be up — the profileReady handler above runs these once the page is actually ready.
 document.addEventListener("visibilitychange", function() {
-    if (document.visibilityState === "visible" && window.profileData !== null)
+    if (document.visibilityState === "visible" && bDailyChecksReady)
     {
         applyDailyLevelReduction();
         checkStreakExpiry();

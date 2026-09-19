@@ -4,6 +4,9 @@ on:
       - 'v*'
 name: Create Release
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Create Release
@@ -11,29 +14,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-        with:
-          lfs: true
-          submodules: true
-      - name: Checkout submodules
-        shell: bash
-        run: |
-          git submodule sync --recursive
-          git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
       - name: Get tag
         shell: bash
         id: mod
         run: |
           tag="${{ github.ref_name }}"
-          echo "out=youyin-web-${tag:1}" >> $GITHUB_OUTPUT
+          echo "out=youyin-web-${tag:1}" >> "$GITHUB_OUTPUT"
+      # The site has no submodules or LFS objects since the move to Hugo, so the source archive is
+      # simply the tagged tree. git archive leaves out .git and anything untracked, and fails loudly
+      # instead of the old mv/tar steps that ignored their own errors.
       - name: Create archive
         shell: bash
         run: |
-          rm -rf .git/
-          mkdir "${{ steps.mod.outputs.out }}" || exit
-          mv * ${{ steps.mod.outputs.out }}/ || echo "Errors in move"
-          mv .* "${{ steps.mod.outputs.out }}" || echo "Errors in move"
-
-          tar cfJ ${{ steps.mod.outputs.out }}.tar.xz ${{ steps.mod.outputs.out }} || echo "Might have failed"
+          set -euo pipefail
+          git archive --format=tar --prefix="${{ steps.mod.outputs.out }}/" HEAD | xz -9 > "${{ steps.mod.outputs.out }}.tar.xz"
       - name: Create Release
         uses: softprops/action-gh-release@v3
         with:

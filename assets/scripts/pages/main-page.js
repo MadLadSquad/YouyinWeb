@@ -11,6 +11,8 @@ window.ADD_POINTS_ON_ERROR_1_4 = 0.0125;            // 1/4 of 0.05
 // account page never loads this file
 
 window.WRITER_SLEEP_AFTER_COMPLETE = 1200;          // In ms
+// Pause before moving past a character that has no stroke data and so can't be drawn
+window.WRITER_SKIP_MISSING_DELAY = 300;             // In ms
 // How long the completed-character "fly into the progress counter" animation lasts. It is timed to
 // land right as the next character loads (after WRITER_SLEEP_AFTER_COMPLETE), so the snapshot sits
 // invisibly on top during the admire beat, then flies for the last stretch of the pause
@@ -57,13 +59,20 @@ window.totalPhraseStrokes = 0;
 
 window.currentPhraseIndex = 0;
 window.currentIndex = 0;
+// When the round's active time was last added to totalTimeInSessions (see flushSessionTime)
 window.sessionTime = 0;
+// Active time spent in the current round, for the recap. Excludes time the tab spent hidden
+window.roundActiveTime = 0;
 
-window.bMobile = false;
-
+// The app bar's nav links, stashed while a phone round replaces them with an Exit link; null otherwise
 window.linkChildren = null;
 
-window.extensiveModeLevel = 4;
+// Extensive mode revisits items in passes of decreasing knowledge level, starting from the top
+window.extensiveModeLevel = window.MAX_KNOWLEDGE_LEVEL;
+
+// The phone layout breakpoint from styles/components/header.css, where the app bar's nav collapses and
+// the tab bar takes over. A round goes immersive only there
+const PHONE_LAYOUT_QUERY = "(max-width: 760px)";
 
 window.cardsReviewedCounter = 1;
 window.phrasesReviewedCounter = 0;
@@ -143,7 +152,6 @@ function getDrawElementHeight()
     // the document was taller than the viewport it read as 0 instead and the footer was pushed off
     // the bottom. Summing the chrome we can actually name is both simpler and stable.
     const chromeHeight = headerBottom + progressStripHeight + hrHeight + footerHeight + tabBarHeight;
-    window.bMobile = navigator.userAgent.toLowerCase().includes("mobile");
 
     const isPortrait = window.matchMedia("(orientation: portrait)").matches;
     if (isPortrait)
@@ -754,8 +762,7 @@ function showFinishedSessionPage(st, bStreakAdvanced)
     growFinishStageToViewport(container);
 
     // Rounds that started or extended the daily streak get to brag about its new length. The
-    // singular/plural wording was resolved at build time by the ui18n switch pattern; here we only
-    // pick the right baked variant - the count itself is left as its {streak} placeholder so the
+    // singular/plural wording is two translation keys; here we only pick the right variant - the count itself is left as its {streak} placeholder so the
     // card can count it up in place
     let streakTemplate = "";
     if (bStreakAdvanced)
@@ -783,29 +790,56 @@ function showFinishedSessionPage(st, bStreakAdvanced)
     window.setTimeout(() => document.dispatchEvent(new CustomEvent(FINISH_SUMMARY_READY_EVENT)), total);
 }
 
+/**
+ * Swallows the rejection of a hanzi-writer call. Its calls return promises that reject when the
+ * character failed to load; writerOnMissingCharacter already handles that case, so the rejections
+ * would only surface as unhandled-rejection noise
+ * @param { * } result - Whatever the writer call returned
+ */
+function ignoreWriterFailure(result)
+{
+    if (result && typeof result.catch === "function")
+        result.catch(() => {});
+}
+
 function setWriterState(ref)
 {
     // Set the default writer state. Certain knowledge levels have certain features enabled/disabled
-    window.writer._options.showHintAfterMisses = 3;
-    window.writer.updateColor("radicalColor", null);
+    const writer = window.writer;
+    writer._options.showHintAfterMisses = 3;
+    ignoreWriterFailure(writer.updateColor("radicalColor", null));
     if (ref.knowledge >= 3)
     {
-        window.writer.hideOutline();
+        ignoreWriterFailure(writer.hideOutline());
     }
     else if (ref.knowledge >= 2)
     {
-        window.writer._options.showHintAfterMisses = window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3;
-        window.writer.hideOutline();
+        writer._options.showHintAfterMisses = window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3;
+        ignoreWriterFailure(writer.hideOutline());
     }
     else if (ref.knowledge >= 1)
     {
-        window.writer.showOutline();
+        ignoreWriterFailure(writer.showOutline());
     }
     else
     {
-        window.writer.updateColor("radicalColor", window.WRITER_RADICAL_COLOUR);
-        window.writer.showOutline();
+        ignoreWriterFailure(writer.updateColor("radicalColor", window.WRITER_RADICAL_COLOUR));
+        ignoreWriterFailure(writer.showOutline());
     }
+}
+
+/**
+ * Loads the next character into the session writer, styles it for the item's knowledge level and
+ * starts quizzing it. The character has to be set first: after a failed load hanzi-writer throws
+ * from every other call until setCharacter is called again, which used to abort the round
+ * @param { string } character - The character plus its variant postfix
+ * @param { Object } ref - The card or phrase whose knowledge level styles the writer
+ */
+function quizSessionCharacter(character, ref)
+{
+    ignoreWriterFailure(window.writer.setCharacter(character));
+    setWriterState(ref);
+    ignoreWriterFailure(window.writer.quiz());
 }
 
 /**
@@ -817,6 +851,11 @@ function setWriterState(ref)
  */
 function computeScore(strokes, errors, knowledge)
 {
+    // Nothing was drawn (every character was skipped for missing stroke data): there is nothing to
+    // grade, and dividing by zero strokes would turn the score into NaN
+    if (strokes <= 0)
+        return knowledge;
+
     let pointsPerStroke = (window.MAX_POINTS_ON_CHARACTER / strokes);
     let points = (window.MAX_POINTS_ON_CHARACTER - (errors * pointsPerStroke));
     let result;
@@ -839,6 +878,7 @@ function computeScore(strokes, errors, knowledge)
 function resetSessionData()
 {
     window.totalPhraseErrors = 0;
+    window.totalPhraseStrokes = 0;
     window.errors = 0;
     window.backwardsErrors = 0;
 
@@ -868,16 +908,14 @@ function resetPlayForPhrases(data)
         if (phraseChars[window.currentIndex] === c.character)
         {
             card = c;
-            setWriterState(card);
             break;
         }
     }
-    // Revert to using the phrase score if no card is found
-    if (card === null)
-        setWriterState(currentPhrase);
 
-    window.writer.setCharacter(phraseChars[window.currentIndex])
-    window.writer.quiz();
+    // A phrase character is drawn in the variant of its own card, the way the deck page shows it, and
+    // styled by that card's knowledge. Revert to using the phrase score if no card is found
+    const character = phraseChars[window.currentIndex] + (card !== null ? (card.variant || "") : "");
+    quizSessionCharacter(character, card !== null ? card : currentPhrase);
     changeSidebarText(currentPhrase, sessionRevisionCount(data.phrases), card, phraseChars.length);
 }
 
@@ -1115,19 +1153,54 @@ function recordSessionActivity()
     data.activityByDay[day] = (data.activityByDay[day] || 0) + 1;
 }
 
-// Madman10K: This function is fucking depressing I want to kill myself by just thinking that I have to modify anything here
-async function writerOnComplete(_)
+/**
+ * The session writer's onLoadCharDataError handler. A character with no stroke data (a card saved
+ * before the editor validated it, or a database that failed to download) can never be drawn, so the
+ * round moves past it instead of waiting on a quiz that will never start
+ * @param { * } err - The load error hanzi-writer reports
+ */
+function writerOnMissingCharacter(err)
 {
+    console.warn("Warning: skipping a character with no stroke data", err);
+    writerOnComplete({ skipped: true });
+}
+
+/**
+ * Adds the round time elapsed since the last flush to the profile, so a round that is abandoned or
+ * backgrounded still records the time actually spent in it. No-op outside a round
+ */
+function flushSessionTime()
+{
+    if (!window.bInTest)
+        return;
+
+    const now = Date.now();
+    const elapsed = now - window.sessionTime;
+    window.profileData.totalTimeInSessions += elapsed;
+    window.roundActiveTime += elapsed;
+    window.sessionTime = now;
+}
+
+// Madman10K: This function is fucking depressing I want to kill myself by just thinking that I have to modify anything here
+async function writerOnComplete(result)
+{
+    // A skipped character (see writerOnMissingCharacter) advances the round like a completed one, but
+    // nothing is drawn, scored, paid or counted for it
+    const bSkipped = result !== null && typeof result === "object" && result.skipped === true;
+
     // Reward animation: snapshot the finished character and fly it into the progress counter, then
     // blink the counter as it ticks up. Kicked off up front so it runs regardless of which branch
     // below advances the session. Skipped under reduced motion, where only the counter pulses
     const counterEl = $("character-info-widget-errors");
     const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!reducedMotion)
-        flyCharacterToCounter(counterEl);
-    // The counter value updates when the next character loads, after WRITER_SLEEP_AFTER_COMPLETE -
-    // pulse it then, in step with the flying copy's arrival
-    setTimeout(() => blinkCounter(counterEl), window.WRITER_SLEEP_AFTER_COMPLETE);
+    if (!bSkipped)
+    {
+        if (!reducedMotion)
+            flyCharacterToCounter(counterEl);
+        // The counter value updates when the next character loads, after WRITER_SLEEP_AFTER_COMPLETE -
+        // pulse it then, in step with the flying copy's arrival
+        setTimeout(() => blinkCounter(counterEl), window.WRITER_SLEEP_AFTER_COMPLETE);
+    }
 
     // Go to the next card
     ++window.currentIndex;
@@ -1135,14 +1208,18 @@ async function writerOnComplete(_)
     let data = window.profileData;
 
     // Calculate how many points to add to your knowledge
-    const strokeNum = window.writer._character.strokes.length;
+    const strokeNum = bSkipped ? 0 : window.writer._character.strokes.length;
     window.totalPhraseStrokes += strokeNum;
 
     // Accumulate every stroke the user drew this session (cards and phrase characters alike, and
     // each repeat in extensive mode) - this is the denominator for the recap accuracy percentage
     window.totalSessionStrokes += strokeNum;
 
-    if (!window.bInPhrase)
+    if (bSkipped)
+    {
+        // Nothing to score
+    }
+    else if (!window.bInPhrase)
     {
         data.cards[(window.currentIndex - 1)].knowledge = computeScore(strokeNum, window.errors, data.cards[(window.currentIndex - 1)].knowledge);
         // A card pays out per character. Characters drawn as part of a phrase deliberately do not —
@@ -1167,7 +1244,7 @@ async function writerOnComplete(_)
 
     // Basically sleep. This is so we wait until the finished character animation finishes, but also because the animation
     // will not feel great if we just skip directly without some time with no animation after it plays.
-    await new Promise(r => setTimeout(r, window.WRITER_SLEEP_AFTER_COMPLETE));
+    await new Promise(r => setTimeout(r, bSkipped ? window.WRITER_SKIP_MISSING_DELAY : window.WRITER_SLEEP_AFTER_COMPLETE));
 
     // This if statement handles switching to the next card
     if (!window.bInPhrase)
@@ -1178,11 +1255,9 @@ async function writerOnComplete(_)
             const f = () => {
                 ++window.cardsReviewedCounter;
                 let ref = data.cards[window.currentIndex];
-
-                setWriterState(ref);
-                window.writer.setCharacter(ref.character);
-
-                window.writer.quiz();
+                // With the variant: the round's first card always carried it, every later one didn't,
+                // so Kanji and Hanja cards were quizzed in their Chinese form
+                quizSessionCharacter(ref.character + (ref.variant || ""), ref);
                 changeSidebarText(null, 0, ref, sessionRevisionCount(data.cards));
             }
 
@@ -1217,12 +1292,17 @@ async function writerOnComplete(_)
             data.phrases[window.currentPhraseIndex].knowledge = computeScore(window.totalPhraseStrokes, window.totalPhraseErrors, data.phrases[window.currentPhraseIndex].knowledge);
 
             // The phrase is finished: pay out for it as a whole, the counterpart to the per-card
-            // award above. Together they make a full session worth GEMS_PER_ITEM * (8 + 8)
-            awardItemGems();
+            // award above. Together they make a full session worth GEMS_PER_ITEM * (8 + 8). A phrase
+            // whose every character was skipped was never written, so it earns nothing
+            if (window.totalPhraseStrokes > 0)
+                awardItemGems();
 
+            // Both phrase totals start over for the next phrase; carrying the strokes over made every
+            // later phrase look longer than it was and so scored its errors too leniently
             window.currentIndex = 0;
             ++window.currentPhraseIndex;
             window.totalPhraseErrors = 0;
+            window.totalPhraseStrokes = 0;
         }
 
         // If the index is lower than the length
@@ -1264,12 +1344,13 @@ async function writerOnComplete(_)
                     ++window.cardsReviewedCounter;
                     resetSessionData();
                     window.bInTest = true;
+                    // writerOnComplete scores data.cards[currentIndex - 1] after incrementing the index,
+                    // and carries on through the cards after it, so it has to point at the card being
+                    // drawn rather than stay at the 0 resetSessionData left it at
+                    window.currentIndex = i;
 
                     let ref = data.cards[i];
-                    setWriterState(ref);
-                    window.writer.setCharacter(ref.character);
-
-                    window.writer.quiz();
+                    quizSessionCharacter(ref.character + (ref.variant || ""), ref);
                     changeSidebarText(null, 0, ref, cardCount);
                     return;
                 }
@@ -1307,11 +1388,10 @@ async function writerOnComplete(_)
     $("main-content").classList.remove("in-session");
     setSessionProgressVisible(false);
 
-    // Save user data
-    const now = Date.now();
-    const st = (now - window.sessionTime);
-    data.totalTimeInSessions += st;
-    window.sessionTime = now;
+    // Save user data. The recap reports the round's active time, which excludes any stretch the tab
+    // spent hidden (see the visibility handler in mainPageMain)
+    flushSessionTime();
+    const st = window.roundActiveTime;
 
     // A day only counts towards the daily streak when a round is fully completed. Persisted by the
     // saveProfileData call below. Starting or extending a streak gets a little celebration,
@@ -1335,18 +1415,36 @@ async function writerOnComplete(_)
     window.phrasesReviewedCounter = 0;
     window.totalSessionErrors = 0;
     window.totalSessionStrokes = 0;
+    window.extensiveModeLevel = window.MAX_KNOWLEDGE_LEVEL;
 
     // Recreate initial view
-    saveProfileData(data);
+    saveProfileData(data).catch(() => {});
     fisherYates(data.cards);
     fisherYates(data.phrases);
 
-    // On mobile, we remove all header elements when playing, so re-add them
-    if (window.bMobile)
+    // A phone round swapped the header's links for an Exit link; put them back
+    if (window.linkChildren !== null)
     {
         $("main-page-header").replaceChildren(...window.linkChildren);
-        document.body.classList.remove("session-immersive");
+        window.linkChildren = null;
     }
+    document.body.classList.remove("session-immersive");
+}
+
+/**
+ * The horizontal border width of the writer's frame. The writer is sized to the frame's inner box,
+ * otherwise it is not truly centred. Read per side: the computed value of the border-width shorthand
+ * is not available in every browser
+ * @returns { number } - The combined left and right border width in pixels
+ */
+function writerBorderWidth()
+{
+    const frame = $("character-target-div");
+    if (frame === null)
+        return 0;
+
+    const style = window.getComputedStyle(frame);
+    return (parseFloat(style.borderLeftWidth) || 0) + (parseFloat(style.borderRightWidth) || 0);
 }
 
 /**
@@ -1360,7 +1458,12 @@ function setupSessionEndButton()
         return;
 
     runEventAfterAnimation(button, "click", function() {
-        location.href = window.pageUrl("index");
+        // Record the time spent so far before leaving. Wait for the write, since navigating straight
+        // away can abort it
+        flushSessionTime();
+        saveProfileData(window.profileData).catch(() => {}).then(() => {
+            location.href = window.pageUrl("index");
+        });
     });
 }
 
@@ -1384,9 +1487,11 @@ function createStartButton()
     // When the button is clicked, we will create the writer view
     runEventAfterAnimation(startButton, "click", function(_)
     {
-        // Make the experience more immersive by removing all buttons from the header, except for the main page link.
-        // Also, add an exit button, even though it does the same as clicking the main page link.
-        if (window.bMobile)
+        // On a phone, make the experience more immersive by removing all buttons from the header, except
+        // for the main page link. Also, add an exit button, even though it does the same as clicking
+        // the main page link. Decided by the layout breakpoint rather than the user agent, so tablets
+        // and phones get the layout the stylesheet actually gives them
+        if (window.matchMedia(PHONE_LAYOUT_QUERY).matches)
         {
             // The wordmark is no longer the list's first child — it lives outside #main-page-header
             // in the app bar precisely so it survives this swap, so the whole list is replaced by
@@ -1440,25 +1545,28 @@ function createStartButton()
 
         let data = window.profileData;
 
-        // Get the width of the writer border, since the element will not be truly centered if we do not subtract from it
-        const borderWidth = window.getComputedStyle($("character-target-div")).borderWidth.replace("px", "") * 2;
+        // Subtract the writer border, since the element will not be truly centered otherwise
+        const borderWidth = writerBorderWidth();
         window.writer = createWriter('character-target-div', data.cards[window.currentIndex].character + data.cards[window.currentIndex].variant, {
             width: sessionDrawHeight - borderWidth,
             height: sessionDrawHeight - borderWidth,
             showCharacter: false,
             showHintAfterMisses: window.WRITER_SHOW_HINT_ON_ERRORS,
+            onLoadCharDataError: writerOnMissingCharacter,
         });
-        window.writer.quiz({
+        ignoreWriterFailure(window.writer.quiz({
             onMistake: writerOnMistake,
             onComplete: writerOnComplete,
             onCorrectStroke: writerOnCorrectStroke,
-        });
+        }));
 
         // Modify sidebar text, as well as statistics data
         setWriterState(data.cards[window.currentIndex]);
         changeSidebarText(null, 0, data.cards[window.currentIndex], sessionRevisionCount(data.cards));
         const now = Date.now();
         window.sessionTime = now;
+        window.roundActiveTime = 0;
+        window.extensiveModeLevel = window.MAX_KNOWLEDGE_LEVEL;
 
         data.sessions++;
         data.lastDate = now;
@@ -1507,8 +1615,12 @@ function mainPageMain()
     const notify = function() {
         // Called for the side effect too: getDrawElementHeight sizes the info widget and main
         const newDrawElementHeight = getDrawElementHeight();
-        if (bInTest)
-            window.writer.updateDimensions({ width: newDrawElementHeight, height: newDrawElementHeight });
+        if (window.bInTest)
+        {
+            // Same border subtraction as when the writer was created, or every resize grows it
+            const size = newDrawElementHeight - writerBorderWidth();
+            window.writer.updateDimensions({ width: size, height: size });
+        }
         else
             renderSessionIdle();
     };
@@ -1523,23 +1635,44 @@ function mainPageMain()
         resizeTimer = setTimeout(notify, MAIN_PAGE_RESIZE_DEBOUNCE_MS);
     });
 
-    // getDrawElementHeight sizes the start button from getBoundingClientRect reads of the header/footer
-    // chrome, but those are taken now - before the Ubuntu webfont loads and before twemoji swaps the
-    // footer's 🎨 for an <img>. Both change the chrome's measured height afterwards, leaving the button
-    // sized for stale (shorter) chrome so the landing page overflows the viewport on portrait (the
-    // "works half the time / needs a refresh" symptom noted on getDrawElementHeight). Recompute once
-    // each settles. window load also covers the deferred twemoji script having executed and its emoji
-    // images having loaded.
+    // getDrawElementHeight measures the header/footer chrome, but this can run before the Ubuntu
+    // webfont has loaded and before twemoji has swapped the app bar's emoji for images. Both change the
+    // chrome's height afterwards, which would leave the page sized for stale chrome (the "works half
+    // the time / needs a refresh" symptom noted on getDrawElementHeight), so recompute once each has
+    // settled. This runs after the profile loads, by which point the load event has often fired
+    // already, so check for that rather than only listening
     if (document.fonts && document.fonts.ready)
         document.fonts.ready.then(notify);
-    window.addEventListener("load", notify);
+    if (document.readyState === "complete")
+        notify();
+    else
+        window.addEventListener("load", notify, { once: true });
 
-    // Add this event to make sure to save any data if we close the tab
-    window.addEventListener("beforeunload", function(_)
+    // Keep an unfinished round's progress (time spent, knowledge changes, gems) when the tab is hidden
+    // or closed. visibilitychange is the last event mobile browsers reliably deliver, and pagehide
+    // covers a desktop close; an IndexedDB write from beforeunload was usually torn down with the page.
+    // Time the tab spends hidden is not counted: the clock restarts when it becomes visible again.
+    // Only mid-round: an idle page has nothing unsaved, and saving there would also wake other tabs
+    document.addEventListener("visibilitychange", function()
     {
-        if (bInTest)
-            window.profileData.totalTimeInSessions += (Date.now() - window.sessionTime);
-        saveProfileData(window.profileData);
+        if (!window.bInTest)
+            return;
+
+        if (document.visibilityState === "hidden")
+        {
+            flushSessionTime();
+            saveProfileData(window.profileData).catch(() => {});
+        }
+        else
+            window.sessionTime = Date.now();
+    });
+    window.addEventListener("pagehide", function()
+    {
+        if (!window.bInTest)
+            return;
+
+        flushSessionTime();
+        saveProfileData(window.profileData).catch(() => {});
     });
 
     // Shuffle the cards

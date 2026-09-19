@@ -1,12 +1,12 @@
 'use strict';
 /**
- * Builds the footer theme switcher: a button that toggles a searchable popup listing every
+ * Builds the theme switcher: a button that toggles a searchable popup listing every
  * theme in window.themes. Selecting a theme applies it live (no reload) and persists
  * the choice under the "theme" localStorage key. Themes are applied by theme.js.
  */
 function setThemeBox()
 {
-    // The theme switcher is shown in the footer on every page and duplicated in the account settings
+    // The theme switcher is shown in the app bar on every page and duplicated in the account settings
     // card, so wire up every instance. Each builds its own popup; only one popup can be open at a
     // time (createPopupController enforces mutual exclusion) and every popup re-reads the persisted
     // theme on open, so the instances stay consistent without any live cross-syncing
@@ -19,7 +19,7 @@ function wireThemeButton(button)
     const current = window.localStorage.getItem("theme") || "default";
 
     // Build the popup container, search box and list. Identifiers are classes, not ids, so the
-    // footer and account-card popups can coexist on the same page without colliding
+    // app-bar and account-card popups can coexist on the same page without colliding
     const popup = document.createElement("div");
     popup.className = "list-select-popup theme-popup";
     popup.setAttribute("role", "dialog");
@@ -56,7 +56,7 @@ function wireThemeButton(button)
 
     // The site ships ~190 themes, and building a button (plus its hover/click listeners) for each is
     // the bulk of this function's work — yet the picker is rarely opened. Defer that to the first open
-    // so an ordinary page load doesn't construct ~190 footer DOM nodes for a popup the user may never
+    // so an ordinary page load doesn't construct ~190 DOM nodes for a popup the user may never
     // touch. Everything below keys off `options`, which stays empty until buildOptions runs.
     let optionsBuilt = false;
     function buildOptions()
@@ -144,7 +144,7 @@ function wireThemeButton(button)
     const controller = createPopupController(button, popup, function() {
         // The popup is position:fixed and lives on document.body, so anchor it to whichever button
         // opened it — otherwise every instance would open at the same fixed viewport spot and the
-        // account-card switcher would appear to open the footer's popup. Centre it horizontally on
+        // account-card switcher would appear to open the app bar's popup. Centre it horizontally on
         // the button (CSS keeps the translate(-50%)).
         const GAP = 8;
         const rect = button.getBoundingClientRect();

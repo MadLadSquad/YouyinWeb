@@ -1,8 +1,7 @@
 'use strict';
 // First-visit onboarding tutorial — cross-page core.
 //
-// Loaded on every page via the shared footer chrome, after scripts/index.js (so window.profileReady
-// exists). The tutorial is inherently multi-page and event-driven — it waits on the character-database
+// Part of the core bundle on every page, after scripts/index.js (so window.profileReady exists). The tutorial is inherently multi-page and event-driven — it waits on the character-database
 // download, on a marketplace import committing, and on a practice session finishing — so it can't be a
 // single in-page tour. Instead it's a small state machine persisted in localStorage: each page renders the
 // slice that matches the current step, performs/awaits the relevant action, then advances the step and
@@ -10,14 +9,14 @@
 //
 // This file holds only the cross-page core: the state machine, the shared helpers, the Driver.js wrapper and
 // the per-page dispatch. The per-page *stage* functions it dispatches to live in scripts/components/tutorial/
-// (main-page.js, marketplace.js, deck.js, deck-new.js, account.js) and are loaded only on their page, after
-// this file. Because tutDispatch runs from a profileReady.then() (well after every script has parsed)
+// (main-page.js, marketplace.js, deck.js, deck-new.js, account.js) and are bundled only into their page's
+// script bundle, which runs after the core bundle. Because tutDispatch runs from a profileReady.then() (well after every script has parsed)
 // and every case is guarded by an exact tutPage() check, each stage function is only ever called on the page
 // whose file defines it.
 //
-// Element highlighting/pointer popovers use Driver.js (window.driver.js.driver, loaded from jsDelivr). The
-// intro/outro are bespoke blocking modals (the intro embeds animated hanzi-writer widgets). See CLAUDE.md
-// and the plan for the full flow. Storage keys mirror the existing localStorage idioms (theme-selector.js).
+// Element highlighting/pointer popovers use Driver.js (window.driver.js.driver, vendored into the core
+// bundle just before this file). The intro/outro are bespoke blocking modals (the intro embeds animated
+// hanzi-writer widgets). See CLAUDE.md for the full flow. Storage keys mirror the existing localStorage idioms (theme-selector.js).
 
 // ---------------------------------------------------------------------------------------------------------
 // State (localStorage)
@@ -66,7 +65,6 @@ window.startTutorialReplay = function ()
 // Small helpers
 // ---------------------------------------------------------------------------------------------------------
 
-// Which page we're on, mirroring pageNeedsCharacterData() in index.js. Returns "index" for a directory root.
 // Which page the tour is currently on. Defers to pageNameFromPath() in index.js (loaded earlier in
 // the shared core bundle) so there is one definition of "which page am I on" for directory URLs.
 function tutPage()
@@ -258,22 +256,6 @@ function tutRunTour(steps, extraConfig)
     return driverObj;
 }
 
-// Highlights a single element the user is meant to click themselves (e.g. New Card / New Phrase, whose own
-// handlers navigate). Shows only the close button so there's no competing Next, and attaches a one-time
-// click listener that records the next step and tears the tour down before the native navigation fires.
-function tutHighlightUserClick(element, title, description, side, nextStep)
-{
-    const driverObj = tutRunTour([{ element, title, description, side, showButtons: ["close"] }]);
-    const target = typeof element === "string" ? document.querySelector(element) : element;
-    if (target)
-        target.addEventListener("click", () => {
-            tutSetStep(nextStep);
-            if (driverObj)
-                driverObj.destroy();
-        }, { once: true });
-    return driverObj;
-}
-
 // Opens a button-triggered popup (language / theme / character-variant select) purely for display, by
 // calling its registered popup controller's open() directly — more reliable than synthesizing a click,
 // which doesn't open every select.
@@ -281,10 +263,9 @@ function tutHighlightUserClick(element, title, description, side, nextStep)
 // The theme popup opens fine during a tour but the language/variant ones didn't, and the reason is where
 // each popup lives. The theme popup is mounted on document.body as position:fixed, so it sits in the root
 // stacking context and a high z-index lifts it cleanly above Driver's dim overlay (z-index 10000). The
-// language/variant popups (createCustomSelect) are position:absolute *inside* a .card; .card uses
-// content-visibility:auto, which establishes a stacking context and paint-clips its descendants — so the
-// opened popup is trapped beneath the overlay and clipped no matter how high its z-index, and it also only
-// ever opens upward (no flip), which can push it off-screen at the tour's scroll position.
+// language/variant popups (createCustomSelect) are position:absolute *inside* the page's cards, so their
+// z-index only competes within the stacking contexts they are nested in and doesn't lift them above the
+// overlay, and their own vertical flip reasons about the page rather than about the Driver popover.
 //
 // Rather than fight the card's containment, we make every box behave like the theme one: float the opened
 // popup onto document.body as position:fixed anchored to its button (above it, or below when there isn't

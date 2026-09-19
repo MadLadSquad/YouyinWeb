@@ -5,19 +5,10 @@
  */
 function updateExportButton()
 {
-    const dt = window.profileData;
-    const data = {
-        cards: dt.cards,
-        phrases: dt.phrases
-    }
-
-    let file = new Blob([JSON.stringify(data)], { type: "application/json;charset=utf-8" });
-
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(file);
-    link.download = "deck.yydeck.json";
-    link.click();
-    URL.revokeObjectURL(link.href);
+    downloadJSON("deck.yydeck.json", {
+        cards: window.profileData.cards,
+        phrases: window.profileData.phrases
+    });
 }
 
 /**
@@ -42,17 +33,25 @@ function importDeck(f) {
     {
         const reader = new FileReader();
         reader.addEventListener("load", (e) => {
-            let dt = window.profileData;
-            let data = JSON.parse(e.target.result.toString());
-
-            dt.cards.push.apply(dt.cards, data.cards);
-            dt.phrases.push.apply(dt.phrases, data.phrases);
+            // mergeDeckIntoProfile validates the whole file before touching the profile, so a file that
+            // isn't JSON or isn't a deck leaves the deck exactly as it was
+            try
+            {
+                mergeDeckIntoProfile(JSON.parse(e.target.result.toString()));
+            }
+            catch (err)
+            {
+                console.error("Error: could not import the deck file", err);
+                alert(lc.import_deck_invalid);
+                return;
+            }
 
             // Wait for the IndexedDB write to commit before reloading, otherwise the reload can
             // tear the page down before the transaction flushes
-            saveProfileData(dt).then(() => document.location.reload());
+            saveProfileData(window.profileData).then(() => document.location.reload()).catch(() => {});
         });
-        reader.readAsText(file)
+        reader.addEventListener("error", () => alert(lc.import_deck_invalid));
+        reader.readAsText(file);
     }
 }
 
@@ -64,7 +63,7 @@ function clearDeck() {
         dt.cards = [];
         dt.phrases = [];
 
-        saveProfileData(dt).then(() => document.location.reload());
+        saveProfileData(dt).then(() => document.location.reload()).catch(() => {});
     }
 }
 
@@ -309,11 +308,12 @@ function constructCard(it, index, container, localIndex)
     // adjacent control to contrast with, and a borderless one read as a line of body text rather
     // than something to click
     let editButton = addElement("button", lc.deck_card_edit, `card-edit-button-${index}`, "card-button-edit card-button-secondary deck-card-edit", `${localIndex}`, footer)
-    editButton["phrase"] = it["phrase"] ? "phrase-" : ""; // If we're using phrases add this so that the callback can redirect correctly
-    runEventAfterAnimation(editButton, "click", (e) =>
+    // The original index in profileData (localIndex) is what the editor looks the entry up by. It is
+    // also stamped on the button as arbitrary-data, which scripts/components/tutorial/deck.js reads
+    const editQuery = `?${it["phrase"] ? "phrase-" : ""}edit=${localIndex}`;
+    runEventAfterAnimation(editButton, "click", () =>
     {
-        // In the line above, we store the card index in the "arbitrary-data" field. Here we retrieve it
-        location.href = `./deck-edit-card.html?${e.currentTarget.phrase}edit=${e.currentTarget.attributes["arbitrary-data"].nodeValue}`;
+        location.href = window.pageUrl("deck-edit-card", editQuery);
     });
 
     // Defer the writer — the expensive, SVG-heavy part of a card — until it nears the viewport. The

@@ -2,6 +2,14 @@
    navigation footer buttons, text inputs, the variant select wrapper and the hidden phrase-preview
    section. Colours come from the theme custom properties injected by theme.js (see base.css). */
 
+/* The editor's cards sit in .deck grids too, which gives them content-visibility: auto (see card.css).
+   That implies paint containment, which clips the character-variant popup at the edge of its card.
+   There are only ever a handful of cards here, so the optimisation buys nothing on this page */
+.deck-edit-page .deck > .card {
+    content-visibility: visible;
+    contain-intrinsic-size: none;
+}
+
 /* Keeps the rebuildable variant select on the same line as the character input */
 .character-variant-wrapper {
     display: inline-block;

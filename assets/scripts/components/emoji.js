@@ -10,8 +10,9 @@ function parseEmojis(root)
     if (!window.twemoji || root.nodeType !== Node.ELEMENT_NODE)
         return;
 
+    // No base URL: the library defaults to the asset release matching its own version, so bumping the
+    // vendored twemoji in hugo.yaml moves the SVGs along with it
     window.twemoji.parse(root, {
-        base: 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/',
         folder: 'svg',
         ext: '.svg'
     });
@@ -23,18 +24,10 @@ function parseEmojis(root)
  */
 function initEmojiReplacement()
 {
-    // twemoji.min.js is loaded with defer, so it may not have executed yet when index.js's main()
-    // calls this (a deferred head script runs after the regular body scripts). Rather than silently
-    // skip emoji replacement for the whole page, wait for the script to finish loading and retry.
-    // Once it has executed, window.twemoji is set and we fall straight through
+    // twemoji is vendored at the top of the core bundle (see layouts/_partials/assets.html), so it has
+    // always executed by the time main() calls this
     if (!window.twemoji)
     {
-        const script = document.querySelector('script[src*="twemoji"]');
-        if (script)
-        {
-            script.addEventListener("load", initEmojiReplacement, { once: true });
-            return;
-        }
         console.warn("Twemoji library not loaded; falling back to native emojis.");
         return;
     }

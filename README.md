@@ -30,6 +30,14 @@ on the [wiki](https://github.com/MadLadSquad/YouyinWeb/wiki/) or on the
 [MadLadSquad site](https://madladsquad.com/docs/YouyinWeb/Home).
 
 ## Credits
-This project uses the following third party libraries:
-1. [Makemeahanzi](https://github.com/skishore/makemeahanzi)
-1. [Hanziwriter](https://github.com/chanind/hanzi-writer)
+This project uses the following third party libraries, fonts and data:
+1. [Hanzi Writer](https://github.com/chanind/hanzi-writer) (MIT)
+1. [Driver.js](https://github.com/kamranahmedse/driver.js) (MIT)
+1. [Twemoji](https://github.com/jdecked/twemoji) (MIT code, CC BY 4.0 graphics)
+1. [Ubuntu Font](https://github.com/fontsource/font-files/tree/main/fonts/google/ubuntu) via Fontsource (Ubuntu Font Licence 1.0)
+1. [hanzi-writer-data](https://github.com/chanind/hanzi-writer-data) / [Make Me a Hanzi](https://github.com/skishore/makemeahanzi) (Arphic Public License)
+1. [AnimCJK](https://github.com/parsimonhi/animCJK) (Arphic Public License, LGPL-3.0)
+
+The full list, with every license text, is published on the site's
+[open-source licenses page](https://youyin.madladsquad.com/en_US/licenses/), generated from
+[`data/licenses.yaml`](data/licenses.yaml).

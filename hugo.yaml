@@ -2,7 +2,6 @@
 # output directories that UVKBuildTool produced are now Hugo's multilingual mode.
 baseURL: https://youyin.madladsquad.com/
 title: Youyin
-enableGitInfo: true          # feeds <lastmod> in the sitemap (replaces .github/update-sitemap-lastmod.py)
 disableKinds: [taxonomy, term, rss, section, sitemap]
 defaultContentLanguage: en_US
 defaultContentLanguageInSubdir: true
@@ -11,7 +10,7 @@ disablePathToLower: true
 # Hugo lowercases the language *key* when it builds the output directory (public/en_us/), so every
 # internal link is built from params.dir instead of .RelPermalink, and build.sh renames the three
 # directories afterwards. Keep params.dir in sync with SUPPORTED_LOCALES in
-# assets/scripts/components/language-selector.js and with LOCALES in assets/sw.js.
+# assets/scripts/components/language-selector.js and with the rename loop in build.sh.
 languages:
   en_US:
     locale: en-US
@@ -35,10 +34,13 @@ params:
   marketplace_url: https://github.com/MadLadSquad/YouyinPublicDeckRepository
   marketplace_cdn_url: https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest
   char_data_url: https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin@latest
-  additional_cdn_hosts: "none"
+  # Extra hosts, besides cdn.jsdelivr.net, whose responses the service worker may cache (a list of
+  # host names, e.g. [ "example.com" ])
+  additional_cdn_hosts: []
 
   # Third-party code, fetched once at build time by resources.GetRemote and concatenated into our
-  # own bundles, so the running site talks to no CDN at all. Bump these to update a library.
+  # own bundles, so the running site loads no code from a CDN. Bump these to update a library; the
+  # licenses page and the twemoji SVG base follow the version automatically.
   # Keys must be lowercase: Hugo lowercases config map keys, so a camelCase lookup returns nil.
   vendor:
     hanzi_writer: https://cdn.jsdelivr.net/npm/hanzi-writer@3.7.3/dist/hanzi-writer.min.js

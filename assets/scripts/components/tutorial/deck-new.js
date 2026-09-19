@@ -1,9 +1,9 @@
 'use strict';
 // Tutorial: card/phrase editor stages (deck-edit-card page) — create 好, then the 你好 phrase.
 //
-// Loaded only on deck-edit-card.html, before the shared footer so these stage functions are defined before
-// footer's tutorial.js runs tutDispatch (it only routes to them at call time, by which point the cross-page
-// core in scripts/components/tutorial.js — helpers, tutRunTour, tutDispatch — exists). The form-filling
+// Bundled only into the deck-edit-card page's script bundle, ahead of the bootstrap() call, so these stage functions
+// are defined before main() resolves profileReady and tutorial.js's tutDispatch routes to them. The
+// cross-page core in scripts/components/tutorial.js (helpers, tutRunTour, tutDispatch) lives in the core bundle. The form-filling
 // helpers below are used only by these editor stages, so they live here rather than in the global core.
 
 // ---------------------------------------------------------------------------------------------------------

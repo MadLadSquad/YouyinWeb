@@ -6,7 +6,7 @@
 
   <lastmod> comes from data/lastmod.yaml, which build.sh regenerates from git: a page's date only
   moves when its own layout, the shared chrome, or the translations changed. */ -}}
-{{- $slugs := slice "index" "deck" "account" "marketplace" "privacy" -}}
+{{- $slugs := slice "index" "deck" "account" "marketplace" "privacy" "licenses" -}}
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">

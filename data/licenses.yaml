@@ -1,0 +1,70 @@
+# Every third-party component the site ships or loads, rendered by layouts/licenses.html. The
+# license texts are fetched at build time (layouts/_partials/license-text.html), so the published
+# page makes no cross-origin request.
+#
+# Where a license text comes from:
+#   vendor: <key>  a library under params.vendor in hugo.yaml. The package base and the version are
+#                  derived from that URL, so bumping a version there updates this page too; `files`
+#                  are paths relative to the package base.
+#   font: true     the webfont in data/font.yaml, same idea; `files` relative to the package base.
+#   urls: [...]    explicit URLs, for the runtime data that is not vendored.
+#   local: <path>  a file in this repository.
+#
+# Each entry's description is the translation key licenses_used_for_<id>; each group's title and
+# description are licenses_group_<id>_title / _desc. Adding a vendored library or a runtime source
+# means adding an entry here as well.
+groups:
+  - id: bundled
+    entries:
+      - id: hanzi_writer
+        name: Hanzi Writer
+        homepage: https://github.com/chanind/hanzi-writer
+        license: MIT
+        vendor: hanzi_writer
+        files: [LICENSE]
+      - id: driver_js
+        name: Driver.js
+        homepage: https://github.com/kamranahmedse/driver.js
+        license: MIT
+        vendor: driver_js
+        files: [license]           # lowercase in the published package; LICENSE is a 404
+      - id: twemoji
+        name: Twemoji
+        homepage: https://github.com/jdecked/twemoji
+        license: MIT, CC-BY-4.0    # MIT for the code, CC BY 4.0 for the graphics
+        vendor: twemoji
+        files: [LICENSE, LICENSE-GRAPHICS]
+      - id: ubuntu_font
+        name: Ubuntu Font (via Fontsource)
+        homepage: https://github.com/fontsource/font-files/tree/main/fonts/google/ubuntu
+        license: UFL-1.0
+        font: true
+        files: [LICENSE]
+
+  - id: runtime
+    entries:
+      - id: char_data
+        name: hanzi-writer-data-youyin
+        homepage: https://github.com/MadLadSquad/hanzi-writer-data-youyin
+        license: MIT
+        urls:
+          - https://raw.githubusercontent.com/MadLadSquad/hanzi-writer-data-youyin/master/LICENSE
+      - id: hanzi_writer_data
+        name: hanzi-writer-data / Make Me a Hanzi
+        homepage: https://github.com/chanind/hanzi-writer-data
+        license: Arphic Public License
+        urls:
+          - https://raw.githubusercontent.com/chanind/hanzi-writer-data/master/ARPHICPL.TXT
+      - id: animcjk
+        name: AnimCJK (via hanzi-writer-data-jp)
+        homepage: https://github.com/parsimonhi/animCJK
+        license: Arphic Public License, LGPL-3.0
+        urls:
+          - https://raw.githubusercontent.com/parsimonhi/animCJK/master/licenses/COPYING.txt
+          - https://raw.githubusercontent.com/parsimonhi/animCJK/master/licenses/LGPL.txt
+      - id: marketplace
+        name: YouyinPublicDeckRepository
+        homepage: https://github.com/MadLadSquad/YouyinPublicDeckRepository
+        license: MIT
+        urls:
+          - https://raw.githubusercontent.com/MadLadSquad/YouyinPublicDeckRepository/master/LICENSE

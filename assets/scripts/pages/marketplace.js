@@ -186,13 +186,24 @@ function constructElement(val, deckContainer, deck, type, language)
                 // Download done; the remaining merge + IndexedDB write is the last sliver of the bar
                 updateImportOverlay(overlay, 1);
 
-                let dt = window.profileData;
-                dt.cards.push.apply(dt.cards, content.cards);
-                dt.phrases.push.apply(dt.phrases, content.phrases);
+                // Validates the deck and skips anything the user already has, so importing a deck a
+                // second time neither duplicates it nor resets the progress made on it
+                try
+                {
+                    mergeDeckIntoProfile(content);
+                }
+                catch (err)
+                {
+                    console.error("Error: the marketplace deck is malformed", err);
+                    hideImportOverlay(overlay);
+                    alert(lc.import_deck_invalid);
+                    return;
+                }
+
                 // Wait for the write to commit before navigating, otherwise the imported deck may not
                 // be persisted by the time the deck page loads. The overlay stays up through the
                 // navigation so the page never becomes interactive mid-import
-                await saveProfileData(dt);
+                await saveProfileData(window.profileData);
                 location.href = window.pageUrl("deck");
             }
             catch (err)
@@ -228,14 +239,8 @@ function constructElement(val, deckContainer, deck, type, language)
             if (content === undefined)
                 return;
 
-            // loadMarketplaceData returns the parsed object — serialize it back, otherwise the Blob
-            // would contain the string "[object Object]"
-            let file = new Blob([JSON.stringify(content)], { type: "application/json;charset=utf-8" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(file);
-            link.download = deckPath.split("/").at(-1);
-            link.click();
-            URL.revokeObjectURL(link.href);
+            // loadMarketplaceData returns the parsed object; downloadJSON serialises it back
+            downloadJSON(deckPath.split("/").at(-1), content);
         }
         catch (err)
         {

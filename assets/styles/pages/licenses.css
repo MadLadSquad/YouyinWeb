@@ -1,0 +1,114 @@
+/* Open-source licenses page only (licenses.html). The hero and the group cards reuse the privacy
+   page's .privacy-hero / .privacy-section rules (privacy.css, in the same bundle); this file adds the
+   page column and the per-component entries. Colours come from the theme custom properties injected
+   by theme.js (see base.css). */
+
+.licenses-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-top: 1.75rem;
+    padding-bottom: 2.5rem;
+    max-width: 900px;
+}
+
+.licenses-group-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+/* A div rather than a ul: base.css turns every ul into a centred flex row */
+.license-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.license-entry {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    background-color: var(--sunken);
+    text-align: left;
+}
+
+.license-entry-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1rem;
+    width: 100%;
+}
+
+.license-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+
+/* The accent chip sits on the sunken panel here, so give it the surface's contrast back */
+.license-entry .chip:not(.chip-accent) {
+    background-color: var(--surface);
+}
+
+/* Same underline-in-the-accent treatment as the footer links (see header.css), for the same
+   contrast reason: accent-coloured text fails AA on many palettes */
+.license-source {
+    font-size: 0.875rem;
+    color: var(--main-text-colour);
+    text-decoration: underline;
+    text-decoration-color: var(--main-accent-colour);
+    text-decoration-thickness: 0.09em;
+    text-underline-offset: 0.18em;
+}
+
+.license-source:hover {
+    text-decoration-thickness: 0.16em;
+}
+
+.license-text-block {
+    width: 100%;
+}
+
+.license-text-block summary {
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--body-text);
+    padding: 0.25rem 0;
+}
+
+.license-text-block summary code {
+    font-size: 0.8125rem;
+    color: var(--muted-text);
+}
+
+/* The GPL runs to ~35 KB, so the text scrolls inside a capped box, and wraps so a long URL can
+   never push the page wider than a phone */
+.license-text {
+    margin: 0.5rem 0 0 0;
+    max-height: 22rem;
+    overflow: auto;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    background-color: var(--surface);
+    color: var(--body-text);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.78125rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+    .license-entry {
+        padding: 0.875rem;
+    }
+}

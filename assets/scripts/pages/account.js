@@ -259,6 +259,9 @@ function setupStreakGoal()
     if (slider === null)
         return;
 
+    // The bounds come from the constants in index.js, the same ones the goal prompt's slider uses
+    slider.min = window.STREAK_GOAL_MIN;
+    slider.max = window.STREAK_GOAL_MAX;
     const goal = window.profileData.streakGoal;
     slider.value = goal > 0 ? goal : window.STREAK_GOAL_MIN;
     renderLabel(slider);
@@ -288,7 +291,7 @@ function setupGameModifiers()
 
     extensiveModeCheckbox.addEventListener("change", function(){
         window.gameModifiers.extensive = this.checked;
-        saveGameModifiers();
+        saveGameModifiers().catch(() => {});
     });
 
     const levelReduce = $("level-reduce-slider");
@@ -305,7 +308,7 @@ function setupGameModifiers()
 
     levelReduce.addEventListener("change", (e) => {
         window.gameModifiers.levelReduce = Number(e.target.value);
-        saveGameModifiers();
+        saveGameModifiers().catch(() => {});
     });
 }
 
@@ -343,7 +346,7 @@ function accountmain()
     renderActivityCalendar("activity-calendar-container");
 
     // Replay the onboarding tutorial (highlight-only walkthrough). startTutorialReplay is defined by
-    // scripts/components/tutorial.js, which loads from the shared footer before this page script
+    // scripts/components/tutorial.js, which runs in the core bundle before this page script
     const replayButton = $("replay-tutorial-button");
     if (replayButton && window.startTutorialReplay)
         replayButton.addEventListener("click", () => window.startTutorialReplay());

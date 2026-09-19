@@ -1,8 +1,8 @@
 'use strict';
-// The footer language switcher. Mirrors theme-selector.js: it builds the custom select widget (via
-// createCustomSelect from select-box.js) and handles redirecting to the chosen locale's subdirectory.
-// Loaded in the footer before index.js; setLanguage/setLanguageBox are invoked from index.js#main(),
-// by which point the $ helper and createCustomSelect are both defined
+// The language switcher (app bar and account page). Mirrors theme-selector.js: it builds the custom
+// select widget (via createCustomSelect from select-box.js) and handles redirecting to the chosen
+// locale's subdirectory. Concatenated into the core bundle before index.js; setLanguage/setLanguageBox
+// are invoked from index.js#main(), by which point the $ helper and createCustomSelect are both defined
 
 /**
  * Redirects the user to the same page in another locale.
@@ -45,8 +45,9 @@ function redirectWithLanguage(localStorageLang)
     }
 }
 
-// Locales that actually ship with the site — each needs a Translations/<locale>.yaml and gets
-// built into its own subdirectory. Keep in sync with sw.js's LOCALES when adding a language
+// Locales that actually ship with the site — each needs a data/translations/<locale>.yaml, a
+// content/<locale>/ directory and a `languages:` entry in hugo.yaml, and is built into its own
+// subdirectory. Keep in sync with hugo.yaml and with the rename loop in build.sh
 const SUPPORTED_LOCALES = [
     { value: "en_US", text: "🇬🇧   EN" },
     { value: "bg_BG", text: "🇧🇬   BG" },
@@ -135,7 +136,7 @@ function setLanguage()
         redirectWithLanguage(localStorageLang);
         return true;
     }
-    // The switcher is shown in the footer on every page and duplicated in the account settings card,
+    // The switcher is shown in the app bar on every page and duplicated in the account settings card,
     // so reflect the active locale on every instance
     for (const selectWidget of document.querySelectorAll(".lang-select-widget"))
         selectWidget.value = localStorageLang;
@@ -146,7 +147,7 @@ function setLanguageBox()
 {
     const localStorageLang = window.localStorage.getItem("language") || "en_US";
 
-    // Wire up every language switcher instance (footer on all pages, plus the account settings card).
+    // Wire up every language switcher instance (app bar on all pages, plus the account settings card).
     // createCustomSelect builds an independent popup per button; changing the language redirects to
     // the new locale's subdirectory, so the instances never need to stay in sync live
     for (const selectWidget of document.querySelectorAll(".lang-select-widget"))

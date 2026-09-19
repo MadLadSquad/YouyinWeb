@@ -10,10 +10,10 @@ lc.import_deck_confirm_text = {{ partial "t.html" (dict "k" "import_deck_confirm
 lc.clear_deck_confirm_text = {{ partial "t.html" (dict "k" "clear_deck_confirm_text" "loc" $.loc) | jsonify }};
 // account.js
 lc.clear_account_confirm_text = {{ partial "t.html" (dict "k" "clear_account_confirm_text" "loc" $.loc) | jsonify }};
-// Singular/plural pair baked from one ui18n switch pattern; daily-streak.js picks a variant at
-// runtime and substitutes the literal {streak} placeholder with the live count
-lc.streak_days_count = {{ partial "t.html" (dict "k" "streak_days_count" "loc" $.loc) | jsonify }}
-lc.streak_days_count_one = {{ partial "t.html" (dict "k" "streak_days_count_one" "loc" $.loc) | jsonify }}
+// Singular/plural pair; account.js picks a variant at runtime and substitutes the {streak} placeholder
+// with the live count
+lc.streak_days_count = {{ partial "t.html" (dict "k" "streak_days_count" "loc" $.loc) | jsonify }};
+lc.streak_days_count_one = {{ partial "t.html" (dict "k" "streak_days_count_one" "loc" $.loc) | jsonify }};
 
 lc.hours = {{ partial "t.html" (dict "k" "hours" "loc" $.loc) | jsonify }};
 lc.milliseconds = {{ partial "t.html" (dict "k" "milliseconds" "loc" $.loc) | jsonify }};
@@ -23,13 +23,11 @@ lc.seconds = {{ partial "t.html" (dict "k" "seconds" "loc" $.loc) | jsonify }};
 lc.locale = {{ partial "t.html" (dict "k" "js_locale" "loc" $.loc) | jsonify }};
 
 lc.no_sessions_recorded = {{ partial "t.html" (dict "k" "no_sessions_recorded" "loc" $.loc) | jsonify }};
-lc.average_knowledge_level = {{ partial "t.html" (dict "k" "average_knowledge_level" "loc" $.loc) | jsonify }};
 
 lc.part_of = {{ partial "t.html" (dict "k" "part_of" "loc" $.loc) | jsonify }};
 lc.deck_definitions = {{ partial "t.html" (dict "k" "character-info-widget-def-p" "loc" $.loc) | jsonify }};
 lc.deck_card_edit = {{ partial "t.html" (dict "k" "deck_card_edit" "loc" $.loc) | jsonify }};
 
-lc.level_reduce_label = {{ partial "t.html" (dict "k" "level-reduce-label" "loc" $.loc) | jsonify }};
 
 // deck-new.js
 lc.unknown_character = {{ partial "t.html" (dict "k" "unknown_character" "loc" $.loc) | jsonify }};
@@ -49,18 +47,16 @@ lc.card_phrase = {{ partial "t.html" (dict "k" "card_phrase" "loc" $.loc) | json
 lc.card_character = {{ partial "t.html" (dict "k" "card_character" "loc" $.loc) | jsonify }};
 
 // main-page.js
-lc.finish_page_header = {{ partial "t.html" (dict "k" "finish_page_header" "loc" $.loc) | jsonify }}
-lc.finish_page_characters_reviewed = {{ partial "t.html" (dict "k" "finish_page_characters_reviewed" "loc" $.loc) | jsonify }}
-lc.finish_page_phrases_reviewed = {{ partial "t.html" (dict "k" "finish_page_phrases_reviewed" "loc" $.loc) | jsonify }}
-lc.finish_page_accuracy = {{ partial "t.html" (dict "k" "finish_page_accuracy" "loc" $.loc) | jsonify }}
-lc.finish_page_session_len = {{ partial "t.html" (dict "k" "finish_page_session_len" "loc" $.loc) | jsonify }}
-// The day/days wording is a ui18n switch pattern on the streak_days variable, resolved at build
-// time — so the plural and singular variants are baked separately and the code picks one at
-// runtime. The {streak} placeholder survives the build (no variable is passed for it) and is
-// substituted with the live count in main-page.js
-lc.finish_page_streak_increased = {{ partial "t.html" (dict "k" "finish_page_streak_increased" "loc" $.loc) | jsonify }}
-lc.finish_page_streak_increased_one = {{ partial "t.html" (dict "k" "finish_page_streak_increased_one" "loc" $.loc) | jsonify }}
-lc.finish_page_continue = {{ partial "t.html" (dict "k" "finish_page_continue" "loc" $.loc) | jsonify }}
+lc.finish_page_header = {{ partial "t.html" (dict "k" "finish_page_header" "loc" $.loc) | jsonify }};
+lc.finish_page_characters_reviewed = {{ partial "t.html" (dict "k" "finish_page_characters_reviewed" "loc" $.loc) | jsonify }};
+lc.finish_page_phrases_reviewed = {{ partial "t.html" (dict "k" "finish_page_phrases_reviewed" "loc" $.loc) | jsonify }};
+lc.finish_page_accuracy = {{ partial "t.html" (dict "k" "finish_page_accuracy" "loc" $.loc) | jsonify }};
+lc.finish_page_session_len = {{ partial "t.html" (dict "k" "finish_page_session_len" "loc" $.loc) | jsonify }};
+// Singular/plural pair; main-page.js picks a variant at runtime. The {streak} placeholder survives the
+// build (no value is passed for it) and is substituted with the live count
+lc.finish_page_streak_increased = {{ partial "t.html" (dict "k" "finish_page_streak_increased" "loc" $.loc) | jsonify }};
+lc.finish_page_streak_increased_one = {{ partial "t.html" (dict "k" "finish_page_streak_increased_one" "loc" $.loc) | jsonify }};
+lc.finish_page_continue = {{ partial "t.html" (dict "k" "finish_page_continue" "loc" $.loc) | jsonify }};
 
 lc.phrases_count_phrase = {{ partial "t.html" (dict "k" "deck-phrases-header" "loc" $.loc) | jsonify }};
 lc.phrases_count_errors = {{ partial "t.html" (dict "k" "phrases_count_errors" "loc" $.loc) | jsonify }};
@@ -76,12 +72,16 @@ lc.no_cards_link_deck = {{ partial "t.html" (dict "k" "no_cards_link_deck" "loc"
 lc.no_cards_text = {{ partial "t.html" (dict "k" "no_cards_text" "loc" $.loc) | jsonify }};
 lc.no_cards_text_postfix = {{ partial "t.html" (dict "k" "no_cards_text_postfix" "loc" $.loc) | jsonify }};
 
-lc.deck_new_delete_card = {{ partial "t.html" (dict "k" "deck-new-delete-card" "loc" $.loc) | jsonify }}
-lc.deck_new_delete_phrase = {{ partial "t.html" (dict "k" "deck-new-delete-phrase" "loc" $.loc) | jsonify }}
+lc.deck_new_delete_card = {{ partial "t.html" (dict "k" "deck-new-delete-card" "loc" $.loc) | jsonify }};
+lc.deck_new_delete_phrase = {{ partial "t.html" (dict "k" "deck-new-delete-phrase" "loc" $.loc) | jsonify }};
+// Why the editor refused to save. {character} is filled in at runtime
+lc.deck_edit_error_empty_character = {{ partial "t.html" (dict "k" "deck_edit_error_empty_character" "loc" $.loc) | jsonify }};
+lc.deck_edit_error_single_character = {{ partial "t.html" (dict "k" "deck_edit_error_single_character" "loc" $.loc) | jsonify }};
+lc.deck_edit_error_empty_phrase = {{ partial "t.html" (dict "k" "deck_edit_error_empty_phrase" "loc" $.loc) | jsonify }};
+lc.deck_edit_error_no_stroke_data = {{ partial "t.html" (dict "k" "deck_edit_error_no_stroke_data" "loc" $.loc) | jsonify }};
+lc.deck_edit_error_duplicate = {{ partial "t.html" (dict "k" "deck_edit_error_duplicate" "loc" $.loc) | jsonify }};
 
 // marketplace.js
-lc.leveled_up_no = {{ partial "t.html" (dict "k" "leveled_up_no" "loc" $.loc) | jsonify }};
-lc.leveled_up_yes = {{ partial "t.html" (dict "k" "leveled_up_yes" "loc" $.loc) | jsonify }};
 lc.pre_leveled_up = {{ partial "t.html" (dict "k" "pre_leveled_up" "loc" $.loc) | jsonify }};
 
 lc.deck_import = {{ partial "t.html" (dict "k" "import-deck-button" "loc" $.loc) | jsonify }};
@@ -90,10 +90,12 @@ lc.deck_download = {{ partial "t.html" (dict "k" "deck_download" "loc" $.loc) | 
 
 // The {} placeholder is filled at runtime by createErrorElement (status code)
 lc.marketplace_load_error = {{ partial "t.html" (dict "k" "marketplace_load_error" "loc" $.loc) | jsonify }};
+// deck.js and marketplace.js, when a deck file fails validation
+lc.import_deck_invalid = {{ partial "t.html" (dict "k" "import_deck_invalid" "loc" $.loc) | jsonify }};
 
 lc.community_decks_header = {{ partial "t.html" (dict "k" "community_decks_header" "loc" $.loc) | jsonify }};
 
-// theme switcher (index.js)
+// theme switcher (theme-selector.js) and the practice page (main-page.js)
 lc.theme_button = {{ partial "t.html" (dict "k" "theme_button" "loc" $.loc) | jsonify }};
 lc.session_exit = {{ partial "t.html" (dict "k" "session_exit" "loc" $.loc) | jsonify }};
 lc.session_queue_note = {{ partial "t.html" (dict "k" "session_queue_note" "loc" $.loc) | jsonify }};
@@ -125,14 +127,15 @@ lc.streak_panel_protected = {{ partial "t.html" (dict "k" "streak_panel_protecte
 lc.streak_panel_at_risk = {{ partial "t.html" (dict "k" "streak_panel_at_risk" "loc" $.loc) | jsonify }};
 lc.theme_search_placeholder = {{ partial "t.html" (dict "k" "theme_search_placeholder" "loc" $.loc) | jsonify }};
 
-// browser-support gate (browser-support.js). The nojs_* keys are HTML-only (noscript) and are not
-// needed here.
+// browser-support gate (browser-support.js). Read by key through window.lc[key] rather than as
+// lc.<key>, so a search for their uses won't find them. The nojs_* keys are HTML-only (noscript) and
+// are not needed here.
 lc.unsupported_title = {{ partial "t.html" (dict "k" "unsupported_title" "loc" $.loc) | jsonify }};
 lc.unsupported_privacy_body = {{ partial "t.html" (dict "k" "unsupported_privacy_body" "loc" $.loc) | jsonify }};
 lc.unsupported_outdated_body = {{ partial "t.html" (dict "k" "unsupported_outdated_body" "loc" $.loc) | jsonify }};
 lc.unsupported_reload = {{ partial "t.html" (dict "k" "unsupported_reload" "loc" $.loc) | jsonify }};
 
-// character database loading UI (index.js)
+// character database loading UI (char-loading-ui.js)
 lc.char_loading_title = {{ partial "t.html" (dict "k" "char_loading_title" "loc" $.loc) | jsonify }};
 lc.char_loading_subtitle = {{ partial "t.html" (dict "k" "char_loading_subtitle" "loc" $.loc) | jsonify }};
 lc.char_updating_label = {{ partial "t.html" (dict "k" "char_updating_label" "loc" $.loc) | jsonify }};
@@ -141,13 +144,11 @@ lc.char_updating_label = {{ partial "t.html" (dict "k" "char_updating_label" "lo
 lc.deck_import_title = {{ partial "t.html" (dict "k" "deck_import_title" "loc" $.loc) | jsonify }};
 lc.deck_import_subtitle = {{ partial "t.html" (dict "k" "deck_import_subtitle" "loc" $.loc) | jsonify }};
 
-// onboarding tutorial (tutorial.js) — keep these free of double quotes (they are injected into a
-// double-quoted JS string literal); use single quotes inside the copy instead
+// onboarding tutorial (tutorial.js and scripts/components/tutorial/)
 lc.tutorial_next = {{ partial "t.html" (dict "k" "tutorial_next" "loc" $.loc) | jsonify }};
 lc.tutorial_done = {{ partial "t.html" (dict "k" "tutorial_done" "loc" $.loc) | jsonify }};
 lc.tutorial_skip = {{ partial "t.html" (dict "k" "tutorial_skip" "loc" $.loc) | jsonify }};
 lc.tutorial_continue = {{ partial "t.html" (dict "k" "tutorial_continue" "loc" $.loc) | jsonify }};
-lc.tutorial_preparing = {{ partial "t.html" (dict "k" "tutorial_preparing" "loc" $.loc) | jsonify }};
 lc.tutorial_finish = {{ partial "t.html" (dict "k" "tutorial_finish" "loc" $.loc) | jsonify }};
 
 lc.tutorial_intro_title = {{ partial "t.html" (dict "k" "tutorial_intro_title" "loc" $.loc) | jsonify }};
@@ -168,12 +169,6 @@ lc.tutorial_deck_title = {{ partial "t.html" (dict "k" "tutorial_deck_title" "lo
 lc.tutorial_deck_intro = {{ partial "t.html" (dict "k" "tutorial_deck_intro" "loc" $.loc) | jsonify }};
 lc.tutorial_deck_newcard_title = {{ partial "t.html" (dict "k" "tutorial_deck_newcard_title" "loc" $.loc) | jsonify }};
 lc.tutorial_deck_newcard = {{ partial "t.html" (dict "k" "tutorial_deck_newcard" "loc" $.loc) | jsonify }};
-lc.tutorial_deck_phrases_title = {{ partial "t.html" (dict "k" "tutorial_deck_phrases_title" "loc" $.loc) | jsonify }};
-lc.tutorial_deck_phrases = {{ partial "t.html" (dict "k" "tutorial_deck_phrases" "loc" $.loc) | jsonify }};
-lc.tutorial_deck_characters_title = {{ partial "t.html" (dict "k" "tutorial_deck_characters_title" "loc" $.loc) | jsonify }};
-lc.tutorial_deck_characters = {{ partial "t.html" (dict "k" "tutorial_deck_characters" "loc" $.loc) | jsonify }};
-lc.tutorial_deck_search_title = {{ partial "t.html" (dict "k" "tutorial_deck_search_title" "loc" $.loc) | jsonify }};
-lc.tutorial_deck_search = {{ partial "t.html" (dict "k" "tutorial_deck_search" "loc" $.loc) | jsonify }};
 
 lc.tutorial_review_edit_title = {{ partial "t.html" (dict "k" "tutorial_review_edit_title" "loc" $.loc) | jsonify }};
 lc.tutorial_review_edit = {{ partial "t.html" (dict "k" "tutorial_review_edit" "loc" $.loc) | jsonify }};
@@ -191,8 +186,6 @@ lc.tutorial_card_save = {{ partial "t.html" (dict "k" "tutorial_card_save" "loc"
 
 lc.tutorial_phrase_input_title = {{ partial "t.html" (dict "k" "tutorial_phrase_input_title" "loc" $.loc) | jsonify }};
 lc.tutorial_phrase_input = {{ partial "t.html" (dict "k" "tutorial_phrase_input" "loc" $.loc) | jsonify }};
-lc.tutorial_phrase_autocards_title = {{ partial "t.html" (dict "k" "tutorial_phrase_autocards_title" "loc" $.loc) | jsonify }};
-lc.tutorial_phrase_autocards = {{ partial "t.html" (dict "k" "tutorial_phrase_autocards" "loc" $.loc) | jsonify }};
 lc.tutorial_phrase_save_title = {{ partial "t.html" (dict "k" "tutorial_phrase_save_title" "loc" $.loc) | jsonify }};
 lc.tutorial_phrase_save = {{ partial "t.html" (dict "k" "tutorial_phrase_save" "loc" $.loc) | jsonify }};
 
@@ -204,8 +197,6 @@ lc.tutorial_session_done = {{ partial "t.html" (dict "k" "tutorial_session_done"
 
 lc.tutorial_account_stats_title = {{ partial "t.html" (dict "k" "tutorial_account_stats_title" "loc" $.loc) | jsonify }};
 lc.tutorial_account_stats = {{ partial "t.html" (dict "k" "tutorial_account_stats" "loc" $.loc) | jsonify }};
-lc.tutorial_account_settings_title = {{ partial "t.html" (dict "k" "tutorial_account_settings_title" "loc" $.loc) | jsonify }};
-lc.tutorial_account_settings = {{ partial "t.html" (dict "k" "tutorial_account_settings" "loc" $.loc) | jsonify }};
 
 lc.tutorial_card_pron_title = {{ partial "t.html" (dict "k" "tutorial_card_pron_title" "loc" $.loc) | jsonify }};
 lc.tutorial_card_pron = {{ partial "t.html" (dict "k" "tutorial_card_pron" "loc" $.loc) | jsonify }};
@@ -255,11 +246,10 @@ lc.activity_tooltip_none = {{ partial "t.html" (dict "k" "activity_tooltip_none"
 
 // gems, streak freezes and the daily streak goal (account.js, streak-goal.js, main-page.js). The
 // {goal}/{gems} placeholders survive the build and are filled in at runtime
-lc.streak_goal_label = {{ partial "t.html" (dict "k" "streak-goal-label" "loc" $.loc) | jsonify }};
 lc.streak_goal_aria_label = {{ partial "t.html" (dict "k" "streak-goal-aria-label" "loc" $.loc) | jsonify }};
-// Singular/plural pair baked from one ui18n switch pattern, like streak_days_count above
-lc.streak_goal_sessions = {{ partial "t.html" (dict "k" "streak_goal_sessions" "loc" $.loc) | jsonify }}
-lc.streak_goal_sessions_one = {{ partial "t.html" (dict "k" "streak_goal_sessions_one" "loc" $.loc) | jsonify }}
+// Singular/plural pair, like streak_days_count above
+lc.streak_goal_sessions = {{ partial "t.html" (dict "k" "streak_goal_sessions" "loc" $.loc) | jsonify }};
+lc.streak_goal_sessions_one = {{ partial "t.html" (dict "k" "streak_goal_sessions_one" "loc" $.loc) | jsonify }};
 lc.streak_goal_modal_title = {{ partial "t.html" (dict "k" "streak_goal_modal_title" "loc" $.loc) | jsonify }};
 lc.streak_goal_modal_body = {{ partial "t.html" (dict "k" "streak_goal_modal_body" "loc" $.loc) | jsonify }};
 lc.streak_goal_modal_confirm = {{ partial "t.html" (dict "k" "streak_goal_modal_confirm" "loc" $.loc) | jsonify }};

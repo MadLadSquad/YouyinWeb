@@ -1,0 +1,16 @@
+{{- /*
+  Returns the text of one license file for layouts/licenses.html. Arg: a URL (fetched at build time,
+  exactly like the vendored libraries in assets.html) or a path inside the repository. Call it through
+  partialCached keyed by the same argument so the three locales share one fetch.
+*/ -}}
+{{- $src := . -}}
+{{- $text := "" -}}
+{{- if hasPrefix $src "https://" -}}
+  {{- $t := try (resources.GetRemote $src) -}}
+  {{- with $t.Err -}}{{- errorf "license text %s: %s" $src . -}}{{- end -}}
+  {{- if not $t.Value -}}{{- errorf "license text: fetch of %s returned nothing" $src -}}{{- end -}}
+  {{- $text = $t.Value.Content -}}
+{{- else -}}
+  {{- $text = os.ReadFile $src -}}
+{{- end -}}
+{{- return (trim $text "\n\r") -}}

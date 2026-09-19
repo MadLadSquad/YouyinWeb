@@ -2,9 +2,6 @@
 
 {{ define "main" }}
         <main id="main-content" class="wrap deck-page">
-            <!-- Deferred: nothing needs HanziWriter until the first card hover (resting cards are
-                 hand-built SVG), so it must not block initial parse/render of the deck -->
-
             <div class="page-head">
                 <div>
                     <h1 class="t-display">{{ partial "t.html" (dict "k" "no_cards_link_deck") }}</h1>
@@ -83,11 +80,4 @@
                 <!-- Data will be inserted dynamically by the Javascript here from the deck.js file -->
             </section>
         </main>
-        <!-- Loaded BEFORE the footer (which runs index.js then tutorial.js): these only DEFINE functions
-             that index.js's main() and tutorial.js's dispatch call from async/promise continuations. Those
-             microtasks drain between script tags, so the definitions must exist before the footer runs —
-             a script placed after the footer would be too late -->
-        <!-- Loaded AFTER the footer: these CONSUME the readiness promises (storageReady,
-             profileReady, charDataReady) that index.js creates, so index.js must run first -->
-    
 {{ end }}

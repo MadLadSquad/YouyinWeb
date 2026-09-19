@@ -1,10 +1,10 @@
 {
     "name": "{{ site.Params.trademark }}",
     "short_name": "{{ site.Params.trademark }}",
-    "description": "Learn how to write and read Chinese characters and other writing systems in a fun and easy way",
+    "description": {{ partial "t.html" (dict "k" "site-description" "loc" "en_US") | jsonify }},
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#121212",
+    "background_color": "#ffffff",
     "theme_color": "#c87e74",
     "orientation": "portrait-primary",
     "icons": [

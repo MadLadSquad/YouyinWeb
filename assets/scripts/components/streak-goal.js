@@ -12,8 +12,8 @@
 const STREAK_GOAL_OVERLAY_ID = "streak-goal-prompt";
 
 /**
- * The user-facing wording of a goal value, e.g. "5 sessions a day". The singular/plural pair is
- * baked at build time by the ui18n switch pattern; pick the right variant and fill in the count
+ * The user-facing wording of a goal value, e.g. "5 sessions a day". The singular/plural pair are two
+ * translation keys; pick the right variant and fill in the count
  * @param { number|string } value - The goal, in sessions per day
  * @returns { string } - The localised phrase
  */

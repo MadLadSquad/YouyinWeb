@@ -53,21 +53,7 @@
                         {{ partial "t.html" (dict "k" "start-button") }}
                     </button>
                 </div>
-                <!-- This image will get dynamically imported by main-page.js when the button is clicked
-                <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" id="character-target-div" class="centered character-div character-prop">
-                    <line x1="0" y1="0" x2="100%" y2="100%" stroke="#DDD" />
-                    <line x1="100%" y1="0" x2="0" y2="100%" stroke="#DDD" />
-                    <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#DDD" />
-                    <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#DDD" />
-                </svg>-->
             </section>
         </main>
         <hr id="main-page-hr">
-        <!-- Loaded BEFORE the footer (which runs index.js then tutorial.js): these only DEFINE functions
-             that index.js's main() and tutorial.js's dispatch call from async/promise continuations. Those
-             microtasks drain between script tags, so the definitions must exist before the footer runs —
-             a script placed after the footer would be too late -->
-        <!-- Loaded AFTER the footer: these CONSUME the readiness promises (storageReady,
-             profileReady, charDataReady) that index.js creates, so index.js must run first -->
-    
 {{ end }}

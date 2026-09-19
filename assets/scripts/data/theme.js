@@ -71,15 +71,34 @@ window.applyPalette = function (t, id)
     // If a writer is already on screen (e.g. previewing a theme mid-session), recolour it live.
     // The radical is only recoloured when it's currently shown: main-page.js sets radicalColor to
     // null to hide it at higher knowledge levels, and we must not force a hidden radical back on.
+    // A writer whose character failed to load throws from every call, so recolouring is best-effort
     if (window.writer && typeof window.writer.updateColor === "function")
     {
-        window.writer.updateColor("strokeColor", window.WRITER_STROKE_COLOUR, { duration: 0 });
-        window.writer.updateColor("outlineColor", window.WRITER_OUTLINE_COLOUR, { duration: 0 });
-        if (window.writer._options && window.writer._options.radicalColor)
-            window.writer.updateColor("radicalColor", window.WRITER_RADICAL_COLOUR, { duration: 0 });
+        try
+        {
+            const recolour = (key, value) => {
+                const result = window.writer.updateColor(key, value, { duration: 0 });
+                if (result && typeof result.catch === "function")
+                    result.catch(function () {});
+            };
+            recolour("strokeColor", window.WRITER_STROKE_COLOUR);
+            recolour("outlineColor", window.WRITER_OUTLINE_COLOUR);
+            if (window.writer._options && window.writer._options.radicalColor)
+                recolour("radicalColor", window.WRITER_RADICAL_COLOUR);
+        }
+        catch (e)
+        {
+            // Nothing on screen to recolour
+        }
     }
 
     document.documentElement.setAttribute("data-theme", id);
+
+    // The browser chrome (mobile address bar, installed-app title bar) follows the theme too. The meta
+    // tag precedes this script in <head>, so it already exists at boot
+    const themeColour = document.querySelector('meta[name="theme-color"]');
+    if (themeColour !== null)
+        themeColour.setAttribute("content", t.accent);
 
     // Briefly cross-fade the colours on every change *after* the initial page paint (the first
     // call happens before the stylesheets render, so there's nothing to fade from). The transition

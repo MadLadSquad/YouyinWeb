@@ -301,7 +301,7 @@ function constructEditCard(index, it, root, bPhrase)
     let bReadOnly = true;
 
     // If editing the character is allowed. When editing new cards as part of a phrase we set this to false
-    // as the character is determined by the 
+    // as the character is determined by the phrase: changing it would leave a card that isn't in the phrase
     let bAllowChangingCharacter = true;
 
     // Is a phrase object but not representing a phrase
@@ -324,6 +324,7 @@ function constructEditCard(index, it, root, bPhrase)
             {
                 lit = card;
                 bReadOnly = false;
+                bAllowChangingCharacter = false;
 
                 for (let f = index - 1; f >= 0; --f)
                     if (phraseChars[f] === phraseChars[index])
@@ -384,6 +385,10 @@ function constructEditCard(index, it, root, bPhrase)
                 window.previewCards = [];
                 constructPhraseEditCardPreview(lit);
                 constructEditCard("phrase", lit, cardEditSection, true);
+                // The rebuilt input is filled from the phrase, which fell back to the default preview
+                // character above; keep it empty so validateEditorEntries still sees an empty phrase
+                if (event.target.value === "")
+                    clearNewEntryInput("character-text-field-phrase");
                 // Iterate by code point — for…in over a string walks UTF-16 units and would
                 // visit both halves of a character outside the BMP
                 const phraseLength = toCharacters(lit.phrase).length;
@@ -445,48 +450,52 @@ function constructEditCard(index, it, root, bPhrase)
     reconstructDefinitionList($(`card-preview-list-${index}`), ol, lit.definitions, bReadOnly)
 }
 
+/**
+ * Parses the index in an ?edit= / ?phrase-edit= query value. Only a plain non-negative integer is
+ * accepted: parseInt would read "3abc" as 3, and a NaN index would reach Array.splice as 0
+ * @param { string|null } raw - The query value
+ * @returns { number } - The index, or -1 when the value isn't a valid index
+ */
+function parseEditIndex(raw)
+{
+    return (raw !== null && /^\d+$/.test(raw)) ? Number(raw) : -1;
+}
+
 function constructListElements()
 {
     const urlParams = new URLSearchParams(window.location.search);
     let dataContainer = null;
-    let index = null;
+    let index = -1;
+    let deleteMessage = "";
 
-    let deleteButton = $("delete-edit-button");
     if (urlParams.has("edit"))
     {
         dataContainer = window.profileData.cards;
-        index = parseInt(urlParams.get("edit"), 10);
-        deleteButton.style.display = "inline-block";
-
-        deleteButton.cardIndex = index;
-        runEventAfterAnimation(deleteButton, "click", (e) => {
-            if (confirm(lc.deck_new_delete_card))
-            {
-                window.profileData.cards.splice(e.target.cardIndex, 1);
-                saveProfileData(window.profileData).then(() => { location.href = window.pageUrl("deck"); });
-            }
-        });
+        index = parseEditIndex(urlParams.get("edit"));
+        deleteMessage = lc.deck_new_delete_card;
     }
     else if (urlParams.has("phrase-edit"))
     {
         dataContainer = window.profileData.phrases;
-        index = parseInt(urlParams.get("phrase-edit"), 10);
-        $("phrase-preview-section").style.display = "block";
-        deleteButton.style.display = "inline-block";
-
-        deleteButton.cardIndex = index;
-        runEventAfterAnimation(deleteButton, "click", (e) => {
-            if (confirm(lc.deck_new_delete_phrase))
-            {
-                window.profileData.phrases.splice(e.target.cardIndex, 1);
-                saveProfileData(window.profileData).then(() => { location.href = window.pageUrl("deck"); });
-            }
-        });
+        index = parseEditIndex(urlParams.get("phrase-edit"));
+        deleteMessage = lc.deck_new_delete_phrase;
     }
 
     let cardEditSection = $("card-edit-section");
     if (dataContainer !== null && index >= 0 && index < dataContainer.length)
     {
+        // Delete is only offered once the index is known to name an existing entry. A malformed or stale
+        // link falls through to the new-card editor below and must not be able to delete anything
+        const deleteButton = $("delete-edit-button");
+        deleteButton.style.display = "inline-block";
+        runEventAfterAnimation(deleteButton, "click", () => {
+            if (!confirm(deleteMessage))
+                return;
+
+            dataContainer.splice(index, 1);
+            saveProfileData(window.profileData).then(() => { location.href = window.pageUrl("deck"); }).catch(() => {});
+        });
+
         // Edit a deep copy of the stored card/phrase, never the live object. Every edit handler below
         // mutates "it" in place (name / character / variant / definitions), so editing the live object
         // would (a) leave a cancelled edit applied in window.profileData and (b) let an unrelated
@@ -506,6 +515,7 @@ function constructListElements()
         }
         else
         {
+            $("phrase-preview-section").style.display = "block";
             let phrasePreviewSectionContainer = $("phrase-preview-section-container");
             constructPhraseEditCardPreview(it);
             constructEditCard("phrase", it, cardEditSection, true);
@@ -525,11 +535,13 @@ function constructListElements()
 
         let lit = constructPhraseEditCardPreview(null);
         constructEditCard("phrase", lit, cardEditSection, true);
+        clearNewEntryInput("character-text-field-phrase");
     }
     else
     {
         constructPreviewCardGeneric(0, null, cardEditSection);
         constructEditCard(0, window.previewCards[0], cardEditSection, false);
+        clearNewEntryInput("character-text-field-0");
 
         // Reverse children of $("card-edit-section") because we display the preview before the edit widget
         for (let i = 0; i < cardEditSection.childNodes.length; i++)
@@ -537,10 +549,103 @@ function constructListElements()
     }
 }
 
+/**
+ * Empties the character (or phrase) input of a new entry. The preview needs a character to draw, so
+ * the new entry holds a default one, but prefilling the input with it made an untouched form save that
+ * default as if the user had chosen it. The default is kept as the placeholder instead, and
+ * validateEditorEntries refuses to save while the input is empty
+ * @param { string } id - ID of the input
+ */
+function clearNewEntryInput(id)
+{
+    const input = $(id);
+    if (input === null)
+        return;
+
+    input.value = "";
+    input.placeholder = window.CARD_DEFAULT_CHARACTER;
+}
+
+/**
+ * Whether the character database has been loaded. When the download failed there is nothing to check
+ * characters against, and refusing every save would lock the editor
+ * @returns { boolean }
+ */
+function characterDatabaseLoaded()
+{
+    for (const _ in window.characterData)
+        return true;
+    return false;
+}
+
+/**
+ * Checks everything the Finish button is about to save and returns the first problem found. The
+ * practice page can only draw a character that is a single code point and has stroke data, so an
+ * entry that fails either check would otherwise sit in the deck as a card that can never be revised
+ * @returns { string|null } - A localised message describing the problem, or null when it can be saved
+ */
+function validateEditorEntries()
+{
+    // The inputs are checked rather than the objects: a new entry's object holds the default preview
+    // character until the user types, and an emptied phrase input falls back to it too
+    const phraseInput = $("character-text-field-phrase");
+    if (phraseInput !== null && phraseInput.value === "")
+        return lc.deck_edit_error_empty_phrase;
+
+    const characterInput = $("character-text-field-0");
+    if (characterInput !== null && characterInput.value === "")
+        return lc.deck_edit_error_empty_character;
+
+    // Every card this save writes: the card being edited, and the new cards (the one on the new-card
+    // form, or those a phrase introduces)
+    const cards = [...window.previewCards];
+    const editContext = window.editContext;
+    if (editContext !== null && editContext.working["character"] !== undefined)
+        cards.push(editContext.working);
+
+    const bCheckStrokes = characterDatabaseLoaded();
+    for (const card of cards)
+    {
+        if (toCharacters(card.character).length !== 1)
+            return lc.deck_edit_error_single_character;
+
+        const variant = card.variant || "";
+        if (bCheckStrokes && charDataLoader(card.character + variant, null, null) === undefined)
+            return lc.deck_edit_error_no_stroke_data.replace("{character}", card.character);
+
+        // A card whose character and variant another card already has would be revised twice
+        const existing = window.profileData.cards.findIndex((c, i) =>
+            c.character === card.character && (c.variant || "") === variant &&
+            !(editContext !== null && editContext.array === window.profileData.cards && i === editContext.index));
+        if (existing !== -1)
+            return lc.deck_edit_error_duplicate.replace("{character}", card.character);
+    }
+
+    const phrase = editContext !== null && editContext.working["phrase"] !== undefined
+        ? editContext.working
+        : window.previewPhrase;
+    if (phrase !== null && bCheckStrokes)
+    {
+        for (const character of toCharacters(phrase.phrase))
+            if (charDataLoader(character + findPhraseCharacterVariant(character), null, null) === undefined &&
+                charDataLoader(character, null, null) === undefined)
+                return lc.deck_edit_error_no_stroke_data.replace("{character}", character);
+    }
+
+    return null;
+}
+
 function deckEditMain()
 {
     constructListElements();
     runEventAfterAnimation($("finish-edit-button"), "click", function(_) {
+        const problem = validateEditorEntries();
+        if (problem !== null)
+        {
+            alert(problem);
+            return;
+        }
+
         // Commit an in-progress edit of an existing card/phrase: write the detached working copy back
         // over the original entry. This is the only place an edit reaches live profileData, so a
         // Cancel (which never runs this) leaves the stored card/phrase exactly as it was.
@@ -564,7 +669,7 @@ function deckEditMain()
         }
 
         // Wait for the write to commit before navigating back to the deck page
-        saveProfileData(window.profileData).then(() => { location.href = window.pageUrl("deck"); });
+        saveProfileData(window.profileData).then(() => { location.href = window.pageUrl("deck"); }).catch(() => {});
     });
     runEventAfterAnimation($("cancel-edit-button"), "click", function() { location.href = window.pageUrl("deck") })
 }

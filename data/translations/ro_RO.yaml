@@ -107,8 +107,6 @@ account:
   other: "Cont"
 guest:
   other: "Oaspete"
-locale:
-  other: "ro_RO/"
 extensive-mode-title:
   other: "Activează modul extins. În loc să parcurgă toate cardurile o singură dată, modul extins parcurge pachetul de mai multe ori, eliminând treptat cardurile cu cel mai ridicat nivel de cunoaștere."
 extensive-mode-aria-label:
@@ -182,15 +180,6 @@ finish_page_continue:
   other: "Continuă"
 
 # Coming soon
-coming-soon-header:
-  other: "Această pagină va fi disponibilă în curând!"
-# Add coming soon text 1
-coming-soon-text-1:
-  other: "Poate arunci o privire pe {} sau {}!"
-coming-soon-text-2:
-  other: "Vă mulțumim pentru răbdare!"
-
-# deck-edit-card.html
 edit-card-site-title:
   other: "Editează cardul"
 new-card-h1:
@@ -261,8 +250,6 @@ average-session-length-field:
   other: "Durata medie a rundei de recapitulare"
 time-spent-in-sessions-field:
   other: "Timp petrecut recapitulând"
-new-card-header:
-  other: "Adaugă un card sau o frază nouă în pachet"
 new-card-button:
   other: "Card nou"
 new-phrase-button:
@@ -299,8 +286,6 @@ js_locale:
   other: "ro-RO"
 no_sessions_recorded:
   other: "Nicio rundă de recapitulare înregistrată încă"
-average_knowledge_level:
-  other: "Nivel mediu de cunoaștere"
 part_of:
   other: "Parte din"
 deck_card_edit:
@@ -322,10 +307,6 @@ marketplace_search_placeholder:
 
 import_deck_confirm_text:
   other: "Importarea unui pachet VA ÎMBINA pachetul actual cu cel nou; pentru a-l înlocui, golește mai întâi pachetul actual!"
-leveled_up_no:
-  other: "Nu"
-leveled_up_yes:
-  other: "Da"
 pre_leveled_up:
   other: "Pre-avansat"
 deck_source:
@@ -376,8 +357,6 @@ tutorial_skip:
   other: "Omite tutorialul"
 tutorial_continue:
   other: "Începe turul"
-tutorial_preparing:
-  other: "Se pregătește…"
 tutorial_finish:
   other: "Finalizează"
 tutorial_replay_button:
@@ -416,18 +395,6 @@ tutorial_deck_newcard_title:
   other: "Adaugă carduri"
 tutorial_deck_newcard:
   other: "Hai să creăm primul tău caracter. Apasă Card nou pentru a începe."
-tutorial_deck_phrases_title:
-  other: "Fraze"
-tutorial_deck_phrases:
-  other: "Frazele formate din mai multe caractere apar în această secțiune."
-tutorial_deck_characters_title:
-  other: "Caractere"
-tutorial_deck_characters:
-  other: "Caracterele individuale apar aici - inclusiv cele pe care tocmai le-ai importat."
-tutorial_deck_search_title:
-  other: "Caută în pachet"
-tutorial_deck_search:
-  other: "Filtrează cardurile și frazele pe măsură ce pachetul tău se mărește."
 tutorial_review_edit_title:
   other: "Editează orice card"
 tutorial_review_edit:
@@ -456,10 +423,6 @@ tutorial_phrase_input_title:
   other: "Introdu o frază"
 tutorial_phrase_input:
   other: "Acum fraza în sine - vom scrie 你好. Se creează un card pentru fiecare caracter necunoscut pe care îl conține."
-tutorial_phrase_autocards_title:
-  other: "Creare automată a cardurilor"
-tutorial_phrase_autocards:
-  other: "Se creează automat un card pentru fiecare caracter din frază - un card pentru 好 este adăugat automat, iar cardul pentru 你 este refolosit deoarece face deja parte din pachetul tău."
 tutorial_phrase_save_title:
   other: "Salvează fraza"
 tutorial_phrase_save:
@@ -478,10 +441,6 @@ tutorial_account_stats_title:
   other: "Profilul tău"
 tutorial_account_stats:
   other: "Statisticile profilului tău se află aici - numărul de sesiuni, seria, dimensiunea pachetului și nivelul mediu de cunoaștere."
-tutorial_account_settings_title:
-  other: "Setări"
-tutorial_account_settings:
-  other: "Personalizează-ți practica, schimbă limba sau tema."
 tutorial_card_pron_title:
   other: "Adaugă pronunția"
 tutorial_card_pron:
@@ -642,13 +601,11 @@ privacy_sec_localdata_p2:
 privacy_sec_thirdparty_title:
   other: "3. Date tehnice și furnizori terți"
 privacy_sec_thirdparty_p1:
-  other: "Când vizitezi {brand}, browserul tău web se conectează la furnizori terți de infrastructură pentru a descărca fișierele site-ului, fonturile, datele despre liniile caracterelor și pachetele publice. Acești furnizori pot prelucra date tehnice de conectare (cum ar fi adresa ta IP, User-Agent-ul browserului și marcajele temporale ale solicitărilor) strict în scopul transmiterii conținutului și securizării operațiunilor de rețea:"
+  other: "Când vizitezi {brand}, browserul tău web se conectează la furnizori terți de infrastructură pentru a descărca fișierele site-ului, datele despre liniile caracterelor, pachetele publice și imaginile emoji. Acești furnizori pot prelucra date tehnice de conectare (cum ar fi adresa ta IP, User-Agent-ul browserului și marcajele temporale ale solicitărilor) strict în scopul transmiterii conținutului și securizării operațiunilor de rețea:"
 privacy_sec_thirdparty_li1:
   other: "GitHub Pages (GitHub, Inc. / Microsoft): Găzduire web statică pentru fișierele aplicației site-ului."
 privacy_sec_thirdparty_li2:
-  other: "jsDelivr CDN (ProspectOne / Cloudflare): Rețea de distribuție a conținutului (CDN) utilizată pentru a distribui animațiile liniilor, bazele de date cu linii și depozitele publice de pachete."
-privacy_sec_thirdparty_li3:
-  other: "Google Fonts (Google LLC): Distribuirea fontului open-source Ubuntu."
+  other: "jsDelivr CDN (ProspectOne / Cloudflare): Rețea de distribuție a conținutului (CDN) utilizată pentru a distribui baza de date cu liniile caracterelor, depozitul public de pachete și imaginile emoji."
 privacy_sec_thirdparty_p2:
   other: "Acești furnizori prelucrează metadate tehnice în conformitate cu propriile politici de confidențialitate și în baza mecanismelor internaționale de transfer de date aplicabile (cum ar fi Cadrul de confidențialitate a datelor UE-SUA și extinderea sa pentru Regatul Unit, precum și clauzele contractuale standard)."
 privacy_sec_legal_title:
@@ -692,7 +649,7 @@ privacy_sec_children_p1:
 privacy_sec_transfers_title:
   other: "9. Transferuri internaționale de date"
 privacy_sec_transfers_p1:
-  other: "Furnizorii externi de infrastructură și CDN (GitHub, Google, Cloudflare) operează rețele globale și centre de date. În măsura în care metadatele tehnice de conectare sunt prelucrate în afara Regatului Unit sau a Spațiului Economic European (SEE), aceste transferuri sunt acoperite de reglementările de adecvare ale Regatului Unit și de Acordul internațional de transfer de date (IDTA) sau de Anexa Regatului Unit la clauzele contractuale standard (SCC) ale Comisiei Europene; pentru vizitatorii din SEE, acestea sunt acoperite de SCC și de deciziile de adecvare adoptate de Comisia Europeană."
+  other: "Furnizorii externi de infrastructură și CDN (GitHub, Cloudflare) operează rețele globale și centre de date. În măsura în care metadatele tehnice de conectare sunt prelucrate în afara Regatului Unit sau a Spațiului Economic European (SEE), aceste transferuri sunt acoperite de reglementările de adecvare ale Regatului Unit și de Acordul internațional de transfer de date (IDTA) sau de Anexa Regatului Unit la clauzele contractuale standard (SCC) ale Comisiei Europene; pentru vizitatorii din SEE, acestea sunt acoperite de SCC și de deciziile de adecvare adoptate de Comisia Europeană."
 privacy_sec_contact_title:
   other: "10. Modificări ale acestei politici și contact"
 privacy_sec_contact_p1:
@@ -701,3 +658,57 @@ privacy_sec_contact_p2:
   other: "Dacă aveți întrebări, feedback sau solicitări referitoare la această Politică de confidențialitate sau la securitatea {brand}, puteți scrie companiei Heapforge Ltd la adresa sediului social din secțiunea 1 sau puteți deschide o sesizare pe depozitul nostru oficial de pe GitHub:"
 privacy_contact_github:
   other: "Vizitează {brand} pe GitHub"
+footer_licenses_link:
+  other: "Licențe open-source"
+licenses_title:
+  other: "Licențe open-source"
+licenses_hero_eyebrow:
+  other: "Mulțumiri și licențe"
+licenses_hero_lead:
+  other: "{brand} este construit pe munca multor proiecte open-source. Mai jos găsești fiecare bibliotecă, font, set de date și resursă terță pe care o folosește site-ul, împreună cu licența sub care este distribuită. Textele licențelor sunt reproduse în engleza originală, exact așa cum au fost publicate de autorii lor."
+licenses_group_bundled_title:
+  other: "Incluse în site"
+licenses_group_bundled_desc:
+  other: "Integrate în fișierele proprii ale {brand} și servite de pe același server ca site-ul."
+licenses_group_runtime_title:
+  other: "Descărcate în timp ce folosești site-ul"
+licenses_group_runtime_desc:
+  other: "Date pe care {brand} le descarcă din rețeaua CDN jsDelivr în timp ce îl folosești."
+licenses_version:
+  other: "Versiunea {version}"
+licenses_source_link:
+  other: "Cod sursă"
+licenses_show_text:
+  other: "Afișează textul licenței"
+licenses_used_for_hanzi_writer:
+  other: "Desenează caracterele, animă liniile lor și îți evaluează scrisul."
+licenses_used_for_driver_js:
+  other: "Evidențiază părți ale paginii în timpul tutorialului de introducere."
+licenses_used_for_twemoji:
+  other: "Înlocuiește emoji-urile cu imagini uniforme pe toate dispozitivele. Codul este inclus în site, iar imaginile emoji sunt descărcate de pe jsDelivr atunci când este nevoie."
+licenses_used_for_ubuntu_font:
+  other: "Fontul Ubuntu folosit pentru textul site-ului, servit de pe propriul nostru server."
+licenses_used_for_char_data:
+  other: "Baza de date combinată cu liniile caracterelor, compilată de MadLadSquad din sursele de mai jos."
+licenses_used_for_hanzi_writer_data:
+  other: "Datele despre liniile caracterelor chinezești, derivate din proiectul Make Me a Hanzi și din fonturile Arphic Technology."
+licenses_used_for_animcjk:
+  other: "Datele despre liniile caracterelor kanji și kana japoneze."
+licenses_used_for_marketplace:
+  other: "Pachetele publice pe care le poți explora și importa din Piață."
+import_deck_invalid:
+  other: "Acest fișier nu este un pachet valid, așa că nu a fost importat nimic."
+deck_edit_error_empty_character:
+  other: "Introdu caracterul acestui card înainte de a salva."
+deck_edit_error_single_character:
+  other: "Un card conține exact un caracter. Folosește o frază pentru orice text mai lung."
+deck_edit_error_empty_phrase:
+  other: "Introdu textul acestei fraze înainte de a salva."
+deck_edit_error_no_stroke_data:
+  other: "Nu există date despre trăsături pentru „{character}”, așa că nu poate fi exersat."
+deck_edit_error_duplicate:
+  other: "„{character}” este deja în pachetul tău."
+og_title:
+  other: "{brand} — învață să scrii de mână chineză, japoneză, coreeană, greacă și nu numai"
+meta_keywords:
+  other: "învață să scrii caractere chinezești, ordinea trăsăturilor Hanzi, kana japoneză, hiragana, katakana, kanji, hangul coreean, hanja, alfabetul grecesc, alfabetul chirilic, exersarea scrisului de mână, aplicație de învățare a limbilor, sisteme de scriere, cartonașe, repetiție spațiată"

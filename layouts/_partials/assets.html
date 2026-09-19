@@ -67,7 +67,7 @@
   {{- $css = $css | append $r -}}
 {{- end -}}
 {{- $css = $css | append $vendor.driver_css (resources.Get "styles/components/tutorial.css") -}}
-{{- range (slice "index" "deck" "deck-edit" "account" "marketplace" "privacy") -}}
+{{- range (slice "index" "deck" "deck-edit" "account" "marketplace" "privacy" "licenses") -}}
   {{- $r := resources.Get (printf "styles/pages/%s.css" .) -}}
   {{- if not $r -}}{{- errorf "missing page stylesheet %s" . -}}{{- end -}}
   {{- $css = $css | append $r -}}
@@ -120,6 +120,7 @@
   "account"        (dict "hanzi" false "pre" (slice "scripts/components/tutorial/account.js")                                          "post" (slice "scripts/utils/format.js" "scripts/components/activity-calendar.js" "scripts/components/streak-goal.js" "scripts/pages/account.js"))
   "marketplace"    (dict "hanzi" false "pre" (slice "scripts/components/tutorial/marketplace.js")                                      "post" (slice "scripts/utils/fuzzy-match.js" "scripts/components/card-search.js" "scripts/pages/marketplace.js"))
   "privacy"        (dict "hanzi" false "pre" (slice) "post" (slice))
+  "licenses"       (dict "hanzi" false "pre" (slice) "post" (slice))
   "404"            (dict "hanzi" false "pre" (slice) "post" (slice))
 -}}
 {{- /* Page scripts that carry build-time variables and must be executed as templates. */ -}}
