@@ -551,7 +551,7 @@ privacy_hero_eyebrow:
 privacy_hero_title:
   other: "Privacy Policy"
 privacy_last_updated:
-  other: "Last updated: September 2026"
+  other: "Last updated: 5 October 2026"
 privacy_hero_lead:
   other: "{brand} is built with a local-first, privacy-by-design architecture. Your learning progress, custom flashcards, and preferences are stored exclusively on your own device and are never transmitted to a remote server."
 privacy_hl_local_title:
@@ -570,94 +570,208 @@ privacy_hl_control_title:
   other: "Full Data Control"
 privacy_hl_control_desc:
   other: "Export your decks to JSON or erase all local data in one click at any time."
-privacy_sec_controller_title:
-  other: "1. Overview & Data Controller"
-privacy_sec_controller_p1:
-  other: "{brand} is an open-source educational web application dedicated to helping people learn and practise handwriting characters from various writing systems. The website is operated by Heapforge Ltd, a company registered in England and Wales. Heapforge Ltd is the data controller for this website under the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018, and - for visitors in the European Economic Area - under the EU General Data Protection Regulation (Regulation (EU) 2016/679)."
-privacy_sec_controller_p2:
-  other: "Because {brand} operates as a static, client-side application without user accounts or server-side databases, we do not collect, store, sell, or process personal data on any remote server."
+privacy_intro:
+  other: "This Privacy Policy explains how Heapforge Ltd. (“Heapforge”, “we”, “us” or “our”) collects, uses, shares and protects personal data when you visit {website}, use {brand}, or otherwise contact us. It also explains the rights you have and how to exercise them."
+privacy_s1_title:
+  other: "1. Who we are"
+privacy_s1_p1:
+  other: "The data controller responsible for your personal data is Heapforge Ltd., registered in England and Wales:"
 privacy_controller_company_label:
   other: "Company"
 privacy_controller_number_label:
-  other: "Companies House number"
+  other: "Company number"
 privacy_controller_address_label:
-  other: "Registered address"
-privacy_sec_controller_p3:
-  other: "Because no personal data ever reaches us, Heapforge Ltd has not appointed a data protection officer and has not designated a representative in the European Economic Area under Article 27 of the EU GDPR. Written enquiries can be sent to the registered address above; questions about this policy are answered fastest through the GitHub repository linked at the end of it."
-privacy_sec_localdata_title:
-  other: "2. Data Stored on Your Device"
-privacy_sec_localdata_p1:
-  other: "All application data generated during your learning journey is saved locally in your browser's persistent storage (IndexedDB and localStorage). This data includes:"
-privacy_sec_localdata_li1:
-  other: "Cards and Phrases: Character definitions, pronunciations, regional variant selections, and custom phrases you create or import."
-privacy_sec_localdata_li2:
-  other: "Study Statistics: Revision history, error counts, knowledge levels, daily streaks, streak freeze balances, and gem rewards."
-privacy_sec_localdata_li3:
-  other: "Activity Calendar: Daily session counts used to draw your practice heatmap on the Account page."
-privacy_sec_localdata_li4:
-  other: "Preferences: Selected color theme, interface language, game modifiers (such as extensive mode and daily level reduction), and onboarding tutorial progress."
-privacy_sec_localdata_p2:
-  other: "This information remains entirely on your device. It is never transmitted to us or any third party."
-privacy_sec_thirdparty_title:
-  other: "3. Technical Data & Third-Party Providers"
-privacy_sec_thirdparty_p1:
-  other: "When you visit {brand}, your web browser connects to third-party infrastructure providers to download the website files, character stroke data, public decks, and emoji images. These providers may process technical connection data (such as your IP address, browser User-Agent, and request timestamps) strictly for the purpose of transmitting content and securing network operations:"
-privacy_sec_thirdparty_li1:
-  other: "GitHub Pages (GitHub, Inc. / Microsoft): Static web hosting for the site application files."
-privacy_sec_thirdparty_li2:
-  other: "jsDelivr CDN (ProspectOne / Cloudflare): Content Delivery Network used to distribute the character stroke database, the public deck repository, and emoji images."
-privacy_sec_thirdparty_p2:
-  other: "These providers process technical metadata in accordance with their respective privacy policies and under the international data transfer mechanisms that apply to them (such as the EU-U.S. Data Privacy Framework and its UK Extension, and standard contractual clauses)."
-privacy_sec_legal_title:
-  other: "4. Legal Bases for Processing (Art. 6 UK GDPR / EU GDPR)"
-privacy_sec_legal_p1:
-  other: "Under Article 6(1) of the UK GDPR and of the EU GDPR, the limited technical processing required to deliver the website relies on:"
-privacy_sec_legal_li1:
-  other: "Article 6(1)(b) (Performance of a Contract / Service Delivery): Processing technical requests necessary to provide the web app and its interactive character practice tools upon your visit."
-privacy_sec_legal_li2:
-  other: "Article 6(1)(f) (Legitimate Interests): The legitimate interest of maintaining website availability, fast CDN delivery, system integrity, and protection against network attacks or abuse."
-privacy_sec_cookies_title:
-  other: "5. Cookies & Tracking Technologies"
-privacy_sec_cookies_p1:
-  other: "{brand} does not use any tracking cookies, analytics cookies, targeting cookies, or third-party advertising scripts. We do not track your behavior across websites, nor do we build personal user profiles."
-privacy_sec_cookies_p2:
-  other: "We utilize standard client-side storage technologies (IndexedDB, localStorage, and Service Worker Cache API) solely for strictly necessary technical functionality — storing your decks, keeping track of your revision levels, enabling offline practice as a Progressive Web App (PWA), and remembering your UI preferences. In accordance with the UK Privacy and Electronic Communications Regulations 2003 (PECR), the EU ePrivacy Directive (Directive 2002/58/EC) and the UK and EU GDPR, strictly necessary functional storage does not require a consent banner."
-privacy_sec_rights_title:
-  other: "6. Your Rights Under the UK and EU GDPR"
-privacy_sec_rights_p1:
-  other: "The UK GDPR - and, if you are in the European Economic Area, the EU GDPR - grants you specific rights concerning your data:"
-privacy_sec_rights_li1:
-  other: "Right of Access (Art. 15): You can view all data stored about your learning progress directly on the Deck and Account pages."
-privacy_sec_rights_li2:
-  other: "Right to Rectification (Art. 16): You have complete control to edit, correct, or rename any card, phrase, definition, or preference at any time directly in the application."
-privacy_sec_rights_li3:
-  other: "Right to Erasure (Art. 17 - 'Right to be Forgotten'): You can delete all your stored data immediately at any time by clicking the 'Clear account data' button on the Account page, or by clearing your browser's site data."
-privacy_sec_rights_li4:
-  other: "Right to Data Portability (Art. 20): You can export all your decks and phrases in machine-readable JSON format at any time using the Export Deck option on the Deck page."
-privacy_sec_rights_li5:
-  other: "Right to Restriction and Objection (Art. 18 & 21): Since no personal data is stored on remote servers, you can stop all local processing at any moment by closing the application or clearing local storage."
-privacy_sec_rights_li6:
-  other: "Right to Lodge a Complaint (Art. 77): Our lead supervisory authority is the UK Information Commissioner's Office (ICO), which you can contact at ico.org.uk. If you are in the European Economic Area you may instead complain to the supervisory authority of your own country (for example, the Commission for Personal Data Protection in Bulgaria - CPDP / КЗЛД)."
-privacy_sec_security_title:
-  other: "7. Data Retention & Security"
-privacy_sec_security_p1:
-  other: "Your learning data remains saved in your browser until you choose to erase it, reset your account, or clear your browser's site data. Because your data is stored locally within the browser origin sandbox and never sent to a central server database, it is protected against central database breaches, and Heapforge Ltd never holds a copy of it."
-privacy_sec_children_title:
-  other: "8. Children's Privacy"
-privacy_sec_children_p1:
-  other: "{brand} is a safe, educational learning environment suitable for learners of all ages. We do not collect, request, or store personal information from children or any other users, and since nothing is profiled, advertised or nudged, the app is built in line with the ICO's Age Appropriate Design Code."
-privacy_sec_transfers_title:
-  other: "9. International Data Transfers"
-privacy_sec_transfers_p1:
-  other: "External infrastructure and CDN providers (GitHub, Cloudflare) operate global networks and data centres. To the extent technical connection metadata is processed outside the United Kingdom or the European Economic Area (EEA), those transfers are covered by the UK's adequacy regulations and by the International Data Transfer Agreement (IDTA) or the UK Addendum to the European Commission's standard contractual clauses (SCCs); for visitors in the EEA they are covered by the SCCs and adequacy decisions adopted by the European Commission."
-privacy_sec_contact_title:
-  other: "10. Changes to This Policy & Contact"
-privacy_sec_contact_p1:
-  other: "We may update this Privacy Policy periodically to reflect improvements to the application or legal developments. Any changes will be posted on this page with a revised 'Last updated' date."
-privacy_sec_contact_p2:
-  other: "If you have questions, feedback, or inquiries regarding this Privacy Policy or the security of {brand}, you can write to Heapforge Ltd at the registered address in section 1, or open an issue on our official GitHub repository:"
-privacy_contact_github:
-  other: "Visit {brand} on GitHub"
+  other: "Registered office"
+privacy_controller_contact_label:
+  other: "Privacy contact"
+privacy_s2_title:
+  other: "2. Scope"
+privacy_s2_p1:
+  other: "This policy applies to personal data we process through this service, as well as when you communicate with us. It does not apply to third-party websites or services that we link to, which have their own privacy policies."
+privacy_s3_title:
+  other: "3. Personal data we collect"
+privacy_s3_p1:
+  other: "We try to collect only what we need. Depending on how you interact with us, this may include:"
+privacy_s3_li1:
+  other: "Contact information – such as your name and email address, when you email us or otherwise get in touch."
+privacy_s3_li2:
+  other: "Communications – the content of messages you send us, including any attachments, and our replies."
+privacy_s3_li3:
+  other: "Technical and usage information – such as your IP address, browser type, device information, the pages you request, and the date and time of your visit. This is processed automatically when you access our website, mainly for security and to deliver the site to you."
+privacy_s3_li4:
+  other: "Account and transaction information – where you use a paid service, information needed to provide it (for example, purchase confirmations). We do not directly collect or store full payment card details."
+privacy_s3_li5:
+  other: "Any other information you choose to provide to us."
+privacy_s3_p2:
+  other: "We do not intentionally collect special category data (such as health, religious or biometric data). Please do not send us such information unless we have specifically asked for it."
+privacy_s4_title:
+  other: "4. How we use personal data and our lawful bases"
+privacy_s4_p1:
+  other: "Under the UK and EU GDPR, we must have a lawful basis for each use of your personal data."
+privacy_s4_th_purpose:
+  other: "Purpose"
+privacy_s4_th_basis:
+  other: "Lawful basis"
+privacy_s4_row1_purpose:
+  other: "Delivering our website and services to you"
+privacy_s4_row1_basis:
+  other: "Legitimate interests (operating our website and business); contract, where you use our services"
+privacy_s4_row2_purpose:
+  other: "Protecting our website and services from abuse, fraud, bots and attacks"
+privacy_s4_row2_basis:
+  other: "Legitimate interests (keeping our services and users secure)"
+privacy_s4_row3_purpose:
+  other: "Responding to your emails and enquiries"
+privacy_s4_row3_basis:
+  other: "Legitimate interests (communicating with people who contact us); contract, where the enquiry relates to a service you use or are about to use"
+privacy_s4_row4_purpose:
+  other: "Providing, managing and supporting services you have purchased"
+privacy_s4_row4_basis:
+  other: "Contract"
+privacy_s4_row5_purpose:
+  other: "Keeping business records and meeting legal, tax and regulatory obligations"
+privacy_s4_row5_basis:
+  other: "Legal obligation"
+privacy_s4_row6_purpose:
+  other: "Establishing, exercising or defending legal claims"
+privacy_s4_row6_basis:
+  other: "Legitimate interests"
+privacy_s4_row7_purpose:
+  other: "Any purpose for which we ask for your consent"
+privacy_s4_row7_basis:
+  other: "Consent (which you can withdraw at any time)"
+privacy_s4_p2:
+  other: "Where we rely on legitimate interests, we have considered whether those interests are outweighed by your rights and freedoms. You can contact us for more information about this balancing."
+privacy_s4_p3:
+  other: "We do not sell your personal data."
+privacy_s5_title:
+  other: "5. Third-party service providers"
+privacy_s5_p1:
+  other: "We use a number of trusted service providers to run our business. They process personal data on our behalf and under our instructions, and are bound by contractual obligations to protect it. Our main providers are listed below."
+privacy_s5_1_title:
+  other: "5.1 Cloudflare"
+privacy_s5_1_p1:
+  other: "We use services provided by Cloudflare, Inc. to host, deliver and protect our website:"
+privacy_s5_1_li1:
+  other: "Security and bot protection – Cloudflare screens traffic to our website to protect it against denial-of-service attacks, automated bots and other malicious activity. To do this, it analyses information such as IP addresses, browser and device characteristics and request details, and may set a strictly necessary security cookie."
+privacy_s5_1_li2:
+  other: "Website hosting – our website is served using Cloudflare's hosting and edge computing services (Cloudflare Pages and Workers), which process web requests and other technical information in order to deliver pages to you."
+privacy_s5_1_li3:
+  other: "Content delivery – static files such as images, scripts and stylesheets are stored and delivered using Cloudflare's storage and content delivery network (Cloudflare R2)."
+privacy_s5_1_p2:
+  other: "Cloudflare operates a global network, so your data may be processed in data centres close to your location, including outside the UK and EU. For more information, see Cloudflare's Privacy Policy: {cloudflare_policy}"
+privacy_s5_2_title:
+  other: "5.2 Google Workspace"
+privacy_s5_2_p1:
+  other: "We use Google Workspace, provided by Google, as our email provider. When you email us, your message – including your name, email address, message content, attachments and related metadata – is received, stored and processed on Google's systems. Google processes this data on our behalf under its business data processing terms and does not use Workspace customer data for advertising."
+privacy_s5_2_p2:
+  other: "For more information, see Google's Privacy Policy ({google_policy}) and Google Cloud Privacy Notice ({google_cloud_notice})."
+privacy_s5_3_title:
+  other: "5.3 Other recipients"
+privacy_s5_3_p1:
+  other: "We may also share some personal data with:"
+privacy_s5_3_li1:
+  other: "professional advisers such as accountants, lawyers and insurers, where necessary;"
+privacy_s5_3_li2:
+  other: "law enforcement, regulators, courts or other authorities, where required by law or to protect our rights, users or the public;"
+privacy_s5_3_li3:
+  other: "a buyer, successor or investor in connection with a merger, acquisition, restructuring or sale of all or part of our business, subject to appropriate confidentiality protections."
+privacy_s6_title:
+  other: "6. Cookies and similar technologies"
+privacy_s6_p1:
+  other: "We only use cookies and similar technologies that are strictly necessary for our website to function securely, such as security cookies to distinguish genuine visitors from automated bots. These do not require your consent under UK and EU law, and we do not use them to track you across other websites."
+privacy_s6_p2:
+  other: "If we introduce non-essential cookies (for example, for analytics or advertising), we will update this policy and, where required by law, ask for your consent before setting them."
+privacy_s7_title:
+  other: "7. International data transfers"
+privacy_s7_p1:
+  other: "We are based in the United Kingdom, and some of our service providers process data in other countries, including the United States."
+privacy_s7_p2:
+  other: "Where personal data is transferred outside the UK or the European Economic Area (EEA), we ensure appropriate safeguards are in place, such as:"
+privacy_s7_li1:
+  other: "transfers to countries recognised as providing an adequate level of protection (adequacy regulations/decisions);"
+privacy_s7_li2:
+  other: "transfers to organisations certified under the EU-U.S. Data Privacy Framework and its UK Extension (the “UK-US data bridge”);"
+privacy_s7_li3:
+  other: "Standard Contractual Clauses approved by the European Commission, together with the UK International Data Transfer Addendum or UK International Data Transfer Agreement, where applicable."
+privacy_s7_p3:
+  other: "You can contact us for more information about the safeguards we use."
+privacy_s8_title:
+  other: "8. How long we keep personal data"
+privacy_s8_p1:
+  other: "We keep personal data only for as long as necessary for the purposes described in this policy, including to meet legal, accounting or reporting requirements. As a general guide:"
+privacy_s8_li1:
+  other: "Email correspondence – kept for 24 months after our last contact, unless it relates to an ongoing matter or we need to keep it longer for legal reasons."
+privacy_s8_li2:
+  other: "Security and technical logs – kept for short periods only, as needed for security and troubleshooting."
+privacy_s8_li3:
+  other: "Business and transaction records – kept for as long as required by law (in the UK, typically up to six years after the end of the relevant financial year)."
+privacy_s8_p2:
+  other: "When data is no longer needed, we delete or anonymise it securely."
+privacy_s9_title:
+  other: "9. How we protect personal data"
+privacy_s9_p1:
+  other: "We use appropriate technical and organisational measures to protect personal data against unauthorised access, loss, misuse or alteration. These include encryption in transit, access controls and choosing reputable providers with strong security practices. No method of transmission or storage is completely secure, however, and we cannot guarantee absolute security."
+privacy_s9_p2:
+  other: "If a personal data breach occurs that is likely to put your rights at risk, we will notify you and the relevant authorities as required by law."
+privacy_s10_title:
+  other: "10. Your rights (UK, EU, EEA and Switzerland)"
+privacy_s10_p1:
+  other: "If you are in the UK, EU, EEA or Switzerland, you have the following rights, subject to certain conditions and exceptions:"
+privacy_s10_li1:
+  other: "Access – to request a copy of the personal data we hold about you."
+privacy_s10_li2:
+  other: "Rectification – to ask us to correct inaccurate or incomplete data."
+privacy_s10_li3:
+  other: "Erasure – to ask us to delete your data in certain circumstances."
+privacy_s10_li4:
+  other: "Restriction – to ask us to limit how we use your data in certain circumstances."
+privacy_s10_li5:
+  other: "Data portability – to receive data you provided to us in a structured, commonly used format, or have it transferred to another organisation."
+privacy_s10_li6:
+  other: "Objection – to object to processing based on our legitimate interests, and to object at any time to direct marketing."
+privacy_s10_li7:
+  other: "Withdraw consent – where we rely on consent, you may withdraw it at any time without affecting earlier processing."
+privacy_s10_li8:
+  other: "Not to be subject to solely automated decisions with legal or similarly significant effects."
+privacy_s10_p2:
+  other: "To exercise any of these rights, email us at {email}. We will respond within one month, which may be extended by up to two further months for complex requests. We may need to verify your identity before responding. Exercising your rights is usually free of charge."
+privacy_s11_title:
+  other: "11. Other countries"
+privacy_s11_p1:
+  other: "If you live in another country with privacy laws that give you rights over your personal data, please contact us and we will respond in accordance with the law that applies to you."
+privacy_s12_title:
+  other: "12. Children's privacy"
+privacy_s12_p1:
+  other: "Our website and services are not directed at children under the minimal age for data processing consent, and we do not knowingly collect personal data from them. If you believe a child has provided us with personal data, please contact us and we will delete it."
+privacy_s13_title:
+  other: "13. Automated decision-making"
+privacy_s13_p1:
+  other: "We do not make decisions about you based solely on automated processing that produce legal or similarly significant effects. Automated security tools (such as bot protection) may block or challenge suspicious traffic; if you believe you have been blocked in error, please contact us."
+privacy_s14_title:
+  other: "14. Links to other websites"
+privacy_s14_p1:
+  other: "Our website may contain links to third-party websites or services. We are not responsible for their privacy practices, and we encourage you to read their privacy policies."
+privacy_s15_title:
+  other: "15. Changes to this policy"
+privacy_s15_p1:
+  other: "We may update this policy from time to time. The “Last updated” date at the top shows when it was last revised. If we make significant changes, we will take reasonable steps to let you know, for example by a notice on our website."
+privacy_s16_title:
+  other: "16. Contact us and complaints"
+privacy_s16_p1:
+  other: "If you have any questions about this policy or how we handle your personal data, please contact us:"
+privacy_s16_li1:
+  other: "E-mail: {email}"
+privacy_s16_li2:
+  other: "Post: Heapforge Ltd., {address}"
+privacy_s16_p2:
+  other: "We would appreciate the chance to address your concerns first, but you have the right to complain to a data protection authority:"
+privacy_s16_li3:
+  other: "United Kingdom: Information Commissioner's Office (ICO) – {ico}"
+privacy_s16_li4:
+  other: "EU/EEA: the supervisory authority in the country where you live, work or where the alleged infringement took place – a list is available at {edpb}"
+privacy_s16_li5:
+  other: "Other regions: your local data protection or privacy regulator."
 footer_licenses_link:
   other: "Open-source licenses"
 licenses_title:

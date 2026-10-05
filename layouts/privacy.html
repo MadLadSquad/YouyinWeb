@@ -64,128 +64,212 @@
                 </div>
             </section>
 
-            <!-- ============================== 1. Controller ============================== -->
+            <!-- The controller's identity and contact points, kept here once rather than in the translation
+                 files: the company name, its Companies House number, its registered office and the privacy
+                 mailbox are legal identifiers that must read identically in every locale. They reach the
+                 translated prose through {placeholder}s, which is also how the links get in, so the strings
+                 that carry one are piped through safeHTML (translations must not use a bare < or &). -->
+            {{- $company := "Heapforge Ltd." -}}
+            {{- $number := "17418393" -}}
+            {{- $address := "82A James Carter Road, Mildenhall, Bury St. Edmunds, Suffolk, England, IP28 7DE, United Kingdom" -}}
+            {{- $email := "privacy@heapforge.com" -}}
+            {{- $mail := printf `<a href="mailto:%s">%s</a>` $email $email -}}
+            {{- $ext := `<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>` -}}
+            {{- $links := dict
+                "website" (printf `<a href="%s/">%s</a>` site.Params.cannonical_url site.Params.cannonical_url)
+                "email" $mail
+                "address" $address
+                "cloudflare_policy" (printf $ext "https://www.cloudflare.com/privacypolicy/" "https://www.cloudflare.com/privacypolicy/")
+                "google_policy" (printf $ext "https://policies.google.com/privacy" "https://policies.google.com/privacy")
+                "google_cloud_notice" (printf $ext "https://cloud.google.com/terms/cloud-privacy-notice" "https://cloud.google.com/terms/cloud-privacy-notice")
+                "ico" (printf $ext "https://ico.org.uk/make-a-complaint/" "https://ico.org.uk/make-a-complaint/")
+                "edpb" (printf $ext "https://edpb.europa.eu/about-edpb/about-edpb/members_en" "https://edpb.europa.eu/about-edpb/about-edpb/members_en")
+            }}
+
+            <!-- ============================== Introduction ============================== -->
             <section class="card privacy-section">
-                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_sec_controller_title") }}</h2>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_intro" "ctx" $links) | safeHTML }}</p>
+            </section>
+
+            <!-- ============================== 1. Who we are ============================== -->
+            <section class="card privacy-section">
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s1_title") }}</h2>
                 <hr class="hairline">
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_controller_p1") }}</p>
-                <!-- The controller's registered identity. Only the labels go through the translation
-                     files: the company name, its Companies House number and its registered address are
-                     legal identifiers that must read identically in every locale, so keeping one copy
-                     of them here is what stops a translation drifting away from the register. -->
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s1_p1") }}</p>
                 <dl class="privacy-details">
                     <div class="privacy-detail">
                         <dt>{{ partial "t.html" (dict "k" "privacy_controller_company_label") }}</dt>
-                        <dd>Heapforge Ltd</dd>
+                        <dd>{{ $company }}</dd>
                     </div>
                     <div class="privacy-detail">
                         <dt>{{ partial "t.html" (dict "k" "privacy_controller_number_label") }}</dt>
-                        <dd>17418393</dd>
+                        <dd>{{ $number }}</dd>
                     </div>
                     <div class="privacy-detail">
                         <dt>{{ partial "t.html" (dict "k" "privacy_controller_address_label") }}</dt>
-                        <dd>82a James Carter Road, Mildenhall, Bury St. Edmunds, England, IP28 7DE</dd>
+                        <dd>{{ $address }}</dd>
+                    </div>
+                    <div class="privacy-detail">
+                        <dt>{{ partial "t.html" (dict "k" "privacy_controller_contact_label") }}</dt>
+                        <dd>{{ $mail | safeHTML }}</dd>
                     </div>
                 </dl>
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_controller_p2") }}</p>
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_controller_p3") }}</p>
             </section>
 
-            <!-- ============================== 2. Local Data ============================== -->
+            <!-- ============================== 2. Scope ============================== -->
             <section class="card privacy-section">
-                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_sec_localdata_title") }}</h2>
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s2_title") }}</h2>
                 <hr class="hairline">
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_localdata_p1") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s2_p1") }}</p>
+            </section>
+
+            <!-- ============================== 3. Personal data we collect ============================== -->
+            <section class="card privacy-section">
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s3_title") }}</h2>
+                <hr class="hairline">
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s3_p1") }}</p>
                 <ul class="privacy-list">
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_localdata_li1") }}</li>
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_localdata_li2") }}</li>
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_localdata_li3") }}</li>
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_localdata_li4") }}</li>
+                    {{- range seq 5 }}
+                    <li>{{ partial "t.html" (dict "k" (printf "privacy_s3_li%d" .)) }}</li>
+                    {{- end }}
                 </ul>
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_localdata_p2") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s3_p2") }}</p>
             </section>
 
-            <!-- ============================== 3. Third-party & Technical ============================== -->
+            <!-- ============================== 4. Uses & lawful bases ============================== -->
             <section class="card privacy-section">
-                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_sec_thirdparty_title") }}</h2>
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s4_title") }}</h2>
                 <hr class="hairline">
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_thirdparty_p1") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s4_p1") }}</p>
+                {{- $basisLabel := partial "t.html" (dict "k" "privacy_s4_th_basis") }}
+                <table class="privacy-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">{{ partial "t.html" (dict "k" "privacy_s4_th_purpose") }}</th>
+                            <th scope="col">{{ $basisLabel }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{- range seq 7 }}
+                        <tr>
+                            <td>{{ partial "t.html" (dict "k" (printf "privacy_s4_row%d_purpose" .)) }}</td>
+                            <td data-label="{{ $basisLabel }}">{{ partial "t.html" (dict "k" (printf "privacy_s4_row%d_basis" .)) }}</td>
+                        </tr>
+                        {{- end }}
+                    </tbody>
+                </table>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s4_p2") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s4_p3") }}</p>
+            </section>
+
+            <!-- ============================== 5. Service providers ============================== -->
+            <section class="card privacy-section">
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s5_title") }}</h2>
+                <hr class="hairline">
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s5_p1") }}</p>
+
+                <h3 class="t-h2 privacy-subheading">{{ partial "t.html" (dict "k" "privacy_s5_1_title") }}</h3>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s5_1_p1") }}</p>
                 <ul class="privacy-list">
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_thirdparty_li1") }}</li>
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_thirdparty_li2") }}</li>
+                    {{- range seq 3 }}
+                    <li>{{ partial "t.html" (dict "k" (printf "privacy_s5_1_li%d" .)) }}</li>
+                    {{- end }}
                 </ul>
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_thirdparty_p2") }}</p>
-            </section>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s5_1_p2" "ctx" $links) | safeHTML }}</p>
 
-            <!-- ============================== 4. Legal Bases ============================== -->
-            <section class="card privacy-section">
-                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_sec_legal_title") }}</h2>
-                <hr class="hairline">
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_legal_p1") }}</p>
+                <h3 class="t-h2 privacy-subheading">{{ partial "t.html" (dict "k" "privacy_s5_2_title") }}</h3>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s5_2_p1") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s5_2_p2" "ctx" $links) | safeHTML }}</p>
+
+                <h3 class="t-h2 privacy-subheading">{{ partial "t.html" (dict "k" "privacy_s5_3_title") }}</h3>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s5_3_p1") }}</p>
                 <ul class="privacy-list">
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_legal_li1") }}</li>
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_legal_li2") }}</li>
+                    {{- range seq 3 }}
+                    <li>{{ partial "t.html" (dict "k" (printf "privacy_s5_3_li%d" .)) }}</li>
+                    {{- end }}
                 </ul>
             </section>
 
-            <!-- ============================== 5. Cookies ============================== -->
+            <!-- ============================== 6. Cookies ============================== -->
             <section class="card privacy-section">
-                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_sec_cookies_title") }}</h2>
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s6_title") }}</h2>
                 <hr class="hairline">
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_cookies_p1") }}</p>
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_cookies_p2") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s6_p1") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s6_p2") }}</p>
             </section>
 
-            <!-- ============================== 6. GDPR Rights ============================== -->
+            <!-- ============================== 7. International transfers ============================== -->
             <section class="card privacy-section">
-                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_sec_rights_title") }}</h2>
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s7_title") }}</h2>
                 <hr class="hairline">
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_rights_p1") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s7_p1") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s7_p2") }}</p>
                 <ul class="privacy-list">
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_rights_li1") }}</li>
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_rights_li2") }}</li>
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_rights_li3") }}</li>
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_rights_li4") }}</li>
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_rights_li5") }}</li>
-                    <li>{{ partial "t.html" (dict "k" "privacy_sec_rights_li6") }}</li>
+                    {{- range seq 3 }}
+                    <li>{{ partial "t.html" (dict "k" (printf "privacy_s7_li%d" .)) }}</li>
+                    {{- end }}
                 </ul>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s7_p3") }}</p>
             </section>
 
-            <!-- ============================== 7. Retention & Security ============================== -->
+            <!-- ============================== 8. Retention ============================== -->
             <section class="card privacy-section">
-                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_sec_security_title") }}</h2>
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s8_title") }}</h2>
                 <hr class="hairline">
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_security_p1") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s8_p1") }}</p>
+                <ul class="privacy-list">
+                    {{- range seq 3 }}
+                    <li>{{ partial "t.html" (dict "k" (printf "privacy_s8_li%d" .)) }}</li>
+                    {{- end }}
+                </ul>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s8_p2") }}</p>
             </section>
 
-            <!-- ============================== 8. Children's Privacy ============================== -->
+            <!-- ============================== 9. Security ============================== -->
             <section class="card privacy-section">
-                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_sec_children_title") }}</h2>
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s9_title") }}</h2>
                 <hr class="hairline">
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_children_p1") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s9_p1") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s9_p2") }}</p>
             </section>
 
-            <!-- ============================== 9. Transfers ============================== -->
+            <!-- ============================== 10. Your rights ============================== -->
             <section class="card privacy-section">
-                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_sec_transfers_title") }}</h2>
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s10_title") }}</h2>
                 <hr class="hairline">
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_transfers_p1") }}</p>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s10_p1") }}</p>
+                <ul class="privacy-list">
+                    {{- range seq 8 }}
+                    <li>{{ partial "t.html" (dict "k" (printf "privacy_s10_li%d" .)) }}</li>
+                    {{- end }}
+                </ul>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s10_p2" "ctx" $links) | safeHTML }}</p>
             </section>
 
-            <!-- ============================== 10. Changes & Contact ============================== -->
+            <!-- ============================== 11–15. Short sections ============================== -->
+            {{- range seq 11 15 }}
             <section class="card privacy-section">
-                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_sec_contact_title") }}</h2>
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" (printf "privacy_s%d_title" .)) }}</h2>
                 <hr class="hairline">
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_contact_p1") }}</p>
-                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_sec_contact_p2") }}</p>
-                <div class="privacy-contact-box">
-                    <a href="https://github.com/MadLadSquad" class="card-button-edit privacy-github-link" target="_blank" rel="noopener noreferrer">
-                        <svg class="icon icon-sm" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-                            <path d="M10 2a8 8 0 0 0-2.5 15.6c.4.1.5-.2.5-.4v-1.5c-2.2.5-2.7-1.1-2.7-1.1-.4-.9-.9-1.2-.9-1.2-.7-.5.1-.5.1-.5.8.1 1.2.8 1.2.8.7 1.2 1.9.9 2.4.7.1-.5.3-.9.5-1.1-1.8-.2-3.6-.9-3.6-4 0-.9.3-1.6.8-2.2-.1-.2-.4-1 .1-2.1 0 0 .7-.2 2.2.8.6-.2 1.3-.3 2-.3s1.4.1 2 .3c1.5-1 2.2-.8 2.2-.8.5 1.1.2 1.9.1 2.1.5.6.8 1.3.8 2.2 0 3.1-1.9 3.8-3.7 4 .3.3.6.8.6 1.6v2.4c0 .2.1.5.5.4A8 8 0 0 0 10 2z" fill="currentColor" stroke="none"></path>
-                        </svg>
-                        {{ partial "t.html" (dict "k" "privacy_contact_github") }}
-                    </a>
-                </div>
+                <p class="t-body">{{ partial "t.html" (dict "k" (printf "privacy_s%d_p1" .)) }}</p>
+            </section>
+            {{- end }}
+
+            <!-- ============================== 16. Contact & complaints ============================== -->
+            <section class="card privacy-section">
+                <h2 class="t-h1">{{ partial "t.html" (dict "k" "privacy_s16_title") }}</h2>
+                <hr class="hairline">
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s16_p1") }}</p>
+                <ol class="privacy-list privacy-list-numbered">
+                    <li>{{ partial "t.html" (dict "k" "privacy_s16_li1" "ctx" $links) | safeHTML }}</li>
+                    <li>{{ partial "t.html" (dict "k" "privacy_s16_li2" "ctx" $links) }}</li>
+                </ol>
+                <p class="t-body">{{ partial "t.html" (dict "k" "privacy_s16_p2") }}</p>
+                <ul class="privacy-list">
+                    <li>{{ partial "t.html" (dict "k" "privacy_s16_li3" "ctx" $links) | safeHTML }}</li>
+                    <li>{{ partial "t.html" (dict "k" "privacy_s16_li4" "ctx" $links) | safeHTML }}</li>
+                    <li>{{ partial "t.html" (dict "k" "privacy_s16_li5") }}</li>
+                </ul>
             </section>
         </main>
     

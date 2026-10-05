@@ -7,6 +7,12 @@ defaultContentLanguage: en_US
 defaultContentLanguageInSubdir: true
 disablePathToLower: true
 
+# Older Hugo releases cannot resolve the media type of the vendored .woff2 fonts and fail deep in
+# assets.html; fail up front instead. Keep in sync with HUGO_VERSION in the deploy settings.
+module:
+  hugoVersion:
+    min: "0.165.0"
+
 # Hugo lowercases the language *key* when it builds the output directory (public/en_us/), so every
 # internal link is built from params.dir instead of .RelPermalink, and build.sh renames the three
 # directories afterwards. Keep params.dir in sync with SUPPORTED_LOCALES in

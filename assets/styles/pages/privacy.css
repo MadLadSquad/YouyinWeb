@@ -1,5 +1,5 @@
 /* Privacy policy page only (privacy.html): hero highlights grid, structured legal sections,
-   lists, and contact actions. Colours come from the theme custom properties injected by
+   and lists. Colours come from the theme custom properties injected by
    theme.js (see base.css). */
 
 .privacy-page {
@@ -146,18 +146,51 @@
     color: var(--body-text);
 }
 
-.privacy-contact-box {
-    margin-top: 0.375rem;
-    display: flex;
-    align-items: center;
+/* The "how we use personal data" table: purpose on the left, lawful basis on the right. Rows are
+   separated by hairlines on the same sunken panel as the controller fact box. */
+.privacy-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin: 0.25rem 0 0.25rem 0;
+    background-color: var(--sunken);
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    overflow: hidden;
 }
 
-.privacy-github-link {
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0;
+.privacy-table th,
+.privacy-table td {
+    padding: 0.75rem 1.125rem;
+    text-align: left;
+    vertical-align: top;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--body-text);
+    overflow-wrap: anywhere;
+}
+
+.privacy-table th {
+    font-weight: 600;
+    color: var(--muted-text);
+}
+
+.privacy-table tbody tr {
+    border-top: 1px solid var(--hairline);
+}
+
+/* The 5.1-5.3 provider subsections inside section 5 */
+.privacy-subheading {
+    margin-top: 0.5rem;
+}
+
+.privacy-list-numbered {
+    list-style-type: decimal;
+}
+
+/* Long URLs (the providers' privacy policies, the EDPB list) would otherwise push a phone wide */
+.privacy-section a {
+    overflow-wrap: anywhere;
 }
 
 /* --------------------------------------- Responsive --------------------------------------- */
@@ -175,5 +208,34 @@
     /* Two columns leave the address a couple of words wide on a phone, so stack label over value */
     .privacy-detail {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    /* Two narrow columns are unreadable on a phone, so each row becomes a purpose followed by its
+       lawful basis, labelled with the column header that the hidden <thead> no longer shows */
+    .privacy-table thead {
+        display: none;
+    }
+
+    .privacy-table tr,
+    .privacy-table td {
+        display: block;
+    }
+
+    .privacy-table tbody tr:first-child {
+        border-top: none;
+    }
+
+    .privacy-table td {
+        padding: 0.625rem 1rem 0 1rem;
+    }
+
+    .privacy-table td + td {
+        padding-bottom: 0.75rem;
+    }
+
+    .privacy-table td[data-label]::before {
+        content: attr(data-label) ": ";
+        font-weight: 600;
+        color: var(--muted-text);
     }
 }

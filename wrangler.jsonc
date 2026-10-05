@@ -1,6 +1,8 @@
 {
   // Static-assets-only Worker: no server code, `public/` is served directly.
-  // `hugo --gc --minify` must run before `wrangler deploy` (it is the build command).
+  // `./build.sh` must run before `wrangler deploy` (it is the build command). Plain
+  // `hugo --gc --minify` is not enough: build.sh also restores the cased locale directories
+  // (public/en_US/...) and the root mirror of the default locale.
   "name": "youyin",
   "compatibility_date": "2026-06-01",
   "workers_dev": false,

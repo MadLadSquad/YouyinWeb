@@ -551,7 +551,7 @@ privacy_hero_eyebrow:
 privacy_hero_title:
   other: "Politică de confidențialitate"
 privacy_last_updated:
-  other: "Ultima actualizare: Septembrie 2026"
+  other: "Ultima actualizare: 5 octombrie 2026"
 privacy_hero_lead:
   other: "{brand} este construit pe o arhitectură orientată spre stocare locală și confidențialitate prin design. Progresul tău de învățare, cardurile personalizate și preferințele sunt stocate exclusiv pe propriul dispozitiv și nu sunt niciodată transmise către un server la distanță."
 privacy_hl_local_title:
@@ -570,94 +570,208 @@ privacy_hl_control_title:
   other: "Control deplin asupra datelor"
 privacy_hl_control_desc:
   other: "Exportă-ți pachetele în format JSON sau șterge toate datele locale cu un singur clic în orice moment."
-privacy_sec_controller_title:
-  other: "1. Prezentare generală și operatorul de date"
-privacy_sec_controller_p1:
-  other: "{brand} este o aplicație web educațională cu sursă deschisă, dedicată sprijinirii celor care învață și exersează scrierea de mână a caracterelor din diverse sisteme de scriere. Site-ul web este operat de Heapforge Ltd, o companie înregistrată în Anglia și Țara Galilor. Heapforge Ltd este operatorul de date pentru acest site conform Regulamentului general privind protecția datelor din Regatul Unit (UK GDPR) și Data Protection Act 2018, iar - pentru vizitatorii din Spațiul Economic European - conform Regulamentului general privind protecția datelor din UE (Regulamentul (UE) 2016/679)."
-privacy_sec_controller_p2:
-  other: "Deoarece {brand} funcționează ca o aplicație statică, pe partea de client, fără conturi de utilizator sau baze de date pe server, nu colectăm, nu stocăm, nu vindem și nu prelucrăm date cu caracter personal pe niciun server la distanță."
+privacy_intro:
+  other: "Această Politică de confidențialitate explică modul în care Heapforge Ltd. („Heapforge”, „noi”, „ne” sau „nostru”) colectează, utilizează, partajează și protejează datele cu caracter personal atunci când vizitați {website}, utilizați {brand} sau ne contactați în alt mod. De asemenea, explică drepturile pe care le aveți și cum le puteți exercita."
+privacy_s1_title:
+  other: "1. Cine suntem"
+privacy_s1_p1:
+  other: "Operatorul responsabil pentru datele dumneavoastră cu caracter personal este Heapforge Ltd., înregistrată în Anglia și Țara Galilor:"
 privacy_controller_company_label:
   other: "Companie"
 privacy_controller_number_label:
-  other: "Număr de înregistrare Companies House"
+  other: "Număr de înregistrare"
 privacy_controller_address_label:
   other: "Sediu social"
-privacy_sec_controller_p3:
-  other: "Deoarece nicio dată cu caracter personal nu ajunge la noi, Heapforge Ltd nu a numit un responsabil cu protecția datelor și nu a desemnat un reprezentant în Spațiul Economic European în conformitate cu articolul 27 din GDPR UE. Solicitările scrise pot fi trimise la adresa sediului social menționată mai sus; la întrebările privind această politică se răspunde cel mai rapid prin intermediul depozitului GitHub menționat la sfârșitul acesteia."
-privacy_sec_localdata_title:
-  other: "2. Date stocate pe dispozitivul tău"
-privacy_sec_localdata_p1:
-  other: "Toate datele aplicației generate în timpul învățării sunt salvate local în spațiul de stocare persistent al browserului tău (IndexedDB și localStorage). Aceste date includ:"
-privacy_sec_localdata_li1:
-  other: "Carduri și fraze: Definițiile caracterelor, pronunțiile, selecțiile de variante regionale și frazele personalizate pe care le creezi sau le imporți."
-privacy_sec_localdata_li2:
-  other: "Statistici de studiu: Istoricul recapitulărilor, numărul de erori, nivelurile de cunoaștere, seriile zilnice, soldul de înghețări ale seriei și recompensele în nestemate."
-privacy_sec_localdata_li3:
-  other: "Calendar de activitate: Numărul zilnic de sesiuni utilizat pentru a genera harta termică a practicii tale pe pagina Cont."
-privacy_sec_localdata_li4:
-  other: "Preferințe: Tema de culori selectată, limba interfeței, modificatorii de joc (cum ar fi modul extins și reducerea zilnică a nivelului) și progresul în tutorialul introductiv."
-privacy_sec_localdata_p2:
-  other: "Aceste informații rămân în întregime pe dispozitivul tău. Ele nu sunt niciodată transmise către noi sau către terți."
-privacy_sec_thirdparty_title:
-  other: "3. Date tehnice și furnizori terți"
-privacy_sec_thirdparty_p1:
-  other: "Când vizitezi {brand}, browserul tău web se conectează la furnizori terți de infrastructură pentru a descărca fișierele site-ului, datele despre liniile caracterelor, pachetele publice și imaginile emoji. Acești furnizori pot prelucra date tehnice de conectare (cum ar fi adresa ta IP, User-Agent-ul browserului și marcajele temporale ale solicitărilor) strict în scopul transmiterii conținutului și securizării operațiunilor de rețea:"
-privacy_sec_thirdparty_li1:
-  other: "GitHub Pages (GitHub, Inc. / Microsoft): Găzduire web statică pentru fișierele aplicației site-ului."
-privacy_sec_thirdparty_li2:
-  other: "jsDelivr CDN (ProspectOne / Cloudflare): Rețea de distribuție a conținutului (CDN) utilizată pentru a distribui baza de date cu liniile caracterelor, depozitul public de pachete și imaginile emoji."
-privacy_sec_thirdparty_p2:
-  other: "Acești furnizori prelucrează metadate tehnice în conformitate cu propriile politici de confidențialitate și în baza mecanismelor internaționale de transfer de date aplicabile (cum ar fi Cadrul de confidențialitate a datelor UE-SUA și extinderea sa pentru Regatul Unit, precum și clauzele contractuale standard)."
-privacy_sec_legal_title:
-  other: "4. Temeiuri juridice pentru prelucrare (Art. 6 GDPR UK / GDPR UE)"
-privacy_sec_legal_p1:
-  other: "În conformitate cu articolul 6 alineatul (1) din GDPR UK și din GDPR UE, prelucrarea tehnică limitată necesară pentru furnizarea site-ului web se bazează pe:"
-privacy_sec_legal_li1:
-  other: "Articolul 6 alineatul (1) litera (b) (Executarea unui contract / Furnizarea serviciilor): Prelucrarea cererilor tehnice necesare pentru furnizarea aplicației web și a instrumentelor sale interactive de exersare a caracterelor la vizitarea site-ului."
-privacy_sec_legal_li2:
-  other: "Articolul 6 alineatul (1) litera (f) (Interese legitime): Interesul legitim de a menține disponibilitatea site-ului web, livrarea rapidă prin CDN, integritatea sistemului și protecția împotriva atacurilor sau abuzurilor de rețea."
-privacy_sec_cookies_title:
-  other: "5. Module cookie și tehnologii de urmărire"
-privacy_sec_cookies_p1:
-  other: "{brand} nu utilizează module cookie de urmărire, cookie-uri de analiză, cookie-uri de direcționare sau scripturi publicitare terțe. Nu îți urmărim comportamentul pe alte site-uri web și nu construim profiluri personale de utilizator."
-privacy_sec_cookies_p2:
-  other: "Utilizăm tehnologii standard de stocare pe partea de client (IndexedDB, localStorage și Service Worker Cache API) exclusiv pentru funcționalități tehnice strict necesare — stocarea pachetelor tale, urmărirea nivelurilor de recapitulare, permiterea exersării offline ca Aplicație Web Progresivă (PWA) și memorarea preferințelor tale de interfață. În conformitate cu Reglementările privind confidențialitatea și comunicațiile electronice din Regatul Unit din 2003 (PECR), Directiva UE privind confidențialitatea în mediul electronic (Directiva 2002/58/CE) și GDPR din Regatul Unit și UE, stocarea funcțională strict necesară nu necesită un banner de consimțământ."
-privacy_sec_rights_title:
-  other: "6. Drepturile tale conform GDPR UK și UE"
-privacy_sec_rights_p1:
-  other: "GDPR din Regatul Unit - și, dacă vă aflați în Spațiul Economic European, GDPR UE - vă conferă drepturi specifice privind datele dumneavoastră:"
-privacy_sec_rights_li1:
-  other: "Dreptul de acces (art. 15): Puteți vizualiza toate datele stocate despre progresul dumneavoastră de învățare direct pe paginile Pachet și Cont."
-privacy_sec_rights_li2:
-  other: "Dreptul la rectificare (art. 16): Aveți control total pentru a edita, corecta sau redenumi orice card, frază, definiție sau preferință în orice moment, direct în aplicație."
-privacy_sec_rights_li3:
-  other: "Dreptul la ștergere (art. 17 - 'Dreptul de a fi uitat'): Puteți șterge imediat toate datele stocate, în orice moment, apăsând butonul 'Șterge datele contului' de pe pagina Cont sau ștergând datele site-ului din browser."
-privacy_sec_rights_li4:
-  other: "Dreptul la portabilitatea datelor (art. 20): Puteți exporta oricând toate pachetele și frazele într-un format JSON ușor de citit automat, utilizând opțiunea Exportă de pe pagina Pachet."
-privacy_sec_rights_li5:
-  other: "Dreptul la restricționare și opoziție (art. 18 și 21): Deoarece nu sunt stocate date cu caracter personal pe servere la distanță, puteți opri orice prelucrare locală în orice moment prin închiderea aplicației sau ștergerea stocării locale."
-privacy_sec_rights_li6:
-  other: "Dreptul de a depune o plângere (art. 77): Autoritatea noastră principală de supraveghere este Information Commissioner's Office (ICO) din Regatul Unit, pe care o puteți contacta la ico.org.uk. Dacă vă aflați în Spațiul Economic European, puteți depune o plângere la autoritatea de supraveghere din țara dumneavoastră (de exemplu, Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal din România - ANSPDCP)."
-privacy_sec_security_title:
-  other: "7. Păstrarea datelor și securitatea"
-privacy_sec_security_p1:
-  other: "Datele tale de învățare rămân salvate în browser până când alegi să le ștergi, să îți resetezi contul sau să ștergi datele site-ului din browser. Deoarece datele tale sunt stocate local în cadrul sandbox-ului de origine al browserului și nu sunt trimise niciodată către o bază de date centrală de server, acestea sunt protejate împotriva breșelor bazelor de date centrale, iar Heapforge Ltd nu deține niciodată o copie a acestora."
-privacy_sec_children_title:
-  other: "8. Confidențialitatea datelor minorilor"
-privacy_sec_children_p1:
-  other: "{brand} este un mediu educațional sigur, potrivit pentru cursanți de toate vârstele. Nu colectăm, nu solicităm și nu stocăm informații cu caracter personal de la copii sau de la orice alți utilizatori și, deoarece nimic nu este profilat, promovat publicitar sau direcționat subtil, aplicația este construită în conformitate cu Age Appropriate Design Code al ICO."
-privacy_sec_transfers_title:
-  other: "9. Transferuri internaționale de date"
-privacy_sec_transfers_p1:
-  other: "Furnizorii externi de infrastructură și CDN (GitHub, Cloudflare) operează rețele globale și centre de date. În măsura în care metadatele tehnice de conectare sunt prelucrate în afara Regatului Unit sau a Spațiului Economic European (SEE), aceste transferuri sunt acoperite de reglementările de adecvare ale Regatului Unit și de Acordul internațional de transfer de date (IDTA) sau de Anexa Regatului Unit la clauzele contractuale standard (SCC) ale Comisiei Europene; pentru vizitatorii din SEE, acestea sunt acoperite de SCC și de deciziile de adecvare adoptate de Comisia Europeană."
-privacy_sec_contact_title:
-  other: "10. Modificări ale acestei politici și contact"
-privacy_sec_contact_p1:
-  other: "Putem actualiza periodic această Politică de confidențialitate pentru a reflecta îmbunătățirile aduse aplicației sau evoluțiile legislative. Orice modificări vor fi publicate pe această pagină cu o dată revizuită a 'Ultimei actualizări'."
-privacy_sec_contact_p2:
-  other: "Dacă aveți întrebări, feedback sau solicitări referitoare la această Politică de confidențialitate sau la securitatea {brand}, puteți scrie companiei Heapforge Ltd la adresa sediului social din secțiunea 1 sau puteți deschide o sesizare pe depozitul nostru oficial de pe GitHub:"
-privacy_contact_github:
-  other: "Vizitează {brand} pe GitHub"
+privacy_controller_contact_label:
+  other: "Contact pentru confidențialitate"
+privacy_s2_title:
+  other: "2. Domeniu de aplicare"
+privacy_s2_p1:
+  other: "Această politică se aplică datelor cu caracter personal pe care le prelucrăm prin intermediul acestui serviciu, precum și atunci când comunicați cu noi. Nu se aplică site-urilor web sau serviciilor terților către care oferim linkuri, care au propriile politici de confidențialitate."
+privacy_s3_title:
+  other: "3. Datele cu caracter personal pe care le colectăm"
+privacy_s3_p1:
+  other: "Încercăm să colectăm doar ceea ce ne este necesar. În funcție de modul în care interacționați cu noi, acestea pot include:"
+privacy_s3_li1:
+  other: "Date de contact – precum numele și adresa de e-mail, atunci când ne scrieți sau ne contactați în alt mod."
+privacy_s3_li2:
+  other: "Comunicări – conținutul mesajelor pe care ni le trimiteți, inclusiv eventualele atașamente, și răspunsurile noastre."
+privacy_s3_li3:
+  other: "Informații tehnice și de utilizare – precum adresa IP, tipul de browser, informații despre dispozitiv, paginile solicitate și data și ora vizitei. Acestea sunt prelucrate automat atunci când accesați site-ul nostru, în principal pentru securitate și pentru a vă livra site-ul."
+privacy_s3_li4:
+  other: "Informații despre cont și tranzacții – atunci când utilizați un serviciu plătit, informațiile necesare pentru furnizarea acestuia (de exemplu, confirmări de cumpărare). Nu colectăm și nu stocăm direct datele complete ale cardurilor de plată."
+privacy_s3_li5:
+  other: "Orice alte informații pe care alegeți să ni le furnizați."
+privacy_s3_p2:
+  other: "Nu colectăm în mod intenționat categorii speciale de date (precum date privind sănătatea, convingerile religioase sau date biometrice). Vă rugăm să nu ne trimiteți astfel de informații decât dacă vi le-am solicitat în mod expres."
+privacy_s4_title:
+  other: "4. Cum utilizăm datele cu caracter personal și temeiurile noastre legale"
+privacy_s4_p1:
+  other: "În temeiul GDPR din Regatul Unit și al GDPR al UE, trebuie să avem un temei legal pentru fiecare utilizare a datelor dumneavoastră cu caracter personal."
+privacy_s4_th_purpose:
+  other: "Scop"
+privacy_s4_th_basis:
+  other: "Temei legal"
+privacy_s4_row1_purpose:
+  other: "Furnizarea site-ului și a serviciilor noastre"
+privacy_s4_row1_basis:
+  other: "Interese legitime (funcționarea site-ului și a activității noastre); contract, atunci când utilizați serviciile noastre"
+privacy_s4_row2_purpose:
+  other: "Protejarea site-ului și a serviciilor noastre împotriva abuzurilor, fraudei, boților și atacurilor"
+privacy_s4_row2_basis:
+  other: "Interese legitime (menținerea securității serviciilor și a utilizatorilor noștri)"
+privacy_s4_row3_purpose:
+  other: "Răspunsul la e-mailurile și solicitările dumneavoastră"
+privacy_s4_row3_basis:
+  other: "Interese legitime (comunicarea cu persoanele care ne contactează); contract, atunci când solicitarea se referă la un serviciu pe care îl utilizați sau urmează să îl utilizați"
+privacy_s4_row4_purpose:
+  other: "Furnizarea, gestionarea și asistența pentru serviciile pe care le-ați achiziționat"
+privacy_s4_row4_basis:
+  other: "Contract"
+privacy_s4_row5_purpose:
+  other: "Păstrarea evidențelor comerciale și îndeplinirea obligațiilor legale, fiscale și de reglementare"
+privacy_s4_row5_basis:
+  other: "Obligație legală"
+privacy_s4_row6_purpose:
+  other: "Constatarea, exercitarea sau apărarea unor drepturi în instanță"
+privacy_s4_row6_basis:
+  other: "Interese legitime"
+privacy_s4_row7_purpose:
+  other: "Orice scop pentru care vă solicităm consimțământul"
+privacy_s4_row7_basis:
+  other: "Consimțământ (pe care îl puteți retrage oricând)"
+privacy_s4_p2:
+  other: "Atunci când ne bazăm pe interese legitime, am analizat dacă aceste interese sunt înlăturate de drepturile și libertățile dumneavoastră. Ne puteți contacta pentru mai multe informații despre această evaluare."
+privacy_s4_p3:
+  other: "Nu vindem datele dumneavoastră cu caracter personal."
+privacy_s5_title:
+  other: "5. Furnizori de servicii terți"
+privacy_s5_p1:
+  other: "Folosim o serie de furnizori de servicii de încredere pentru a ne desfășura activitatea. Aceștia prelucrează date cu caracter personal în numele nostru și conform instrucțiunilor noastre și sunt obligați contractual să le protejeze. Principalii noștri furnizori sunt enumerați mai jos."
+privacy_s5_1_title:
+  other: "5.1 Cloudflare"
+privacy_s5_1_p1:
+  other: "Folosim servicii furnizate de Cloudflare, Inc. pentru a găzdui, livra și proteja site-ul nostru:"
+privacy_s5_1_li1:
+  other: "Securitate și protecție împotriva boților – Cloudflare verifică traficul către site-ul nostru pentru a-l proteja împotriva atacurilor de tip denial-of-service, a boților automați și a altor activități rău intenționate. În acest scop, analizează informații precum adresele IP, caracteristicile browserului și ale dispozitivului și detaliile solicitărilor și poate seta un cookie de securitate strict necesar."
+privacy_s5_1_li2:
+  other: "Găzduirea site-ului – site-ul nostru este servit prin serviciile de găzduire și edge computing ale Cloudflare (Cloudflare Pages și Workers), care prelucrează solicitările web și alte informații tehnice pentru a vă livra paginile."
+privacy_s5_1_li3:
+  other: "Livrarea conținutului – fișierele statice, precum imaginile, scripturile și foile de stil, sunt stocate și livrate prin serviciul de stocare și rețeaua de livrare a conținutului ale Cloudflare (Cloudflare R2)."
+privacy_s5_1_p2:
+  other: "Cloudflare operează o rețea globală, astfel încât datele dumneavoastră pot fi prelucrate în centre de date apropiate de locația dumneavoastră, inclusiv în afara Regatului Unit și a UE. Pentru mai multe informații, consultați Politica de confidențialitate a Cloudflare: {cloudflare_policy}"
+privacy_s5_2_title:
+  other: "5.2 Google Workspace"
+privacy_s5_2_p1:
+  other: "Folosim Google Workspace, furnizat de Google, ca furnizor de e-mail. Atunci când ne scrieți, mesajul dumneavoastră – inclusiv numele, adresa de e-mail, conținutul mesajului, atașamentele și metadatele aferente – este primit, stocat și prelucrat în sistemele Google. Google prelucrează aceste date în numele nostru, conform termenilor săi de prelucrare a datelor pentru companii, și nu utilizează datele clienților Workspace în scopuri publicitare."
+privacy_s5_2_p2:
+  other: "Pentru mai multe informații, consultați Politica de confidențialitate Google ({google_policy}) și Notificarea privind confidențialitatea Google Cloud ({google_cloud_notice})."
+privacy_s5_3_title:
+  other: "5.3 Alți destinatari"
+privacy_s5_3_p1:
+  other: "De asemenea, putem partaja anumite date cu caracter personal cu:"
+privacy_s5_3_li1:
+  other: "consultanți profesioniști, precum contabili, avocați și asigurători, atunci când este necesar;"
+privacy_s5_3_li2:
+  other: "organe de aplicare a legii, autorități de reglementare, instanțe sau alte autorități, atunci când legea o impune sau pentru a ne proteja drepturile, utilizatorii sau publicul;"
+privacy_s5_3_li3:
+  other: "un cumpărător, succesor sau investitor, în legătură cu o fuziune, achiziție, restructurare sau vânzare a întregii activități sau a unei părți a acesteia, sub rezerva unor garanții adecvate de confidențialitate."
+privacy_s6_title:
+  other: "6. Cookie-uri și tehnologii similare"
+privacy_s6_p1:
+  other: "Folosim doar cookie-uri și tehnologii similare strict necesare pentru funcționarea în siguranță a site-ului nostru, precum cookie-uri de securitate care disting vizitatorii reali de boții automați. Conform legislației Regatului Unit și a UE, acestea nu necesită consimțământul dumneavoastră și nu le folosim pentru a vă urmări pe alte site-uri."
+privacy_s6_p2:
+  other: "Dacă vom introduce cookie-uri neesențiale (de exemplu, pentru analiză sau publicitate), vom actualiza această politică și, acolo unde legea o impune, vă vom cere consimțământul înainte de a le seta."
+privacy_s7_title:
+  other: "7. Transferuri internaționale de date"
+privacy_s7_p1:
+  other: "Suntem stabiliți în Regatul Unit, iar unii dintre furnizorii noștri de servicii prelucrează date în alte țări, inclusiv în Statele Unite."
+privacy_s7_p2:
+  other: "Atunci când datele cu caracter personal sunt transferate în afara Regatului Unit sau a Spațiului Economic European (SEE), ne asigurăm că există garanții adecvate, precum:"
+privacy_s7_li1:
+  other: "transferuri către țări recunoscute ca asigurând un nivel adecvat de protecție (regulamente/decizii privind caracterul adecvat);"
+privacy_s7_li2:
+  other: "transferuri către organizații certificate în cadrul Cadrului UE-SUA privind confidențialitatea datelor și al extensiei sale pentru Regatul Unit („UK-US data bridge”);"
+privacy_s7_li3:
+  other: "Clauze contractuale standard aprobate de Comisia Europeană, împreună cu Addendumul Regatului Unit privind transferul internațional de date sau Acordul Regatului Unit privind transferul internațional de date, după caz."
+privacy_s7_p3:
+  other: "Ne puteți contacta pentru mai multe informații despre garanțiile pe care le folosim."
+privacy_s8_title:
+  other: "8. Cât timp păstrăm datele cu caracter personal"
+privacy_s8_p1:
+  other: "Păstrăm datele cu caracter personal doar atât timp cât este necesar pentru scopurile descrise în această politică, inclusiv pentru a îndeplini cerințe legale, contabile sau de raportare. Cu titlu orientativ:"
+privacy_s8_li1:
+  other: "Corespondența prin e-mail – păstrată timp de 24 de luni de la ultimul nostru contact, cu excepția cazului în care se referă la o chestiune în desfășurare sau trebuie să o păstrăm mai mult din motive legale."
+privacy_s8_li2:
+  other: "Jurnalele de securitate și tehnice – păstrate doar pentru perioade scurte, cât este necesar pentru securitate și depanare."
+privacy_s8_li3:
+  other: "Evidențele comerciale și ale tranzacțiilor – păstrate cât timp impune legea (în Regatul Unit, de regulă până la șase ani de la sfârșitul exercițiului financiar relevant)."
+privacy_s8_p2:
+  other: "Atunci când datele nu mai sunt necesare, le ștergem sau le anonimizăm în mod sigur."
+privacy_s9_title:
+  other: "9. Cum protejăm datele cu caracter personal"
+privacy_s9_p1:
+  other: "Folosim măsuri tehnice și organizatorice adecvate pentru a proteja datele cu caracter personal împotriva accesului neautorizat, pierderii, utilizării abuzive sau modificării. Acestea includ criptarea în tranzit, controlul accesului și alegerea unor furnizori de renume cu practici solide de securitate. Totuși, nicio metodă de transmitere sau stocare nu este complet sigură și nu putem garanta securitatea absolută."
+privacy_s9_p2:
+  other: "Dacă are loc o încălcare a securității datelor cu caracter personal care ar putea pune în pericol drepturile dumneavoastră, vă vom notifica pe dumneavoastră și autoritățile competente, conform legii."
+privacy_s10_title:
+  other: "10. Drepturile dumneavoastră (Regatul Unit, UE, SEE și Elveția)"
+privacy_s10_p1:
+  other: "Dacă vă aflați în Regatul Unit, UE, SEE sau Elveția, aveți următoarele drepturi, sub rezerva anumitor condiții și excepții:"
+privacy_s10_li1:
+  other: "Acces – să solicitați o copie a datelor cu caracter personal pe care le deținem despre dumneavoastră."
+privacy_s10_li2:
+  other: "Rectificare – să ne cereți să corectăm datele inexacte sau incomplete."
+privacy_s10_li3:
+  other: "Ștergere – să ne cereți să vă ștergem datele în anumite situații."
+privacy_s10_li4:
+  other: "Restricționare – să ne cereți să limităm modul în care vă folosim datele în anumite situații."
+privacy_s10_li5:
+  other: "Portabilitatea datelor – să primiți datele pe care ni le-ați furnizat într-un format structurat, utilizat în mod curent, sau să le transferăm către o altă organizație."
+privacy_s10_li6:
+  other: "Opoziție – să vă opuneți prelucrării bazate pe interesele noastre legitime și să vă opuneți oricând marketingului direct."
+privacy_s10_li7:
+  other: "Retragerea consimțământului – atunci când ne bazăm pe consimțământ, îl puteți retrage oricând, fără a afecta prelucrarea anterioară."
+privacy_s10_li8:
+  other: "Dreptul de a nu face obiectul unor decizii bazate exclusiv pe prelucrare automată, care produc efecte juridice sau efecte similare semnificative."
+privacy_s10_p2:
+  other: "Pentru a exercita oricare dintre aceste drepturi, scrieți-ne la {email}. Vom răspunde în termen de o lună, termen care poate fi prelungit cu încă cel mult două luni pentru solicitările complexe. Este posibil să fie nevoie să vă verificăm identitatea înainte de a răspunde. Exercitarea drepturilor este, de regulă, gratuită."
+privacy_s11_title:
+  other: "11. Alte țări"
+privacy_s11_p1:
+  other: "Dacă locuiți într-o altă țară a cărei legislație privind confidențialitatea vă conferă drepturi asupra datelor cu caracter personal, vă rugăm să ne contactați și vă vom răspunde în conformitate cu legea care vi se aplică."
+privacy_s12_title:
+  other: "12. Confidențialitatea copiilor"
+privacy_s12_p1:
+  other: "Site-ul și serviciile noastre nu se adresează copiilor sub vârsta minimă pentru consimțământul la prelucrarea datelor și nu colectăm cu bună știință date cu caracter personal de la aceștia. Dacă credeți că un copil ne-a furnizat date cu caracter personal, vă rugăm să ne contactați și le vom șterge."
+privacy_s13_title:
+  other: "13. Luarea automată a deciziilor"
+privacy_s13_p1:
+  other: "Nu luăm decizii cu privire la dumneavoastră bazate exclusiv pe prelucrare automată care produc efecte juridice sau efecte similare semnificative. Instrumentele automate de securitate (precum protecția împotriva boților) pot bloca sau supune unei verificări suplimentare traficul suspect; dacă credeți că ați fost blocat din greșeală, vă rugăm să ne contactați."
+privacy_s14_title:
+  other: "14. Linkuri către alte site-uri"
+privacy_s14_p1:
+  other: "Site-ul nostru poate conține linkuri către site-uri sau servicii ale terților. Nu suntem responsabili pentru practicile lor de confidențialitate și vă încurajăm să citiți politicile lor de confidențialitate."
+privacy_s15_title:
+  other: "15. Modificări ale acestei politici"
+privacy_s15_p1:
+  other: "Putem actualiza această politică din când în când. Data „Ultima actualizare” din partea de sus arată când a fost revizuită ultima dată. Dacă facem modificări semnificative, vom lua măsuri rezonabile pentru a vă informa, de exemplu printr-o notificare pe site-ul nostru."
+privacy_s16_title:
+  other: "16. Contact și reclamații"
+privacy_s16_p1:
+  other: "Dacă aveți întrebări despre această politică sau despre modul în care vă gestionăm datele cu caracter personal, vă rugăm să ne contactați:"
+privacy_s16_li1:
+  other: "E-mail: {email}"
+privacy_s16_li2:
+  other: "Poștă: Heapforge Ltd., {address}"
+privacy_s16_p2:
+  other: "Am aprecia ocazia de a răspunde mai întâi preocupărilor dumneavoastră, dar aveți dreptul de a depune o plângere la o autoritate pentru protecția datelor:"
+privacy_s16_li3:
+  other: "Regatul Unit: Information Commissioner's Office (ICO) – {ico}"
+privacy_s16_li4:
+  other: "UE/SEE: autoritatea de supraveghere din țara în care locuiți, lucrați sau în care a avut loc presupusa încălcare – o listă este disponibilă la {edpb}"
+privacy_s16_li5:
+  other: "Alte regiuni: autoritatea locală pentru protecția datelor sau a confidențialității."
 footer_licenses_link:
   other: "Licențe open-source"
 licenses_title:
