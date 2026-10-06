@@ -786,7 +786,7 @@ licenses_group_bundled_desc:
 licenses_group_runtime_title:
   other: "Изтегляни по време на използване"
 licenses_group_runtime_desc:
-  other: "Данни, които {brand} изтегля от CDN мрежата jsDelivr, докато го използвате."
+  other: "Данни, които {brand} изтегля от CDN мрежи, докато го използвате."
 licenses_version:
   other: "Версия {version}"
 licenses_source_link:

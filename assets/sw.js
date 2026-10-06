@@ -79,8 +79,8 @@ self.addEventListener('activate', (event) => {
 });
 
 // Hosts whose responses are safe to cache long-term as they are requested: jsDelivr, which serves the
-// character database, the public deck marketplace and the twemoji SVGs, plus any extra hosts listed in
-// params.additional_cdn_hosts in hugo.yaml.
+// public deck marketplace and the twemoji SVGs, plus any extra hosts listed in
+// params.additional_cdn_hosts in hugo.yaml (such as the one serving the character database).
 const CDN_HOSTS = {{ slice "cdn.jsdelivr.net" | append (site.Params.additional_cdn_hosts | default slice) | jsonify | safeJS }};
 
 // The public deck repository (params.marketplace_cdn_url in hugo.yaml)

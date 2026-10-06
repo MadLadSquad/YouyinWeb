@@ -787,7 +787,7 @@ licenses_group_bundled_desc:
 licenses_group_runtime_title:
   other: "Descărcate în timp ce folosești site-ul"
 licenses_group_runtime_desc:
-  other: "Date pe care {brand} le descarcă din rețeaua CDN jsDelivr în timp ce îl folosești."
+  other: "Date pe care {brand} le descarcă din rețele CDN în timp ce îl folosești."
 licenses_version:
   other: "Versiunea {version}"
 licenses_source_link:

@@ -787,7 +787,7 @@ licenses_group_bundled_desc:
 licenses_group_runtime_title:
   other: "Downloaded while you use the site"
 licenses_group_runtime_desc:
-  other: "Data that {brand} downloads from the jsDelivr CDN as you use it."
+  other: "Data that {brand} downloads from content delivery networks (CDNs) as you use it."
 licenses_version:
   other: "Version {version}"
 licenses_source_link:

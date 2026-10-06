@@ -39,10 +39,10 @@ params:
   cannonical_url: https://youyin.madladsquad.com
   marketplace_url: https://github.com/MadLadSquad/YouyinPublicDeckRepository
   marketplace_cdn_url: https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest
-  char_data_url: https://cdn.jsdelivr.net/gh/MadLadSquad/hanzi-writer-data-youyin@latest
+  char_data_url: https://yy.cdn.madladsquad.com
   # Extra hosts, besides cdn.jsdelivr.net, whose responses the service worker may cache (a list of
   # host names, e.g. [ "example.com" ])
-  additional_cdn_hosts: []
+  additional_cdn_hosts: [ "yy.cdn.madladsquad.com" ]
 
   # Third-party code, fetched once at build time by resources.GetRemote and concatenated into our
   # own bundles, so the running site loads no code from a CDN. Bump these to update a library; the

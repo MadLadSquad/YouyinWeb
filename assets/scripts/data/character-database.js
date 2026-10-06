@@ -16,9 +16,8 @@
 // manifest and the bulky chunks come from jsDelivr (cacheable, fast)
 window.CHARACTER_MANIFEST_URL = "{{ site.Params.char_data_url }}/character-map-chunks.json";
 window.CHARACTER_CHUNK_URL_BASE = "{{ site.Params.char_data_url }}/character-map-chunks/character-map-full-";
-// Chunks are fetched in batches with a cooldown between batches so we don't hammer the CDN
+// Chunks are fetched in batches so only a handful of requests are in flight at once
 window.CHARACTER_CHUNK_BATCH_SIZE = 5;
-window.CHARACTER_CHUNK_COOLDOWN_MS = 300;
 // Each manifest/chunk fetch is retried a few times. This rides out transient failures, most notably
 // the brief window when a freshly-installed service worker activates and takes over mid-download —
 // the outgoing worker aborts the requests it was handling, which would otherwise fail the download
@@ -128,7 +127,7 @@ async function fetchUpstreamManifest()
 }
 
 /**
- * Downloads the given chunk indices in throttled batches, persisting each to IndexedDB and merging it
+ * Downloads the given chunk indices in batches, persisting each to IndexedDB and merging it
  * into window.characterData. Reports progress after every chunk completes
  * @param { number[] } indices - Chunk indices to download
  * @param { function(number, number): void } onProgress - Called with (completed, total)
@@ -150,9 +149,6 @@ async function downloadChunks(indices, onProgress)
             if (onProgress)
                 onProgress(done, total);
         }));
-        // Cooldown between batches so we don't overload the CDN (no need after the last batch)
-        if (i + window.CHARACTER_CHUNK_BATCH_SIZE < indices.length)
-            await sleep(window.CHARACTER_CHUNK_COOLDOWN_MS);
     }
 }
 
