@@ -100,12 +100,18 @@ lc.theme_button = {{ partial "t.html" (dict "k" "theme_button" "loc" $.loc) | js
 lc.session_exit = {{ partial "t.html" (dict "k" "session_exit" "loc" $.loc) | jsonify }};
 lc.session_queue_note = {{ partial "t.html" (dict "k" "session_queue_note" "loc" $.loc) | jsonify }};
 lc.session_errors_count = {{ partial "t.html" (dict "k" "session_errors_count" "loc" $.loc) | jsonify }};
+lc.session_errors_count_one = {{ partial "t.html" (dict "k" "session_errors_count_one" "loc" $.loc) | jsonify }};
 // The strip's label swaps between this and the two stage names (phrases_count_cards /
 // phrases_count_phrase) as the round moves from cards to phrases
 lc.session_round_in_progress = {{ partial "t.html" (dict "k" "session_round_in_progress" "loc" $.loc) | jsonify }};
 lc.deck_knowledge_label = {{ partial "t.html" (dict "k" "deck_knowledge_label" "loc" $.loc) | jsonify }};
 lc.deck_summary = {{ partial "t.html" (dict "k" "deck_summary" "loc" $.loc) | jsonify }};
+lc.count_cards = {{ partial "t.html" (dict "k" "count_cards" "loc" $.loc) | jsonify }};
+lc.count_cards_one = {{ partial "t.html" (dict "k" "count_cards_one" "loc" $.loc) | jsonify }};
+lc.count_phrases = {{ partial "t.html" (dict "k" "count_phrases" "loc" $.loc) | jsonify }};
+lc.count_phrases_one = {{ partial "t.html" (dict "k" "count_phrases_one" "loc" $.loc) | jsonify }};
 lc.today_of_goal = {{ partial "t.html" (dict "k" "today_of_goal" "loc" $.loc) | jsonify }};
+lc.today_of_goal_one = {{ partial "t.html" (dict "k" "today_of_goal_one" "loc" $.loc) | jsonify }};
 lc.today_no_goal = {{ partial "t.html" (dict "k" "today_no_goal" "loc" $.loc) | jsonify }};
 lc.today_goal_met = {{ partial "t.html" (dict "k" "today_goal_met" "loc" $.loc) | jsonify }};
 lc.today_goal_left = {{ partial "t.html" (dict "k" "today_goal_left" "loc" $.loc) | jsonify }};

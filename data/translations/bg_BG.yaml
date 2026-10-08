@@ -45,6 +45,8 @@ today_header:
   other: "Днес"
 today_of_goal:
   other: "от {goal} серии"
+today_of_goal_one:
+  other: "от {goal} серия"
 today_no_goal:
   other: "серии днес"
 today_goal_met:
@@ -71,18 +73,22 @@ streak_panel_at_risk:
   other: "Преговорете днес, за да запазите поредицата си."
 language_label:
   other: "Език"
-language_description:
-  other: "Език на интерфейса. Достъпен е и от лентата горе."
-theme_description:
-  other: "190 палитри. Всеки цвят на страницата се извлича от активната."
 data_card_header:
   other: "Вашите данни"
 deck_more_actions:
   other: "Още действия"
 deck_knowledge_label:
-  other: "Владеене"
+  other: "Ниво на владеене"
+count_cards:
+  other: "{count} карти"
+count_cards_one:
+  other: "{count} карта"
+count_phrases:
+  other: "{count} фрази"
+count_phrases_one:
+  other: "{count} фраза"
 deck_summary:
-  other: "{cards} карти · {phrases} фрази · средно владеене {knowledge}"
+  other: "{cards} · {phrases} · средно ниво на владеене {knowledge}"
 marketplace_subtitle:
   other: "Готови тестета, поддържани в публичното хранилище."
 new_deck_upload_title:
@@ -92,13 +98,15 @@ session_ready_eyebrow:
 session_next_round:
   other: "Следваща серия"
 session_queue_note:
-  other: "{cards} карти и {phrases} фрази са подредени за тази серия."
+  other: "{cards} и {phrases} са подредени за тази серия."
 session_round_in_progress:
   other: "Серия в ход"
 session_end_round:
   other: "Край на серията"
 session_errors_count:
   other: "{count} грешки"
+session_errors_count_one:
+  other: "{count} грешка"
 theme_button:
   other: "Цветови теми"
 theme_search_placeholder:
@@ -124,8 +132,6 @@ game_modifiers_header:
 
 # Gems, streak freezes and the daily streak goal (account.html shop + settings slider, and the
 # blocking goal prompt in scripts/components/streak-goal.js)
-streak-goal-title:
-  other: "Колко серии на ден си поставяте за цел. Това определя и цената на замразяването на серията, така че то винаги струва четири дни преговаряне със собственото Ви темпо."
 streak-goal-aria-label:
   other: "Слайдер за дневна цел"
 streak-goal-label:

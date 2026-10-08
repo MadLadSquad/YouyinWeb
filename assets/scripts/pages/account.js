@@ -116,7 +116,7 @@ function renderTodayProgress()
 
     const goalEl = $("today-rounds-goal");
     if (goalEl !== null)
-        goalEl.textContent = goal > 0 ? lc.today_of_goal.replace("{goal}", goal) : lc.today_no_goal;
+        goalEl.textContent = goal > 0 ? (goal === 1 ? lc.today_of_goal_one : lc.today_of_goal).replace("{goal}", goal) : lc.today_no_goal;
 
     const fill = $("today-progress-fill");
     if (fill !== null)

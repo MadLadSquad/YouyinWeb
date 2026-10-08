@@ -202,7 +202,7 @@ function renderSessionIdle()
 
     const ofEl = $("session-goal-of");
     if (ofEl !== null)
-        ofEl.textContent = goal > 0 ? lc.today_of_goal.replace("{goal}", goal) : lc.today_no_goal;
+        ofEl.textContent = goal > 0 ? (goal === 1 ? lc.today_of_goal_one : lc.today_of_goal).replace("{goal}", goal) : lc.today_no_goal;
 
     // The ring is a stroked circle of radius 52, so its full sweep is 2 * PI * 52
     const arc = $("session-goal-arc");
@@ -216,9 +216,13 @@ function renderSessionIdle()
 
     const note = $("session-queue-note");
     if (note !== null)
+    {
+        const cards = sessionRevisionCount(data.cards);
+        const phrases = sessionRevisionCount(data.phrases);
         note.textContent = lc.session_queue_note
-            .replace("{cards}", sessionRevisionCount(data.cards))
-            .replace("{phrases}", sessionRevisionCount(data.phrases));
+            .replace("{cards}", (cards === 1 ? lc.count_cards_one : lc.count_cards).replace("{count}", cards))
+            .replace("{phrases}", (phrases === 1 ? lc.count_phrases_one : lc.count_phrases).replace("{count}", phrases));
+    }
 }
 
 /**
@@ -265,7 +269,7 @@ function renderSessionProgress()
 
     const errors = $("session-progress-errors");
     if (errors !== null)
-        errors.textContent = lc.session_errors_count.replace("{count}", window.totalSessionErrors);
+        errors.textContent = (window.totalSessionErrors === 1 ? lc.session_errors_count_one : lc.session_errors_count).replace("{count}", window.totalSessionErrors);
 }
 
 /**

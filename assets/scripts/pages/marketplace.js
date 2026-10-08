@@ -152,8 +152,8 @@ function constructElement(val, deckContainer, deck, type, language)
     // The three "Label: value" paragraphs become metadata chips — they are attributes of the deck,
     // not prose, and as chips they fit on one line instead of three
     const meta = addElement("div", "", "", "marketplace-card-meta", "", div);
-    addElement("span", `${deck.cards} ${lc.phrases_count_cards.toLowerCase()}`, "", "chip", "", meta);
-    addElement("span", `${deck.phrases} ${lc.phrases_count_phrase.toLowerCase()}`, "", "chip", "", meta);
+    addElement("span", (Number(deck.cards) === 1 ? lc.count_cards_one : lc.count_cards).replace("{count}", deck.cards), "", "chip", "", meta);
+    addElement("span", (Number(deck.phrases) === 1 ? lc.count_phrases_one : lc.count_phrases).replace("{count}", deck.phrases), "", "chip", "", meta);
 
     addElement("hr", "", "", "hairline marketplace-card-rule", "", div);
 

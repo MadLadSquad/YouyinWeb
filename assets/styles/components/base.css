@@ -88,6 +88,13 @@
     }
 }
 
+/* The default palette's accent sits just above the crossover, so the rule above would print black on
+   it. White is the deliberate choice for the house theme. applyPalette() sets data-theme on <html> */
+:root[data-theme="default"] {
+    --on-accent: #ffffff;
+    --on-accent-active: #ffffff;
+}
+
 html {
     accent-color: var(--main-accent-colour);
     /* Backstop against stray horizontal overflow on mobile. The main offender - the footer

@@ -45,6 +45,8 @@ today_header:
   other: "Astăzi"
 today_of_goal:
   other: "din {goal} runde"
+today_of_goal_one:
+  other: "din {goal} rundă"
 today_no_goal:
   other: "runde astăzi"
 today_goal_met:
@@ -71,18 +73,22 @@ streak_panel_at_risk:
   other: "Exersează astăzi pentru a-ți păstra seria."
 language_label:
   other: "Limbă"
-language_description:
-  other: "Limba interfeței. Disponibilă și în bara de sus."
-theme_description:
-  other: "190 de palete. Fiecare culoare din pagină este derivată din cea activă."
 data_card_header:
   other: "Datele tale"
 deck_more_actions:
   other: "Mai multe acțiuni"
 deck_knowledge_label:
   other: "Cunoștințe"
+count_cards:
+  other: "{count} carduri"
+count_cards_one:
+  other: "{count} card"
+count_phrases:
+  other: "{count} fraze"
+count_phrases_one:
+  other: "{count} frază"
 deck_summary:
-  other: "{cards} carduri · {phrases} fraze · cunoștințe medii {knowledge}"
+  other: "{cards} · {phrases} · cunoștințe medii {knowledge}"
 marketplace_subtitle:
   other: "Pachete gata făcute, menținute în depozitul public de pachete."
 new_deck_upload_title:
@@ -92,13 +98,15 @@ session_ready_eyebrow:
 session_next_round:
   other: "Runda următoare"
 session_queue_note:
-  other: "{cards} carduri și {phrases} fraze sunt în așteptare pentru această rundă."
+  other: "{cards} și {phrases} sunt în așteptare pentru această rundă."
 session_round_in_progress:
   other: "Rundă în desfășurare"
 session_end_round:
   other: "Încheie runda"
 session_errors_count:
   other: "{count} erori"
+session_errors_count_one:
+  other: "{count} eroare"
 theme_button:
   other: "Temă"
 theme_search_placeholder:
@@ -124,8 +132,6 @@ game_modifiers_header:
 
 # Gems, streak freezes and the daily streak goal (account.html shop + settings slider, and the
 # blocking goal prompt in scripts/components/streak-goal.js)
-streak-goal-title:
-  other: "Numărul de runde de recapitulare pe zi pe care ți-l propui. De asemenea, stabilește prețul unei înghețări de serie, astfel încât una costă întotdeauna patru zile de practică în ritmul tău."
 streak-goal-aria-label:
   other: "Glisor pentru obiectivul zilnic"
 streak-goal-label:

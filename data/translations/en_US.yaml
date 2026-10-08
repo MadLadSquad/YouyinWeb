@@ -45,6 +45,8 @@ today_header:
   other: "Today"
 today_of_goal:
   other: "of {goal} rounds"
+today_of_goal_one:
+  other: "of {goal} round"
 today_no_goal:
   other: "rounds today"
 today_goal_met:
@@ -71,18 +73,22 @@ streak_panel_at_risk:
   other: "Practise today to keep your streak."
 language_label:
   other: "Language"
-language_description:
-  other: "Interface language. Also available from the top bar."
-theme_description:
-  other: "190 palettes. Every colour on the page is derived from the active one."
 data_card_header:
   other: "Your data"
 deck_more_actions:
   other: "More actions"
 deck_knowledge_label:
   other: "Knowledge"
+count_cards:
+  other: "{count} cards"
+count_cards_one:
+  other: "{count} card"
+count_phrases:
+  other: "{count} phrases"
+count_phrases_one:
+  other: "{count} phrase"
 deck_summary:
-  other: "{cards} cards · {phrases} phrases · average knowledge {knowledge}"
+  other: "{cards} · {phrases} · average knowledge {knowledge}"
 marketplace_subtitle:
   other: "Ready-made decks maintained in the public deck repository."
 new_deck_upload_title:
@@ -92,13 +98,15 @@ session_ready_eyebrow:
 session_next_round:
   other: "Next round"
 session_queue_note:
-  other: "{cards} cards and {phrases} phrases are queued for this round."
+  other: "{cards} and {phrases} are queued for this round."
 session_round_in_progress:
   other: "Round in progress"
 session_end_round:
   other: "End round"
 session_errors_count:
   other: "{count} errors"
+session_errors_count_one:
+  other: "{count} error"
 theme_button:
   other: "Theme"
 theme_search_placeholder:
@@ -124,8 +132,6 @@ game_modifiers_header:
 
 # Gems, streak freezes and the daily streak goal (account.html shop + settings slider, and the
 # blocking goal prompt in scripts/components/streak-goal.js)
-streak-goal-title:
-  other: "How many revision rounds a day you are aiming for. It also sets the price of a streak freeze, so one always costs four days of practice at your own pace."
 streak-goal-aria-label:
   other: "Daily goal slider"
 streak-goal-label:

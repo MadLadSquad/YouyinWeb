@@ -717,8 +717,8 @@ function renderDeckSummary()
         knowledge = 0;
 
     el.textContent = lc.deck_summary
-        .replace("{cards}", data.cards.length)
-        .replace("{phrases}", data.phrases.length)
+        .replace("{cards}", (data.cards.length === 1 ? lc.count_cards_one : lc.count_cards).replace("{count}", data.cards.length))
+        .replace("{phrases}", (data.phrases.length === 1 ? lc.count_phrases_one : lc.count_phrases).replace("{count}", data.phrases.length))
         .replace("{knowledge}", `${formatDecimal(knowledge)}/${window.MAX_KNOWLEDGE_LEVEL}`);
 }
 
