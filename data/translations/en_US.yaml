@@ -144,8 +144,6 @@ streak-freeze-field:
   other: "Streak freezes"
 streak-freeze-cost-field:
   other: "Price"
-streak-freeze-description:
-  other: "A streak freeze is spent automatically on a day you do not practise, keeping your streak alive. It does not raise the streak count."
 buy_streak_freeze_button:
   other: "Buy a streak freeze"
 streak_goal_sessions:

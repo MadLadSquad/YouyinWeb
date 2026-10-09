@@ -144,8 +144,6 @@ streak-freeze-field:
   other: "Înghețări de serie"
 streak-freeze-cost-field:
   other: "Preț"
-streak-freeze-description:
-  other: "O înghețare de serie este folosită automat într-o zi în care nu exersezi, menținându-ți seria activă. Aceasta nu crește numărul de zile din serie."
 buy_streak_freeze_button:
   other: "Cumpără o înghețare de serie"
 streak_goal_sessions:

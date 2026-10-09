@@ -391,12 +391,6 @@
     background-color: var(--main-accent-colour);
 }
 
-/* The explanatory line under the shop's stat rows. Toned down and a size smaller so it reads as
-   help text rather than another statistic */
-.shop-description {
-    margin-bottom: 1rem;
-}
-
 .shop-price {
     display: flex;
     align-items: center;
