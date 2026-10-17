@@ -38,7 +38,7 @@ params:
   trademark: Youyin
   cannonical_url: https://youyin.madladsquad.com
   marketplace_url: https://github.com/MadLadSquad/YouyinPublicDeckRepository
-  marketplace_cdn_url: https://cdn.jsdelivr.net/gh/MadLadSquad/YouyinPublicDeckRepository@latest
+  marketplace_cdn_url: https://yy.cdn.madladsquad.com
   char_data_url: https://yy.cdn.madladsquad.com
   # Extra hosts, besides cdn.jsdelivr.net, whose responses the service worker may cache (a list of
   # host names, e.g. [ "example.com" ])

@@ -13,7 +13,7 @@
 // ------------------- CONSTANT BLOCK EDIT IF RUNNING ON A CUSTOM SYSTEM ------------------
 // The character stroke database is shipped as numbered chunks. The manifest lists the chunk count
 // and a per-chunk content hash so we can re-download only the chunks that actually changed. Both the
-// manifest and the bulky chunks come from jsDelivr (cacheable, fast)
+// manifest and the bulky chunks come from our CDN (params.char_data_url; cacheable, fast)
 window.CHARACTER_MANIFEST_URL = "{{ site.Params.char_data_url }}/character-map-chunks.json";
 window.CHARACTER_CHUNK_URL_BASE = "{{ site.Params.char_data_url }}/character-map-chunks/character-map-full-";
 // Chunks are fetched in batches so only a handful of requests are in flight at once
