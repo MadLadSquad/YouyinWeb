@@ -25,7 +25,14 @@
   {{- $t := try (resources.GetRemote $url) -}}
   {{- with $t.Err -}}{{- errorf "vendor %s (%s): %s" $k $url . -}}{{- end -}}
   {{- if not $t.Value -}}{{- errorf "vendor %s: fetch of %s returned nothing" $k $url -}}{{- end -}}
-  {{- $vendor = merge $vendor (dict $k $t.Value) -}}
+  {{- $r := $t.Value -}}
+  {{- /* Vendored files skip the minifier (see the core bundle), so drop their source-map comments
+         here: the .map files are not published, and the comment would 404 in DevTools. */ -}}
+  {{- if in $r.Content "sourceMappingURL" -}}
+    {{- $r = resources.FromString (printf "vendor/%s%s" $k (path.Ext $url))
+          (replaceRE `(?m)^[ \t]*(//|/\*)# sourceMappingURL=.*$` "" $r.Content) -}}
+  {{- end -}}
+  {{- $vendor = merge $vendor (dict $k $r) -}}
 {{- end -}}
 
 {{- /* ---------- self-hosted webfont ---------- */ -}}
@@ -89,9 +96,13 @@
 {{- /* ---------- core bundle: per locale ---------- */ -}}
 {{- /* Exactly the order the shared footer used to load these in. i18n.js is the only locale-varying
        file; the vendored libraries ride along so the whole of the shared chrome is one request. */ -}}
+{{- /* Vendored libraries ship already minified and are concatenated in as-is: running them through
+       Hugo's minifier again gains nothing and can break them (it renamed a self-referencing class
+       expression in hanzi-writer onto an outer variable — "i is not a constructor"). So only our
+       own scripts are minified, in runs between the vendored files. */ -}}
 {{- $i18n := resources.Get "scripts/data/i18n.js"
       | resources.ExecuteAsTemplate (printf "scripts/_i18n.%s.js" $loc) (dict "loc" $loc) -}}
-{{- $core := $none | append $vendor.twemoji $i18n -}}
+{{- $core := $none | append $i18n -}}
 {{- range (slice
       "scripts/components/select-box.js"
       "scripts/components/theme-selector.js"
@@ -105,8 +116,10 @@
   {{- if not $r -}}{{- errorf "missing core script %s" . -}}{{- end -}}
   {{- $core = $core | append $r -}}
 {{- end -}}
-{{- $core = $core | append $vendor.driver_js (resources.Get "scripts/components/tutorial.js") -}}
-{{- $coreBundle := $core | resources.Concat (printf "scripts/core.%s.js" $loc) | minify | fingerprint -}}
+{{- $coreOwn := $core | resources.Concat (printf "scripts/_core-own.%s.js" $loc) | minify -}}
+{{- $tutorial := resources.Get "scripts/components/tutorial.js" | resources.Copy "scripts/_tutorial.min.js" | minify -}}
+{{- $coreBundle := ($none | append $vendor.twemoji $coreOwn $vendor.driver_js $tutorial)
+      | resources.Concat (printf "scripts/core.%s.js" $loc) | fingerprint -}}
 
 {{- /* ---------- page bundle ---------- */ -}}
 {{- /* `pre` held the scripts the old templates put *before* the shared footer (they only define
@@ -128,7 +141,6 @@
 {{- $spec := index $pages $slug -}}
 {{- if not $spec -}}{{- errorf "no script bundle defined for page %q" $slug -}}{{- end -}}
 {{- $pageRes := $none -}}
-{{- if $spec.hanzi -}}{{- $pageRes = $pageRes | append $vendor.hanzi_writer -}}{{- end -}}
 {{- range $spec.pre -}}
   {{- $r := resources.Get . -}}
   {{- if not $r -}}{{- errorf "missing page script %s" . -}}{{- end -}}
@@ -149,7 +161,11 @@
   {{- end -}}
   {{- $pageRes = $pageRes | append $r -}}
 {{- end -}}
-{{- $pageBundle := $pageRes | resources.Concat (printf "scripts/page.%s.js" $slug) | minify | fingerprint -}}
+{{- $pageOwn := $pageRes | resources.Concat (printf "scripts/_page-own.%s.js" $slug) | minify -}}
+{{- $pageBundle := $none -}}
+{{- if $spec.hanzi -}}{{- $pageBundle = $pageBundle | append $vendor.hanzi_writer -}}{{- end -}}
+{{- $pageBundle = $pageBundle | append $pageOwn
+      | resources.Concat (printf "scripts/page.%s.js" $slug) | fingerprint -}}
 
 {{- return (dict
       "css"  $cssBundle.RelPermalink
