@@ -29,11 +29,19 @@
     /* Isolate each block's layout and paint from the rest of the page, so rendering/collapsing one
        block (or a writer animating inside it) can't trigger reflow or repaint of the others */
     contain: layout paint;
+
+    /* Paint containment clips at the block's edge, where the outer cards' borders sit. On fractional
+       display scaling the border's last pixel rounds past that edge and was cut off. A small padding
+       moves the clip outwards and the matching negative margin keeps the cards where they were */
+    --deck-block-bleed: 4px;
+    padding: var(--deck-block-bleed);
+    margin: calc(-1 * var(--deck-block-bleed));
 }
 
-/* Match the in-grid row gap between stacked blocks */
+/* Match the in-grid row gap between stacked blocks (the bleed padding on both sides is added back
+   on top of this margin, which collapses with the previous block's negative bottom margin) */
 .deck-block + .deck-block {
-    margin-top: 0.875rem;
+    margin-top: calc(0.875rem - var(--deck-block-bleed));
 }
 
 /* The card surface. A rounded, slightly-raised panel rather than a hard 1px box: the fill and the
