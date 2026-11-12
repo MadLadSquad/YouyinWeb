@@ -48,7 +48,7 @@ function importDeck(f) {
 
             // Wait for the IndexedDB write to commit before reloading, otherwise the reload can
             // tear the page down before the transaction flushes
-            saveProfileData(window.profileData).then(() => document.location.reload()).catch(() => {});
+            saveProfileData(window.profileData).then(() => document.location.reload()).catch(reportSaveFailure);
         });
         reader.addEventListener("error", () => alert(lc.import_deck_invalid));
         reader.readAsText(file);
@@ -63,7 +63,7 @@ function clearDeck() {
         dt.cards = [];
         dt.phrases = [];
 
-        saveProfileData(dt).then(() => document.location.reload()).catch(() => {});
+        saveProfileData(dt).then(() => document.location.reload()).catch(reportSaveFailure);
     }
 }
 
@@ -238,7 +238,8 @@ function createStaticOutline(targetEl, character, size)
     // solid — visually identical to one filled path per stroke, but a single SVG node per card
     const path = document.createElementNS(SVG_NS, "path");
     path.setAttribute("d", data.strokes.join(" "));
-    path.setAttribute("fill", window.WRITER_STROKE_COLOUR);
+    // Filled from the theme's CSS variable (set by theme.js), so a theme change recolours it live
+    path.style.setProperty("fill", "var(--writer-stroke-colour)");
     path.setAttribute("transform", `translate(${tx}, ${ty}) scale(${scale}, ${-scale})`);
     svg.appendChild(path);
     targetEl.appendChild(svg);
@@ -309,7 +310,7 @@ function constructCard(it, index, container, localIndex)
     // than something to click
     let editButton = addElement("button", lc.deck_card_edit, `card-edit-button-${index}`, "card-button-edit card-button-secondary deck-card-edit", `${localIndex}`, footer)
     // The original index in profileData (localIndex) is what the editor looks the entry up by. It is
-    // also stamped on the button as arbitrary-data, which scripts/components/tutorial/deck.js reads
+    // also stamped on the button as data-value, which scripts/components/tutorial/deck.js reads
     const editQuery = `?${it["phrase"] ? "phrase-" : ""}edit=${localIndex}`;
     runEventAfterAnimation(editButton, "click", () =>
     {
@@ -328,7 +329,7 @@ function constructCard(it, index, container, localIndex)
             createStaticOutline(target, fullCharacter, window.CARD_WRITER_SIZE);
 
             let writer = null;
-            target.addEventListener('mouseover', function()
+            target.addEventListener('mouseenter', function()
             {
                 if (writer === null)
                 {
@@ -361,7 +362,7 @@ function constructCard(it, index, container, localIndex)
 
             let writers = null;
             let bAnimating = false;
-            target.addEventListener('mouseover', async function()
+            target.addEventListener('mouseenter', async function()
             {
                 if (writers === null)
                 {
@@ -755,9 +756,12 @@ function deckmain()
     setupDeckOverflowMenu();
 
     // Get the elements and load their onclick events, holy shit that's massive! That's what she said!
-    runEventAfterAnimation($("export-deck-button"), "click", updateExportButton);
+    // Export and import run straight from the click rather than after the ripple: opening the file
+    // picker and starting a download need the click's user activation, which stricter browsers no
+    // longer grant to a handler deferred until a transition ends
+    $("export-deck-button").addEventListener("click", updateExportButton);
     runEventAfterAnimation($("clear-deck-button"), "click", clearDeck);
-    runEventAfterAnimation($("import-deck-button"), "click", function(){
+    $("import-deck-button").addEventListener("click", function(){
         $("fileupload").click();
     });
     $("fileupload").addEventListener("change", importDeck);

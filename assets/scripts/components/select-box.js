@@ -75,6 +75,13 @@ function createPopupController(button, popup, onOpen, onClose)
         controller.isOpen() ? controller.close() : controller.open();
     });
 
+    // Drop the controllers of popups whose trigger has left the page (the card editor rebuilds its
+    // variant box every time the character changes), so the registry doesn't grow for the life of the
+    // page. Pruned in place: other scripts hold on to the array itself
+    for (let i = window.popupControllers.length - 1; i >= 0; i--)
+        if (!window.popupControllers[i].button.isConnected)
+            window.popupControllers.splice(i, 1);
+
     window.popupControllers.push(controller);
     return controller;
 }

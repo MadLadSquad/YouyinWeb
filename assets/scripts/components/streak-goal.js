@@ -66,7 +66,7 @@ function showStreakGoalModal()
     const confirm = addElement("button", lc.streak_goal_modal_confirm, "streak-goal-confirm", "card-button-edit", "", box);
     confirm.type = "button";
     confirm.addEventListener("click", function() {
-        window.profileData.streakGoal = Number(slider.value);
+        setStreakGoal(Number(slider.value));
 
         // Take the modal down straight away rather than after the write commits: the value is
         // already live in memory, and leaving a blocking overlay up while IndexedDB flushes reads as
@@ -89,6 +89,7 @@ function showStreakGoalModal()
     });
 
     document.body.appendChild(overlay);
+    trapModalFocus(overlay);
     slider.focus();
 }
 window.showStreakGoalModal = showStreakGoalModal;

@@ -21,12 +21,16 @@ async function loadMarketplaceData(file, onProgress)
     }
 
     // Stream the body when a progress callback is supplied so the import loading bar can track the
-    // download. Content-Length is absent (or, under gzip, the compressed size) for some responses,
-    // so onProgress is only called when we have a usable total; the overlay stays indeterminate
-    // otherwise.
+    // download. Content-Length is absent for some responses, and for a compressed one it is the
+    // compressed size while the stream yields decompressed bytes, which ran the bar to 100% early.
+    // Content-Encoding tells us when that is the case — if the CDN exposes it to us; otherwise the
+    // byte count overtaking the total gives it away. Either way the bar goes back to indeterminate:
+    // onProgress(null)
     if (onProgress && response.body)
     {
-        const total = Number(response.headers.get("Content-Length")) || 0;
+        const encoding = response.headers.get("Content-Encoding");
+        const bCompressed = encoding !== null && encoding !== "" && encoding !== "identity";
+        let total = bCompressed ? 0 : (Number(response.headers.get("Content-Length")) || 0);
         const reader = response.body.getReader();
         const chunks = [];
         let received = 0;
@@ -37,7 +41,12 @@ async function loadMarketplaceData(file, onProgress)
                 break;
             chunks.push(value);
             received += value.length;
-            if (total > 0)
+            if (total > 0 && received > total)
+            {
+                total = 0;
+                onProgress(null);
+            }
+            else if (total > 0)
                 onProgress(received / total);
         }
         return JSON.parse(await new Blob(chunks).text());
@@ -72,10 +81,17 @@ function showImportOverlay()
 /**
  * Advances the import overlay's progress bar.
  * @param { HTMLElement } overlay - The overlay returned by showImportOverlay
- * @param { number } fraction - Progress in the range 0..1
+ * @param { number|null } fraction - Progress in the range 0..1, or null when the size turned out to
+ *        be unknown after all (the bar goes back to indeterminate)
  */
 function updateImportOverlay(overlay, fraction)
 {
+    if (fraction === null)
+    {
+        overlay.fill.classList.add("indeterminate");
+        overlay.fill.style.removeProperty("width");
+        return;
+    }
     overlay.fill.classList.remove("indeterminate");
     overlay.fill.style.width = `${Math.max(0, Math.min(1, fraction)) * 100}%`;
 }
@@ -160,11 +176,11 @@ function constructElement(val, deckContainer, deck, type, language)
     const actions = addElement("div", "", "", "marketplace-card-actions", "", div);
 
     // Import a deck from file
-    runEventAfterAnimation(addElement("button", lc.deck_import, `import-button-${type}-${val}`, "card-button-edit marketplace-import", path, actions), "click", async function(e)
+    // The deck's path is also stamped on each button as data-value: the onboarding tutorial finds the
+    // numbers deck's import button by it (see scripts/components/tutorial/marketplace.js)
+    runEventAfterAnimation(addElement("button", lc.deck_import, `import-button-${type}-${val}`, "card-button-edit marketplace-import", path, actions), "click", async function()
     {
-        // Read the button's data before anything suspends: currentTarget is only non-null while the
-        // event is being dispatched, and everything below runs after at least one await.
-        const deckPath = e.currentTarget.getAttribute("arbitrary-data");
+        const deckPath = path;
 
         let bExecuted = confirm(lc.import_deck_confirm_text);
         if (bExecuted)
@@ -180,6 +196,7 @@ function constructElement(val, deckContainer, deck, type, language)
                 if (content === undefined)
                 {
                     hideImportOverlay(overlay);
+                    alert(lc.deck_import_failed);
                     return;
                 }
 
@@ -203,13 +220,24 @@ function constructElement(val, deckContainer, deck, type, language)
                 // Wait for the write to commit before navigating, otherwise the imported deck may not
                 // be persisted by the time the deck page loads. The overlay stays up through the
                 // navigation so the page never becomes interactive mid-import
-                await saveProfileData(window.profileData);
+                try
+                {
+                    await saveProfileData(window.profileData);
+                }
+                catch (err)
+                {
+                    hideImportOverlay(overlay);
+                    reportSaveFailure();
+                    return;
+                }
                 location.href = window.pageUrl("deck");
             }
             catch (err)
             {
+                // The download itself failed (offline, CDN unreachable)
                 console.error("Error: deck import failed", err);
                 hideImportOverlay(overlay);
+                alert(lc.deck_import_failed);
             }
         }
     });
@@ -219,19 +247,19 @@ function constructElement(val, deckContainer, deck, type, language)
 
     const sourceButton = addElement("button", lc.deck_source, `source-button-${type}-${val}`, "card-button-edit card-button-ghost marketplace-secondary card-button-icon", path, actions);
     makeIconButton(sourceButton, MARKETPLACE_ICONS.source, lc.deck_source);
-    runEventAfterAnimation(sourceButton, "click", async function(e)
+    // Straight from the click, not after the ripple: window.open needs the click's user activation,
+    // which stricter browsers no longer grant to a handler deferred until a transition ends
+    sourceButton.addEventListener("click", function()
     {
-        // If an element uses addElement, arbitrary data is also assigned
-        window.open(`${MARKETPLACE_URL}/blob/master/` + e.currentTarget.getAttribute("arbitrary-data"));
+        window.open(`${MARKETPLACE_URL}/blob/master/${path}`);
     });
 
     // Download deck with this interesting code
     const downloadButton = addElement("button", lc.deck_download, `download-button-${type}-${val}`, "card-button-edit card-button-ghost marketplace-secondary card-button-icon", path, actions);
     makeIconButton(downloadButton, MARKETPLACE_ICONS.download, lc.deck_download);
-    runEventAfterAnimation(downloadButton, "click", async function(e)
+    runEventAfterAnimation(downloadButton, "click", async function()
     {
-        // Same reason as the import handler: capture before the first await.
-        const deckPath = e.currentTarget.getAttribute("arbitrary-data");
+        const deckPath = path;
 
         try
         {
@@ -261,7 +289,7 @@ function constructElement(val, deckContainer, deck, type, language)
  */
 function createErrorElement(deckContainer, status)
 {
-    const text = lc.marketplace_load_error.replace("{}", status == null ? "—" : status);
+    const text = lc.marketplace_load_error.replace("{status}", status == null ? "—" : status);
     addElement("h1", text, "", "error-text centered vcentered", "", deckContainer);
 }
 
@@ -378,7 +406,8 @@ async function marketplaceMain()
         createErrorElement(officialContainer, null);
     }
 
-    runEventAfterAnimation($("upload-deck-public"), "click", (_) => { window.open(MARKETPLACE_URL) });
+    // A plain listener for the same user-activation reason as the Source button
+    $("upload-deck-public").addEventListener("click", () => { window.open(MARKETPLACE_URL) });
 
     // Filter the rendered decks live as the user types in the search box
     wireSearchInput("marketplace-search", applyDeckFilter);

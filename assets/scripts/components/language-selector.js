@@ -49,7 +49,7 @@ function redirectWithLanguage(localStorageLang)
 // content/<locale>/ directory and a `languages:` entry in hugo.yaml, and is built into its own
 // subdirectory. Keep in sync with hugo.yaml and with the rename loop in build.sh
 const SUPPORTED_LOCALES = [
-    { value: "en_US", text: "🇬🇧   EN" },
+    { value: "en_US", text: "🇺🇸   EN" },
     { value: "bg_BG", text: "🇧🇬   BG" },
     { value: "ro_RO", text: "🇷🇴   RO" },
 ];
@@ -107,51 +107,74 @@ function getSystemLanguage()
 }
 
 /**
- * Settles the stored language and moves the browser into its locale directory if it isn't already
- * there. Assigning location.href doesn't stop the caller, so the return value tells main() to stop
- * initializing a page that is being left — otherwise a later navigation can override this one
+ * The language the site should be shown in: the stored choice when it is still supported, otherwise
+ * the browser's own language, otherwise English
+ * @returns { string } - A value from SUPPORTED_LOCALES
+ */
+function effectiveLanguage()
+{
+    const stored = window.localStorage.getItem("language");
+    if (stored !== null && SUPPORTED_LOCALES.some((l) => l.value === stored))
+        return stored;
+    return getSystemLanguage() || "en_US";
+}
+
+/**
+ * Stores the language the site is being shown in, once the privacy policy has been accepted, when the
+ * user has never picked one. setLanguage keeps an auto-detected language in memory only, because
+ * nothing may be stored before consent
+ */
+function persistDetectedLanguage()
+{
+    const stored = window.localStorage.getItem("language");
+    if (stored === null || !SUPPORTED_LOCALES.some((l) => l.value === stored))
+        window.localStorage.setItem("language", effectiveLanguage());
+}
+
+/**
+ * Moves the browser into the directory of the language the site should be shown in if it isn't
+ * already there. This includes a first visit: the system language used to be stored but not acted
+ * on, so a new visitor stayed on the English root until their first navigation. Assigning
+ * location.href doesn't stop the caller, so the return value tells main() to stop initializing a
+ * page that is being left — otherwise a later navigation can override this one
  * @returns { boolean } - True when a redirect has been started
  */
 function setLanguage()
 {
-    let localStorageLang = window.localStorage.getItem("language");
+    const language = effectiveLanguage();
 
-    if (localStorageLang === null)
-    {
-        // First-time user, check system language
-        const systemLang = getSystemLanguage();
-        localStorageLang = systemLang !== null ? systemLang : "en_US";
-        window.localStorage.setItem("language", localStorageLang);
-    }
-    else if (!SUPPORTED_LOCALES.some((l) => l.value === localStorageLang))
-    {
-        // If a language was previously saved but is no longer supported, fallback to English
-        localStorageLang = "en_US";
-        window.localStorage.setItem("language", localStorageLang);
-    }
+    // A language that is no longer supported is replaced by the one we fell back to. A first-visit
+    // detection is not stored here: persistDetectedLanguage does that once the policy is accepted
+    const stored = window.localStorage.getItem("language");
+    if (stored !== null && stored !== language)
+        window.localStorage.setItem("language", language);
+
     // Compared against the first path segment exactly, so a lowercased "/en_us/" is also redirected
     // once to its canonical "/en_US/"
-    else if (location.pathname.split("/").filter((segment) => segment !== "")[0] !== localStorageLang)
+    if (location.pathname.split("/").filter((segment) => segment !== "")[0] !== language)
     {
-        redirectWithLanguage(localStorageLang);
+        redirectWithLanguage(language);
         return true;
     }
+
     // The switcher is shown in the app bar on every page and duplicated in the account settings card,
     // so reflect the active locale on every instance
     for (const selectWidget of document.querySelectorAll(".lang-select-widget"))
-        selectWidget.value = localStorageLang;
+        selectWidget.value = language;
     return false;
 }
 
 function setLanguageBox()
 {
-    const localStorageLang = window.localStorage.getItem("language") || "en_US";
+    const language = effectiveLanguage();
 
     // Wire up every language switcher instance (app bar on all pages, plus the account settings card).
     // createCustomSelect builds an independent popup per button; changing the language redirects to
-    // the new locale's subdirectory, so the instances never need to stay in sync live
+    // the new locale's subdirectory, so the instances never need to stay in sync live. An explicit
+    // choice is stored straight away, consent or not: without it the redirect would bounce the user
+    // back to the detected language
     for (const selectWidget of document.querySelectorAll(".lang-select-widget"))
-        createCustomSelect(selectWidget, "Language select box", SUPPORTED_LOCALES, localStorageLang, function(newValue) {
+        createCustomSelect(selectWidget, lc.language_label, SUPPORTED_LOCALES, language, function(newValue) {
             window.localStorage.setItem("language", newValue);
             redirectWithLanguage(newValue);
         });

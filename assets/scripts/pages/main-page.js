@@ -42,6 +42,22 @@ function fisherYates(array)
 // Global writer variable, because yes
 window.writer = null;
 
+// The order this session revises the deck in: shuffled shallow copies of profileData.cards and
+// .phrases (see shuffleSessionOrder). The entries are the profile's own objects, so scoring one
+// updates the profile, but the profile's lists themselves keep the user's order — shuffling those in
+// place used to reorder the deck page and every export after each round
+window.sessionCards = [];
+window.sessionPhrases = [];
+
+// The character the session writer is quizzing (with its variant postfix), and the number of misses
+// after which it shows a hint. Both are tracked here rather than read back out of hanzi-writer's
+// private state
+window.sessionCharacter = "";
+window.sessionHintThreshold = window.WRITER_SHOW_HINT_ON_ERRORS;
+
+// Gems actually paid out this round, for the recap
+window.roundGems = 0;
+
 window.totalPhraseErrors = 0;
 window.errors = 0;
 window.backwardsErrors = 0;
@@ -83,10 +99,23 @@ window.phrasesReviewedCounter = 0;
 const MAIN_PAGE_RESIZE_DEBOUNCE_MS = 200;
 
 /**
- * The number of cards (or phrases) that may be revised in the current session. The cards and
- * phrases arrays are shuffled before each session and never resized mid-session, so capping the
- * length to window.MAX_SESSION_REVISION_ITEMS limits revision to a stable, random subset of the
- * deck. Pass the cards array to cap cards and the phrases array to cap phrases independently.
+ * Draws a fresh random order for the next session. Only the session's own copies are shuffled; the
+ * profile's lists are left in the user's order
+ */
+function shuffleSessionOrder()
+{
+    window.sessionCards = window.profileData.cards.slice();
+    window.sessionPhrases = window.profileData.phrases.slice();
+    fisherYates(window.sessionCards);
+    fisherYates(window.sessionPhrases);
+}
+
+/**
+ * The number of cards (or phrases) that may be revised in the current session. The session arrays
+ * are shuffled before each session and never reordered or resized mid-session (extensive mode's later
+ * passes included), so capping the length to window.MAX_SESSION_REVISION_ITEMS limits revision to a
+ * stable, random subset of the deck. Pass window.sessionCards to cap cards and window.sessionPhrases
+ * to cap phrases independently.
  *
  * When the deck has fewer phrases than window.MAX_SESSION_REVISION_ITEMS, the unused phrase slots
  * are donated to the card cap so a session still revises a full batch of items. The phrase cap
@@ -97,9 +126,9 @@ const MAIN_PAGE_RESIZE_DEBOUNCE_MS = 200;
 function sessionRevisionCount(arr)
 {
     let max = window.MAX_SESSION_REVISION_ITEMS;
-    if (arr === window.profileData.cards)
+    if (arr === window.sessionCards)
     {
-        const phraseNum = window.profileData.phrases.length;
+        const phraseNum = window.sessionPhrases.length;
         const remainder = window.MAX_SESSION_REVISION_ITEMS - phraseNum;
         if (remainder > 0)
             max += remainder;
@@ -217,8 +246,8 @@ function renderSessionIdle()
     const note = $("session-queue-note");
     if (note !== null)
     {
-        const cards = sessionRevisionCount(data.cards);
-        const phrases = sessionRevisionCount(data.phrases);
+        const cards = sessionRevisionCount(window.sessionCards);
+        const phrases = sessionRevisionCount(window.sessionPhrases);
         note.textContent = lc.session_queue_note
             .replace("{cards}", (cards === 1 ? lc.count_cards_one : lc.count_cards).replace("{count}", cards))
             .replace("{phrases}", (phrases === 1 ? lc.count_phrases_one : lc.count_phrases).replace("{count}", phrases));
@@ -242,7 +271,7 @@ function renderSessionProgress()
     // not items completed, and the item counter is currentPhraseIndex. Reading currentIndex against
     // the card cap through both stages is what made a two-phrase round report "3 / 16".
     const bPhrases = window.bInPhrase;
-    const total = bPhrases ? sessionRevisionCount(data.phrases) : sessionRevisionCount(data.cards);
+    const total = bPhrases ? sessionRevisionCount(window.sessionPhrases) : sessionRevisionCount(window.sessionCards);
     const done = Math.min(bPhrases ? window.currentPhraseIndex : window.currentIndex, total);
 
     // How far into the phrase currently being written, so the bar keeps creeping through a long
@@ -250,7 +279,7 @@ function renderSessionProgress()
     let partial = 0;
     if (bPhrases && done < total)
     {
-        const length = toCharacters(data.phrases[window.currentPhraseIndex].phrase).length;
+        const length = toCharacters(window.sessionPhrases[window.currentPhraseIndex].phrase).length;
         if (length > 0)
             partial = Math.min(window.currentIndex, length) / length;
     }
@@ -309,7 +338,7 @@ function writerOnMistake(strokeData)
     // Since we don't count backwards strokes as errors, remove them rom the mistakes and calculate errors correctly.
     // Compare against the writer's current hint threshold — setWriterState lowers it to 1 at high
     // knowledge levels, so a fixed comparison with 3 would never count those errors
-    if ((strokeData.mistakesOnStroke - window.backwardsErrors) === window.writer._options.showHintAfterMisses)
+    if ((strokeData.mistakesOnStroke - window.backwardsErrors) === window.sessionHintThreshold)
     {
         window.errors++;
         window.totalPhraseErrors++;
@@ -317,13 +346,13 @@ function writerOnMistake(strokeData)
     }
 
     // Either use the number of cards or the phrase-local number
-    let num = sessionRevisionCount(window.profileData.cards);
+    let num = sessionRevisionCount(window.sessionCards);
     if (window.bInPhrase)
     {
-        num = toCharacters(window.profileData.phrases[window.currentPhraseIndex].phrase).length;
+        num = toCharacters(window.sessionPhrases[window.currentPhraseIndex].phrase).length;
         // Also update the phrase information. It's ugly, I know...
         // Display as 1-based to match changeSidebarText, which renders currentPhraseIndex + 1
-        $("phrase-info-widget-errors").textContent = `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${sessionRevisionCount(window.profileData.phrases)}; ${lc.phrases_count_errors}: ${window.totalSessionErrors}`;
+        $("phrase-info-widget-errors").textContent = `${lc.phrases_count_phrase}: ${window.currentPhraseIndex + 1}/${sessionRevisionCount(window.sessionPhrases)}; ${lc.phrases_count_errors}: ${window.totalSessionErrors}`;
     }
 
     // Update the card information. 1-based to match changeSidebarText, which renders currentIndex + 1.
@@ -593,7 +622,7 @@ function buildFinishSummary(container, entry, parts)
     parts.push({ el: addElement("h3", entry.text, "", "finish-summary-title", "", card) });
 
     const stats = addElement("div", "", "", "finish-summary-stats", "", card);
-    // Reuses the exact labels the per-stat slides used to show, so the card still reads as a recap.
+    // The tile labels are the round's standing stat names, so the card reads as a recap.
     // Each tile carries its own formatter: the two tallies are whole numbers, the session length is
     // a two-decimal value with a localised unit after it.
     const rows = [
@@ -774,8 +803,8 @@ function showFinishedSessionPage(st, bStreakAdvanced)
             ? lc.finish_page_streak_increased_one
             : lc.finish_page_streak_increased;
 
-    // Gems are derived, not tracked: awardItemGems pays GEMS_PER_ITEM per completed card and per
-    // completed whole phrase
+    // Tallied by awardItemGems as it pays out, so skipped characters (which earn nothing) don't
+    // inflate the figure
     const parts = [];
     buildFinishSummary(container, {
         text: lc.finish_page_header,
@@ -784,7 +813,7 @@ function showFinishedSessionPage(st, bStreakAdvanced)
         phrases: window.phrasesReviewedCounter,
         timeValue: result.time,
         timePostfix: result.postfix,
-        gems: (window.cardsReviewedCounter + window.phrasesReviewedCounter) * window.GEMS_PER_ITEM,
+        gems: window.roundGems,
         streak: window.profileData.streak,
         streakTemplate: streakTemplate
     }, parts);
@@ -806,30 +835,26 @@ function ignoreWriterFailure(result)
         result.catch(() => {});
 }
 
+/**
+ * Styles the session writer for an item's knowledge level. Each level takes away one more aid: level
+ * 0 highlights the radical over the outline, level 1 keeps only the outline, level 2 hides it, and
+ * level 3 and up also shows the hint after a single miss instead of WRITER_SHOW_HINT_ON_ERRORS. The
+ * hint threshold is applied by the quiz call that follows (see quizSessionCharacter)
+ * @param { Object } ref - The card or phrase whose knowledge level styles the writer
+ */
 function setWriterState(ref)
 {
-    // Set the default writer state. Certain knowledge levels have certain features enabled/disabled
     const writer = window.writer;
-    writer._options.showHintAfterMisses = 3;
-    ignoreWriterFailure(writer.updateColor("radicalColor", null));
-    if (ref.knowledge >= 3)
-    {
+    window.sessionHintThreshold = ref.knowledge >= 3 ? window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3 : window.WRITER_SHOW_HINT_ON_ERRORS;
+
+    // theme.js recolours the radical on a theme change only while it is shown
+    window.WRITER_RADICAL_VISIBLE = ref.knowledge < 1;
+    ignoreWriterFailure(writer.updateColor("radicalColor", window.WRITER_RADICAL_VISIBLE ? window.WRITER_RADICAL_COLOUR : null));
+
+    if (ref.knowledge >= 2)
         ignoreWriterFailure(writer.hideOutline());
-    }
-    else if (ref.knowledge >= 2)
-    {
-        writer._options.showHintAfterMisses = window.WRITER_SHOW_HINT_ON_ERRORS_LVL_3;
-        ignoreWriterFailure(writer.hideOutline());
-    }
-    else if (ref.knowledge >= 1)
-    {
-        ignoreWriterFailure(writer.showOutline());
-    }
     else
-    {
-        ignoreWriterFailure(writer.updateColor("radicalColor", window.WRITER_RADICAL_COLOUR));
         ignoreWriterFailure(writer.showOutline());
-    }
 }
 
 /**
@@ -841,9 +866,11 @@ function setWriterState(ref)
  */
 function quizSessionCharacter(character, ref)
 {
+    window.sessionCharacter = character;
     ignoreWriterFailure(window.writer.setCharacter(character));
     setWriterState(ref);
-    ignoreWriterFailure(window.writer.quiz());
+    // quiz() merges its options into the writer's, so the original callbacks stay in place
+    ignoreWriterFailure(window.writer.quiz({ showHintAfterMisses: window.sessionHintThreshold }));
 }
 
 /**
@@ -904,7 +931,7 @@ function resetPlayForPhrases(data)
     // setting up its first character (currentIndex === 0) - otherwise the tally counts characters
     if (window.currentIndex === 0)
         ++window.phrasesReviewedCounter;
-    let currentPhrase = data.phrases[window.currentPhraseIndex];
+    let currentPhrase = window.sessionPhrases[window.currentPhraseIndex];
     const phraseChars = toCharacters(currentPhrase.phrase);
     let card = null;
     for (const c of data.cards)
@@ -920,7 +947,7 @@ function resetPlayForPhrases(data)
     // styled by that card's knowledge. Revert to using the phrase score if no card is found
     const character = phraseChars[window.currentIndex] + (card !== null ? (card.variant || "") : "");
     quizSessionCharacter(character, card !== null ? card : currentPhrase);
-    changeSidebarText(currentPhrase, sessionRevisionCount(data.phrases), card, phraseChars.length);
+    changeSidebarText(currentPhrase, sessionRevisionCount(window.sessionPhrases), card, phraseChars.length);
 }
 
 /**
@@ -1122,6 +1149,7 @@ function floatGemsGain(amount)
 function awardItemGems()
 {
     window.profileData.gems += window.GEMS_PER_ITEM;
+    window.roundGems += window.GEMS_PER_ITEM;
 
     // Keep the app-bar readout honest as the round runs — this is where the gem count changes most
     if (window.renderHeaderStats)
@@ -1212,7 +1240,8 @@ async function writerOnComplete(result)
     let data = window.profileData;
 
     // Calculate how many points to add to your knowledge
-    const strokeNum = bSkipped ? 0 : window.writer._character.strokes.length;
+    const strokeData = bSkipped ? undefined : window.characterData[window.sessionCharacter];
+    const strokeNum = strokeData && strokeData.strokes ? strokeData.strokes.length : 0;
     window.totalPhraseStrokes += strokeNum;
 
     // Accumulate every stroke the user drew this session (cards and phrase characters alike, and
@@ -1225,14 +1254,14 @@ async function writerOnComplete(result)
     }
     else if (!window.bInPhrase)
     {
-        data.cards[(window.currentIndex - 1)].knowledge = computeScore(strokeNum, window.errors, data.cards[(window.currentIndex - 1)].knowledge);
+        window.sessionCards[(window.currentIndex - 1)].knowledge = computeScore(strokeNum, window.errors, window.sessionCards[(window.currentIndex - 1)].knowledge);
         // A card pays out per character. Characters drawn as part of a phrase deliberately do not —
         // the phrase pays out once, as a whole, when its last character lands (see below)
         awardItemGems();
     }
     else
     {
-        const phraseChars = toCharacters(data.phrases[window.currentPhraseIndex].phrase);
+        const phraseChars = toCharacters(window.sessionPhrases[window.currentPhraseIndex].phrase);
         for (const card of data.cards)
         {
             if (phraseChars[(window.currentIndex - 1)] === card.character)
@@ -1253,23 +1282,23 @@ async function writerOnComplete(result)
     // This if statement handles switching to the next card
     if (!window.bInPhrase)
     {
-        if (window.currentIndex < sessionRevisionCount(data.cards))
+        if (window.currentIndex < sessionRevisionCount(window.sessionCards))
         {
             // If we just had a goto statement in this retarded language
             const f = () => {
                 ++window.cardsReviewedCounter;
-                let ref = data.cards[window.currentIndex];
+                let ref = window.sessionCards[window.currentIndex];
                 // With the variant: the round's first card always carried it, every later one didn't,
                 // so Kanji and Hanja cards were quizzed in their Chinese form
                 quizSessionCharacter(ref.character + (ref.variant || ""), ref);
-                changeSidebarText(null, 0, ref, sessionRevisionCount(data.cards));
+                changeSidebarText(null, 0, ref, sessionRevisionCount(window.sessionCards));
             }
 
             if (window.gameModifiers.extensive)
             {
-                for (; window.currentIndex < sessionRevisionCount(data.cards); ++window.currentIndex)
+                for (; window.currentIndex < sessionRevisionCount(window.sessionCards); ++window.currentIndex)
                 {
-                    if (data.cards[window.currentIndex].knowledge <= window.extensiveModeLevel)
+                    if (window.sessionCards[window.currentIndex].knowledge <= window.extensiveModeLevel)
                     {
                         f();
                         return;
@@ -1289,11 +1318,11 @@ async function writerOnComplete(result)
     }
 
     // This code would be way more understandable and clearer if Javascript just had a goto statement
-    if (window.currentPhraseIndex < sessionRevisionCount(data.phrases))
+    if (window.currentPhraseIndex < sessionRevisionCount(window.sessionPhrases))
     {
-        if (window.currentIndex >= toCharacters(data.phrases[window.currentPhraseIndex].phrase).length)
+        if (window.currentIndex >= toCharacters(window.sessionPhrases[window.currentPhraseIndex].phrase).length)
         {
-            data.phrases[window.currentPhraseIndex].knowledge = computeScore(window.totalPhraseStrokes, window.totalPhraseErrors, data.phrases[window.currentPhraseIndex].knowledge);
+            window.sessionPhrases[window.currentPhraseIndex].knowledge = computeScore(window.totalPhraseStrokes, window.totalPhraseErrors, window.sessionPhrases[window.currentPhraseIndex].knowledge);
 
             // The phrase is finished: pay out for it as a whole, the counterpart to the per-card
             // award above. Together they make a full session worth GEMS_PER_ITEM * (8 + 8). A phrase
@@ -1310,14 +1339,14 @@ async function writerOnComplete(result)
         }
 
         // If the index is lower than the length
-        if (window.currentPhraseIndex < sessionRevisionCount(data.phrases))
+        if (window.currentPhraseIndex < sessionRevisionCount(window.sessionPhrases))
         {
             // A goto statement would have made this way simpler and way more readable
             if (window.gameModifiers.extensive)
             {
-                for (; window.currentPhraseIndex < sessionRevisionCount(data.phrases); ++window.currentPhraseIndex)
+                for (; window.currentPhraseIndex < sessionRevisionCount(window.sessionPhrases); ++window.currentPhraseIndex)
                 {
-                    if (data.phrases[window.currentPhraseIndex].knowledge <= window.extensiveModeLevel)
+                    if (window.sessionPhrases[window.currentPhraseIndex].knowledge <= window.extensiveModeLevel)
                     {
                         resetPlayForPhrases(data);
                         return;
@@ -1334,35 +1363,35 @@ async function writerOnComplete(result)
 
     if (window.extensiveModeLevel > 0 && window.gameModifiers.extensive)
     {
+        // The later passes revisit the same subset in the same order. Reshuffling here used to send
+        // them through a different subset of the deck than the round started with
         --window.extensiveModeLevel;
-        fisherYates(data.cards);
-        fisherYates(data.phrases);
 
         for (; window.extensiveModeLevel >= 0; --window.extensiveModeLevel)
         {
-            const cardCount = sessionRevisionCount(data.cards);
+            const cardCount = sessionRevisionCount(window.sessionCards);
             for (let i = 0; i < cardCount; ++i)
             {
-                if (data.cards[i].knowledge <= window.extensiveModeLevel)
+                if (window.sessionCards[i].knowledge <= window.extensiveModeLevel)
                 {
                     ++window.cardsReviewedCounter;
                     resetSessionData();
                     window.bInTest = true;
-                    // writerOnComplete scores data.cards[currentIndex - 1] after incrementing the index,
+                    // writerOnComplete scores window.sessionCards[currentIndex - 1] after incrementing the index,
                     // and carries on through the cards after it, so it has to point at the card being
                     // drawn rather than stay at the 0 resetSessionData left it at
                     window.currentIndex = i;
 
-                    let ref = data.cards[i];
+                    let ref = window.sessionCards[i];
                     quizSessionCharacter(ref.character + (ref.variant || ""), ref);
                     changeSidebarText(null, 0, ref, cardCount);
                     return;
                 }
             }
-            const phraseCount = sessionRevisionCount(data.phrases);
+            const phraseCount = sessionRevisionCount(window.sessionPhrases);
             for (let i = 0; i < phraseCount; ++i)
             {
-                if (data.phrases[i].knowledge <= window.extensiveModeLevel)
+                if (window.sessionPhrases[i].knowledge <= window.extensiveModeLevel)
                 {
                     resetSessionData();
                     $("phrase-info-widget").style.display = "block"
@@ -1378,9 +1407,8 @@ async function writerOnComplete(result)
         }
     }
 
-    // The round is over: remove the writer and hide the sidebar (the finished-round deck is shown
-    // full-width). Capture the writer's rectangle first as a fallback fire target, in case it is
-    // ever needed before a slide rect is available
+    // The round is over: remove the writer and hide the sidebar (the recap is shown full-width).
+    // Capture the writer's rectangle first, as the fallback origin for the floating gems label
     const writerRect = $("character-target-div").getBoundingClientRect();
     window.lastWriterRect = {
         left: writerRect.left + window.scrollX,
@@ -1397,19 +1425,20 @@ async function writerOnComplete(result)
     flushSessionTime();
     const st = window.roundActiveTime;
 
-    // A day only counts towards the daily streak when a round is fully completed. Persisted by the
-    // saveProfileData call below. Starting or extending a streak gets a little celebration,
-    // played on the streak slide itself from inside showFinishedSessionPage
+    // Tally this completed session against today. Feeds the account-page activity calendar and the
+    // daily goal, so it has to come before the streak check. Persisted by the saveProfileData call
+    // below
+    recordSessionActivity();
+
+    // A day only counts towards the daily streak once the day's goal of completed rounds is met.
+    // Persisted by the saveProfileData call below. Starting or extending a streak gets a little
+    // celebration on the recap, from inside showFinishedSessionPage
     const bStreakAdvanced = updateDailyStreak();
 
     // The app bar shows the streak on every page, including this one; awardItemGems keeps the gem
     // half current during the round, and this is the one moment the streak half changes
     if (window.renderHeaderStats)
         window.renderHeaderStats();
-
-    // Tally this completed session against today for the account-page activity calendar. Also
-    // persisted by the saveProfileData call below
-    recordSessionActivity();
 
     showFinishedSessionPage(st, bStreakAdvanced);
 
@@ -1419,12 +1448,12 @@ async function writerOnComplete(result)
     window.phrasesReviewedCounter = 0;
     window.totalSessionErrors = 0;
     window.totalSessionStrokes = 0;
+    window.roundGems = 0;
     window.extensiveModeLevel = window.MAX_KNOWLEDGE_LEVEL;
 
     // Recreate initial view
-    saveProfileData(data).catch(() => {});
-    fisherYates(data.cards);
-    fisherYates(data.phrases);
+    saveProfileData(data).catch(reportSaveFailure);
+    shuffleSessionOrder();
 
     // A phone round swapped the header's links for an Exit link; put them back
     if (window.linkChildren !== null)
@@ -1452,8 +1481,10 @@ function writerBorderWidth()
 }
 
 /**
- * Wires the progress strip's "End round" control. Leaving mid-round is a plain navigation back to the
- * landing page — exactly what the mobile Exit link has always done — so no partial round is recorded.
+ * Wires the progress strip's "End round" control. Leaving mid-round navigates back to the landing
+ * page, like the mobile Exit link. The progress made so far (time, knowledge changes, gems) is saved
+ * first, exactly as when the tab is hidden, but the round is not counted as completed: no session
+ * activity, no streak.
  */
 function setupSessionEndButton()
 {
@@ -1513,7 +1544,7 @@ function createStartButton()
             buttonList.replaceChildren(el);
 
             // The phone tab bar would otherwise sit under the writer offering four ways to leave
-            // mid-round; hide it for the duration and restore it in resetSessionData
+            // mid-round; hide it for the duration. writerOnComplete restores it when the round ends
             document.body.classList.add("session-immersive");
         }
 
@@ -1522,7 +1553,7 @@ function createStartButton()
         window.bInTest = true;
 
         // Reveal the sidebar for the duration of the revision round (see styles/pages/index.css). It is removed
-        // again in writerOnComplete when we switch to the finished-round slide deck
+        // again in writerOnComplete when we switch to the finished-round recap
         $("main-content").classList.add("in-session");
 
         // The progress strip is measured by getDrawElementHeight, so it has to be visible before the
@@ -1551,22 +1582,29 @@ function createStartButton()
 
         // Subtract the writer border, since the element will not be truly centered otherwise
         const borderWidth = writerBorderWidth();
-        window.writer = createWriter('character-target-div', data.cards[window.currentIndex].character + data.cards[window.currentIndex].variant, {
+        const first = window.sessionCards[window.currentIndex];
+        window.sessionCharacter = first.character + (first.variant || "");
+        window.writer = createWriter('character-target-div', window.sessionCharacter, {
             width: sessionDrawHeight - borderWidth,
             height: sessionDrawHeight - borderWidth,
             showCharacter: false,
             showHintAfterMisses: window.WRITER_SHOW_HINT_ON_ERRORS,
             onLoadCharDataError: writerOnMissingCharacter,
         });
+
+        // Styled before the quiz starts so the quiz picks up this card's hint threshold. Later
+        // characters go through quizSessionCharacter, which only passes the threshold: quiz() merges
+        // its options into the writer's, so these callbacks stay in place for the whole round
+        setWriterState(first);
         ignoreWriterFailure(window.writer.quiz({
             onMistake: writerOnMistake,
             onComplete: writerOnComplete,
             onCorrectStroke: writerOnCorrectStroke,
+            showHintAfterMisses: window.sessionHintThreshold,
         }));
 
         // Modify sidebar text, as well as statistics data
-        setWriterState(data.cards[window.currentIndex]);
-        changeSidebarText(null, 0, data.cards[window.currentIndex], sessionRevisionCount(data.cards));
+        changeSidebarText(null, 0, window.sessionCards[window.currentIndex], sessionRevisionCount(window.sessionCards));
         const now = Date.now();
         window.sessionTime = now;
         window.roundActiveTime = 0;
@@ -1579,6 +1617,7 @@ function createStartButton()
 
 function mainPageMain()
 {
+    shuffleSessionOrder();
     getDrawElementHeight();
     setupSessionEndButton();
 
@@ -1678,10 +1717,6 @@ function mainPageMain()
         flushSessionTime();
         saveProfileData(window.profileData).catch(() => {});
     });
-
-    // Shuffle the cards
-    fisherYates(window.profileData.cards);
-    fisherYates(window.profileData.phrases);
 }
 
 // Wait until index.js has loaded the profile data from IndexedDB before starting the practice page

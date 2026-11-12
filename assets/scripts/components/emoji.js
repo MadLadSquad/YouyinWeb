@@ -12,9 +12,13 @@ function parseEmojis(root)
 
     // No base URL: the library defaults to the asset release matching its own version, so bumping the
     // vendored twemoji in hugo.yaml moves the SVGs along with it
+    // crossorigin makes the SVGs CORS requests (jsDelivr allows any origin), so the service worker
+    // can cache readable responses instead of opaque ones, which browsers bill at several megabytes
+    // of storage quota each
     window.twemoji.parse(root, {
         folder: 'svg',
-        ext: '.svg'
+        ext: '.svg',
+        attributes: () => ({ crossorigin: 'anonymous' })
     });
 }
 

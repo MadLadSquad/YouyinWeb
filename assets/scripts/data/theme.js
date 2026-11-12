@@ -59,6 +59,9 @@ window.applyPalette = function (t, id)
         "--main-error-colour:" + t.error + ";" +
         "--deck-button-active-colour:" + t.buttonActive + ";" +
         "--deck-card-text-colour:" + t.cardText + ";" +
+        // The deck's static character outlines (deck.js) are filled from this, so they follow a theme
+        // change like everything else instead of keeping the colour they were drawn with
+        "--writer-stroke-colour:" + (t.strokeColor || "#555") + ";" +
         "}";
 
     // Keep the hanzi-writer colours in sync with the theme. The radical highlight follows the
@@ -69,8 +72,9 @@ window.applyPalette = function (t, id)
     window.WRITER_OUTLINE_COLOUR = t.outlineColor || "#DDD";
 
     // If a writer is already on screen (e.g. previewing a theme mid-session), recolour it live.
-    // The radical is only recoloured when it's currently shown: main-page.js sets radicalColor to
-    // null to hide it at higher knowledge levels, and we must not force a hidden radical back on.
+    // The radical is only recoloured when it's currently shown: main-page.js hides it at higher
+    // knowledge levels (and says so through WRITER_RADICAL_VISIBLE), and we must not force a hidden
+    // radical back on.
     // A writer whose character failed to load throws from every call, so recolouring is best-effort
     if (window.writer && typeof window.writer.updateColor === "function")
     {
@@ -83,7 +87,7 @@ window.applyPalette = function (t, id)
             };
             recolour("strokeColor", window.WRITER_STROKE_COLOUR);
             recolour("outlineColor", window.WRITER_OUTLINE_COLOUR);
-            if (window.writer._options && window.writer._options.radicalColor)
+            if (window.WRITER_RADICAL_VISIBLE)
                 recolour("radicalColor", window.WRITER_RADICAL_COLOUR);
         }
         catch (e)

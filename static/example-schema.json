@@ -8,6 +8,10 @@
    "gems":1240,
    "streakFreezes":2,
    "streakGoal":5,
+   "streakGoalPeak":{
+      "goal":10,
+      "day":19650
+   },
    "activityByDay":{
       "19649":1,
       "19650":3,

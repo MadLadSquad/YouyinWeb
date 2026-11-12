@@ -116,6 +116,13 @@
     color: var(--main-text-colour);
 }
 
+/* The "character data unavailable" notice (showCharLoadError): the same pill, with no bar, marked in
+   the theme's error colour and narrow enough to wrap on a phone */
+.char-update-pill-error {
+    max-width: min(20rem, calc(100vw - 2rem));
+    border-color: var(--main-error-colour);
+}
+
 .char-update-bar {
     height: 5px;
     width: 160px;

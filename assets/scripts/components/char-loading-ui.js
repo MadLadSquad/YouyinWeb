@@ -90,3 +90,58 @@ function hideCharUpdatePill(pill)
     // Remove after the fade-out transition (duration kept in sync with char-loading.css)
     setTimeout(() => pill.remove(), 400);
 }
+
+/**
+ * Keeps keyboard focus inside a blocking modal: Tab and Shift+Tab cycle through the modal's own
+ * controls instead of walking out into the page behind it, which the modal is there to block. The
+ * listener lives on the overlay, so it goes away with it
+ * @param { HTMLElement } overlay - The modal overlay
+ */
+function trapModalFocus(overlay)
+{
+    overlay.addEventListener("keydown", (e) => {
+        if (e.key !== "Tab")
+            return;
+
+        const focusable = Array.from(overlay.querySelectorAll(
+            "a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1'])"));
+        if (focusable.length === 0)
+        {
+            e.preventDefault();
+            return;
+        }
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && (document.activeElement === first || !overlay.contains(document.activeElement)))
+        {
+            e.preventDefault();
+            last.focus();
+        }
+        else if (!e.shiftKey && (document.activeElement === last || !overlay.contains(document.activeElement)))
+        {
+            e.preventDefault();
+            first.focus();
+        }
+    });
+}
+
+// How long the "character data unavailable" notice stays up
+const CHAR_LOAD_ERROR_DURATION_MS = 8000;
+
+/**
+ * Tells the user the character database could not be downloaded (offline, or the CDN unreachable),
+ * so writers that stay empty have an explanation. Uses the background-update pill's corner and
+ * styling, and takes itself down after a while
+ */
+function showCharLoadError()
+{
+    const pill = document.createElement("div");
+    pill.className = "char-update-pill char-update-pill-error";
+    pill.setAttribute("role", "status");
+    addElement("span", lc.char_loading_failed, "", "char-update-label", "", pill);
+
+    document.body.appendChild(pill);
+    requestAnimationFrame(() => pill.classList.add("visible"));
+    setTimeout(() => hideCharUpdatePill(pill), CHAR_LOAD_ERROR_DURATION_MS);
+}

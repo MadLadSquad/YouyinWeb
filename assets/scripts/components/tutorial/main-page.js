@@ -11,11 +11,27 @@
 // Intro / outro modals (the intro embeds the animated 你好)
 // ---------------------------------------------------------------------------------------------------------
 
-// A loader-free hanzi-writer for the intro: omitting charDataLoader lets HanziWriter fetch 你/好 straight
-// from its own CDN, so the animation runs immediately without waiting for the full local database download.
+// The intro's hanzi-writer. It reads 你/好 from the site's own character database like every other
+// writer — HanziWriter's built-in loader would fetch them from a third-party CDN the privacy policy
+// doesn't cover. On a first visit the database is still downloading behind the intro, so the loader
+// waits for it (hanzi-writer accepts an answer through the callbacks later) and the animation starts
+// once it lands
+function tutHelloCharDataLoader(character, onLoad, onError)
+{
+    window.charDataReady.then(() => {
+        const data = window.characterData[character];
+        if (data !== undefined)
+            onLoad(data);
+        else
+            onError(new Error(`No stroke data for "${character}"`));
+    });
+}
+
 function tutCreateHelloWriter(targetId, character)
 {
     return HanziWriter.create(targetId, character, {
+        charDataLoader: tutHelloCharDataLoader,
+        onLoadCharDataError: () => {},
         width: 90,
         height: 90,
         padding: 5,

@@ -88,10 +88,23 @@
 {{- /* ---------- boot bundle: <head>, render-blocking ---------- */ -}}
 {{- /* browser-support.js has to run before any storage access and theme.js before the stylesheets
        paint, so this stays a blocking script in <head>, exactly as the two separate tags did. */ -}}
+{{- /* locale-redirect.js sends a visitor with a stored language into their locale directory before
+       the rest of the page loads; it is handed the build's locale list. */ -}}
+{{- $locales := slice -}}
+{{- range hugo.Sites -}}{{- $locales = $locales | append .Params.dir -}}{{- end -}}
+{{- $localeRedirect := resources.Get "scripts/data/locale-redirect.js"
+      | resources.ExecuteAsTemplate "scripts/_locale-redirect.js" (dict "locales" $locales) -}}
 {{- $theme := resources.Get "scripts/data/theme.js"
       | resources.ExecuteAsTemplate "scripts/_theme.js" (dict "themesDataURL" $themesData.RelPermalink) -}}
-{{- $boot := ($none | append (resources.Get "scripts/data/browser-support.js") $theme)
+{{- $boot := ($none | append (resources.Get "scripts/data/browser-support.js") $localeRedirect $theme)
       | resources.Concat "scripts/boot.js" | minify | fingerprint -}}
+
+{{- /* Our scripts are written for strict mode, but a "use strict" directive only counts as the very
+       first statement of a script. The core and hanzi page bundles open with a vendored library, which
+       pushed every file's own directive into the middle of the bundle and silently made all of our
+       code sloppy-mode. One directive at the head of each bundle restores it; the vendored libraries
+       are strict-mode clean (each already wraps itself in a strict function). */ -}}
+{{- $strict := resources.FromString "scripts/_strict.js" "\"use strict\";\n" -}}
 
 {{- /* ---------- core bundle: per locale ---------- */ -}}
 {{- /* Exactly the order the shared footer used to load these in. i18n.js is the only locale-varying
@@ -118,7 +131,7 @@
 {{- end -}}
 {{- $coreOwn := $core | resources.Concat (printf "scripts/_core-own.%s.js" $loc) | minify -}}
 {{- $tutorial := resources.Get "scripts/components/tutorial.js" | resources.Copy "scripts/_tutorial.min.js" | minify -}}
-{{- $coreBundle := ($none | append $vendor.twemoji $coreOwn $vendor.driver_js $tutorial)
+{{- $coreBundle := ($none | append $strict $vendor.twemoji $coreOwn $vendor.driver_js $tutorial)
       | resources.Concat (printf "scripts/core.%s.js" $loc) | fingerprint -}}
 
 {{- /* ---------- page bundle ---------- */ -}}
@@ -162,7 +175,7 @@
   {{- $pageRes = $pageRes | append $r -}}
 {{- end -}}
 {{- $pageOwn := $pageRes | resources.Concat (printf "scripts/_page-own.%s.js" $slug) | minify -}}
-{{- $pageBundle := $none -}}
+{{- $pageBundle := $none | append $strict -}}
 {{- if $spec.hanzi -}}{{- $pageBundle = $pageBundle | append $vendor.hanzi_writer -}}{{- end -}}
 {{- $pageBundle = $pageBundle | append $pageOwn
       | resources.Concat (printf "scripts/page.%s.js" $slug) | fingerprint -}}

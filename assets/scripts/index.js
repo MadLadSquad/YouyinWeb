@@ -84,6 +84,7 @@ function idbGet(key)
         const request = transaction.objectStore(window.DB_STORE).get(key);
         request.onsuccess = () => resolve(request.result === undefined ? null : request.result);
         request.onerror = () => reject(request.error);
+        transaction.onabort = () => reject(transaction.error || new Error("IndexedDB transaction aborted"));
     }));
 }
 
@@ -100,6 +101,9 @@ function idbPut(key, value)
         transaction.objectStore(window.DB_STORE).put(value, key);
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error);
+        // A quota failure at commit time is reported as an abort, not an error. Without this the
+        // promise never settled and every save-then-navigate chain hung
+        transaction.onabort = () => reject(transaction.error || new Error("IndexedDB transaction aborted"));
     }));
 }
 
@@ -115,6 +119,7 @@ function idbDelete(key)
         transaction.objectStore(window.DB_STORE).delete(key);
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error || new Error("IndexedDB transaction aborted"));
     }));
 }
 
@@ -201,35 +206,53 @@ function markCurrentNavLink()
     }
 }
 
+// The ripple's release transition in styles/components/button.css runs for 0.8s. If no animation or
+// transition end arrives within this window (reduced motion, a button without the ripple, a browser
+// that coalesced the events) the handler runs anyway, so a click can never be left armed
+const RUN_AFTER_ANIMATION_FALLBACK_MS = 1000;
+
 /**
  * Given an element, an event and a function to execute, tracks the given event and executes the provided callback
- * function when the animation or transition on the given element has finished playing
+ * function when the animation or transition on the given element has finished playing.
+ *
+ * Only a pointer click waits for the ripple. A click from the keyboard (Enter/Space) or from script
+ * reports detail === 0 and plays no ripple, so it runs at once: waiting for it left the handler armed
+ * until some unrelated transition (a hover, say) fired it at a random later moment
  * @param { HTMLElement } element - Element on which to track the event
  * @param { string } event - Event type, like "click"
  * @param { function } f - Function to run after animation
  */
 function runEventAfterAnimation(element, event, f)
 {
-    // The armed flag lives on the element we bound to, not on e.target. Both events can be raised by
+    // The armed state lives on the element we bound to, not on e.target. Both events can be raised by
     // a descendant and bubble up here: a click lands on whatever is under the cursor (for a button
     // with an inline SVG icon that is the <svg>, not the <button>), while the ripple's transitionend
     // is raised by the button itself. Keying off e.target would arm one node and test another, and
     // the callback would silently never run.
     element.bWaitForAnimation = false;
-    element.addEventListener(event, () => {
-        element.bWaitForAnimation = true;
-    });
+    let fallbackTimer = null;
 
-    const func = (e) => {
-        if (element.bWaitForAnimation)
-        {
-            element.bWaitForAnimation = false;
-            f(e);
-        }
+    const fire = (e) => {
+        if (!element.bWaitForAnimation)
+            return;
+        element.bWaitForAnimation = false;
+        clearTimeout(fallbackTimer);
+        f(e);
     };
 
-    element.addEventListener("animationend", func);
-    element.addEventListener("transitionend", func);
+    element.addEventListener(event, (e) => {
+        element.bWaitForAnimation = true;
+        if (event === "click" && e.detail === 0)
+        {
+            fire(e);
+            return;
+        }
+        clearTimeout(fallbackTimer);
+        fallbackTimer = setTimeout(() => fire(e), RUN_AFTER_ANIMATION_FALLBACK_MS);
+    });
+
+    element.addEventListener("animationend", fire);
+    element.addEventListener("transitionend", fire);
 }
 
 /**
@@ -394,11 +417,100 @@ function mergeDeckIntoProfile(content)
     return added;
 }
 
+// The profile as this tab last read it from, or wrote it to, IndexedDB. A save from a tab that has
+// gone stale (another tab saved since) is merged against it rather than written blindly; see
+// mergeProfiles
+let profileBase = null;
+
+/**
+ * Merges one list of cards or phrases three ways. Entries are matched by identity (the key), so the
+ * result starts from the newest stored list and replays what this tab did since its base: entries it
+ * changed take its version, entries it deleted are dropped, entries it added are appended
+ * @param { Array } base - The list as this tab last saw it stored
+ * @param { Array } local - The list as this tab has it now
+ * @param { Array } fresh - The list as it is stored now
+ * @param { function(Object): string } keyOf - Identity of an entry
+ * @returns { Array } - The merged list
+ */
+function mergeProfileEntries(base, local, fresh, keyOf)
+{
+    const baseByKey = new Map(base.map((e) => [keyOf(e), e]));
+    const localByKey = new Map(local.map((e) => [keyOf(e), e]));
+    const result = [];
+    const seen = new Set();
+
+    for (const entry of fresh)
+    {
+        const key = keyOf(entry);
+        const b = baseByKey.get(key);
+        const l = localByKey.get(key);
+        seen.add(key);
+        if (b !== undefined && l === undefined)
+            continue;
+        result.push(b !== undefined && JSON.stringify(b) !== JSON.stringify(l) ? l : entry);
+    }
+
+    for (const entry of local)
+    {
+        const key = keyOf(entry);
+        if (!baseByKey.has(key) && !seen.has(key))
+            result.push(entry);
+    }
+    return result;
+}
+
+// Profile fields that accumulate, so concurrent changes from two tabs add up instead of one winning
+const PROFILE_COUNTERS = ["sessions", "totalTimeInSessions", "gems", "streakFreezes"];
+
+/**
+ * Three-way merge of a stale tab's profile into the one stored by another tab. Counters (and the
+ * per-day activity tallies) carry this tab's delta onto the stored value; every other field takes
+ * this tab's value only if this tab changed it; cards and phrases are merged entry by entry
+ * @param { Object } base - The profile as this tab last read or wrote it
+ * @param { Object } local - The profile as this tab has it now
+ * @param { Object } fresh - The profile as it is stored now
+ * @returns { Object } - The merged profile
+ */
+function mergeProfiles(base, local, fresh)
+{
+    const merged = Object.assign({}, fresh);
+    for (const key of Object.keys(local))
+    {
+        if (key === "cards" || key === "phrases" || key === "activityByDay")
+            continue;
+        if (PROFILE_COUNTERS.includes(key))
+            merged[key] = (Number(fresh[key]) || 0) + (Number(local[key]) || 0) - (Number(base[key]) || 0);
+        else if (JSON.stringify(local[key]) !== JSON.stringify(base[key]))
+            merged[key] = local[key];
+    }
+    merged.gems = Math.max(0, merged.gems || 0);
+    merged.streakFreezes = Math.min(Math.max(merged.streakFreezes || 0, 0), window.MAX_STREAK_FREEZES);
+
+    const activity = Object.assign({}, fresh.activityByDay);
+    const localActivity = local.activityByDay || {};
+    const baseActivity = base.activityByDay || {};
+    for (const day of Object.keys(localActivity))
+        activity[day] = (activity[day] || 0) + localActivity[day] - (baseActivity[day] || 0);
+    merged.activityByDay = activity;
+
+    merged.cards = mergeProfileEntries(base.cards || [], local.cards || [], fresh.cards || [],
+        (c) => c.character + (c.variant || ""));
+    merged.phrases = mergeProfileEntries(base.phrases || [], local.phrases || [], fresh.phrases || [],
+        (p) => p.phrase);
+    return merged;
+}
+
 /**
  * Persists the profile data object to IndexedDB under the card-data key. Updates the in-memory
  * copy too, so callers passing a fresh object keep window.profileData in sync. The returned promise
  * resolves once the write commits — await it before navigating away, otherwise the browser may tear
- * the page down before the transaction flushes
+ * the page down before the transaction flushes.
+ *
+ * When another tab has saved since this one loaded (see the cross-tab section below), the stored
+ * profile is read back and this tab's changes are merged into it instead of overwriting it. The tab
+ * keeps its own in-memory copy and stays marked stale, so it still reloads once it is idle. If the
+ * profile was deleted meanwhile ("Clear account data" in another tab) nothing is written, so a stale
+ * tab cannot resurrect it
  * @param { Object } obj - The profile data object to persist
  * @returns { Promise<void> } - Resolves once the write commits
  */
@@ -411,14 +523,27 @@ function saveProfileData(obj)
     if (!privacyConsentGiven())
         return Promise.resolve();
 
-    return idbPut(window.CARD_DATA_KEY, obj).catch((err) => {
+    // Snapshot now: the write is asynchronous and the caller may keep mutating the profile
+    const local = structuredClone(obj);
+    const value = (bProfileStale && profileBase !== null)
+        ? idbGet(window.CARD_DATA_KEY).then((fresh) => fresh === null ? null : mergeProfiles(profileBase, local, fresh))
+        : Promise.resolve(local);
+
+    return value.then((toWrite) => {
+        if (toWrite === null)
+            return;
+        return idbPut(window.CARD_DATA_KEY, toWrite).then(() => {
+            profileBase = local;
+            announceProfileChange();
+        });
+    }).catch((err) => {
         // Log, then re-reject. Resolving on failure made callers that navigate/reload in .then()
         // proceed as if the write had committed, silently dropping the user's import or edit. By
         // rejecting, a navigate-after-save chain simply doesn't fire, keeping the user on the page
         // with their data intact. Fire-and-forget callers should .catch() this (see main() below).
         console.error("Error: failed to save profile data", err);
         throw err;
-    }).then(announceProfileChange);
+    });
 }
 
 /**
@@ -439,11 +564,11 @@ function saveGameModifiers()
 }
 
 // ------------------------------------ Cross-tab consistency ------------------------------------
-// Every tab holds its own in-memory copy of the profile and each save writes that whole copy back, so
-// a save from a tab holding stale data would silently undo what another tab had just written. Every
-// successful save is therefore announced on a BroadcastChannel, and a tab that hears one reloads to
-// pick the fresh data up. It waits until it is visible and idle: a practice round in progress and the
-// card editor both hold unsaved work that a reload would throw away
+// Every tab holds its own in-memory copy of the profile. Every successful save is announced on a
+// BroadcastChannel, and a tab that hears one reloads to pick the fresh data up. It waits until it is
+// visible and idle: a practice round in progress and the card editor both hold unsaved work that a
+// reload would throw away. A save such a tab makes in the meantime is merged into the stored profile
+// rather than overwriting it (see saveProfileData)
 const profileChannel = ("BroadcastChannel" in window) ? new BroadcastChannel("profile") : null;
 let bProfileStale = false;
 
@@ -471,6 +596,11 @@ if (profileChannel !== null)
 }
 document.addEventListener("visibilitychange", reloadIfProfileStale);
 
+// The fallback exit transition (main() below and redirectWithLanguage) fades <body> out right before
+// navigating. A page restored from the back/forward cache comes back in exactly that state, which
+// showed a blank page on Back, so take the fade off again whenever a page is shown
+window.addEventListener("pageshow", () => document.body.classList.remove("page-exiting"));
+
 /**
  * Price of one streak freeze, in gems. A freeze costs window.STREAK_FREEZE_COST_DAYS days of
  * practice at the user's own daily goal: goal sessions a day, each worth a full batch of cards and
@@ -486,12 +616,56 @@ function streakFreezeCost(goal)
 }
 
 /**
+ * The goal a streak freeze is priced at. Normally the user's own goal (STREAK_GOAL_MIN while none
+ * has been chosen), but lowering the goal does not cheapen freezes until STREAK_FREEZE_COST_DAYS days
+ * have passed: otherwise dropping the goal to the minimum, buying, and raising it straight back
+ * bought freezes at a tenth of the price they would be spent at
+ * @returns { number } - The goal to pass to streakFreezeCost
+ */
+function streakFreezePriceGoal()
+{
+    const data = window.profileData;
+    const goal = data.streakGoal > 0 ? data.streakGoal : window.STREAK_GOAL_MIN;
+    const peak = data.streakGoalPeak;
+    if (peak && localDayIndex(new Date()) - peak.day < window.STREAK_FREEZE_COST_DAYS)
+        return Math.max(goal, peak.goal);
+    return goal;
+}
+
+/**
+ * Changes the daily streak goal in memory, remembering the price level when it goes down (see
+ * streakFreezePriceGoal). Does not save
+ * @param { number } goal - The new goal, in sessions per day
+ */
+function setStreakGoal(goal)
+{
+    const data = window.profileData;
+    if (data.streakGoal > 0)
+    {
+        const priceGoal = streakFreezePriceGoal();
+        if (goal < priceGoal)
+            data.streakGoalPeak = { goal: priceGoal, day: localDayIndex(new Date()) };
+    }
+    data.streakGoal = goal;
+}
+
+/**
+ * Tells the user a save they asked for did not go through. The failure itself is already logged by
+ * saveProfileData; this is for the handlers that would otherwise swallow it with .catch(() => {})
+ */
+function reportSaveFailure()
+{
+    alert(lc.save_failed);
+}
+
+/**
  * Utility function to create an HTML element in a single line
  * @param { string } elType - Type of the new element
  * @param { string } content - Text content of the new element
  * @param { string } id - ID of the new element
  * @param { string } classType - Class of the new element
- * @param { string } data - Data that will be stored as the value of the "arbitrary-data" attribute
+ * @param { string } data - Data that will be stored as the value of the "data-value" attribute (read
+ *                          back through element.dataset.value)
  * @param { HTMLElement } parentEl - Element to become the parent of the new element
  * @returns { HTMLElement } - The element that was created
  */
@@ -501,10 +675,10 @@ function addElement(elType, content, id, classType, data, parentEl)
     el.className = classType;
     el.id = id;
     el.textContent = content;
-    // Most callers pass no arbitrary-data; only write the attribute when there's actually a value,
-    // so building a multi-thousand-card deck doesn't pay an empty setAttribute per element
+    // Most callers pass no data; only write the attribute when there's actually a value, so building
+    // a multi-thousand-card deck doesn't pay an empty setAttribute per element
     if (data)
-        el.setAttribute("arbitrary-data", data);
+        el.dataset.value = data;
 
     if (parentEl !== null)
         parentEl.appendChild(el);
@@ -731,6 +905,10 @@ async function main()
     let bProfileChanged = legacy.cardData;
     let bModifiersChanged = legacy.gameModifiers;
 
+    // A profile that isn't an object at all (a corrupt legacy entry) is treated as no profile
+    if (window.profileData !== null && typeof window.profileData !== "object")
+        window.profileData = null;
+
     if (window.profileData === null)
     {
         window.profileData = {
@@ -749,10 +927,23 @@ async function main()
         };
         bProfileChanged = true;
     }
-    else if (!window.profileData["phrases"])
+    else
     {
-        window.profileData["phrases"] = [];
-        bProfileChanged = true;
+        // Both lists are indexed directly everywhere, so anything that isn't an array of objects
+        // (a hand-edited or corrupt legacy profile) is repaired here rather than left to throw from
+        // every page script. Phrases are absent from decks that predate them
+        for (const key of ["cards", "phrases"])
+        {
+            const list = window.profileData[key];
+            const valid = Array.isArray(list)
+                ? list.filter((e) => e !== null && typeof e === "object" && typeof e[key === "cards" ? "character" : "phrase"] === "string")
+                : [];
+            if (!Array.isArray(list) || valid.length !== list.length)
+            {
+                window.profileData[key] = valid;
+                bProfileChanged = true;
+            }
+        }
     }
 
     // Users from before the daily-streak feature: derive the last play-day once from lastDate in
@@ -809,6 +1000,9 @@ async function main()
     if (fixLegacyCharacterVariants())
         bProfileChanged = true;
 
+    // What this tab's later saves are diffed against when another tab has saved in the meantime
+    profileBase = structuredClone(window.profileData);
+
     // A redirect into the user's locale directory is underway. Stop here, exactly as for UNSUPPORTED:
     // carrying on would show the consent modal on a page that is being left and let a later
     // navigation (maybeStartTutorial's, or a page script's) override this one
@@ -817,7 +1011,6 @@ async function main()
     setLanguageBox();
     setThemeBox();
     markCurrentNavLink();
-    initEmojiReplacement();
 
     // Fallback page exit transition for browsers without native Cross-Document View Transitions (like Firefox)
     if (!('pageswap' in window) && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
@@ -859,7 +1052,16 @@ async function main()
     // the privacy page itself pass through without a modal
     await awaitPrivacyConsent();
     if (privacyConsentGiven())
+    {
         persistStartupChanges(legacy, bProfileChanged, bModifiersChanged);
+
+        // setLanguage only keeps an auto-detected language in memory until now (see there)
+        persistDetectedLanguage();
+
+        // Twemoji fetches its SVGs from jsDelivr, so the swap waits for consent too; until then (and
+        // on the exempt privacy and licenses pages) the native emoji are shown
+        initEmojiReplacement();
+    }
 
     // First-visit onboarding gate. On a brand-new visit to a non-landing page this redirects to the landing
     // page, so stop initializing here and let the fresh page load take over (no point downloading the

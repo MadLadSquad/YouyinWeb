@@ -3,8 +3,8 @@
 
 /**
  * Whether today is already banked into the streak. lastStreakDay is written by updateDailyStreak
- * when a round completes (and nudged forward by a freeze spent at midnight), so "not before today"
- * means the user has kept the streak alive for the day they are currently having. The comparison is
+ * once the day's goal is met (and nudged forward by a freeze spent at midnight), so "not before
+ * today" means the user has kept the streak alive for the day they are currently having. The comparison is
  * >= rather than === for the same reason updateDailyStreak uses it: a clock or timezone moved
  * backwards must never read as a day lost. Safe to call before the profile has loaded
  * @returns { boolean } - True when the streak is alive and already counted for today
@@ -94,7 +94,7 @@ function refreshStreakReadouts()
 function buyStreakFreeze()
 {
     let data = window.profileData;
-    const cost = streakFreezeCost(data.streakGoal);
+    const cost = streakFreezeCost(streakFreezePriceGoal());
 
     if (data.streakGoal <= 0 || data.streakFreezes >= window.MAX_STREAK_FREEZES || data.gems < cost)
         return false;
@@ -104,7 +104,7 @@ function buyStreakFreeze()
 
     // Repaint from the in-memory copy immediately; the write is fire-and-forget because nothing here
     // navigates away, and saveProfileData rejects on failure so it needs a catch
-    saveProfileData(data).catch(() => {});
+    saveProfileData(data).catch(reportSaveFailure);
     refreshStreakReadouts();
     return true;
 }
@@ -207,7 +207,7 @@ function createStreakPanel(button, mode)
 
         const data = window.profileData;
         const goal = data.streakGoal;
-        const cost = streakFreezeCost(goal > 0 ? goal : window.STREAK_GOAL_MIN);
+        const cost = streakFreezeCost(streakFreezePriceGoal());
         const held = data.streakFreezes;
 
         count.textContent = bStreak ? data.streak : data.gems;
@@ -272,16 +272,24 @@ function createStreakPanel(button, mode)
 }
 
 /**
- * Advances the streak when a session is fully completed. The same local day as the last completion
- * is a no-op, the day right after grows the streak and anything else starts a new one. Does NOT
- * save — the completion path in main-page.js calls saveProfileData right after
+ * Advances the streak when a completed session brings today up to the daily goal (one session while
+ * no goal has been chosen). A day already counted is a no-op, the day right after the last counted
+ * one grows the streak and anything else starts a new one. Expects the session to have been recorded
+ * in activityByDay already. Does NOT save — the completion path in main-page.js calls
+ * saveProfileData right after
  * @returns { boolean } - True when this completion advanced the streak, either by starting a new
- *                        one or by extending it to today; false when today was already counted
+ *                        one or by extending it to today; false when today was already counted or
+ *                        the goal is not met yet
  */
 function updateDailyStreak()
 {
     let data = window.profileData;
     const today = localDayIndex(new Date());
+
+    const goal = data.streakGoal > 0 ? data.streakGoal : 1;
+    const done = (data.activityByDay && data.activityByDay[today]) || 0;
+    if (done < goal)
+        return false;
 
     // >= instead of === also covers a clock or timezone moved backwards — never punish that. The
     // streak can still legitimately be 0 here (a play-day migrated from lastDate earlier today),
@@ -305,59 +313,52 @@ function updateDailyStreak()
 
 /**
  * Kills an expired streak: it dies once the local clock passes midnight of the day AFTER the last
- * completed-session day with nothing completed. Day boundaries follow the device's current clock,
+ * counted day without the goal having been met. Day boundaries follow the device's current clock,
  * so the deadline moves with the user's timezone.
  *
- * Streak freezes are spent here first, one per fully missed day. Each one advances lastStreakDay by
- * a day, standing in for a session that never happened — so the streak survives but deliberately
- * does NOT grow, and a session completed later still extends it normally (lastStreakDay is left at
- * yesterday, which is the "extend" branch of updateDailyStreak). They chain: holding the maximum
- * covers that many consecutive days off, and the streak only dies once a missed day finds the
- * wallet empty. Saves and refreshes the display whenever anything changed
+ * Streak freezes cover the missed days first, one each. Each one advances lastStreakDay by a day,
+ * standing in for a day that was never counted — so the streak survives but deliberately does NOT
+ * grow, and a goal met later still extends it normally (lastStreakDay is left at yesterday, which is
+ * the "extend" branch of updateDailyStreak). They chain: holding the maximum covers that many
+ * consecutive days off. Freezes are only spent when they cover every missed day: a gap longer than
+ * the wallet ends the streak either way, and spending them on it would only have emptied the wallet
+ * for nothing. Refreshes the display whenever anything changed; the caller saves
+ * @returns { boolean } - True when the profile changed and needs saving
  */
 function checkStreakExpiry()
 {
     let data = window.profileData;
     if (data.streak === 0 || !data.lastStreakDay)
-        return;
+        return false;
 
     // Days that passed with nothing completed. Today itself is never counted (there is still time
     // to practise), so the day right after the last session is free — the streak has always
     // survived a single day boundary. A negative result means the clock or timezone moved
     // backwards, which must never be punished
-    let missed = localDayIndex(new Date()) - data.lastStreakDay - 1;
+    const missed = localDayIndex(new Date()) - data.lastStreakDay - 1;
     if (missed <= 0)
-        return;
+        return false;
 
-    let changed = false;
-    while (missed > 0 && data.streakFreezes > 0)
+    if (missed <= data.streakFreezes)
     {
-        --data.streakFreezes;
-        --missed;
-        ++data.lastStreakDay;
-        changed = true;
+        data.streakFreezes -= missed;
+        data.lastStreakDay += missed;
     }
-
-    if (missed > 0)
-    {
+    else
         data.streak = 0;
-        changed = true;
-    }
 
-    if (changed)
-    {
-        saveProfileData(data).catch(() => {});
-        // Repaints the app bar, its panels, and the account page's profile card and shop when we
-        // happen to be on that page
-        refreshStreakReadouts();
-    }
+    // Repaints the app bar, its panels, and the account page's profile card and shop when we happen
+    // to be on that page
+    refreshStreakReadouts();
+    return true;
 }
 
 /**
  * Applies the daily level reduction game modifier: every local calendar day that passed since the
  * last application subtracts the slider value from every card's and phrase's knowledge level,
  * clamped at 0. Days use the same local day index as the streak, so the boundary is the device's
- * local midnight and moves with the user's timezone. Saves whenever state changes
+ * local midnight and moves with the user's timezone. The caller saves
+ * @returns { boolean } - True when the profile changed and needs saving
  */
 function applyDailyLevelReduction()
 {
@@ -369,14 +370,13 @@ function applyDailyLevelReduction()
     if (!data.lastLevelReduceDay)
     {
         data.lastLevelReduceDay = today;
-        saveProfileData(data).catch(() => {});
-        return;
+        return true;
     }
 
     // A negative gap means the clock or timezone moved backwards — never punish that
     const days = today - data.lastLevelReduceDay;
     if (days <= 0)
-        return;
+        return false;
 
     // The slider's input event stores its value as a string. Rounding to two decimals keeps the
     // stored levels free of float dust (the slider step is 0.01)
@@ -392,7 +392,20 @@ function applyDailyLevelReduction()
     // Advance even when the slider sits at 0, so that raising it later only counts the days
     // after the change
     data.lastLevelReduceDay = today;
-    saveProfileData(data).catch(() => {});
+    return true;
+}
+
+/**
+ * Runs both daily systems and saves once if either changed anything. They used to save separately,
+ * so the first load of every day wrote the whole profile twice
+ */
+function runDailyChecks()
+{
+    // Both run unconditionally: || would skip the streak check whenever the reduction changed something
+    const bReduced = applyDailyLevelReduction();
+    const bStreakChanged = checkStreakExpiry();
+    if (bReduced || bStreakChanged)
+        saveProfileData(window.profileData).catch(() => {});
 }
 
 /**
@@ -425,8 +438,7 @@ function scheduleDailyMidnightCheck()
     // +1s so a marginally-early timer still lands past midnight; an early fire is harmless
     // anyway — the checks no-op and we re-arm with the remaining time
     dailyMidnightTimer = setTimeout(function() {
-        applyDailyLevelReduction();
-        checkStreakExpiry();
+        runDailyChecks();
         scheduleDailyMidnightCheck();
         // Unconditionally, unlike checkStreakExpiry's own repaint: crossing midnight with the
         // streak intact changes nothing about the numbers, but yesterday's flame has to go out
@@ -440,8 +452,7 @@ function scheduleDailyMidnightCheck()
 // so this still runs before the deck page renders — the deck shows already-reduced levels
 window.profileReady.then(() => {
     bDailyChecksReady = true;
-    applyDailyLevelReduction();
-    checkStreakExpiry();
+    runDailyChecks();
     scheduleDailyMidnightCheck();
     // checkStreakExpiry only re-renders when it actually changed something, so paint the app-bar
     // readouts unconditionally here — this is the first point on every page where the profile exists
@@ -459,8 +470,7 @@ window.profileReady.then(() => {
 document.addEventListener("visibilitychange", function() {
     if (document.visibilityState === "visible" && bDailyChecksReady)
     {
-        applyDailyLevelReduction();
-        checkStreakExpiry();
+        runDailyChecks();
         scheduleDailyMidnightCheck();
         renderHeaderStats();
     }

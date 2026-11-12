@@ -91,7 +91,7 @@ async function tutRunCreateCard()
             title: lc.tutorial_card_defs_title,
             description: lc.tutorial_card_defs,
             side: "bottom",
-            onHighlighted: () => tutAddDefinitions(0, ["good", "fine", "ok"]),
+            onHighlighted: () => tutAddDefinitions(0, [lc.tutorial_def_good, lc.tutorial_def_fine, lc.tutorial_def_ok]),
         },
         {
             element: "#finish-edit-button",
@@ -139,7 +139,7 @@ async function tutRunCreatePhrase()
             title: lc.tutorial_phrase_defs_title,
             description: lc.tutorial_phrase_defs,
             side: "bottom",
-            onHighlighted: () => tutAddDefinitions("phrase", ["hello"]),
+            onHighlighted: () => tutAddDefinitions("phrase", [lc.tutorial_def_hello]),
         },
         {
             element: "#edit-phrase-0",
@@ -149,7 +149,7 @@ async function tutRunCreatePhrase()
             // The unknown 你 card (index 0) gets its own pronunciation and meaning; 好 (index 1) was reused.
             onHighlighted: async () => {
                 tutFillField("name-text-field-0", "nǐ");
-                await tutAddDefinitions(0, ["you"]);
+                await tutAddDefinitions(0, [lc.tutorial_def_you]);
             },
         },
         {

@@ -64,7 +64,7 @@ gems_label:
 gems_panel_hint:
   other: "Earned by finishing cards and phrases. Spend them on streak freezes."
 streak_panel_none:
-  other: "Finish a round to start a streak."
+  other: "Meet your daily goal to start a streak."
 streak_panel_safe:
   other: "Today is counted. See you tomorrow."
 streak_panel_protected:
@@ -318,7 +318,7 @@ deck_source:
 deck_download:
   other: "Download"
 marketplace_load_error:
-  other: "Error {}: Couldn't load the marketplace, retry later!"
+  other: "Error {status}: Couldn't load the marketplace, retry later!"
 
 skip-to-content:
   other: "Skip to content"
@@ -452,7 +452,7 @@ tutorial_card_pron:
 tutorial_card_defs_title:
   other: "Add meanings"
 tutorial_card_defs:
-  other: "List what the card means, one entry at a time - we will add 'good', 'fine' and 'ok'."
+  other: "List what the card means, one entry at a time - we will add 'good', 'fine' and 'OK'."
 tutorial_cardreview_title:
   other: "Your new card"
 tutorial_cardreview:
@@ -830,3 +830,27 @@ og_title:
   other: "{brand} — learn to handwrite Chinese, Japanese, Korean, Greek & more"
 meta_keywords:
   other: "learn to write Chinese characters, Hanzi stroke order, Japanese Kana, Hiragana, Katakana, Kanji, Korean Hangul, Hanja, Greek alphabet, Cyrillic, handwriting practice, stroke order practice, language learning app, writing systems, flashcards, spaced repetition"
+save_failed:
+  other: "Your changes couldn't be saved. Please try again."
+deck_edit_error_duplicate_phrase:
+  other: "“{phrase}” is already in your deck."
+deck_import_failed:
+  other: "The deck couldn't be downloaded. Check your connection and try again."
+char_loading_failed:
+  other: "Couldn't download the character data. Practice will work once you're back online."
+tutorial_def_good:
+  other: "good"
+tutorial_def_fine:
+  other: "fine"
+tutorial_def_ok:
+  other: "OK"
+tutorial_def_hello:
+  other: "hello"
+tutorial_def_you:
+  other: "you"
+input-mode-pinyin:
+  other: "Pinyin (pin1 yin1)"
+input-mode-romaji-hiragana:
+  other: "Romaji → Hiragana"
+input-mode-romaji-katakana:
+  other: "Romaji → Katakana"

@@ -62,7 +62,9 @@ function isRomajiConsonant(c)
  * ん from "n" the start of "na", nor produce the doubled-consonant っ), this walks the input left to
  * right and, at each position, greedily takes the longest romaji key that matches. Two constructs are
  * handled before the table lookup because they don't have their own literal keys:
- *   - the syllabic n (ん): an "n" not followed by a vowel or "y" — e.g. "zannen" -> "ざんねん";
+ *   - the syllabic n (ん): an "n" not followed by a vowel or "y" — e.g. "zannen" -> "ざんねん" — or a
+ *     doubled "nn", which writes one ん however the next syllable starts ("konnnichiha" and
+ *     "konnichiha" both give "こんにちは", "nn" alone gives "ん");
  *   - the sokuon (っ): a doubled consonant, e.g. "kitte" -> "きって", plus the "tch" spelling of っち.
  * @param { string } string - The input string
  * @param { number } bKatakana - Whether to convert to Katakana or not. Treat this as a boolean
@@ -95,9 +97,20 @@ function fromRomaji(string, bKatakana)
             continue;
         }
 
+        // Doubled n: one ん. When the letter after the pair starts a syllable of its own the second "n"
+        // belongs to it ("konnichiha" -> こん + にちは), otherwise the pair is the whole ん ("konnnichiha"
+        // -> こん + にちは, "nn" -> ん). Taking each "n" of the pair separately wrote ん twice
+        if (c === "n" && next === "n")
+        {
+            const afterPair = input[i + 2] || "";
+            out += syllabicN;
+            i += (afterPair === "y" || (afterPair !== "" && "aiueo".includes(afterPair))) ? 1 : 2;
+            continue;
+        }
+
         // Syllabic n (ん): an "n" that doesn't begin a na/ni/nu/ne/no or nya/nyu/nyo syllable — i.e.
-        // one followed by a consonant, another "n", or the end of the input. `next` is "" at the end
-        // of the string, which is not a vowel (guard the empty case: "aiueo".includes("") is true).
+        // one followed by a consonant or the end of the input. `next` is "" at the end of the string,
+        // which is not a vowel (guard the empty case: "aiueo".includes("") is true).
         const nextIsVowel = next !== "" && "aiueo".includes(next);
         if (c === "n" && next !== "y" && !nextIsVowel)
         {
@@ -325,8 +338,6 @@ soundTables.romaji =
         "wi":   [ "ゐ", "ヰ" ],
         "we":   [ "ゑ", "ヱ" ],
         "wo":   [ "を", "ヲ" ],
-
-        "nn":   [ "ん", "ン" ],
 
         "vu":   [ "ゔ", "ヴ" ],
 

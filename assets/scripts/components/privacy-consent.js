@@ -54,16 +54,15 @@ function onPrivacyPolicyPage()
 
 /**
  * The URL of the privacy policy in the user's language. This spells the locale directory out from
- * the stored language rather than calling window.pageUrl("privacy"), which follows the locale the
- * browser is currently *in*: the gate can run at the site root, whose copy is English, and the
- * policy must still be shown in the user's own language. setLanguage() runs before the gate, so the
- * stored language is set and valid by now
+ * effectiveLanguage() rather than calling window.pageUrl("privacy"), which follows the locale the
+ * browser is currently *in*: the policy must be shown in the user's own language wherever the gate
+ * runs. On a first visit the language is not stored yet (nothing is, before consent), which is why
+ * this asks effectiveLanguage instead of reading localStorage
  * @returns { string } - An absolute URL to the locale's privacy page
  */
 function privacyPolicyUrl()
 {
-    const language = window.localStorage.getItem("language") || "en_US";
-    return "/" + language + "/privacy/";
+    return "/" + effectiveLanguage() + "/privacy/";
 }
 
 /**
@@ -110,6 +109,7 @@ function showPrivacyConsentModal()
         });
 
         document.body.appendChild(overlay);
+        trapModalFocus(overlay);
         accept.focus();
     });
 }

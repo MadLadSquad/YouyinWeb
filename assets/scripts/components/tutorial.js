@@ -76,15 +76,15 @@ function tutNavigate(url) { window.location.href = url; }
 
 function tutDelay(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
 
-// Many of the site's buttons run their handler from runEventAfterAnimation (index.js): a click only arms
-// the handler, which then runs on the following animationend/transitionend. A bare programmatic .click()
-// never produces that follow-up event, so dispatch a synthetic animationend to actually fire the handler.
+// Many of the site's buttons run their handler from runEventAfterAnimation (index.js). A programmatic
+// .click() reports detail === 0, which that helper runs straight away, synchronously, like a keyboard
+// activation — so the handler has run by the time this returns (the marketplace stage relies on that to
+// stub confirm() around it).
 function tutTriggerButton(btn)
 {
     if (!btn)
         return;
     btn.click();
-    btn.dispatchEvent(new Event("animationend"));
 }
 
 // After Driver has highlighted a step, keep BOTH the highlighted widget and its popover on screen.

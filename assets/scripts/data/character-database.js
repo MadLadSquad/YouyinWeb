@@ -37,6 +37,9 @@ window.characterData = {};
 // handled)
 window.CHAR_MANIFEST_KEY = "CharManifest";
 window.CHAR_CHUNK_PREFIX = "CharChunk:";
+// A first download that was interrupted: the manifest it was downloading against and the chunks it
+// had already stored, so the next visit only fetches the rest. Removed once the download completes
+window.CHAR_DOWNLOAD_PROGRESS_KEY = "CharDownloadProgress";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -54,6 +57,20 @@ function chunkArrayToMap(arr)
 }
 
 /**
+ * Whether a manifest has the shape the download logic indexes into: a chunk count and one content
+ * hash per chunk. A malformed upstream (or stored) manifest used to throw from the diff, outside any
+ * error handling
+ * @param { * } manifest - The parsed manifest
+ * @returns { boolean }
+ */
+function isValidCharManifest(manifest)
+{
+    return manifest !== null && typeof manifest === "object" &&
+        Number.isInteger(manifest.num) && manifest.num >= 0 &&
+        Array.isArray(manifest.version) && manifest.version.length >= manifest.num;
+}
+
+/**
  * Loads the stored character database from IndexedDB into window.characterData. Builds a fresh object
  * and swaps it in atomically so the map is never momentarily empty (a writer rendering mid-load would
  * otherwise see undefined)
@@ -62,7 +79,8 @@ function chunkArrayToMap(arr)
 async function loadCharacterDataFromIDB()
 {
     const manifest = await idbGet(window.CHAR_MANIFEST_KEY);
-    if (manifest === null)
+    // A stored manifest that isn't usable is treated as no database, which downloads it afresh
+    if (!isValidCharManifest(manifest))
         return null;
 
     // Read every chunk concurrently rather than awaiting them one at a time: the reads are independent
@@ -88,8 +106,11 @@ async function loadCharacterDataFromIDB()
  */
 async function fetchWithRetry(url, options)
 {
+    // Retrying exists for a worker swapping in mid-download. A browser that knows it is offline would
+    // only spend the whole retry schedule failing, holding the page up for nothing
+    const attempts = navigator.onLine === false ? 1 : window.CHARACTER_FETCH_RETRIES;
     let lastErr = null;
-    for (let attempt = 0; attempt < window.CHARACTER_FETCH_RETRIES; attempt++)
+    for (let attempt = 0; attempt < attempts; attempt++)
     {
         try
         {
@@ -101,7 +122,7 @@ async function fetchWithRetry(url, options)
         catch (err)
         {
             lastErr = err;
-            if (attempt < window.CHARACTER_FETCH_RETRIES - 1)
+            if (attempt < attempts - 1)
                 await sleep(window.CHARACTER_FETCH_RETRY_DELAY_MS);
         }
     }
@@ -110,14 +131,21 @@ async function fetchWithRetry(url, options)
 
 /**
  * Fetches the upstream chunk manifest { num, version: [...] }
- * @returns { Promise<Object|null> } - The manifest, or null if it couldn't be fetched/parsed
+ * @returns { Promise<Object|null> } - The manifest, or null if it couldn't be fetched, parsed or isn't
+ *          a valid manifest
  */
 async function fetchUpstreamManifest()
 {
     try
     {
         const response = await fetchWithRetry(window.CHARACTER_MANIFEST_URL, { cache: "no-store" });
-        return await response.json();
+        const manifest = await response.json();
+        if (!isValidCharManifest(manifest))
+        {
+            console.warn("Error: the character manifest is malformed", manifest);
+            return null;
+        }
+        return manifest;
     }
     catch (err)
     {
@@ -131,9 +159,11 @@ async function fetchUpstreamManifest()
  * into window.characterData. Reports progress after every chunk completes
  * @param { number[] } indices - Chunk indices to download
  * @param { function(number, number): void } onProgress - Called with (completed, total)
+ * @param { function(number[]): Promise<void> } [onBatchStored] - Called with the indices of each batch
+ *        once all of them are stored
  * @returns { Promise<void> } - Resolves once every requested chunk is stored and merged
  */
-async function downloadChunks(indices, onProgress)
+async function downloadChunks(indices, onProgress, onBatchStored)
 {
     const total = indices.length;
     let done = 0;
@@ -149,12 +179,16 @@ async function downloadChunks(indices, onProgress)
             if (onProgress)
                 onProgress(done, total);
         }));
+        if (onBatchStored)
+            await onBatchStored(batch);
     }
 }
 
 /**
  * First-visit path: downloads the entire character database behind a blocking progress modal and
- * stores it (chunks + manifest) in IndexedDB
+ * stores it (chunks + manifest) in IndexedDB. An earlier attempt that was interrupted is resumed:
+ * the chunks it stored, if upstream hasn't changed them since, are loaded from IndexedDB instead of
+ * downloaded again
  * @returns { Promise<void> } - Resolves once the database is in memory (or the download failed)
  */
 async function firstTimeDownload()
@@ -163,25 +197,54 @@ async function firstTimeDownload()
     if (manifest === null)
     {
         // Offline / unreachable on a first visit: nothing to load. The app still runs, writers just
-        // render nothing until a later visit succeeds
+        // render nothing until a later visit succeeds, and the user is told why
         console.error("Error: character database unavailable on first load");
+        showCharLoadError();
         return;
     }
 
     const overlay = showCharLoadOverlay();
     try
     {
+        const progress = await idbGet(window.CHAR_DOWNLOAD_PROGRESS_KEY);
+        const stored = new Set();
+        if (progress !== null && Array.isArray(progress.done) && Array.isArray(progress.version))
+        {
+            const candidates = progress.done.filter((i) =>
+                Number.isInteger(i) && i < manifest.num && progress.version[i] === manifest.version[i]);
+            const chunks = await Promise.all(candidates.map((i) => idbGet(window.CHAR_CHUNK_PREFIX + i)));
+            candidates.forEach((i, n) => {
+                if (chunks[n] === null)
+                    return;
+                Object.assign(window.characterData, chunks[n]);
+                stored.add(i);
+            });
+        }
+
         const indices = [];
         for (let i = 0; i < manifest.num; i++)
-            indices.push(i);
-        await downloadChunks(indices, (done, total) => updateCharLoadOverlay(overlay, done, total));
-        // Only record the manifest once every chunk is stored, so an interrupted download is retried
-        // wholesale on the next visit rather than being mistaken for a complete database
+            if (!stored.has(i))
+                indices.push(i);
+
+        // Recorded after every batch, so the next attempt knows which chunks it can keep
+        const state = { version: manifest.version, done: Array.from(stored) };
+        updateCharLoadOverlay(overlay, stored.size, manifest.num);
+        await downloadChunks(indices,
+            (done) => updateCharLoadOverlay(overlay, stored.size + done, manifest.num),
+            (batch) => {
+                state.done.push(...batch);
+                return idbPut(window.CHAR_DOWNLOAD_PROGRESS_KEY, state);
+            });
+
+        // Only record the manifest once every chunk is stored, so an interrupted download is never
+        // mistaken for a complete database
         await idbPut(window.CHAR_MANIFEST_KEY, manifest);
+        await idbDelete(window.CHAR_DOWNLOAD_PROGRESS_KEY);
     }
     catch (err)
     {
         console.error("Error: character database download failed", err);
+        showCharLoadError();
     }
     finally
     {

@@ -193,7 +193,7 @@ function renderFreezeSlots(held)
 function renderShopFields()
 {
     const goal = window.profileData.streakGoal;
-    const cost = streakFreezeCost(goal > 0 ? goal : window.STREAK_GOAL_MIN);
+    const cost = streakFreezeCost(streakFreezePriceGoal());
     const held = window.profileData.streakFreezes;
 
     renderStatValue("streak-freeze-field", `${held}/${window.MAX_STREAK_FREEZES}`);
@@ -269,9 +269,10 @@ function setupStreakGoal()
     slider.addEventListener("input", (e) => renderLabel(e.target));
 
     slider.addEventListener("change", (e) => {
-        window.profileData.streakGoal = Number(e.target.value);
-        saveProfileData(window.profileData).catch(() => {});
+        setStreakGoal(Number(e.target.value));
+        saveProfileData(window.profileData).catch(reportSaveFailure);
         renderShopFields();
+        renderTodayProgress();
     });
 
     // streakGoalText is defined by streak-goal.js, which the page loads before this file so that the
@@ -291,7 +292,7 @@ function setupGameModifiers()
 
     extensiveModeCheckbox.addEventListener("change", function(){
         window.gameModifiers.extensive = this.checked;
-        saveGameModifiers().catch(() => {});
+        saveGameModifiers().catch(reportSaveFailure);
     });
 
     const levelReduce = $("level-reduce-slider");
@@ -308,7 +309,7 @@ function setupGameModifiers()
 
     levelReduce.addEventListener("change", (e) => {
         window.gameModifiers.levelReduce = Number(e.target.value);
-        saveGameModifiers().catch(() => {});
+        saveGameModifiers().catch(reportSaveFailure);
     });
 }
 
@@ -316,7 +317,8 @@ function setupGameModifiers()
  * Wipes every trace of the user's account from storage — the profile (decks, sessions, streak,
  * time spent) and the game modifiers — then reloads so main() reinitializes a clean set of defaults.
  * Guarded behind a confirm() because it is irreversible. The legacy localStorage copies are dropped
- * too so a stale one isn't re-migrated back into IndexedDB on the next load.
+ * too so a stale one isn't re-migrated back into IndexedDB on the next load. The wipe is announced
+ * like any save, so other open tabs reload instead of writing their copy of the profile back.
  */
 function clearAccountData()
 {
@@ -331,7 +333,13 @@ function clearAccountData()
     Promise.all([
         idbDelete(window.CARD_DATA_KEY),
         idbDelete(window.GAME_MODIFIERS_KEY),
-    ]).then(() => document.location.reload());
+    ]).then(() => {
+        announceProfileChange();
+        document.location.reload();
+    }).catch((err) => {
+        console.error("Error: failed to clear the account data", err);
+        reportSaveFailure();
+    });
 }
 
 /**

@@ -6,14 +6,14 @@
 // cross-page core in scripts/components/tutorial.js (helpers, tutRunTour, tutDispatch) lives in the core bundle.
 
 // Finds the import button for the Chinese Numbers starter deck among the rendered marketplace cards. The
-// arbitrary-data attribute holds the deck's CDN path (…/Chinese-Numbers.yydeck.json); fall back to the
+// data-value attribute holds the deck's CDN path (…/Chinese-Numbers.yydeck.json); fall back to the
 // card's visible name if the file is ever renamed.
 function tutFindNumbersImportButton()
 {
     const buttons = document.querySelectorAll('[id^="import-button-"]');
     for (const btn of buttons)
     {
-        const data = btn.getAttribute("arbitrary-data") || "";
+        const data = btn.dataset.value || "";
         if (data.endsWith("Chinese-Numbers.yydeck.json"))
             return btn;
     }

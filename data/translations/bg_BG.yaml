@@ -64,7 +64,7 @@ gems_label:
 gems_panel_hint:
   other: "Печелят се със завършване на карти и фрази. Харчат се за замразявания."
 streak_panel_none:
-  other: "Завършете една серия, за да започнете поредица."
+  other: "Изпълнете дневната си цел, за да започнете поредица."
 streak_panel_safe:
   other: "Днешният ден е отчетен. До утре!"
 streak_panel_protected:
@@ -317,7 +317,7 @@ deck_source:
 deck_download:
   other: "Изтегли"
 marketplace_load_error:
-  other: "Грешка {}: Пазарът не можа да бъде зареден, опитайте отново по-късно!"
+  other: "Грешка {status}: Пазарът не можа да бъде зареден, опитайте отново по-късно!"
 
 skip-to-content:
   other: "Към съдържанието"
@@ -451,7 +451,7 @@ tutorial_card_pron:
 tutorial_card_defs_title:
   other: "Добави значения"
 tutorial_card_defs:
-  other: "Нека да зададем значението на символа - ще добавим 'good', 'fine' и 'ok'."
+  other: "Нека да зададем значението на символа - ще добавим 'добър', 'хубав' и 'добре'."
 tutorial_cardreview_title:
   other: "Вашата нова карта"
 tutorial_cardreview:
@@ -467,7 +467,7 @@ tutorial_phrase_pron:
 tutorial_phrase_defs_title:
   other: "Значение на фразата"
 tutorial_phrase_defs:
-  other: "Тук може да добавите различните значения на фразата - ще добавим 'hello'."
+  other: "Тук може да добавите различните значения на фразата - ще добавим 'здравей'."
 tutorial_phrase_subcard_title:
   other: "Съвсем нов символ"
 tutorial_phrase_subcard:
@@ -829,3 +829,27 @@ og_title:
   other: "{brand} — научете се да пишете на ръка китайски, японски, корейски, гръцки и още"
 meta_keywords:
   other: "писане на китайски йероглифи, ред на щрихите, японска кана, хирагана, катакана, канджи, корейски хангъл, ханджа, гръцка азбука, кирилица, упражнения по писане на ръка, приложение за изучаване на езици, писмени системи, флашкарти, повторение през интервали"
+save_failed:
+  other: "Промените Ви не можаха да бъдат запазени. Моля, опитайте отново."
+deck_edit_error_duplicate_phrase:
+  other: "„{phrase}“ вече е във Вашето тесте."
+deck_import_failed:
+  other: "Тестето не можа да бъде изтеглено. Проверете връзката си и опитайте отново."
+char_loading_failed:
+  other: "Данните за символите не можаха да бъдат изтеглени. Упражненията ще работят, щом се свържете отново с интернет."
+tutorial_def_good:
+  other: "добър"
+tutorial_def_fine:
+  other: "хубав"
+tutorial_def_ok:
+  other: "добре"
+tutorial_def_hello:
+  other: "здравей"
+tutorial_def_you:
+  other: "ти"
+input-mode-pinyin:
+  other: "Пинин (pin1 yin1)"
+input-mode-romaji-hiragana:
+  other: "Ромаджи → Хирагана"
+input-mode-romaji-katakana:
+  other: "Ромаджи → Катакана"

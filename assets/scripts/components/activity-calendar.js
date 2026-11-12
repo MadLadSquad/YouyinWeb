@@ -2,7 +2,7 @@
 // GitHub-style activity heatmap for the account page. Renders a year grid where each day
 // fills more strongly the more revision sessions the user completed that day, plus a year sidebar to
 // browse previous years. Reads window.profileData.activityByDay (a flat localDayIndex -> count map
-// written on session completion by recordSessionActivity in daily-streak.js).
+// written on session completion by recordSessionActivity in scripts/pages/main-page.js).
 //
 // Theme sync is intentionally pure CSS: cells carry a data-level attribute and styles/components/
 // activity-calendar.css derives their colour from the theme's CSS custom properties via color-mix,

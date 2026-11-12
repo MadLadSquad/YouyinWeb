@@ -7,26 +7,26 @@
                 <p>{{ partial "t.html" (dict "k" "input-mode-p") }}</p>
                 <div>
                     <label>
-                        <input type="radio" name="type" value="false" checked onclick="window.currentIME = ''; window.IMEIndex = 0">
+                        <input type="radio" name="type" value="" data-ime="" data-ime-index="0" checked>
                         {{ partial "t.html" (dict "k" "input-mode-none") }}
                     </label>
                 </div>
                 <div title="{{ partial "t.html" (dict "k" "pinyin-input-description") }}">
                     <label>
-                        <input type="radio" name="type" value="true" onclick="window.currentIME = 'pinyin'; window.IMEIndex = 0">
-                        Pin1 yin1
+                        <input type="radio" name="type" value="pinyin" data-ime="pinyin" data-ime-index="0">
+                        {{ partial "t.html" (dict "k" "input-mode-pinyin") }}
                     </label>
                 </div>
                 <div title="{{ partial "t.html" (dict "k" "romaji-hiragana-input-description") }}">
                     <label>
-                        <input type="radio" name="type" value="true" onclick="window.currentIME = 'romaji'; window.IMEIndex = 0">
-                        Romaji Hiragana
+                        <input type="radio" name="type" value="romaji-hiragana" data-ime="romaji" data-ime-index="0">
+                        {{ partial "t.html" (dict "k" "input-mode-romaji-hiragana") }}
                     </label>
                 </div>
                 <div title="{{ partial "t.html" (dict "k" "romaji-katakana-input-description") }}">
                     <label>
-                        <input type="radio" name="type" value="true" onclick="window.currentIME = 'romaji'; window.IMEIndex = 1">
-                        Romaji Katakana
+                        <input type="radio" name="type" value="romaji-katakana" data-ime="romaji" data-ime-index="1">
+                        {{ partial "t.html" (dict "k" "input-mode-romaji-katakana") }}
                     </label>
                 </div>
             </section>

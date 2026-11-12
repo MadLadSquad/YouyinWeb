@@ -35,12 +35,12 @@ async function tutScrollToBottomStable(timeout = 8000)
 }
 
 // Finds a rendered card by its original index in profileData.cards (the deck virtualizer stamps that onto
-// each card's edit button as arbitrary-data), then returns the enclosing card container.
+// each card's edit button as data-value), then returns the enclosing card container.
 function tutFindCardByDeckIndex(deckIndex)
 {
     const target = String(deckIndex);
     for (const btn of document.querySelectorAll('[id^="card-edit-button-"]'))
-        if (btn.getAttribute("arbitrary-data") === target)
+        if (btn.dataset.value === target)
             return btn.closest('[id^="card-container-"]');
     return null;
 }

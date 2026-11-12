@@ -1,19 +1,21 @@
 'use strict';
 
-// Defaults for the live card preview rendered while editing a card
+// Default character for the live card preview rendered while editing a card
 window.CARD_DEFAULT_CHARACTER = "是"
-window.CARD_DEFAULT_PREVIEW_NAME = "Preview Name"
 
 // Global variables, why not
 window.previewCards = [];
 window.previewPhrase = null;
 
+// New cards a phrase introduced before its text was edited, by character. Retyping the phrase rebuilds
+// every per-character card; a character that is still in the phrase gets its card (and whatever was
+// already typed into it) back from here instead of starting blank
+window.previewCardPool = new Map();
+
 // Set when editing an existing card/phrase (?edit / ?phrase-edit). Holds the live array, the index,
 // and a deep-copied "working" object that all the edit handlers mutate instead of the stored one, so
 // live profileData is only touched when Finish commits the copy back. Stays null when creating new.
 window.editContext = null;
-
-window.writer = null;
 
 window.currentIME = "";
 window.IMEIndex = 0;
@@ -29,7 +31,7 @@ function convertFromIME(string)
     if (window.currentIME === "")
         return string;
 
-    return soundTables[currentIME].convert(string, IMEIndex);
+    return soundTables[window.currentIME].convert(string, window.IMEIndex);
 }
 
 /**
@@ -66,7 +68,8 @@ function constructPreviewCardGeneric(index, it, owner)
 
         if (it === null || lit === it)
         {
-            window.previewCards.push({
+            const kept = it === null ? undefined : window.previewCardPool.get(phraseChar);
+            window.previewCards.push(kept !== undefined ? kept : {
                 name: lc.unknown_character,
                 character: it === null ? window.CARD_DEFAULT_CHARACTER : phraseChar,
                 variant: "",
@@ -88,7 +91,7 @@ function constructPreviewCardGeneric(index, it, owner)
         addElement("li", definition, "", "", "", list);
 
     writerArea.writer = createCardWriter(`card-character-target-div-preview-${index}`, lit.character + lit.variant);
-    writerArea.addEventListener("mouseover", function(){
+    writerArea.addEventListener("mouseenter", function(){
         this.writer.animateCharacter();
     })
     return lit;
@@ -173,7 +176,7 @@ function constructPhraseEditCardPreview(it) {
     // Chain the per-character animations on hover. The guard stops a fresh hover from restarting the
     // sequence while it's still drawing
     let bAnimating = false;
-    writerRow.addEventListener("mouseover", async function() {
+    writerRow.addEventListener("mouseenter", async function() {
         if (bAnimating)
             return;
         bAnimating = true;
@@ -190,14 +193,16 @@ function constructPhraseEditCardPreview(it) {
 }
 
 /**
- * Checks if a given character variant exists in the in-memory character database
+ * Checks if a given character variant exists in the in-memory character database. Without a loaded
+ * database there is nothing to check against, so every variant is assumed to exist: reporting none
+ * would make the variant box drop the one the card already has
  * @param { string } character - The character in question
  * @param { string } postfix - Variant postfix, like "-jp" or "-ko" for Japanese and Korean respectively
- * @returns { undefined|Object } - The character's stroke data, or undefined when the variant is absent
+ * @returns { boolean } - Whether the variant can be offered
  */
 function testVariantExists(character, postfix)
 {
-    return charDataLoader(character + postfix, null, null);
+    return !characterDatabaseLoaded() || charDataLoader(character + postfix, null, null) !== undefined;
 }
 
 /**
@@ -213,9 +218,8 @@ function testVariantExists(character, postfix)
  * @param { string } ariaLabel - Aria label attribute for the select box
  * @param { string } name - Name attribute for the select box
  * @param { Object } it - Card object this corresponds to. Used to change the character's value in the change callback
- * @returns {Promise<void>}
  */
-async function constructCharacterVariantSelect(container, id, classT, ariaLabel, name, it)
+function constructCharacterVariantSelect(container, id, classT, ariaLabel, name, it)
 {
     container.replaceChildren();
 
@@ -226,9 +230,9 @@ async function constructCharacterVariantSelect(container, id, classT, ariaLabel,
     let options = [
         { value: "", text: lc.character_variant_default }
     ];
-    if (await testVariantExists(it.character, "-jp") !== undefined)
+    if (testVariantExists(it.character, "-jp"))
         options.push({ value: "-jp", text: `🇯🇵   ${lc.character_variant_kanji}` });
-    if (await testVariantExists(it.character, "-ko") !== undefined)
+    if (testVariantExists(it.character, "-ko"))
         options.push({ value: "-ko", text: `🇰🇷   ${lc.character_variant_hanja}` });
 
     // Drop a previously-selected variant that the new character doesn't offer
@@ -267,20 +271,16 @@ function reconstructDefinitionList(previewList, editList, definitions, bReadOnly
         addElement("li", definitions[i], "", "", "", previewList);
 
         let li = addElement("li", definitions[i], "", "", "", editList);
+        // A read-only list still lists every definition, it just gets no remove buttons
         if (bReadOnly)
-            return;
+            continue;
 
         addTextNode(li, " ");
 
-        let button = addElement("button", "-", "", "card-button-edit small-button", "", li);
-        button.previewList = previewList;
-        button.editList = editList;
-        button.definitions = definitions;
-        button.defIndex = i;
-
-        runEventAfterAnimation(button, "click", (e) => {
-            e.target.definitions.splice(e.target.defIndex, 1);
-            reconstructDefinitionList(e.target.previewList, e.target.editList, e.target.definitions, false)
+        const button = addElement("button", "-", "", "card-button-edit small-button", "", li);
+        runEventAfterAnimation(button, "click", () => {
+            definitions.splice(i, 1);
+            reconstructDefinitionList(previewList, editList, definitions, false);
         });
     }
 }
@@ -339,7 +339,7 @@ function constructEditCard(index, it, root, bPhrase)
         bReadOnly = false;
 
     let container = addElement("div", "", `edit-phrase-${index}`, "card centered", "", root);
-    container.setAttribute("yy-readonly", bReadOnly.toString());
+    container.dataset.readonly = bReadOnly.toString();
 
     addElement("h3", `${lc.card_name}: ` + (bReadOnly
                                                     ? lit.name
@@ -382,6 +382,10 @@ function constructEditCard(index, it, root, bPhrase)
                 cardEditSection.replaceChildren();
                 lit.phrase = event.target.value === "" ? window.CARD_DEFAULT_CHARACTER : event.target.value;
 
+                // Keep the new cards built so far, so a character that survives the edit keeps what
+                // was typed into its card (see constructPreviewCardGeneric)
+                for (const card of window.previewCards)
+                    window.previewCardPool.set(card.character, card);
                 window.previewCards = [];
                 constructPhraseEditCardPreview(lit);
                 constructEditCard("phrase", lit, cardEditSection, true);
@@ -408,13 +412,8 @@ function constructEditCard(index, it, root, bPhrase)
                 // refreshed with whatever variant survived the rebuild
                 let variantWrapper = $(`character-variant-wrapper-${index}`);
                 if (variantWrapper)
-                {
-                    constructCharacterVariantSelect(variantWrapper, `character-variant-box-${index}`, "centered", lc.character_variant_box_aria, lc.character_variant_box_aria, lit).then(() => {
-                        $(`card-character-target-div-preview-${index}`).writer.setCharacter(lit.character + lit.variant);
-                    });
-                }
-                else
-                    $(`card-character-target-div-preview-${index}`).writer.setCharacter(lit.character + lit.variant);
+                    constructCharacterVariantSelect(variantWrapper, `character-variant-box-${index}`, "centered", lc.character_variant_box_aria, lc.character_variant_box_aria, lit);
+                $(`card-character-target-div-preview-${index}`).writer.setCharacter(lit.character + lit.variant);
             })
         }
     }
@@ -426,7 +425,7 @@ function constructEditCard(index, it, root, bPhrase)
         // Stable wrapper so the variant box can be rebuilt in place when the character changes.
         // Inline-block keeps it on the same line as the character input, like the original layout
         let variantWrapper = addElement("div", "", `character-variant-wrapper-${index}`, "character-variant-wrapper", "", container);
-        constructCharacterVariantSelect(variantWrapper, `character-variant-box-${index}`, "centered", lc.character_variant_box_aria, lc.character_variant_box_aria, lit).then(_ => {});
+        constructCharacterVariantSelect(variantWrapper, `character-variant-box-${index}`, "centered", lc.character_variant_box_aria, lc.character_variant_box_aria, lit);
     }
 
     addElement("h3", `${lc.deck_definitions}`, "", "", "", container);
@@ -440,8 +439,11 @@ function constructEditCard(index, it, root, bPhrase)
 
         runEventAfterAnimation(addButton, "click", (_) => {
             let textField = $(`meaning-text-field-${index}`);
-            lit.definitions.push(textField.value);
+            const definition = textField.value.trim();
             textField.value = "";
+            if (definition === "")
+                return;
+            lit.definitions.push(definition);
 
             reconstructDefinitionList($(`card-preview-list-${index}`), $(`definition-list-current-edit-${index}`), lit.definitions, false)
         });
@@ -493,7 +495,7 @@ function constructListElements()
                 return;
 
             dataContainer.splice(index, 1);
-            saveProfileData(window.profileData).then(() => { location.href = window.pageUrl("deck"); }).catch(() => {});
+            saveProfileData(window.profileData).then(() => { location.href = window.pageUrl("deck"); }).catch(reportSaveFailure);
         });
 
         // Edit a deep copy of the stored card/phrase, never the live object. Every edit handler below
@@ -509,7 +511,7 @@ function constructListElements()
         if (it["character"])
         {
             constructPreviewCardGeneric(0, it, cardEditSection);
-            constructEditCard(0, it, cardEditSection, true);
+            constructEditCard(0, it, cardEditSection, false);
             for (let i = 0; i < cardEditSection.childNodes.length; i++)
                 cardEditSection.insertBefore(cardEditSection.childNodes[i], cardEditSection.firstChild);
         }
@@ -624,6 +626,13 @@ function validateEditorEntries()
     const phrase = editContext !== null && editContext.working["phrase"] !== undefined
         ? editContext.working
         : window.previewPhrase;
+
+    // The same phrase twice would be revised twice, and imports already skip duplicates
+    if (phrase !== null && window.profileData.phrases.some((p, i) =>
+        p.phrase === phrase.phrase &&
+        !(editContext !== null && editContext.array === window.profileData.phrases && i === editContext.index)))
+        return lc.deck_edit_error_duplicate_phrase.replace("{phrase}", phrase.phrase);
+
     if (phrase !== null && bCheckStrokes)
     {
         for (const character of toCharacters(phrase.phrase))
@@ -635,8 +644,32 @@ function validateEditorEntries()
     return null;
 }
 
+/**
+ * Wires the input-mode radios. Each carries the sound table it selects and that table's variant
+ * (Hiragana or Katakana for romaji) as data attributes; see layouts/deck-edit-card.html
+ */
+function setupInputModes()
+{
+    const apply = (radio) => {
+        window.currentIME = radio.dataset.ime || "";
+        window.IMEIndex = Number(radio.dataset.imeIndex) || 0;
+    };
+
+    for (const radio of document.querySelectorAll("#input-mode input[type=radio]"))
+    {
+        // The browser may restore a previous choice on reload or Back, so start from whichever is checked
+        if (radio.checked)
+            apply(radio);
+        radio.addEventListener("change", () => {
+            if (radio.checked)
+                apply(radio);
+        });
+    }
+}
+
 function deckEditMain()
 {
+    setupInputModes();
     constructListElements();
     runEventAfterAnimation($("finish-edit-button"), "click", function(_) {
         const problem = validateEditorEntries();
@@ -669,7 +702,7 @@ function deckEditMain()
         }
 
         // Wait for the write to commit before navigating back to the deck page
-        saveProfileData(window.profileData).then(() => { location.href = window.pageUrl("deck"); }).catch(() => {});
+        saveProfileData(window.profileData).then(() => { location.href = window.pageUrl("deck"); }).catch(reportSaveFailure);
     });
     runEventAfterAnimation($("cancel-edit-button"), "click", function() { location.href = window.pageUrl("deck") })
 }

@@ -64,7 +64,7 @@ gems_label:
 gems_panel_hint:
   other: "Câștigate prin finalizarea cardurilor și frazelor. Cheltuiește-le pe înghețări de serie."
 streak_panel_none:
-  other: "Finalizează o rundă pentru a începe o serie."
+  other: "Atinge-ți obiectivul zilnic pentru a începe o serie."
 streak_panel_safe:
   other: "Ziua de azi este contorizată. Pe mâine!"
 streak_panel_protected:
@@ -318,7 +318,7 @@ deck_source:
 deck_download:
   other: "Descarcă"
 marketplace_load_error:
-  other: "Eroare {}: Nu s-a putut încărca piața, reîncearcă mai târziu!"
+  other: "Eroare {status}: Nu s-a putut încărca piața, reîncearcă mai târziu!"
 
 skip-to-content:
   other: "Sari la conținut"
@@ -452,7 +452,7 @@ tutorial_card_pron:
 tutorial_card_defs_title:
   other: "Adaugă semnificații"
 tutorial_card_defs:
-  other: "Enumeră ce înseamnă cardul, câte o intrare pe rând - vom adăuga 'bun', 'bine' și 'ok'."
+  other: "Enumeră ce înseamnă cardul, câte o intrare pe rând - vom adăuga 'bun', 'bine' și 'în regulă'."
 tutorial_cardreview_title:
   other: "Noul tău card"
 tutorial_cardreview:
@@ -830,3 +830,27 @@ og_title:
   other: "{brand} — învață să scrii de mână chineză, japoneză, coreeană, greacă și nu numai"
 meta_keywords:
   other: "învață să scrii caractere chinezești, ordinea trăsăturilor Hanzi, kana japoneză, hiragana, katakana, kanji, hangul coreean, hanja, alfabetul grecesc, alfabetul chirilic, exersarea scrisului de mână, aplicație de învățare a limbilor, sisteme de scriere, cartonașe, repetiție spațiată"
+save_failed:
+  other: "Modificările tale nu au putut fi salvate. Încearcă din nou."
+deck_edit_error_duplicate_phrase:
+  other: "„{phrase}” este deja în pachetul tău."
+deck_import_failed:
+  other: "Pachetul nu a putut fi descărcat. Verifică-ți conexiunea și încearcă din nou."
+char_loading_failed:
+  other: "Datele caracterelor nu au putut fi descărcate. Exersarea va funcționa când revii online."
+tutorial_def_good:
+  other: "bun"
+tutorial_def_fine:
+  other: "bine"
+tutorial_def_ok:
+  other: "în regulă"
+tutorial_def_hello:
+  other: "salut"
+tutorial_def_you:
+  other: "tu"
+input-mode-pinyin:
+  other: "Pinyin (pin1 yin1)"
+input-mode-romaji-hiragana:
+  other: "Romaji → Hiragana"
+input-mode-romaji-katakana:
+  other: "Romaji → Katakana"

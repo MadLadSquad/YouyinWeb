@@ -41,10 +41,12 @@
 // gets a fresh cache and the activate handler drops the old one.
 const CACHE_NAME = 'static-{{ delimit $urls "|" | hash.FNV32a }}';
 
-// Runtime data fetched from the CDN (the character database, the marketplace decks, the twemoji SVGs).
-// Kept apart from the shell and not versioned by deploy, so shipping a new build doesn't throw away
-// data that did not change. Entries are keyed by URL and replaced as fresher copies are fetched.
-const DATA_CACHE_NAME = 'data-v1';
+// Runtime data fetched from the CDN (the marketplace decks and the twemoji SVGs). Kept apart from the
+// shell and not versioned by deploy, so shipping a new build doesn't throw away data that did not
+// change. Entries are keyed by URL and replaced as fresher copies are fetched. Bump the version only
+// when what this cache holds changes shape: activate deletes every other cache. (v1 also held the
+// character database and opaque emoji responses, neither of which is cached any more.)
+const DATA_CACHE_NAME = 'data-v2';
 
 // Same-origin app shell: always served from our own host, so these are reliable and cached
 // atomically — a failure here means a genuinely broken build worth surfacing. Generated from the
@@ -86,14 +88,23 @@ const CDN_HOSTS = {{ slice "cdn.jsdelivr.net" | append (site.Params.additional_c
 // The public deck repository (params.marketplace_cdn_url in hugo.yaml)
 const CDN_PATH = '{{ site.Params.marketplace_cdn_url }}';
 
-// The character database (manifest + chunks) is downloaded and persisted by the page (into
-// IndexedDB), but the service worker still caches whatever chunks it sees go by so they remain
-// available offline. It is fetched network-first so a package update is actually picked up — a
-// cache-first copy would pin the database forever. params.char_data_url in hugo.yaml
-const CHARACTER_DATA_REPO = '{{ site.Params.char_data_url }}';
+// The character database (manifest + chunks; params.char_data_url in hugo.yaml). The page downloads
+// it and keeps it in IndexedDB, which is what makes it available offline, so the worker leaves these
+// requests alone: caching them as well stored the whole database a second time
+const CHARACTER_DATA_PREFIX = '{{ site.Params.char_data_url }}/character-map-chunks';
 
-// Network-first for same-origin requests so new deploys are picked up immediately, with the
-// cache as an offline fallback. Cross-origin CDN assets are cache-first since they don't change
+// Bundles, stylesheets, fonts and the theme catalogue are published under content-hashed names
+// (fingerprinted by layouts/_partials/assets.html), so a given URL never changes and can be answered
+// from the cache without asking the network
+const FINGERPRINTED = /\.[0-9a-f]{64}\.(?:js|css|woff2)$/;
+
+// How long a page navigation waits on the network before answering from the cache, when a cached copy
+// exists. The network response still lands in the cache for next time
+const NAVIGATION_TIMEOUT_MS = 3000;
+
+// Network-first for pages and the other unversioned same-origin files, so new deploys are picked up
+// immediately, with the cache as an offline fallback; cache-first for the fingerprinted assets.
+// Cross-origin CDN assets are handled by handleCdnRequest
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
 
@@ -102,9 +113,12 @@ self.addEventListener('fetch', (event) => {
         return;
 
     if (url.origin === self.location.origin) {
-        event.respondWith(handleSameOriginRequest(event.request));
-    } else if (CDN_HOSTS.includes(url.host)) {
-        event.respondWith(handleCdnRequest(event.request, url));
+        if (FINGERPRINTED.test(url.pathname))
+            event.respondWith(handleImmutableRequest(event));
+        else
+            event.respondWith(handleSameOriginRequest(event));
+    } else if (CDN_HOSTS.includes(url.host) && !url.href.startsWith(CHARACTER_DATA_PREFIX)) {
+        event.respondWith(handleCdnRequest(event, url));
     }
     // Anything else goes straight to the network without the worker in the way
 });
@@ -124,19 +138,49 @@ function cacheKeyFor(request) {
     return url.href;
 }
 
-async function handleSameOriginRequest(request) {
+// Stores a response without holding up the one being returned, while keeping the worker alive until
+// the write has finished
+function cachePut(event, cache, key, response) {
+    event.waitUntil(cache.put(key, response).catch(() => {}));
+}
+
+async function handleImmutableRequest(event) {
+    const cache = await caches.open(CACHE_NAME);
+    const cachedResponse = await cache.match(event.request);
+    if (cachedResponse) return cachedResponse;
+
+    const networkResponse = await fetch(event.request);
+    if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic')
+        cachePut(event, cache, event.request, networkResponse.clone());
+    return networkResponse;
+}
+
+async function handleSameOriginRequest(event) {
+    const request = event.request;
     const cacheKey = cacheKeyFor(request);
-    try {
-        const networkResponse = await fetch(request);
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-            const cache = await caches.open(CACHE_NAME);
-            cache.put(cacheKey, networkResponse.clone());
-        }
+    const cache = await caches.open(CACHE_NAME);
+
+    const network = fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic')
+            cachePut(event, cache, cacheKey, networkResponse.clone());
         return networkResponse;
+    });
+
+    try {
+        // A page with a cached copy doesn't wait out a bad connection: after the timeout the cached
+        // copy is served, and the network response, if it comes, still refreshes the cache
+        if (request.mode === 'navigate') {
+            const cachedResponse = await cache.match(cacheKey);
+            if (cachedResponse) {
+                event.waitUntil(network.catch(() => {}));
+                const timeout = new Promise((resolve) => setTimeout(() => resolve(cachedResponse), NAVIGATION_TIMEOUT_MS));
+                return await Promise.race([network.catch(() => cachedResponse), timeout]);
+            }
+        }
+        return await network;
     } catch (err) {
         // Offline: serve from the cache. Read through the versioned cache rather than caches.match,
         // which searches every cache and could answer from a superseded version
-        const cache = await caches.open(CACHE_NAME);
         const cachedResponse = await cache.match(cacheKey);
         if (cachedResponse) return cachedResponse;
 
@@ -152,17 +196,17 @@ async function handleSameOriginRequest(request) {
     }
 }
 
-async function handleCdnRequest(request, url) {
+async function handleCdnRequest(event, url) {
+    const request = event.request;
     const cache = await caches.open(DATA_CACHE_NAME);
 
-    // Network-first for the mutable deck repository (so marketplace updates are picked up) and the
-    // character database (so package updates land), falling back to the cache only when offline
-    if (url.href.startsWith(CDN_PATH) || url.href.startsWith(CHARACTER_DATA_REPO)) {
+    // Network-first for the mutable deck repository, so marketplace updates are picked up, falling
+    // back to the cache only when offline
+    if (url.href.startsWith(CDN_PATH)) {
         try {
             const networkResponse = await fetch(request);
-            if (networkResponse && networkResponse.status === 200) {
-                cache.put(request, networkResponse.clone());
-            }
+            if (networkResponse && networkResponse.status === 200)
+                cachePut(event, cache, request, networkResponse.clone());
             return networkResponse;
         } catch (err) {
             const cachedResponse = await cache.match(request);
@@ -171,15 +215,15 @@ async function handleCdnRequest(request, url) {
         }
     }
 
-    // Everything else on these hosts is a versioned, immutable URL (the twemoji SVGs): cache-first
+    // Everything else on these hosts is a versioned, immutable URL (the twemoji SVGs): cache-first.
+    // Only readable (CORS) responses are kept. emoji.js requests the SVGs with crossorigin for this:
+    // an opaque response is charged several megabytes of quota apiece by Chromium, whatever its size
     const cachedResponse = await cache.match(request);
     if (cachedResponse) return cachedResponse;
 
     const networkResponse = await fetch(request);
-    // Opaque (no-cors) responses report status 0, so check the type as well before caching
-    if (networkResponse && (networkResponse.status === 200 || networkResponse.type === 'opaque')) {
-        cache.put(request, networkResponse.clone());
-    }
+    if (networkResponse && networkResponse.status === 200)
+        cachePut(event, cache, request, networkResponse.clone());
     return networkResponse;
 }
 

@@ -23,8 +23,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    /* Space between an inline SVG icon and the label. Buttons that carry an icon read their own
-       arbitrary-data via e.currentTarget (see deck.js / marketplace.js), so a child element is safe */
+    /* Space between an inline SVG icon and the label. Handlers never read the clicked node (they
+       close over what they need), so a click landing on the icon is safe */
     gap: 0.5rem;
     box-sizing: border-box;
     /* 40px, up from 32: the old height was below a comfortable touch target, and these are the

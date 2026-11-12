@@ -42,6 +42,20 @@
             showOverlay(info);
     }
 
+    const PROBE_SESSION_KEY = "__site_idb_probe_ok__";
+
+    function probePassedThisSession()
+    {
+        try
+        {
+            return window.sessionStorage.getItem(PROBE_SESSION_KEY) === "1";
+        }
+        catch (e)
+        {
+            return false;
+        }
+    }
+
     // Probes the capabilities the app hard-depends on. Returns null when everything works, or
     // { category, reasons } for the first blocking problem. "privacy" means storage is blocked
     // (lockdown / private / "block all site data"); "outdated" means the browser is too old to run
@@ -65,9 +79,15 @@
 
         // indexedDB: profile + character-database storage. Some profiles remove it, null it out, or
         // throw synchronously from open(). Async open failures are caught by the onerror handler.
+        // A probe that succeeded is remembered for the rest of the browser session, so ordinary page
+        // loads don't each create and delete a throwaway database
         if (!("indexedDB" in window) || window.indexedDB === null)
         {
             reasons.push("indexedDB");
+        }
+        else if (probePassedThisSession())
+        {
+            // Checked earlier in this session
         }
         else
         {
@@ -84,6 +104,7 @@
                     {
                         req.result.close();
                         window.indexedDB.deleteDatabase("__site_probe__");
+                        window.sessionStorage.setItem(PROBE_SESSION_KEY, "1");
                     }
                     catch (e)
                     {
@@ -110,6 +131,8 @@
             reasons.push("at");
         if (typeof Element.prototype.replaceChildren !== "function")
             reasons.push("replaceChildren");
+        if (typeof window.structuredClone !== "function")
+            reasons.push("structuredClone");
         if (typeof window.IntersectionObserver !== "function")
             reasons.push("IntersectionObserver");
         if (!(window.CSS && typeof CSS.supports === "function" && CSS.supports("color", "color-mix(in srgb, red, blue)")))
