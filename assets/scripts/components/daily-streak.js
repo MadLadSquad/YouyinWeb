@@ -130,9 +130,68 @@ function streakStatusText()
 }
 
 /**
+ * The weekday the user's locale starts its week on, counted like Date.getDay() (0 is Sunday). Falls
+ * back to Monday where the browser cannot say: Intl.Locale's week info is not in every engine yet,
+ * and older ones exposed it as a getter rather than a method
+ * @returns { number } - 0-6
+ */
+function localeFirstWeekday()
+{
+    try
+    {
+        const locale = new Intl.Locale(lc.locale);
+        const info = typeof locale.getWeekInfo === "function" ? locale.getWeekInfo() : locale.weekInfo;
+        // firstDay is 1-7 with 7 for Sunday
+        if (info && info.firstDay)
+            return info.firstDay % 7;
+    }
+    catch (e) {}
+    return 1;
+}
+
+/**
+ * Fills the streak panel's week strip: seven days, each filled when the streak covers it. Covered
+ * rather than practised: a day bridged by a freeze is part of the streak too, so it is filled as
+ * well, in ice blue rather than the accent - checkStreakExpiry records those days in frozenDays.
+ *
+ * The strip normally shows the current week. A streak that began this week (or has not begun yet)
+ * starts the strip on its first day instead, so a new or returning user isn't greeted by a row of
+ * grey days they were never there for; once the streak has lived to the start of a week, it is the
+ * plain week again
+ * @param { HTMLElement } week - The strip's list element
+ */
+function renderStreakWeek(week)
+{
+    const data = window.profileData;
+    const today = localDayIndex(new Date());
+    // Day 0 of localDayIndex is 1 January 1970, a Thursday (getDay() 4)
+    const weekStart = today - (today + 4 - localeFirstWeekday() + 7) % 7;
+    const firstCounted = data.lastStreakDay - data.streak + 1;
+    // With no streak alive, the next one can start today at the earliest
+    const streakStart = data.streak > 0 ? Math.min(firstCounted, today) : today;
+    const start = Math.max(weekStart, streakStart);
+    const frozen = new Set(data.frozenDays);
+
+    week.replaceChildren();
+    for (let day = start; day < start + 7; day++)
+    {
+        let cls = "streak-panel-day";
+        if (data.streak > 0 && day >= firstCounted && day <= data.lastStreakDay)
+            cls += frozen.has(day) ? " streak-panel-day-frozen" : " streak-panel-day-done";
+        if (day === today)
+            cls += " streak-panel-day-today";
+
+        // localDayIndex counts UTC midnights, so the weekday is read back in UTC
+        const label = new Date(day * 86400000).toLocaleDateString(lc.locale, { weekday: "narrow", timeZone: "UTC" });
+        addElement("li", label, "", cls, "", week);
+    }
+}
+
+/**
  * Builds the panel behind an app-bar chip. The two chips ask different questions, so they get
  * different panels off the same builder:
- *   "streak" - how the streak stands, the freeze wallet backing it, and the shop underneath
+ *   "streak" - the current week, how the streak stands, the freeze wallet backing it, and the shop
+ *              underneath
  *   "gems"   - the balance and the one thing it buys; no streak count and no status line, because
  *              a gem balance says nothing about the streak and repeating it made the two chips
  *              indistinguishable
@@ -156,6 +215,15 @@ function createStreakPanel(button, mode)
     const popup = addElement("div", "", "", "list-select-popup streak-panel", "", container);
     popup.setAttribute("role", "dialog");
     popup.setAttribute("aria-label", bStreak ? lc.streak_field : lc.gems_label);
+
+    // The streak panel opens on the current week. Hidden from screen readers: the status line under
+    // the count says where the streak stands in words
+    let week = null;
+    if (bStreak)
+    {
+        week = addElement("ol", "", "", "streak-panel-week", "", popup);
+        week.setAttribute("aria-hidden", "true");
+    }
 
     // The headline number is whichever one the chip shows
     const head = addElement("div", "", "", "streak-panel-head", "", popup);
@@ -211,6 +279,8 @@ function createStreakPanel(button, mode)
         const held = data.streakFreezes;
 
         count.textContent = bStreak ? data.streak : data.gems;
+        if (week !== null)
+            renderStreakWeek(week);
         if (status !== null)
             status.textContent = streakStatusText();
         freezeCount.textContent = `${held}/${window.MAX_STREAK_FREEZES}`;
@@ -341,6 +411,9 @@ function checkStreakExpiry()
 
     if (missed <= data.streakFreezes)
     {
+        // Recorded so the streak panel's week strip can tell these days from practised ones
+        for (let day = data.lastStreakDay + 1; day <= data.lastStreakDay + missed; day++)
+            data.frozenDays.push(day);
         data.streakFreezes -= missed;
         data.lastStreakDay += missed;
     }

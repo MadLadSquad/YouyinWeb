@@ -19,8 +19,7 @@
              that swap. -->
         <a href="{{ partial "url.html" (dict "slug" "") }}" id="main-page-header-home" class="app-brand site-title">
             <svg class="app-brand-mark" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
-                <rect x="2.6" y="2.6" width="14.8" height="14.8" rx="4.4"></rect>
-                <path d="M6.4 13.6c1.5.5 2.6 0 3.2-1.3l3.4-4.2" stroke-width="1.9"></path>
+                {{ partial "brand-mark.html" . }}
             </svg>
             <span>{{ site.Params.trademark }}</span>
         </a>

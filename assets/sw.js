@@ -32,7 +32,7 @@
 {{- $urls = $urls | append "/" "/404.html" -}}
 {{- range (uniq $shared) -}}{{- $urls = $urls | append . -}}{{- end -}}
 {{- /* Root-level static files that no bundle references. */ -}}
-{{- range (slice "/manifest.json" "/favicon.png" "/favicon-new.png" "/icon-192.png" "/icon-512.png") -}}
+{{- range (slice "/manifest.json" "/favicon.svg" "/icon-192.png" "/icon-512.png") -}}
   {{- $urls = $urls | append . -}}
 {{- end -}}
 {{- $urls = uniq $urls -}}

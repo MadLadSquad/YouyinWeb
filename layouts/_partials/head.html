@@ -5,6 +5,9 @@
 {{- $canonical := printf "%s%s" site.Params.cannonical_url (partial "url.html" (dict "slug" .slug)) -}}
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The palette is the user's chosen theme, so opt out of the browser's automatic darkening
+     (Chrome/Samsung Internet "auto dark mode"), which would otherwise recolour it -->
+<meta name="color-scheme" content="only light">
 <meta name="description" content="{{ partial "t.html" (dict "k" "site-description") }}">
 {{- /* The brand and its Chinese spelling stay out of the translations (see "Brand name in strings" in CLAUDE.md) */}}
 <meta name="keywords" content="{{ site.Params.trademark }}, {{ partial "t.html" (dict "k" "meta_keywords") }}, 卣囙, Yǒuyīn">
@@ -61,7 +64,8 @@
   | jsonify (dict "indent" "    ") | safeJS }}
 </script>
 
-<link rel="icon" type="image/png" href="/favicon-new.png">
+{{- /* The app bar's brand mark. theme.js swaps it for one in the active theme's accent at boot */}}
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
 <link rel="manifest" href="/manifest.json">
 {{- /* The default theme's accent. theme.js rewrites it to the active theme's accent at boot */}}

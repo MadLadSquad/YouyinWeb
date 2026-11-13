@@ -209,6 +209,62 @@ header {
     margin: 0;
 }
 
+/* The current week at the top of the streak panel (renderStreakWeek in daily-streak.js) */
+.streak-panel-week {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 0.25rem;
+    padding: 0;
+    list-style: none;
+}
+
+.streak-panel-day {
+    display: grid;
+    place-items: center;
+    flex: none;
+    box-sizing: border-box;
+    width: 1.75rem;
+    height: 1.75rem;
+    /* base.css pads every ol li at the top, which stretched the circles into ovals */
+    padding: 0;
+    border-radius: 50%;
+    /* Outlined like the freeze pips below, for the same reason: the accent fill clears 3:1 against
+       the page on far more palettes than against a --sunken disc */
+    background-color: var(--surface);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+    color: var(--muted-text);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.streak-panel-day-done {
+    background-color: var(--main-accent-colour);
+    box-shadow: none;
+    color: var(--on-accent);
+}
+
+/* A day bridged by a streak freeze. A literal ice blue rather than a palette colour: no palette field
+   means "frozen", and it has to read as ice next to the accent on every theme. The label is picked
+   from the fill the same way --on-accent is (base.css) */
+.streak-panel-day-frozen {
+    --frozen-day-colour: #3d8fd6;
+    background-color: var(--frozen-day-colour);
+    box-shadow: none;
+    color: #ffffff;
+}
+
+@supports (color: oklch(from red l c h)) {
+    .streak-panel-day-frozen {
+        color: oklch(from var(--frozen-day-colour) clamp(0, (l - 0.57) * -1000, 1) 0 0);
+    }
+}
+
+/* A gap the colour of the panel, then the accent ring */
+.streak-panel-day-today {
+    box-shadow: 0 0 0 2px var(--main-background-colour), 0 0 0 4px var(--main-accent-colour);
+}
+
 .streak-panel-head {
     display: flex;
     align-items: baseline;

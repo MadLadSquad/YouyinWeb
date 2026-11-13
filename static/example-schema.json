@@ -12,6 +12,9 @@
       "goal":10,
       "day":19650
    },
+   "frozenDays":[
+      19648
+   ],
    "activityByDay":{
       "19649":1,
       "19650":3,

@@ -95,7 +95,7 @@
 {{- $localeRedirect := resources.Get "scripts/data/locale-redirect.js"
       | resources.ExecuteAsTemplate "scripts/_locale-redirect.js" (dict "locales" $locales) -}}
 {{- $theme := resources.Get "scripts/data/theme.js"
-      | resources.ExecuteAsTemplate "scripts/_theme.js" (dict "themesDataURL" $themesData.RelPermalink) -}}
+      | resources.ExecuteAsTemplate "scripts/_theme.js" (dict "themesDataURL" $themesData.RelPermalink "favicon" (partial "favicon.html" "{accent}")) -}}
 {{- $boot := ($none | append (resources.Get "scripts/data/browser-support.js") $localeRedirect $theme)
       | resources.Concat "scripts/boot.js" | minify | fingerprint -}}
 

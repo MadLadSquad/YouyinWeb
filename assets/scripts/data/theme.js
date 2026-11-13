@@ -33,6 +33,10 @@ window.THEME_PALETTE_KEY = "themePalette";
 // sibling of the catalogue; the fingerprinted URL has to come from the asset pipeline instead.
 const THEME_SCRIPT_SRC = "{{ .themesDataURL }}";
 
+// The favicon's SVG source with an "{accent}" placeholder for its stroke, from layouts/_partials/
+// favicon.html, so the tab icon is the app bar's mark in the active theme's accent
+const FAVICON_SVG = {{ .favicon | jsonify }};
+
 /**
  * Applies a palette object by injecting its colours as CSS variables into a :root <style> block and
  * syncing the hanzi-writer colours (recolouring any live writer). This is the lower half of theming:
@@ -103,6 +107,12 @@ window.applyPalette = function (t, id)
     const themeColour = document.querySelector('meta[name="theme-color"]');
     if (themeColour !== null)
         themeColour.setAttribute("content", t.accent);
+
+    // So does the favicon. It is an image and takes no CSS from the page, so it is rebuilt as a data
+    // URL in the new accent. The link precedes this script in <head> like the meta tag above
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (favicon !== null)
+        favicon.setAttribute("href", "data:image/svg+xml," + encodeURIComponent(FAVICON_SVG.replace("{accent}", t.accent)));
 
     // Briefly cross-fade the colours on every change *after* the initial page paint (the first
     // call happens before the stylesheets render, so there's nothing to fade from). The transition

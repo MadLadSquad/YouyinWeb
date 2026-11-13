@@ -114,6 +114,11 @@
    styling only — the text itself is untouched. */
 #main-page-info-container {
     padding: 1.125rem 0.25rem;
+    /* getDrawElementHeight gives this and <main> the same pixel height; content-box would add the
+       padding on top of it, and the right border would run past main into the footer */
+    box-sizing: border-box;
+    /* A long definition list scrolls inside the rail instead of spilling past it */
+    overflow-y: auto;
 }
 
 #main-page-info-container > div {

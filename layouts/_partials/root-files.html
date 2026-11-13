@@ -12,3 +12,6 @@
   {{- if not $r -}}{{- errorf "missing root file assets/%s" . -}}{{- end -}}
   {{- ($r | resources.ExecuteAsTemplate . $).Publish -}}
 {{- end -}}
+{{- /* The favicon in the default theme's accent (the theme-color meta in head.html carries the same
+       value), for the first paint and for anything that reads it without running theme.js */ -}}
+{{- (resources.FromString "favicon.svg" (partial "favicon.html" "#c87e74")).Publish -}}

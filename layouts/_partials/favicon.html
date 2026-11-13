@@ -1,0 +1,5 @@
+{{- /* The favicon: the app bar's brand mark as a standalone SVG, stroked in the colour passed as the
+       context. A favicon takes no CSS from the page, so the stroke attributes header.css gives
+       .app-brand-mark are written out here. root-files.html publishes it in the default accent as
+       /favicon.svg; theme.js gets it with an "{accent}" placeholder and rebuilds it per theme. */ -}}
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="{{ . }}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">{{ partial "brand-mark.html" . }}</svg>

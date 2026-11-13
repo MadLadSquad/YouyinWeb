@@ -476,7 +476,7 @@ function mergeProfiles(base, local, fresh)
     const merged = Object.assign({}, fresh);
     for (const key of Object.keys(local))
     {
-        if (key === "cards" || key === "phrases" || key === "activityByDay")
+        if (key === "cards" || key === "phrases" || key === "activityByDay" || key === "frozenDays")
             continue;
         if (PROFILE_COUNTERS.includes(key))
             merged[key] = (Number(fresh[key]) || 0) + (Number(local[key]) || 0) - (Number(base[key]) || 0);
@@ -492,6 +492,9 @@ function mergeProfiles(base, local, fresh)
     for (const day of Object.keys(localActivity))
         activity[day] = (activity[day] || 0) + localActivity[day] - (baseActivity[day] || 0);
     merged.activityByDay = activity;
+
+    // Days only ever join this list, so both tabs' days are kept
+    merged.frozenDays = [...new Set([...(fresh.frozenDays || []), ...(local.frozenDays || [])])].sort((a, b) => a - b);
 
     merged.cards = mergeProfileEntries(base.cards || [], local.cards || [], fresh.cards || [],
         (c) => c.character + (c.variant || ""));
@@ -924,6 +927,7 @@ async function main()
             gems: 0,
             streakFreezes: 0,
             streakGoal: 0,
+            frozenDays: [],
         };
         bProfileChanged = true;
     }
@@ -980,6 +984,14 @@ async function main()
         window.profileData["gems"] = 0;
         window.profileData["streakFreezes"] = 0;
         window.profileData["streakGoal"] = 0;
+        bProfileChanged = true;
+    }
+
+    // Users from before frozen days were recorded: freezes they already spent can't be told apart
+    // from practised days any more, so the list starts empty
+    if (!Array.isArray(window.profileData["frozenDays"]))
+    {
+        window.profileData["frozenDays"] = [];
         bProfileChanged = true;
     }
 
